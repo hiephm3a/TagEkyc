@@ -1,13 +1,19 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 0.4
+**Version:** 0.5
 **Status:** Active
 **Date:** 2026-06-10
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v0.5 - TIP-03 closed
+
+- Recorded TIP-03 as accepted and closed.
+- Cleared TIP-03 review active work.
+- Set TIP-04 kickoff preparation as the next recommended action.
 
 ### v0.4 - TIP-03 review state synchronized
 
@@ -185,13 +191,13 @@ No open inbound agent messages.
 
 - From: Coordinator
 - To: User / Next agent
-- Status: Active
+- Status: Done
 - Gate: Review
 - Scope: TIP-03 implementation review follow-through.
 - Context: `docs/tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md` records TIP-02A as accepted and TIP-03 as implemented pending review. The coordinator re-reviewed TIP-03 against `tip_03_kickoff_v0_2.md`, re-ran `dotnet test TagEkyc.sln --no-restore`, and recorded `tip_03_review_v0_1.md` with no findings.
-- Requested action: Keep TIP-03 in review/acceptance state. Do not open TIP-04 runtime API/auth implementation unless a TIP-04 kickoff is explicitly prepared and accepted.
-- Output expected: TIP-03 acceptance decision or a separate accepted TIP-04 kickoff packet.
-- Links: `docs/tips/tip_03_core_domain_contracts/tip_03_kickoff_v0_2.md`, `docs/tips/tip_03_core_domain_contracts/tip_03_execution_report_v0_1.md`, `docs/tips/tip_03_core_domain_contracts/tip_03_review_v0_1.md`, `docs/tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md`
+- Requested action: Completed. TIP-03 was accepted and closed.
+- Output expected: None.
+- Links: `docs/tips/tip_03_core_domain_contracts/tip_03_kickoff_v0_2.md`, `docs/tips/tip_03_core_domain_contracts/tip_03_execution_report_v0_1.md`, `docs/tips/tip_03_core_domain_contracts/tip_03_review_v0_1.md`, `docs/tips/tip_03_core_domain_contracts/tip_03_closeout_v0_1.md`, `docs/tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md`
 
 #### MSG-20260609-0001-tip01-dispatch
 
@@ -222,7 +228,12 @@ No pending user gate.
 - TIP-02A confirmation report recorded that `Note.txt` is a scratch reference intentionally left outside the source set and does not block TIP-01 acceptance.
 - `tip_02_roadmap_v0_2.md` is the newer source of active-plan truth; it records TIP-02A accepted and TIP-03 implemented pending review.
 - TIP-03 coordinator review on 2026-06-10 found no boundary or validation issues and revalidated the test suite with `dotnet test TagEkyc.sln --no-restore`.
-- Opening TIP-04 implementation remains gated on a separate accepted TIP kickoff or explicit user direction because TIP-03 is the only accepted implementation TIP currently evidenced in the repository.
+- TIP-03 was accepted and closed on 2026-06-10 after commit-boundary cleanup. Final commits: `9ab27b1` bootstrap baseline and `19aa700` TIP-03 implementation.
+- Opening TIP-04 implementation remains gated on a separate accepted TIP kickoff or explicit user direction.
+
+### Next Recommended Action
+
+Prepare a separate TIP-04 kickoff for API key authentication, client policy, and session lifecycle.
 
 ### Outbox
 
@@ -230,13 +241,13 @@ No pending user gate.
 
 - From: Coordinator
 - To: User / Next agent
-- Status: New
+- Status: Done
 - Gate: Review
 - Scope: TIP-03 review result.
 - Context: The accepted TIP-03 kickoff v0.2 was reviewed against the current implementation and tests. No findings were identified.
-- Requested action: Review or accept TIP-03, or prepare a separate TIP-04 kickoff before any runtime API/auth work starts.
-- Output expected: Acceptance decision or next TIP kickoff.
-- Links: `docs/tips/tip_03_core_domain_contracts/tip_03_review_v0_1.md`, `docs/tips/tip_03_core_domain_contracts/tip_03_execution_report_v0_1.md`
+- Requested action: Completed. TIP-03 was accepted and closed.
+- Output expected: None.
+- Links: `docs/tips/tip_03_core_domain_contracts/tip_03_review_v0_1.md`, `docs/tips/tip_03_core_domain_contracts/tip_03_execution_report_v0_1.md`, `docs/tips/tip_03_core_domain_contracts/tip_03_closeout_v0_1.md`
 
 ### MSG-20260609-1200-tip01-complete
 
