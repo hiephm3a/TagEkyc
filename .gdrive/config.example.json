@@ -1,0 +1,12 @@
+{
+  "applicationName": "TagEkyc.GDriveSync",
+  "profiles": {
+    "main": {
+      "clientId": "YOUR_GOOGLE_OAUTH_CLIENT_ID",
+      "clientSecret": "YOUR_GOOGLE_OAUTH_CLIENT_SECRET",
+      "tokenPath": ".gdrive/tokens/main",
+      "driveFolderId": "YOUR_TARGET_GOOGLE_DRIVE_FOLDER_ID",
+      "localRoot": "docs"
+    }
+  }
+}

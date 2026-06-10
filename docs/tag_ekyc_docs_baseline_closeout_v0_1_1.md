@@ -1,5 +1,20 @@
 # TagEkyc Docs Baseline Closeout v0.1.1
 
+**File:** `docs/tag_ekyc_docs_baseline_closeout_v0_1_1.md`
+**Version:** 0.1.1
+**Status:** Closed - baseline accepted
+**Date:** 2026-06-08
+**Baseline:** Product Brief v0.1.1
+**Purpose:** Records accepted documentation baseline and next planning step.
+
+## Changelog
+
+### v0.1.1 - Baseline closeout recorded
+
+- Recorded Product Brief v0.1.1 acceptance as product baseline.
+- Confirmed baseline docs aligned to Product Brief.
+- Captured key decisions, open debts, and TIP-01 as next recommended step.
+
 ## 1. Baseline Verdict
 
 - Product Brief v0.1.1 accepted as product baseline.

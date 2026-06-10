@@ -39,10 +39,20 @@ TagEkyc S1 is an evidence-ready eKYC platform with mock/PoC verification engines
 ## Document Index
 
 1. [Product Brief](00_product_brief_v0_1.md)
-2. [High-Level Design](tagekyc_hld_v0_1.md)
-3. [Logical Data Model](lld_01_data_model_v0_1.md)
-4. [Sequence Flows](lld_02_sequence_flows_v0_1.md)
-5. [API Contracts](lld_03_api_contracts_v0_1.md)
-6. [Engine Adapter Contracts](lld_04_engine_adapter_contracts_v0_1.md)
-7. [Phase 1 Scope and Debt Registry](phase1_scope_and_debt_registry_v0_1.md)
-8. [SignFlow Integration Contract](signflow_integration_contract_v0_1.md)
+2. [Documentation Governance](00_DOCS_GOVERNANCE.md)
+3. [High-Level Design](tagekyc_hld_v0_1.md)
+4. [Logical Data Model](lld_01_data_model_v0_1.md)
+5. [Sequence Flows](lld_02_sequence_flows_v0_1.md)
+6. [API Contracts](lld_03_api_contracts_v0_1.md)
+7. [Engine Adapter Contracts](lld_04_engine_adapter_contracts_v0_1.md)
+8. [Phase 1 Scope and Debt Registry](phase1_scope_and_debt_registry_v0_1.md)
+9. [SignFlow Integration Contract](signflow_integration_contract_v0_1.md)
+10. [Docs Baseline Closeout v0.1.1](tag_ekyc_docs_baseline_closeout_v0_1_1.md)
+11. [TIP-01 Project Skeleton Brief](tips/tip_01_project_skeleton/tip_01_brief_v0_1.md)
+12. [TIP-01 Execution Report](tips/tip_01_project_skeleton/tip_01_execution_report_v0_1.md)
+13. [Agent Coordination Bus](00_AGENT_COORDINATION_BUS.md)
+14. [TIP-02 S1 Execution Roadmap](tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md)
+
+## Documentation Version History
+
+All new planning, baseline, and closeout docs SHOULD include metadata and a changelog. Follow [Documentation Governance](00_DOCS_GOVERNANCE.md) before patching docs so future agents can understand document history without reconstructing Git commits.
