@@ -1,4 +1,4 @@
-﻿namespace TagEkyc.Domain;
+namespace TagEkyc.Domain;
 
 public enum VerificationResult
 {
@@ -9,4 +9,5 @@ public enum VerificationResult
     FailedIdentity = 4,
     ReviewRequired = 5,
     TechnicalError = 6,
+    NotSupported = 7,
 }
