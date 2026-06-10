@@ -2,6 +2,8 @@ using TagEkyc.Api.LocalDev;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Contracts.BusinessConsumer;
+using TagEkyc.Contracts.CaptureAgent;
+using TagEkyc.Contracts.TrustedAdapter;
 
 namespace TagEkyc.Api;
 
@@ -14,6 +16,8 @@ public static class VerificationSessionEndpoints
     {
         endpoints.MapPost("/api/ekyc/verification-sessions", CreateAsync);
         endpoints.MapGet("/api/ekyc/verification-sessions/{id}", GetAsync);
+        endpoints.MapPost("/api/ekyc/verification-sessions/{id}/capture-artifacts", AppendCaptureArtifactAsync);
+        endpoints.MapPost("/api/ekyc/verification-sessions/{id}/evidence-results", AppendEvidenceResultAsync);
         return endpoints;
     }
 
@@ -62,6 +66,56 @@ public static class VerificationSessionEndpoints
         return Results.Ok(result.Value);
     }
 
+    private static async Task<IResult> AppendCaptureArtifactAsync(
+        HttpContext httpContext,
+        string id,
+        CaptureArtifactSubmissionRequestDto request,
+        ILocalDevApiKeyAuthenticator authenticator,
+        ICaptureArtifactCommands commands,
+        CancellationToken cancellationToken)
+    {
+        var authentication = authenticator.Authenticate(httpContext);
+        if (!authentication.IsSuccess)
+        {
+            return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        var result = await commands.AppendCaptureArtifactAsync(authentication.Value!, id, request, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return ToError(result.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        return Results.Created(
+            $"/api/ekyc/verification-sessions/{id}/capture-artifacts/{result.Value!.CaptureArtifactId}",
+            result.Value);
+    }
+
+    private static async Task<IResult> AppendEvidenceResultAsync(
+        HttpContext httpContext,
+        string id,
+        EvidenceResultSubmissionRequestDto request,
+        ILocalDevApiKeyAuthenticator authenticator,
+        ITrustedEvidenceResultCommands commands,
+        CancellationToken cancellationToken)
+    {
+        var authentication = authenticator.Authenticate(httpContext);
+        if (!authentication.IsSuccess)
+        {
+            return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        var result = await commands.AppendEvidenceResultAsync(authentication.Value!, id, request, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return ToError(result.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        return Results.Created(
+            $"/api/ekyc/verification-sessions/{id}/evidence-results/{result.Value!.EvidenceResultId}",
+            result.Value);
+    }
+
     private static IResult ToError(SessionOperationError error, string correlationId) =>
         Results.Json(
             new ErrorEnvelope(new ErrorBody(error.Code, error.Message, correlationId)),
@@ -71,4 +125,3 @@ public static class VerificationSessionEndpoints
 
     private sealed record ErrorBody(string Code, string Message, string CorrelationId);
 }
-

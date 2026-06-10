@@ -13,5 +13,6 @@ public sealed record AuthenticatedClientContext(
     Guid ClientApplicationId,
     string KeyPrefix,
     AuthenticatedCallerCategory CallerCategory,
-    IReadOnlySet<string> Scopes);
-
+    IReadOnlySet<string> Scopes,
+    IReadOnlySet<Guid>? AllowedClientApplicationIds = null,
+    IReadOnlySet<string>? AllowedCaptureAgentIds = null);

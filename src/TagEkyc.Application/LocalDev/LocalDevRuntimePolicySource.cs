@@ -11,7 +11,9 @@ public sealed record LocalDevApiKeyRecord(
     IReadOnlySet<string> Scopes,
     ApiKeyStatus Status,
     DateTimeOffset? ExpiresAt,
-    AuthenticatedCallerCategory CallerCategory);
+    AuthenticatedCallerCategory CallerCategory,
+    IReadOnlySet<Guid>? AllowedClientApplicationIds = null,
+    IReadOnlySet<string>? AllowedCaptureAgentIds = null);
 
 public sealed class LocalDevRuntimePolicySource : ILocalDevClientPolicyProvider
 {
@@ -23,6 +25,16 @@ public sealed class LocalDevRuntimePolicySource : ILocalDevClientPolicyProvider
     {
         "business.session.create",
         "business.session.read",
+    };
+
+    private static readonly IReadOnlySet<string> CaptureAgentScopes = new HashSet<string>
+    {
+        "capture.artifact.append",
+    };
+
+    private static readonly IReadOnlySet<string> TrustedAdapterScopes = new HashSet<string>
+    {
+        "trusted.evidence.append",
     };
 
     private readonly IReadOnlyList<LocalDevClientPolicy> policies =
@@ -88,6 +100,27 @@ public sealed class LocalDevRuntimePolicySource : ILocalDevClientPolicyProvider
             ApiKeyStatus.Active,
             DateTimeOffset.UtcNow.AddYears(10),
             AuthenticatedCallerCategory.BusinessConsumer),
+        new(
+            Guid.Parse("20000000-0000-0000-0000-000000000007"),
+            BusinessClientId,
+            "localdev-capture-agent-key",
+            "ldev_capture",
+            CaptureAgentScopes,
+            ApiKeyStatus.Active,
+            DateTimeOffset.UtcNow.AddYears(10),
+            AuthenticatedCallerCategory.CaptureAgent,
+            new HashSet<Guid> { BusinessClientId },
+            new HashSet<string> { "ldev_capture" }),
+        new(
+            Guid.Parse("20000000-0000-0000-0000-000000000008"),
+            BusinessClientId,
+            "localdev-trusted-adapter-key",
+            "ldev_adapter",
+            TrustedAdapterScopes,
+            ApiKeyStatus.Active,
+            DateTimeOffset.UtcNow.AddYears(10),
+            AuthenticatedCallerCategory.TrustedAdapter,
+            new HashSet<Guid> { BusinessClientId }),
     ];
 
     public IReadOnlyList<LocalDevApiKeyRecord> ApiKeys => apiKeys;
@@ -115,12 +148,22 @@ public sealed class LocalDevRuntimePolicySource : ILocalDevClientPolicyProvider
             new HashSet<RequiredCheckType>
             {
                 RequiredCheckType.CaptureQuality,
+                RequiredCheckType.DocumentOcr,
                 RequiredCheckType.DocumentNfc,
                 RequiredCheckType.FaceMatch,
                 RequiredCheckType.Liveness,
             },
-            BusinessScopes,
+            new HashSet<string>(
+                BusinessScopes
+                    .Concat(CaptureAgentScopes)
+                    .Concat(TrustedAdapterScopes)),
             AllowsTransactionBoundProfile: true,
-            MaxSessionTtl: TimeSpan.FromHours(24));
+            MaxSessionTtl: TimeSpan.FromHours(24),
+            AllowedOptionalEvidenceChecks: new HashSet<RequiredCheckType>(),
+            AllowedSupportingArtifactTypes: new HashSet<CaptureArtifactType>
+            {
+                CaptureArtifactType.DocumentFrontImage,
+                CaptureArtifactType.DocumentBackImage,
+                CaptureArtifactType.DeviceCaptureMetadata,
+            });
 }
-

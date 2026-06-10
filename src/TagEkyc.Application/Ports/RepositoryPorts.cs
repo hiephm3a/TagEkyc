@@ -12,6 +12,11 @@ public interface IVerificationSessionRepository
         Guid clientApplicationId,
         string externalSessionId,
         CancellationToken cancellationToken = default);
+
+    Task SetStateAsync(
+        Guid verificationSessionId,
+        VerificationSessionState state,
+        CancellationToken cancellationToken = default);
 }
 
 public interface ICaptureArtifactRepository

@@ -1,6 +1,7 @@
 using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.CaptureAgent;
 using TagEkyc.Contracts.TrustedAdapter;
+using TagEkyc.Application;
 using TagEkyc.Application.VerificationSessions;
 
 namespace TagEkyc.Application.Ports;
@@ -24,7 +25,8 @@ public interface IVerificationSessionQueries
 
 public interface ICaptureArtifactCommands
 {
-    Task<CaptureArtifactSubmissionResponseDto> AppendCaptureArtifactAsync(
+    Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> AppendCaptureArtifactAsync(
+        AuthenticatedClientContext caller,
         string verificationSessionId,
         CaptureArtifactSubmissionRequestDto request,
         CancellationToken cancellationToken = default);
@@ -32,7 +34,8 @@ public interface ICaptureArtifactCommands
 
 public interface ITrustedEvidenceResultCommands
 {
-    Task<EvidenceResultSubmissionResponseDto> AppendEvidenceResultAsync(
+    Task<SessionOperationResult<EvidenceResultSubmissionResponseDto>> AppendEvidenceResultAsync(
+        AuthenticatedClientContext caller,
         string verificationSessionId,
         EvidenceResultSubmissionRequestDto request,
         CancellationToken cancellationToken = default);

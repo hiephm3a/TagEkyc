@@ -31,6 +31,63 @@ public sealed class LocalDevInMemoryVerificationSessionRepository : IVerificatio
 
         return Task.FromResult(session);
     }
+
+    public Task SetStateAsync(
+        Guid verificationSessionId,
+        VerificationSessionState state,
+        CancellationToken cancellationToken = default)
+    {
+        sessions.AddOrUpdate(
+            verificationSessionId,
+            _ => throw new InvalidOperationException("Session must exist before state can be updated."),
+            (_, existing) => existing.WithState(state));
+
+        return Task.CompletedTask;
+    }
+}
+
+public sealed class LocalDevInMemoryCaptureArtifactRepository : ICaptureArtifactRepository
+{
+    private readonly ConcurrentQueue<CaptureArtifact> artifacts = new();
+
+    public IReadOnlyList<CaptureArtifact> Artifacts => artifacts.ToArray();
+
+    public Task AppendAsync(CaptureArtifact artifact, CancellationToken cancellationToken = default)
+    {
+        artifacts.Enqueue(artifact);
+        return Task.CompletedTask;
+    }
+
+    public Task<IReadOnlyList<CaptureArtifact>> ListBySessionAsync(Guid verificationSessionId, CancellationToken cancellationToken = default)
+    {
+        var matchingArtifacts = artifacts
+            .Where(candidate => candidate.VerificationSessionId == verificationSessionId)
+            .ToArray();
+
+        return Task.FromResult<IReadOnlyList<CaptureArtifact>>(matchingArtifacts);
+    }
+}
+
+public sealed class LocalDevInMemoryEvidenceResultRepository : IEvidenceResultRepository
+{
+    private readonly ConcurrentQueue<EvidenceResult> evidenceResults = new();
+
+    public IReadOnlyList<EvidenceResult> EvidenceResults => evidenceResults.ToArray();
+
+    public Task AppendAsync(EvidenceResult evidenceResult, CancellationToken cancellationToken = default)
+    {
+        evidenceResults.Enqueue(evidenceResult);
+        return Task.CompletedTask;
+    }
+
+    public Task<IReadOnlyList<EvidenceResult>> ListBySessionAsync(Guid verificationSessionId, CancellationToken cancellationToken = default)
+    {
+        var matchingEvidence = evidenceResults
+            .Where(candidate => candidate.VerificationSessionId == verificationSessionId)
+            .ToArray();
+
+        return Task.FromResult<IReadOnlyList<EvidenceResult>>(matchingEvidence);
+    }
 }
 
 public sealed class LocalDevInMemoryAuditEventRepository : IAuditEventRepository
@@ -54,4 +111,3 @@ public sealed class LocalDevInMemoryAuditEventRepository : IAuditEventRepository
         return Task.FromResult<IReadOnlyList<AuditEvent>>(matchingEvents);
     }
 }
-

@@ -10,7 +10,9 @@ public sealed record LocalDevClientPolicy(
     IReadOnlySet<RequiredCheckType> AllowedRequiredChecks,
     IReadOnlySet<string> AllowedCallerScopes,
     bool AllowsTransactionBoundProfile,
-    TimeSpan? MaxSessionTtl);
+    TimeSpan? MaxSessionTtl,
+    IReadOnlySet<RequiredCheckType>? AllowedOptionalEvidenceChecks = null,
+    IReadOnlySet<CaptureArtifactType>? AllowedSupportingArtifactTypes = null);
 
 public interface ILocalDevClientPolicyProvider
 {
@@ -18,4 +20,3 @@ public interface ILocalDevClientPolicyProvider
         Guid clientApplicationId,
         CancellationToken cancellationToken = default);
 }
-

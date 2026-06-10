@@ -14,7 +14,7 @@ namespace TagEkyc.UnitTests;
 public sealed class Tip04ApiEndpointTests
 {
     [Fact]
-    public void Tip04_maps_only_create_and_get_verification_session_api_routes()
+    public void Tip05_maps_only_allowed_verification_session_api_routes()
     {
         var builder = WebApplication.CreateBuilder();
         builder.Services.AddSingleton<LocalDevRuntimePolicySource>();
@@ -25,9 +25,16 @@ public sealed class Tip04ApiEndpointTests
         builder.Services.AddSingleton<IVerificationSessionRepository>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationSessionRepository>());
         builder.Services.AddSingleton<LocalDevInMemoryAuditEventRepository>();
         builder.Services.AddSingleton<IAuditEventRepository>(sp => sp.GetRequiredService<LocalDevInMemoryAuditEventRepository>());
+        builder.Services.AddSingleton<LocalDevInMemoryCaptureArtifactRepository>();
+        builder.Services.AddSingleton<ICaptureArtifactRepository>(sp => sp.GetRequiredService<LocalDevInMemoryCaptureArtifactRepository>());
+        builder.Services.AddSingleton<LocalDevInMemoryEvidenceResultRepository>();
+        builder.Services.AddSingleton<IEvidenceResultRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceResultRepository>());
         builder.Services.AddSingleton<VerificationSessionApplicationService>();
         builder.Services.AddSingleton<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
         builder.Services.AddSingleton<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
+        builder.Services.AddSingleton<VerificationEvidenceApplicationService>();
+        builder.Services.AddSingleton<ICaptureArtifactCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
+        builder.Services.AddSingleton<ITrustedEvidenceResultCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
         var app = builder.Build();
 
         app.MapVerificationSessionEndpoints();
@@ -59,7 +66,24 @@ public sealed class Tip04ApiEndpointTests
             {
                 Assert.Equal("/api/ekyc/verification-sessions/{id}", route.Pattern);
                 Assert.Equal(["GET"], route.Methods);
+            },
+            route =>
+            {
+                Assert.Equal("/api/ekyc/verification-sessions/{id}/capture-artifacts", route.Pattern);
+                Assert.Equal(["POST"], route.Methods);
+            },
+            route =>
+            {
+                Assert.Equal("/api/ekyc/verification-sessions/{id}/evidence-results", route.Pattern);
+                Assert.Equal(["POST"], route.Methods);
             });
+
+        Assert.DoesNotContain(routes, route => route.Pattern.Contains("capture-quality-result", StringComparison.Ordinal));
+        Assert.DoesNotContain(routes, route => route.Pattern.Contains("document-result", StringComparison.Ordinal));
+        Assert.DoesNotContain(routes, route => route.Pattern.Contains("nfc-result", StringComparison.Ordinal));
+        Assert.DoesNotContain(routes, route => route.Pattern.Contains("face-result", StringComparison.Ordinal));
+        Assert.DoesNotContain(routes, route => route.Pattern.Contains("liveness-result", StringComparison.Ordinal));
+        Assert.DoesNotContain(routes, route => route.Pattern.Contains("fingerprint-result", StringComparison.Ordinal));
     }
 
     private static string FormatPattern(RoutePattern pattern)

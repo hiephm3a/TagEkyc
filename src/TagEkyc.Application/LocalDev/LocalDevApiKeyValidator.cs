@@ -5,7 +5,7 @@ namespace TagEkyc.Application.LocalDev;
 
 public sealed class LocalDevApiKeyValidator(LocalDevRuntimePolicySource policies)
 {
-    public SessionOperationResult<AuthenticatedClientContext> Validate(string? apiKeyValue, string requiredScope)
+    public SessionOperationResult<AuthenticatedClientContext> Validate(string? apiKeyValue, string? requiredScope = null)
     {
         if (string.IsNullOrWhiteSpace(apiKeyValue))
         {
@@ -34,7 +34,7 @@ public sealed class LocalDevApiKeyValidator(LocalDevRuntimePolicySource policies
             return Unauthorized("CLIENT_APPLICATION_DISABLED", "Client application is disabled.");
         }
 
-        if (!apiKey.Scopes.Contains(requiredScope))
+        if (!string.IsNullOrWhiteSpace(requiredScope) && !apiKey.Scopes.Contains(requiredScope))
         {
             return SessionOperationResult<AuthenticatedClientContext>.Failure(
                 "MISSING_SCOPE",
@@ -47,10 +47,11 @@ public sealed class LocalDevApiKeyValidator(LocalDevRuntimePolicySource policies
             apiKey.ClientApplicationId,
             apiKey.KeyPrefix,
             apiKey.CallerCategory,
-            apiKey.Scopes));
+            apiKey.Scopes,
+            apiKey.AllowedClientApplicationIds,
+            apiKey.AllowedCaptureAgentIds));
     }
 
     private static SessionOperationResult<AuthenticatedClientContext> Unauthorized(string code, string message) =>
         SessionOperationResult<AuthenticatedClientContext>.Failure(code, message, 401);
 }
-

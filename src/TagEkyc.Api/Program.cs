@@ -23,9 +23,16 @@ builder.Services.AddSingleton<LocalDevInMemoryVerificationSessionRepository>();
 builder.Services.AddSingleton<IVerificationSessionRepository>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationSessionRepository>());
 builder.Services.AddSingleton<LocalDevInMemoryAuditEventRepository>();
 builder.Services.AddSingleton<IAuditEventRepository>(sp => sp.GetRequiredService<LocalDevInMemoryAuditEventRepository>());
+builder.Services.AddSingleton<LocalDevInMemoryCaptureArtifactRepository>();
+builder.Services.AddSingleton<ICaptureArtifactRepository>(sp => sp.GetRequiredService<LocalDevInMemoryCaptureArtifactRepository>());
+builder.Services.AddSingleton<LocalDevInMemoryEvidenceResultRepository>();
+builder.Services.AddSingleton<IEvidenceResultRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceResultRepository>());
 builder.Services.AddSingleton<VerificationSessionApplicationService>();
 builder.Services.AddSingleton<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
 builder.Services.AddSingleton<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
+builder.Services.AddSingleton<VerificationEvidenceApplicationService>();
+builder.Services.AddSingleton<ICaptureArtifactCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
+builder.Services.AddSingleton<ITrustedEvidenceResultCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
 
 var app = builder.Build();
 

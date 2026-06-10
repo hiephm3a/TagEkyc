@@ -121,4 +121,23 @@ public sealed record VerificationSession
             createdAt,
             completedAt: null);
     }
+
+    public VerificationSession WithState(VerificationSessionState state) =>
+        new(
+            Id,
+            ClientApplicationId,
+            SubjectRef,
+            Profile,
+            Purpose,
+            RequiredChecks,
+            ExternalSessionId,
+            ExternalTransactionId,
+            BindingNonceHash,
+            RequestId,
+            CorrelationId,
+            state,
+            Result,
+            ExpiresAt,
+            CreatedAt,
+            CompletedAt);
 }
