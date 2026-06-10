@@ -1,19 +1,23 @@
 using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.CaptureAgent;
 using TagEkyc.Contracts.TrustedAdapter;
+using TagEkyc.Application.VerificationSessions;
 
 namespace TagEkyc.Application.Ports;
 
 public interface IVerificationSessionCommands
 {
-    Task<CreateVerificationSessionResponseDto> CreateAsync(
+    Task<SessionOperationResult<CreateVerificationSessionResponseDto>> CreateAsync(
+        AuthenticatedClientContext caller,
         CreateVerificationSessionRequestDto request,
+        string? idempotencyKey = null,
         CancellationToken cancellationToken = default);
 }
 
 public interface IVerificationSessionQueries
 {
-    Task<VerificationSessionSummaryDto?> GetSummaryAsync(
+    Task<SessionOperationResult<VerificationSessionSummaryDto>> GetSummaryAsync(
+        AuthenticatedClientContext caller,
         string verificationSessionId,
         CancellationToken cancellationToken = default);
 }

@@ -12,7 +12,7 @@ public sealed class ProjectionBoundaryTests
     [Fact]
     public void Business_consumer_contracts_do_not_expose_internal_or_raw_fields()
     {
-        var forbiddenTerms = new[] { "VaultRef", "Raw", "Biometric", "Template", "Plaintext" };
+        var forbiddenTerms = new[] { "VaultRef", "Raw", "Biometric", "Template", "Plaintext", "ClientApplicationId", "ApiKey" };
         var businessTypes = typeof(CreateVerificationSessionRequestDto).Assembly
             .GetTypes()
             .Where(type => type.Namespace == "TagEkyc.Contracts.BusinessConsumer")
@@ -26,6 +26,20 @@ public sealed class ProjectionBoundaryTests
             Assert.DoesNotContain("InternalAudit", property.PropertyType.FullName ?? string.Empty, StringComparison.Ordinal);
             Assert.DoesNotContain("TrustedAdapter", property.PropertyType.FullName ?? string.Empty, StringComparison.Ordinal);
         }
+    }
+
+    [Fact]
+    public void Create_session_request_does_not_accept_authenticated_caller_fields()
+    {
+        var propertyNames = typeof(CreateVerificationSessionRequestDto)
+            .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            .Select(property => property.Name)
+            .ToArray();
+
+        Assert.DoesNotContain("ClientApplicationId", propertyNames);
+        Assert.DoesNotContain("ApiKey", propertyNames);
+        Assert.DoesNotContain("CallerCategory", propertyNames);
+        Assert.DoesNotContain("Scopes", propertyNames);
     }
 
     [Fact]

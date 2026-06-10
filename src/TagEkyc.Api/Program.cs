@@ -1,8 +1,31 @@
 using System.Reflection;
+using System.Text.Json.Serialization;
+using TagEkyc.Api;
+using TagEkyc.Api.LocalDev;
+using TagEkyc.Application.LocalDev;
+using TagEkyc.Application.Ports;
+using TagEkyc.Application.VerificationSessions;
 using ApplicationMarker = TagEkyc.Application.AssemblyMarker;
 using TagEkyc.Contracts;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+builder.Services.AddSingleton<LocalDevRuntimePolicySource>();
+builder.Services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
+builder.Services.AddSingleton<LocalDevApiKeyValidator>();
+builder.Services.AddSingleton<ILocalDevApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
+builder.Services.AddSingleton<LocalDevInMemoryVerificationSessionRepository>();
+builder.Services.AddSingleton<IVerificationSessionRepository>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationSessionRepository>());
+builder.Services.AddSingleton<LocalDevInMemoryAuditEventRepository>();
+builder.Services.AddSingleton<IAuditEventRepository>(sp => sp.GetRequiredService<LocalDevInMemoryAuditEventRepository>());
+builder.Services.AddSingleton<VerificationSessionApplicationService>();
+builder.Services.AddSingleton<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
+builder.Services.AddSingleton<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
 
 var app = builder.Build();
 
@@ -27,5 +50,7 @@ app.MapGet("/", () => Results.Ok(new SessionStatusPlaceholder(
     "STANDARD_EKYC_PROFILE",
     "CREATED",
     "NOT_AVAILABLE")));
+
+app.MapVerificationSessionEndpoints();
 
 app.Run();

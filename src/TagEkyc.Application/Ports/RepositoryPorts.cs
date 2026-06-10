@@ -7,6 +7,11 @@ public interface IVerificationSessionRepository
     Task AddAsync(VerificationSession session, CancellationToken cancellationToken = default);
 
     Task<VerificationSession?> GetAsync(Guid verificationSessionId, CancellationToken cancellationToken = default);
+
+    Task<VerificationSession?> GetByExternalSessionIdAsync(
+        Guid clientApplicationId,
+        string externalSessionId,
+        CancellationToken cancellationToken = default);
 }
 
 public interface ICaptureArtifactRepository
