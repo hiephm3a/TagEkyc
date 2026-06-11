@@ -1,13 +1,26 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 0.7
+**Version:** 0.9
 **Status:** Active
 **Date:** 2026-06-11
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v0.9 - TIP-07 Option A implementation recorded
+
+- Recorded that TIP-07 Planning Brief v0.3 was accepted for Option A only.
+- Recorded TIP-07 Option A code/test commit `916dd2918c2ab47ab0658ebf271fae45e22fb3ca`.
+- Recorded post-commit validation: 63 passed, 0 failed across contract, architecture, and unit tests.
+- Recorded that TIP-07 Option A introduced no public route, webhook, outbox, retry, EF, or SignFlow drift.
+
+### v0.8 - TIP-06 docs cleanup closed
+
+- Recorded that `DOC-CLEANUP-TIP06` is complete because the coordination bus, TIP-06 kickoff packet, and TIP-02 roadmap already reflect accepted implementation and docs closeout state.
+- Cleared the stale TIP-06 docs-cleanup active-work recommendation.
+- Recorded the then-current dirty worktree as an untracked TIP-07 planning brief that was not yet authorized for implementation.
 
 ### v0.7 - TIP-06 runtime closeout synchronized
 
@@ -199,17 +212,7 @@ No open inbound agent messages.
 
 ### Active Work
 
-#### MSG-20260611-0001-tip06-kickoff-state
-
-- From: Coordinator
-- To: User / Next agent
-- Status: Active
-- Gate: None
-- Scope: TIP-06 docs closeout only.
-- Context: TIP-06 planning was accepted externally, and TIP-06 runtime implementation was committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`. Post-commit validation passed: `TagEkyc.ContractTests` 8 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 36 passed, total 60 passed and 0 failed. Current cleanup is limited to governance/docs state so historical planning records do not imply TIP-06 is still pending implementation.
-- Requested action: Complete `DOC-CLEANUP-TIP06` without modifying `src/`, `tests/`, or unrelated dirty files.
-- Output expected: Coordination bus and TIP-06 kickoff packet reflect accepted implementation, commit id, passing test total, and docs-cleanup status only.
-- Links: `docs/tips/tip_06_final_decision_evidence_package/tip_06_kickoff_v0_1.md`, commit `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`
+No active in-scope coordination work.
 
 #### MSG-20260610-0003-tip03-review
 
@@ -237,7 +240,7 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-No pending TIP-06 implementation dispatch gate. TIP-06 runtime was accepted externally and committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`; current work is docs cleanup only.
+No pending user gates. TIP-06 runtime/docs closeout and TIP-07 Option A code/test implementation are synchronized in governance state. Remaining dirty docs are TIP-07 closeout/governance records only.
 
 ### Decisions Recorded
 
@@ -258,13 +261,30 @@ No pending TIP-06 implementation dispatch gate. TIP-06 runtime was accepted exte
 - TIP-06 kickoff planning exists in `tip_06_kickoff_v0_1.md` as a historical planning record.
 - TIP-06 planning was accepted externally; runtime implementation was committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`.
 - TIP-06 post-commit validation passed: `TagEkyc.ContractTests` 8 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 36 passed, total 60 passed and 0 failed.
-- `DOC-CLEANUP-TIP06` is in progress to remove stale governance wording that still implies TIP-06 is pending kickoff convergence or pending implementation.
+- `DOC-CLEANUP-TIP06` is complete; the coordination bus, TIP-06 kickoff packet, and TIP-02 roadmap now consistently reflect accepted implementation and docs closeout state.
+- TIP-07 Planning Brief v0.3 was accepted for Option A only: internal/application service completion notification projection with no public route.
+- TIP-07 Option A implementation was committed at `916dd2918c2ab47ab0658ebf271fae45e22fb3ca` (`feat: add TIP-07 completion notification projection`).
+- TIP-07 post-commit validation passed: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 38 passed, total 63 passed and 0 failed.
+- TIP-07 review accepted the early implementation after targeted evidence review; confirmed no public route, webhook dispatcher/subscription, durable outbox, retry scheduler, EF/DbContext/migration/durable persistence, or SignFlow runtime/source/database dependency drift.
+- Current dirty worktree state is limited to TIP-07 docs/governance closeout records.
 
 ### Next Recommended Action
 
-Complete `DOC-CLEANUP-TIP06` by narrowly updating TIP-06 governance/docs state. Do not modify source, tests, `Note.txt`, or unrelated roadmap/playbook changes.
+Complete TIP-07 docs/governance closeout only. Do not modify `src/` or `tests/` without a separate accepted implementation gate.
 
 ### Outbox
+
+### MSG-20260611-0001-tip06-kickoff-state
+
+- From: Coordinator
+- To: User / Next agent
+- Status: Done
+- Gate: None
+- Scope: TIP-06 docs closeout only.
+- Context: TIP-06 planning was accepted externally, and TIP-06 runtime implementation was committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`. Post-commit validation passed: `TagEkyc.ContractTests` 8 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 36 passed, total 60 passed and 0 failed. The coordination bus, TIP-06 kickoff packet, and TIP-02 roadmap now reflect accepted implementation and docs closeout state.
+- Requested action: Completed. Leave source, tests, `Note.txt`, and the untracked TIP-07 planning brief unchanged unless a later accepted TIP brings them into scope.
+- Output expected: None.
+- Links: `docs/tips/tip_06_final_decision_evidence_package/tip_06_kickoff_v0_1.md`, `docs/tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md`, commit `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`
 
 ### MSG-20260610-0004-tip03-review-complete
 
