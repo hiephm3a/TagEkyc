@@ -15,6 +15,8 @@
 - Defined TIP lifecycle expectations for TagEkyc.
 - Defined subagent review patterns before dispatch.
 - Added skeleton-only, security-boundary, and documentation-history guardrails.
+- Added TIP kickoff subagent convergence rules after TIP-04 review showed boundary review alone does not catch all dispatch-affecting decisions.
+- Added TIP-05/TIP-06 confirmation lessons for API pipeline tests, review coverage ledgers, patch carry-through gates, blocker-only final gates, report updates, and allowlist commits.
 
 ## 1. Scope
 
@@ -159,6 +161,8 @@ Recommended reviewer roles:
 - Product Baseline Alignment Reviewer.
 - Security / Data Boundary Reviewer.
 - Skeleton Scope Control Reviewer.
+- Dispatch Readiness Reviewer.
+- Contract / API Semantics Reviewer.
 - Documentation Governance / Version History Reviewer.
 - Architecture / Dependency Direction Reviewer.
 
@@ -173,6 +177,31 @@ The main agent SHOULD:
 - Return findings before patching when requested.
 - Patch only confirmed issues.
 
+For TIP kickoffs that may authorize implementation, subagent review SHOULD run as separate lanes rather than one generic self-check:
+
+- Boundary / Security Reviewer: checks scope creep, raw data exposure, production security claims, persistence creep, dependency direction, and consumer-profile leakage.
+- Dispatch Readiness Reviewer: checks whether implementation can start without judgment calls. It MUST list every unresolved `MAY`, `SHOULD`, `if feasible`, `chosen behavior`, open question, precedence conflict, default value gap, or test nondeterminism that affects implementation.
+- Contract / API Semantics Reviewer: checks endpoint status codes, DTO defaults, caller ownership, request/response field authority, and deterministic test expectations.
+
+Kickoff review SHOULD converge before external review or implementation dispatch:
+
+- Round 1: run independent reviewer lanes and patch findings.
+- Round 2: run at least a Dispatch Readiness re-review on the patched draft.
+- Continue until the Dispatch Readiness Reviewer can answer: `Implementation can start without human judgment calls inside the documented boundaries.`
+- If two consecutive review rounds produce only non-blocking wording improvements and no implementation-affecting findings, treat the draft as converged for review handoff.
+- Do not count an explorer/context-gathering agent as a self-check review round. Explorers inform the main draft; reviewer lanes judge the draft.
+
+The reviewer prompt for dispatch readiness SHOULD explicitly ask:
+
+- Can implementation start without human judgment calls?
+- Which open questions affect implementation?
+- Which `MAY`/`SHOULD`/`if feasible` statements need pinned decisions?
+- Are precedence rules specified when two rules conflict?
+- Are error/status codes deterministic?
+- Are response defaults deterministic?
+- Can tests assert the chosen behavior without guessing?
+- Are LocalDev/NonProduction shortcuts clearly named and gated?
+
 ## 10. Dispatch Review Checklist
 
 Before dispatching a TIP, check:
@@ -185,6 +214,10 @@ Before dispatching a TIP, check:
 - Acceptance criteria completeness.
 - Test expectations.
 - Deferred items.
+- No implementation-affecting open questions remain.
+- Ambiguous `MAY`/`SHOULD` choices are either pinned or explicitly deferred behind STOP+ASK.
+- Error/status conventions and response defaults are deterministic.
+- Rule precedence is specified where idempotency, uniqueness, policy, lifecycle, or authorization rules can overlap.
 - Git status and intended files.
 
 For skeleton-only dispatch, also check:
@@ -215,7 +248,56 @@ A TIP completion report SHOULD include:
 
 If an expected check is not feasible, the completion report MUST explain why.
 
-## 12. Current TIP-01 Application
+## 12. TIP-05/TIP-06 Confirmation Lessons
+
+TIP-05 showed that accepted service behavior is not enough when a TIP adds runtime HTTP endpoints.
+
+For any TIP that adds or changes runtime endpoints:
+
+- API pipeline tests are required. Route inventory tests are useful but do not prove header auth, JSON binding, endpoint delegates, status codes, or error envelopes through the actual HTTP path.
+- Prefer `TestServer`, `WebApplicationFactory`, or equivalent `HttpClient` tests for caller category, scope, request body, response envelope, and lifecycle behavior.
+- A route inventory test may prove specialized endpoints are absent, but it does not replace HTTP happy-path and rejection-path coverage.
+- If confirmation finds only service-level tests for a runtime endpoint, STOP+REPORT before acceptance unless the user explicitly waives API-level coverage.
+
+Subagent review convergence must be measured on the same decision surface:
+
+- Do not split two reviewers across unrelated aspects and call the result converged.
+- Run reviewers against the same kickoff/report using the same acceptance and risk rubric when convergence matters.
+- Treat matching findings as strong signal, divergent findings as synthesis input, and single-reviewer findings as items to verify rather than discard.
+- The main agent should synthesize findings around implementation-affecting ambiguity: caller identity, ownership, state transitions, endpoint boundary, data integrity, error precedence, and testability.
+
+TIP-06 showed that high-rigor review must still have a bounded finish line:
+
+- Full initial coverage is required before narrowing. Early reviewers should cover the whole relevant decision surface once, including DTOs, endpoint behavior, state/lifecycle, error precedence, hash/audit inputs, public/private data boundaries, and tests.
+- Keep a coverage ledger for large TIPs. Record which sections, examples, DTOs, tests, and boundary claims each review round touched so later patches do not rely on memory.
+- After a patch, review the invalidated area first: changed sections, dependent examples, test expectations, summaries, final recommendations, changelog/status metadata, and any cross-reference that could now contradict the patch.
+- Run a sentinel sweep before final gate: search for stale `NEEDS PATCHES`, `pending`, old draft labels, superseded gates, deprecated field names, and contradiction-prone terms introduced by earlier rounds.
+- Use reviewer saturation as a signal. When repeated reviews find only duplicate or non-blocking wording issues, stop expanding the review surface unless a new patch changes runtime/API behavior, DTO shape, error precedence, audit/hash inputs, lifecycle state, evidence boundary, or test expectations.
+- For narrow post-convergence patches, require a patch impact/carry-through gate instead of automatically rerunning full A/B review. The gate should prove no patch-regression, no stale status metadata, and no affected-surface contradiction.
+- Final external or architect gates should be blocker-only unless explicitly asked for editorial polish. Non-blocking wording notes should be recorded as deferred cleanup, not allowed to restart implementation review loops.
+- Do not rerun endless full A/B reviews after every patch. Rerun full review only when the patch invalidates broad coverage or changes a core decision surface.
+
+Confirmation review SHOULD include explicit STOP gates:
+
+- Runtime endpoint tests are service-only and do not cover API/route behavior.
+- A deferred or specialized endpoint is mapped.
+- BusinessConsumer can reach capture/evidence write paths.
+- A readiness state such as `READY_TO_COMPLETE` leaks final decision semantics.
+- Boundary scans show persistence, raw upload, production auth/secret lifecycle, webhook runtime, or other deferred infrastructure.
+
+Execution reports must be updated after confirmation patches:
+
+- If tests, packages, validation totals, boundary interpretation, or accepted status change during confirmation, update the TIP execution report before commit.
+- The report should describe confirmation-only patches separately from implementation behavior.
+
+When committing with a dirty worktree:
+
+- Stage by explicit allowlist.
+- Check `git diff --cached --name-only` before commit.
+- Verify excluded dirty files remain unstaged.
+- Do not include unrelated playbook, coordination, note, or prior-TIP files in a feature commit unless explicitly requested.
+
+## 13. Current TIP-01 Application
 
 For TIP-01, this playbook implies:
 
