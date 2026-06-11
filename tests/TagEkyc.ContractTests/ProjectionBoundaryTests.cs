@@ -19,7 +19,6 @@ public sealed class ProjectionBoundaryTests
             "Biometric",
             "Template",
             "Plaintext",
-            "ClientApplicationId",
             "ApiKey",
             "PayloadHash",
         };
@@ -33,8 +32,38 @@ public sealed class ProjectionBoundaryTests
         foreach (var property in businessTypes.SelectMany(type => type.GetProperties(BindingFlags.Instance | BindingFlags.Public)))
         {
             Assert.DoesNotContain(forbiddenTerms, term => property.Name.Contains(term, StringComparison.OrdinalIgnoreCase));
+            if (property.Name.Contains("ClientApplicationId", StringComparison.OrdinalIgnoreCase))
+            {
+                Assert.Equal(typeof(VerificationCompletedEventDto), property.DeclaringType);
+            }
+
             Assert.DoesNotContain("InternalAudit", property.PropertyType.FullName ?? string.Empty, StringComparison.Ordinal);
             Assert.DoesNotContain("TrustedAdapter", property.PropertyType.FullName ?? string.Empty, StringComparison.Ordinal);
+        }
+    }
+
+    [Fact]
+    public void Client_application_id_is_limited_to_completion_notification_event()
+    {
+        Assert.Contains(
+            typeof(VerificationCompletedEventDto).GetProperties(BindingFlags.Instance | BindingFlags.Public),
+            property => property.Name == "ClientApplicationId");
+
+        var defaultBusinessReadDtos = new[]
+        {
+            typeof(CompleteVerificationSessionResponseDto),
+            typeof(VerificationSessionSummaryDto),
+            typeof(EvidencePackageSummaryDto),
+        };
+
+        foreach (var dto in defaultBusinessReadDtos)
+        {
+            var propertyNames = dto
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+                .Select(property => property.Name)
+                .ToArray();
+
+            Assert.DoesNotContain("ClientApplicationId", propertyNames);
         }
     }
 

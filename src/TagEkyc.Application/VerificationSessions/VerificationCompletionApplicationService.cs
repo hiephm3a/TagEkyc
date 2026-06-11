@@ -18,7 +18,7 @@ public sealed class VerificationCompletionApplicationService(
     IInternalEvidenceManifestRepository manifests,
     IAuditEventRepository auditEvents,
     IVerificationFinalizationBoundary finalizationBoundary)
-    : IVerificationSessionCompletionCommands, IEvidencePackageQueries
+    : IVerificationSessionCompletionCommands, IEvidencePackageQueries, ICompletionNotificationQueries
 {
     private const string CompleteScope = "session.complete";
     private const string ReadScope = "business.session.read";
@@ -336,6 +336,65 @@ public sealed class VerificationCompletionApplicationService(
         return SessionOperationResult<EvidencePackageSummaryDto>.Success(ToPackageSummary(package, session, decision, manifest));
     }
 
+    public async Task<SessionOperationResult<VerificationCompletedEventDto>> GetCompletionNotificationAsync(
+        AuthenticatedClientContext caller,
+        string verificationSessionId,
+        CancellationToken cancellationToken = default)
+    {
+        var callerError = ValidateBusinessCaller<VerificationCompletedEventDto>(caller, ReadScope);
+        if (callerError is not null)
+        {
+            return callerError;
+        }
+
+        if (!Guid.TryParse(verificationSessionId, out var sessionId))
+        {
+            return NotFound<VerificationCompletedEventDto>("SESSION_NOT_FOUND", "Verification session was not found.");
+        }
+
+        var session = await sessions.GetAsync(sessionId, cancellationToken);
+        if (session is null)
+        {
+            return NotFound<VerificationCompletedEventDto>("SESSION_NOT_FOUND", "Verification session was not found.");
+        }
+
+        if (session.ClientApplicationId != caller.ClientApplicationId)
+        {
+            return Forbidden<VerificationCompletedEventDto>("FORBIDDEN_CLIENT_APPLICATION", "The completion notification belongs to another client application.");
+        }
+
+        if (session.State != VerificationSessionState.Completed)
+        {
+            return SessionOperationResult<VerificationCompletedEventDto>.Failure(
+                "SESSION_NOT_COMPLETED",
+                "Verification session is not completed.",
+                409);
+        }
+
+        if (session.FinalDecisionId is null ||
+            session.EvidencePackageId is null ||
+            session.EvidencePackageHash is null ||
+            session.ManifestHash is null ||
+            session.CompletedAt is null ||
+            string.IsNullOrWhiteSpace(session.RequestId) ||
+            string.IsNullOrWhiteSpace(session.CorrelationId))
+        {
+            return CompletionNotificationInvariantFailure();
+        }
+
+        var package = await evidencePackages.GetAsync(session.EvidencePackageId.Value, cancellationToken);
+        if (package is null ||
+            package.VerificationSessionId != session.Id ||
+            package.Id != session.EvidencePackageId.Value ||
+            package.PackageHash != session.EvidencePackageHash ||
+            package.ManifestHash != session.ManifestHash)
+        {
+            return CompletionNotificationInvariantFailure();
+        }
+
+        return SessionOperationResult<VerificationCompletedEventDto>.Success(ToCompletionNotification(session, package));
+    }
+
     private async Task<SessionOperationResult<CompleteVerificationSessionResponseDto>> BuildCompletedResponseAsync(
         VerificationSession session,
         CancellationToken cancellationToken)
@@ -564,6 +623,28 @@ public sealed class VerificationCompletionApplicationService(
             EvidencePackageSignatureStatus = ToDto(package.EvidencePackageSignatureStatus),
         };
 
+    private static VerificationCompletedEventDto ToCompletionNotification(
+        VerificationSession session,
+        EvidencePackage package) =>
+        new(
+            "VERIFICATION_COMPLETED",
+            "localdev-not-dispatched",
+            session.CompletedAt!.Value,
+            session.Id.ToString("N"),
+            session.ClientApplicationId.ToString("N"),
+            ToDto(session.Profile),
+            session.ExternalSessionId,
+            ToDto(session.Result),
+            ToDto(session.AssuranceLevel),
+            package.Id.ToString("N"),
+            package.PackageHash.ToString(),
+            package.ManifestHash.ToString(),
+            session.RequestId,
+            session.CorrelationId,
+            session.CompletedAt.Value,
+            SignaturePlaceholderStatusDto.PlaceholderUnverified,
+            ToDto(package.EvidencePackageSignatureStatus));
+
     private static ManifestAuditRefDto ToManifestAuditRef(AuditEvent auditEvent) =>
         new(
             auditEvent.Id.ToString("N"),
@@ -615,6 +696,14 @@ public sealed class VerificationCompletionApplicationService(
             _ => throw new ArgumentOutOfRangeException(nameof(state), state, null),
         };
 
+    private static VerificationProfileDto ToDto(VerificationProfile profile) =>
+        profile switch
+        {
+            VerificationProfile.StandardEkycProfile => VerificationProfileDto.StandardEkycProfile,
+            VerificationProfile.TransactionBoundEkycProfile => VerificationProfileDto.TransactionBoundEkycProfile,
+            _ => throw new ArgumentOutOfRangeException(nameof(profile), profile, null),
+        };
+
     private static VerificationResultDto ToDto(VerificationResult result) =>
         result switch
         {
@@ -652,6 +741,12 @@ public sealed class VerificationCompletionApplicationService(
 
     private static SessionOperationResult<T> NotFound<T>(string code, string message) =>
         SessionOperationResult<T>.Failure(code, message, 404);
+
+    private static SessionOperationResult<VerificationCompletedEventDto> CompletionNotificationInvariantFailure() =>
+        SessionOperationResult<VerificationCompletedEventDto>.Failure(
+            "COMPLETION_NOTIFICATION_INVARIANT_FAILED",
+            "Completed session is missing notification projection fields.",
+            500);
 
     private static string FirstNonEmpty(params string?[] values) =>
         values.First(value => !string.IsNullOrWhiteSpace(value))!;

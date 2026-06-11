@@ -44,6 +44,7 @@ builder.Services.AddSingleton<ITrustedEvidenceResultCommands>(sp => sp.GetRequir
 builder.Services.AddSingleton<VerificationCompletionApplicationService>();
 builder.Services.AddSingleton<IVerificationSessionCompletionCommands>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
 builder.Services.AddSingleton<IEvidencePackageQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
+builder.Services.AddSingleton<ICompletionNotificationQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
 
 var app = builder.Build();
 
