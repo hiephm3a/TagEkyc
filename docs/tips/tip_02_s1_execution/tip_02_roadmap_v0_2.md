@@ -1,13 +1,24 @@
 # TIP-02 S1 Execution Roadmap v0.2
 
 **File:** `docs/tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md`
-**Version:** 0.2
-**Status:** Planning - TIP-02A accepted, TIP-03 implemented pending review
+**Version:** 0.4
+**Status:** Planning - TIP-06 implemented and docs closeout complete
 **Date:** 2026-06-10
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines the execution plan from the completed TIP-01 skeleton to TagEkyc S1 completion.
 
 ## Changelog
+
+### v0.4 - TIP-06 state synchronized
+
+- Recorded that TIP-04, TIP-05, and TIP-06 runtime slices have implementation records after the TIP-03 closeout.
+- Recorded TIP-06 implementation commit `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef` and docs closeout commit `dd878e5`.
+- Set TIP-07 webhook delivery and retry planning as the next roadmap action.
+
+### v0.3 - TIP-03 acceptance synchronized
+
+- Recorded TIP-03 review completion and accepted closeout state.
+- Set TIP-04 kickoff preparation as the next recommended action.
 
 ### v0.2 - Review hardening before TIP-03
 
@@ -22,7 +33,10 @@
 - TIP-02A confirmation passed and was accepted by the user.
 - TIP-01 is now fully accepted as the clean S1 skeleton baseline.
 - TIP-03 kickoff/checklist v0.2 was accepted with minor review patches.
-- TIP-03 implementation has now been completed within the accepted v0.2 boundaries and recorded in `tip_03_execution_report_v0_1.md`; review is pending.
+- TIP-03 implementation was reviewed, accepted, and closed within the accepted v0.2 boundaries. Final artifacts: `tip_03_execution_report_v0_1.md`, `tip_03_review_v0_1.md`, and `tip_03_closeout_v0_1.md`.
+- TIP-04 implementation records exist in `tip_04_execution_report_v0_1.md`.
+- TIP-05 implementation was accepted after confirmation review.
+- TIP-06 implementation was accepted and committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`; TIP-06 docs closeout was committed at `dd878e5`.
 
 ### v0.1 - Initial S1 execution roadmap
 
@@ -37,12 +51,12 @@ TIP-01 created the .NET 8 solution skeleton and placeholder project boundaries.
 
 Current implementation state:
 
-- `TagEkyc.Api` exposes smoke-only endpoints.
-- `TagEkyc.Application`, `TagEkyc.Domain`, `TagEkyc.Contracts`, `TagEkyc.Infrastructure`, `TagEkyc.Adapters`, and `TagEkyc.SignFlow` are placeholder assemblies.
+- `TagEkyc.Api`, `TagEkyc.Application`, `TagEkyc.Domain`, `TagEkyc.Contracts`, `TagEkyc.Infrastructure`, `TagEkyc.Adapters`, and `TagEkyc.SignFlow` have progressed beyond the original skeleton through the TIP-06 runtime slice.
 - Unit, contract, and architecture smoke tests exist.
-- No eKYC business API, persistence, audit, evidence package, webhook runtime, adapter behavior, cryptography, or raw artifact handling has been implemented.
+- TIP-03 through TIP-06 cover core domain/contracts, local development persistence boundary, API key/session lifecycle, capture/evidence recording, final decision, evidence package, and audit manifest behavior.
+- Webhook runtime, production cryptography, production storage/vault lifecycle, production adapter trust, and real raw artifact handling remain deferred to later accepted TIPs.
 
-TIP-02A recorded clean post-hygiene evidence and the user accepted TIP-01 as the clean S1 skeleton baseline. TIP-03 kickoff/checklist v0.2 is accepted, and TIP-03 implementation has been completed within the accepted boundaries pending review.
+TIP-02A recorded clean post-hygiene evidence and the user accepted TIP-01 as the clean S1 skeleton baseline. TIP-03 kickoff/checklist v0.2 was accepted, implemented, reviewed, and closed on 2026-06-10. TIP-04, TIP-05, and TIP-06 have since moved the roadmap through final decision and evidence package implementation, with TIP-06 code/test committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`.
 
 ## 2. S1 Definition of Done
 
@@ -354,21 +368,13 @@ The coordinator should ask the user only for these gates:
 
 Default recommendation:
 
-- Proceed with TIP-02A and TIP-03 without changing Product Brief/HLD/LLD.
+- Proceed with the next accepted TIP planning without changing Product Brief/HLD/LLD.
 - Use the Product Brief S1 defaults: CCCD/NFC, face match, and liveness required for SignFlow; fingerprint optional/demo-only.
 - Keep all raw sensitive data out of default business-consumer payloads.
 - Keep S1 explicitly evidence-ready, not production-certified.
 
 ## 8. Immediate Next Action
 
-Review the TIP-03 kickoff/checklist:
+Prepare TIP-07 kickoff for webhook delivery and retry.
 
-- Confirm adapter trust boundary.
-- Confirm capture artifact upload/reference model.
-- Confirm VaultRef exposure boundary.
-- Confirm lifecycle state vs verification result separation.
-- Confirm SignFlow required checks and optional OCR/fingerprint policy.
-- Confirm SignFlow dependency boundary.
-- Confirm no production database/migration decision in TIP-03.
-
-After review acceptance, TIP-03 implementation may start within the kickoff boundaries.
+TIP-07 remains a separate future kickoff and is not opened by this roadmap update alone.
