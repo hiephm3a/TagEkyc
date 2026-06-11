@@ -1,13 +1,19 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 0.9
+**Version:** 1.0
 **Status:** Active
 **Date:** 2026-06-11
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.0 - TIP-07 docs closeout synchronized
+
+- Recorded TIP-07 docs/governance closeout as complete.
+- Cleared the stale TIP-07 docs-closeout active recommendation.
+- Recorded that TIP-07 docs/governance closeout is synchronized.
 
 ### v0.9 - TIP-07 Option A implementation recorded
 
@@ -240,7 +246,7 @@ No active in-scope coordination work.
 
 ### Pending User Gates
 
-No pending user gates. TIP-06 runtime/docs closeout and TIP-07 Option A code/test implementation are synchronized in governance state. Remaining dirty docs are TIP-07 closeout/governance records only.
+No pending user gates. TIP-06 runtime/docs closeout and TIP-07 Option A code/test implementation are synchronized in governance state.
 
 ### Decisions Recorded
 
@@ -266,11 +272,13 @@ No pending user gates. TIP-06 runtime/docs closeout and TIP-07 Option A code/tes
 - TIP-07 Option A implementation was committed at `916dd2918c2ab47ab0658ebf271fae45e22fb3ca` (`feat: add TIP-07 completion notification projection`).
 - TIP-07 post-commit validation passed: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 38 passed, total 63 passed and 0 failed.
 - TIP-07 review accepted the early implementation after targeted evidence review; confirmed no public route, webhook dispatcher/subscription, durable outbox, retry scheduler, EF/DbContext/migration/durable persistence, or SignFlow runtime/source/database dependency drift.
-- Current dirty worktree state is limited to TIP-07 docs/governance closeout records.
+- TIP-07 docs/governance closeout is synchronized.
 
 ### Next Recommended Action
 
-Complete TIP-07 docs/governance closeout only. Do not modify `src/` or `tests/` without a separate accepted implementation gate.
+No active in-scope coordination work. Do not modify `src/` or `tests/` without a separate accepted implementation gate.
+
+Future webhook delivery/retry work remains deferred to a later accepted planning slice and is not opened by TIP-07 Option A.
 
 ### Outbox
 

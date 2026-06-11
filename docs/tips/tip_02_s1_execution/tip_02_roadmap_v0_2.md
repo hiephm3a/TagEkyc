@@ -1,13 +1,19 @@
 # TIP-02 S1 Execution Roadmap v0.2
 
 **File:** `docs/tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md`
-**Version:** 0.4
-**Status:** Planning - TIP-06 implemented and docs closeout complete
-**Date:** 2026-06-10
+**Version:** 0.5
+**Status:** Planning - TIP-07 Option A implemented; webhook runtime deferred
+**Date:** 2026-06-11
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines the execution plan from the completed TIP-01 skeleton to TagEkyc S1 completion.
 
 ## Changelog
+
+### v0.5 - TIP-07 state synchronized
+
+- Recorded TIP-07 Option A completion notification projection implementation commit `916dd2918c2ab47ab0658ebf271fae45e22fb3ca`.
+- Clarified that TIP-07 delivered the accepted LocalDev completion-notification projection only, with no public route or webhook runtime.
+- Deferred webhook delivery/retry to a later separate planning slice instead of keeping it as the immediate next action.
 
 ### v0.4 - TIP-06 state synchronized
 
@@ -54,9 +60,10 @@ Current implementation state:
 - `TagEkyc.Api`, `TagEkyc.Application`, `TagEkyc.Domain`, `TagEkyc.Contracts`, `TagEkyc.Infrastructure`, `TagEkyc.Adapters`, and `TagEkyc.SignFlow` have progressed beyond the original skeleton through the TIP-06 runtime slice.
 - Unit, contract, and architecture smoke tests exist.
 - TIP-03 through TIP-06 cover core domain/contracts, local development persistence boundary, API key/session lifecycle, capture/evidence recording, final decision, evidence package, and audit manifest behavior.
-- Webhook runtime, production cryptography, production storage/vault lifecycle, production adapter trust, and real raw artifact handling remain deferred to later accepted TIPs.
+- TIP-07 Option A adds an internal/application-service completion notification projection with deterministic LocalDev placeholder delivery semantics and no public route.
+- Webhook runtime, retry/outbox behavior, production cryptography, production storage/vault lifecycle, production adapter trust, and real raw artifact handling remain deferred to later accepted TIPs.
 
-TIP-02A recorded clean post-hygiene evidence and the user accepted TIP-01 as the clean S1 skeleton baseline. TIP-03 kickoff/checklist v0.2 was accepted, implemented, reviewed, and closed on 2026-06-10. TIP-04, TIP-05, and TIP-06 have since moved the roadmap through final decision and evidence package implementation, with TIP-06 code/test committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`.
+TIP-02A recorded clean post-hygiene evidence and the user accepted TIP-01 as the clean S1 skeleton baseline. TIP-03 kickoff/checklist v0.2 was accepted, implemented, reviewed, and closed on 2026-06-10. TIP-04, TIP-05, and TIP-06 moved the roadmap through final decision and evidence package implementation, with TIP-06 code/test committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`. TIP-07 Planning Brief v0.3 was then accepted for Option A only and implemented at `916dd2918c2ab47ab0658ebf271fae45e22fb3ca` with post-commit validation of 63 passed and 0 failed.
 
 ## 2. S1 Definition of Done
 
@@ -246,30 +253,32 @@ STOP+ASK:
 - Assurance-level policy changes outside baseline.
 - Legal audit reliance claims.
 
-### TIP-07 - Webhook Delivery and Retry
+### TIP-07 - Completion Notification Projection
 
-Goal: Deliver sanitized completion results to subscribed business clients and support retry.
+Goal: Prepare a deterministic, client-safe LocalDev completion notification projection without opening public webhook runtime.
 
 Scope:
 
-- Webhook subscription model and local/dev dispatcher.
-- Outgoing `VerificationCompleted` payload.
-- `POST /api/ekyc/webhooks/retry`.
-- Delivery status, attempt count, payload hash, and retry metadata.
-- Placeholder `webhookSignature` field.
-- Tests for successful delivery, retryable failure, final failure, and replay-safe delivery identifiers where feasible.
+- Internal/application-service projection of `BusinessConsumer.VerificationCompletedEventDto` from the TIP-06 completed session/evidence package state.
+- Deterministic LocalDev placeholder delivery semantics only: existing `EventType`, `DeliveryId = "localdev-not-dispatched"`, and `SentAt = completedAt`.
+- Placeholder `webhookSignature` and evidence-package signature status semantics remain non-authoritative.
+- Tests for exact field mapping, deterministic repeatability, cross-client boundary enforcement, and no raw/internal leakage.
 
 Automation-safe:
 
-- Implement local HTTP dispatcher abstraction and test doubles.
-- Persist webhook delivery metadata.
+- Implement the internal projection/query and focused tests.
 - Preserve placeholder signature semantics.
+- Keep the implementation free of public routes, dispatcher/subscription runtime, retry scheduling, durable outbox state, EF/migrations, and SignFlow runtime dependencies.
 
 STOP+ASK:
 
-- Production webhook signing algorithm and key rotation.
-- Replay cache production design.
-- External endpoint credentials or paid delivery infrastructure.
+- Any public endpoint exposing the projection.
+- Any webhook subscription, dispatcher, retry, outbox, or durable persistence behavior.
+- Production webhook signing algorithm, replay protection, key rotation, or external endpoint credentials/infrastructure.
+
+Deferred follow-on after TIP-07:
+
+- A later accepted planning slice must cover actual webhook delivery, retry, outbox/delivery metadata, and operational concerns if those behaviors are needed.
 
 ### TIP-08 - SignFlow Transaction-Bound Profile and End-to-End S1 Flow
 
@@ -325,7 +334,7 @@ STOP+ASK:
 3. TIP-04 API key authentication, client policy, and session lifecycle.
 4. TIP-05 capture artifact and evidence result recording.
 5. TIP-06 final decision, evidence package, and audit manifest.
-6. TIP-07 webhook delivery and retry.
+6. TIP-07 completion notification projection.
 7. TIP-08 SignFlow transaction-bound profile and E2E S1 flow.
 8. TIP-09 S1 hardening, documentation, and closeout.
 
@@ -352,7 +361,7 @@ Minimum S1 end-to-end scenarios:
 - Failed identity evidence produces final `FAILED`.
 - Ambiguous/incomplete evidence produces `REVIEW_REQUIRED`.
 - Technical adapter failure produces `ERROR` or documented terminal behavior.
-- Completion webhook payload is sanitized and retryable.
+- Completion notification projection is sanitized and deterministic.
 - Default business evidence package payload excludes raw artifacts, plaintext identity fields, and internal VaultRefs.
 - Placeholder signature fields are visibly non-authoritative in S1.
 
@@ -375,6 +384,6 @@ Default recommendation:
 
 ## 8. Immediate Next Action
 
-Prepare TIP-07 kickoff for webhook delivery and retry.
+No active in-scope implementation is opened by this roadmap update.
 
-TIP-07 remains a separate future kickoff and is not opened by this roadmap update alone.
+If webhook delivery/retry is later needed, open a separate accepted planning slice after TIP-07 Option A rather than treating it as already authorized.
