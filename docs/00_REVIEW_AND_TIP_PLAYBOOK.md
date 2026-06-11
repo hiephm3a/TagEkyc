@@ -248,7 +248,7 @@ A TIP completion report SHOULD include:
 
 If an expected check is not feasible, the completion report MUST explain why.
 
-## 12. TIP-05/TIP-06 Confirmation Lessons
+## 12. Runtime TIP Review Rules
 
 TIP-05 showed that accepted service behavior is not enough when a TIP adds runtime HTTP endpoints.
 
@@ -266,16 +266,60 @@ Subagent review convergence must be measured on the same decision surface:
 - Treat matching findings as strong signal, divergent findings as synthesis input, and single-reviewer findings as items to verify rather than discard.
 - The main agent should synthesize findings around implementation-affecting ambiguity: caller identity, ownership, state transitions, endpoint boundary, data integrity, error precedence, and testability.
 
-TIP-06 showed that high-rigor review must still have a bounded finish line:
+### L-TAG-Review-01 - Full Coverage First, Then Invalidation Review
 
-- Full initial coverage is required before narrowing. Early reviewers should cover the whole relevant decision surface once, including DTOs, endpoint behavior, state/lifecycle, error precedence, hash/audit inputs, public/private data boundaries, and tests.
-- Keep a coverage ledger for large TIPs. Record which sections, examples, DTOs, tests, and boundary claims each review round touched so later patches do not rely on memory.
-- After a patch, review the invalidated area first: changed sections, dependent examples, test expectations, summaries, final recommendations, changelog/status metadata, and any cross-reference that could now contradict the patch.
-- Run a sentinel sweep before final gate: search for stale `NEEDS PATCHES`, `pending`, old draft labels, superseded gates, deprecated field names, and contradiction-prone terms introduced by earlier rounds.
-- Use reviewer saturation as a signal. When repeated reviews find only duplicate or non-blocking wording issues, stop expanding the review surface unless a new patch changes runtime/API behavior, DTO shape, error precedence, audit/hash inputs, lifecycle state, evidence boundary, or test expectations.
-- For narrow post-convergence patches, require a patch impact/carry-through gate instead of automatically rerunning full A/B review. The gate should prove no patch-regression, no stale status metadata, and no affected-surface contradiction.
-- Final external or architect gates should be blocker-only unless explicitly asked for editorial polish. Non-blocking wording notes should be recorded as deferred cleanup, not allowed to restart implementation review loops.
-- Do not rerun endless full A/B reviews after every patch. Rerun full review only when the patch invalidates broad coverage or changes a core decision surface.
+A TIP that touches runtime contracts, lifecycle, DTOs, audit/hash behavior, finalization, or security boundaries MUST receive at least one full-system review with coverage attestation before review narrows to patch deltas.
+
+The full-system review MUST cover:
+
+- Lifecycle/state behavior.
+- Security and public/private data boundaries.
+- Hash, audit, evidence chain, idempotency, and determinism.
+- API/error precedence and DTO defaults.
+- Test/proof level.
+- Scope boundaries and STOP gates.
+- Builder ambiguity.
+- Repo-real feasibility.
+
+After full coverage is established, later patch reviews MUST NOT reset to full-document exhaustive review by default. The patcher MUST provide an affected-surface map that lists:
+
+- Rule changed.
+- Sections touched.
+- DTO impact.
+- API impact.
+- Error/status impact.
+- Hash/audit impact.
+- Test impact.
+- STOP gates.
+- Tail, matrix, and self-check impact.
+
+Reviewers SHOULD re-review only the invalidated coverage areas plus a lightweight blocker-only sentinel sweep for stale `NEEDS PATCHES`, `pending`, old draft labels, superseded gates, deprecated field names, and direct contradictions.
+
+A full review MAY be rerun only when a patch changes core invariants, changes scope, introduces new runtime/API surface, or contradicts a previously clean coverage area.
+
+### L-TAG-Review-02 - Finding Classification and Stop Rule
+
+Review findings MUST be classified as:
+
+- `BLOCKER`.
+- `PATCH_REGRESSION`.
+- `LATENT_SPEC_GAP`.
+- `TEST_HARDENING_ONLY`.
+- `BOOKKEEPING_ONLY`.
+- `DEFERRED`.
+
+Only `BLOCKER`, `PATCH_REGRESSION`, and implementation-blocking `LATENT_SPEC_GAP` findings require immediate patch and re-review.
+
+After two consecutive rounds with no blocker-category findings, the final gate MUST stop planning review and move hardening-only items to Deferred Notes unless a new patch changes core invariants, scope, runtime/API surface, or a previously clean coverage area.
+
+Final external or architect gates SHOULD be blocker-only unless explicitly asked for editorial polish. Blockers are limited to:
+
+- Builder can implement wrong runtime behavior.
+- Public or BusinessConsumer API can leak internal, raw, or sensitive data.
+- Completed/package/hash/audit/idempotency/determinism invariant can be broken.
+- A critical invariant has no representative proof or test.
+
+Wording polish, extra overlap tests, matrix formatting, minor bookkeeping, and out-of-scope production concerns SHOULD be recorded as `DEFERRED` notes instead of restarting planning review.
 
 Confirmation review SHOULD include explicit STOP gates:
 
