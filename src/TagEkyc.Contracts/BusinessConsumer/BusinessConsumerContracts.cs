@@ -38,14 +38,36 @@ public sealed record VerificationSessionSummaryDto(
     AssuranceLevelDto AssuranceLevel,
     string? EvidencePackageId,
     string? EvidencePackageHash,
+    string? ManifestHash,
     string RequestId,
     string CorrelationId,
     DateTimeOffset? CompletedAt);
 
 public sealed record EvidenceRefSummaryDto(
+    string ResultType,
+    string EvidenceResultId,
     string Type,
     string Id,
     string? ArtifactHash);
+
+public sealed record CompleteVerificationSessionRequestDto(
+    bool ForceReview = false,
+    string? RequestId = null,
+    string? CorrelationId = null);
+
+public sealed record CompleteVerificationSessionResponseDto(
+    string VerificationSessionId,
+    VerificationSessionStateDto State,
+    VerificationResultDto Result,
+    AssuranceLevelDto AssuranceLevel,
+    string FinalDecisionId,
+    string EvidencePackageId,
+    string EvidencePackageHash,
+    string ManifestHash,
+    string RequestId,
+    string CorrelationId,
+    DateTimeOffset CompletedAt,
+    SignaturePlaceholderStatusDto EvidencePackageSignatureStatus);
 
 public sealed record EvidencePackageSummaryDto(
     string EvidencePackageId,
@@ -56,7 +78,10 @@ public sealed record EvidencePackageSummaryDto(
     VerificationResultDto Result,
     AssuranceLevelDto AssuranceLevel,
     IReadOnlyList<EvidenceRefSummaryDto> EvidenceRefs,
-    SignaturePlaceholderStatusDto EvidencePackageSignatureStatus);
+    SignaturePlaceholderStatusDto EvidencePackageSignatureStatus,
+    string RequestId,
+    string CorrelationId,
+    DateTimeOffset CompletedAt);
 
 public sealed record VerificationCompletedEventDto(
     string EventType,
@@ -70,4 +95,5 @@ public sealed record VerificationCompletedEventDto(
     string EvidencePackageId,
     string EvidencePackageHash,
     string CorrelationId,
-    SignaturePlaceholderStatusDto WebhookSignatureStatus);
+    SignaturePlaceholderStatusDto WebhookSignatureStatus,
+    SignaturePlaceholderStatusDto EvidencePackageSignatureStatus);

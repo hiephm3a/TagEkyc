@@ -16,6 +16,11 @@ public sealed record VerificationSession
         string correlationId,
         VerificationSessionState state,
         VerificationResult result,
+        AssuranceLevel assuranceLevel,
+        Guid? finalDecisionId,
+        Guid? evidencePackageId,
+        HashRef? evidencePackageHash,
+        HashRef? manifestHash,
         DateTimeOffset expiresAt,
         DateTimeOffset createdAt,
         DateTimeOffset? completedAt)
@@ -33,6 +38,11 @@ public sealed record VerificationSession
         CorrelationId = correlationId;
         State = state;
         Result = result;
+        AssuranceLevel = assuranceLevel;
+        FinalDecisionId = finalDecisionId;
+        EvidencePackageId = evidencePackageId;
+        EvidencePackageHash = evidencePackageHash;
+        ManifestHash = manifestHash;
         ExpiresAt = expiresAt;
         CreatedAt = createdAt;
         CompletedAt = completedAt;
@@ -51,6 +61,11 @@ public sealed record VerificationSession
     public string CorrelationId { get; }
     public VerificationSessionState State { get; }
     public VerificationResult Result { get; }
+    public AssuranceLevel AssuranceLevel { get; }
+    public Guid? FinalDecisionId { get; }
+    public Guid? EvidencePackageId { get; }
+    public HashRef? EvidencePackageHash { get; }
+    public HashRef? ManifestHash { get; }
     public DateTimeOffset ExpiresAt { get; }
     public DateTimeOffset CreatedAt { get; }
     public DateTimeOffset? CompletedAt { get; }
@@ -117,6 +132,11 @@ public sealed record VerificationSession
             correlationId ?? string.Empty,
             VerificationSessionState.Created,
             VerificationResult.NotAvailable,
+            AssuranceLevel.None,
+            finalDecisionId: null,
+            evidencePackageId: null,
+            evidencePackageHash: null,
+            manifestHash: null,
             expiresAt,
             createdAt,
             completedAt: null);
@@ -137,7 +157,45 @@ public sealed record VerificationSession
             CorrelationId,
             state,
             Result,
+            AssuranceLevel,
+            FinalDecisionId,
+            EvidencePackageId,
+            EvidencePackageHash,
+            ManifestHash,
             ExpiresAt,
             CreatedAt,
             CompletedAt);
+
+    public VerificationSession WithCompletion(
+        VerificationResult result,
+        AssuranceLevel assuranceLevel,
+        Guid finalDecisionId,
+        Guid evidencePackageId,
+        HashRef evidencePackageHash,
+        HashRef manifestHash,
+        string requestId,
+        string correlationId,
+        DateTimeOffset completedAt) =>
+        new(
+            Id,
+            ClientApplicationId,
+            SubjectRef,
+            Profile,
+            Purpose,
+            RequiredChecks,
+            ExternalSessionId,
+            ExternalTransactionId,
+            BindingNonceHash,
+            requestId,
+            correlationId,
+            VerificationSessionState.Completed,
+            result,
+            assuranceLevel,
+            finalDecisionId,
+            evidencePackageId,
+            evidencePackageHash,
+            manifestHash,
+            ExpiresAt,
+            CreatedAt,
+            completedAt);
 }

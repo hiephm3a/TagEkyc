@@ -12,7 +12,17 @@ public sealed class ProjectionBoundaryTests
     [Fact]
     public void Business_consumer_contracts_do_not_expose_internal_or_raw_fields()
     {
-        var forbiddenTerms = new[] { "VaultRef", "Raw", "Biometric", "Template", "Plaintext", "ClientApplicationId", "ApiKey" };
+        var forbiddenTerms = new[]
+        {
+            "VaultRef",
+            "Raw",
+            "Biometric",
+            "Template",
+            "Plaintext",
+            "ClientApplicationId",
+            "ApiKey",
+            "PayloadHash",
+        };
         var businessTypes = typeof(CreateVerificationSessionRequestDto).Assembly
             .GetTypes()
             .Where(type => type.Namespace == "TagEkyc.Contracts.BusinessConsumer")
@@ -98,7 +108,10 @@ public sealed class ProjectionBoundaryTests
             VerificationResultDto.Passed,
             AssuranceLevelDto.Medium,
             [],
-            SignaturePlaceholderStatusDto.PlaceholderUnverified);
+            SignaturePlaceholderStatusDto.PlaceholderUnverified,
+            "req-contract",
+            "corr-contract",
+            DateTimeOffset.UtcNow);
 
         Assert.Equal(SignaturePlaceholderStatusDto.PlaceholderUnverified, package.EvidencePackageSignatureStatus);
     }

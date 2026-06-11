@@ -6,7 +6,7 @@ namespace TagEkyc.ArchTests;
 public sealed class Tip04BoundaryTests
 {
     [Fact]
-    public void Tip05_api_does_not_define_deferred_runtime_surfaces()
+    public void Tip06_api_does_not_define_deferred_runtime_surfaces()
     {
         var apiTypeNames = typeof(TagEkyc.Api.AssemblyMarker).Assembly
             .GetTypes()
@@ -15,9 +15,7 @@ public sealed class Tip04BoundaryTests
 
         var futureRuntimeTerms = new[]
         {
-            "EvidencePackage",
             "Webhook",
-            "FinalDecision",
             "CaptureQualityResult",
             "DocumentResult",
             "NfcResult",

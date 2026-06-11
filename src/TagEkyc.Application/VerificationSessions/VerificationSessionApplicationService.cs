@@ -190,12 +190,13 @@ public sealed class VerificationSessionApplicationService(
             session.Purpose,
             ToDto(session.State),
             ToDto(session.Result),
-            AssuranceLevelDto.None,
-            EvidencePackageId: null,
-            EvidencePackageHash: null,
+            ToDto(session.AssuranceLevel),
+            session.EvidencePackageId?.ToString("N"),
+            session.EvidencePackageHash?.ToString(),
+            session.ManifestHash?.ToString(),
             session.RequestId,
             session.CorrelationId,
-            CompletedAt: null));
+            session.CompletedAt));
     }
 
     private static (string Code, string Message)? ValidateRequestShape(CreateVerificationSessionRequestDto request)
@@ -343,6 +344,17 @@ public sealed class VerificationSessionApplicationService(
             VerificationResult.TechnicalError => VerificationResultDto.TechnicalError,
             VerificationResult.NotSupported => VerificationResultDto.NotSupported,
             _ => throw new ArgumentOutOfRangeException(nameof(result), result, null),
+        };
+
+    private static AssuranceLevelDto ToDto(AssuranceLevel assuranceLevel) =>
+        assuranceLevel switch
+        {
+            AssuranceLevel.None => AssuranceLevelDto.None,
+            AssuranceLevel.Low => AssuranceLevelDto.Low,
+            AssuranceLevel.Medium => AssuranceLevelDto.Medium,
+            AssuranceLevel.High => AssuranceLevelDto.High,
+            AssuranceLevel.Unknown => AssuranceLevelDto.Unknown,
+            _ => throw new ArgumentOutOfRangeException(nameof(assuranceLevel), assuranceLevel, null),
         };
 
     private static string FormatId(Guid id) => id.ToString("N");

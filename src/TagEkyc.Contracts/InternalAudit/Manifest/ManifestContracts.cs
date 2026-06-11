@@ -11,6 +11,11 @@ public sealed record ManifestEvidenceRefDto(
     string? ArtifactHash,
     string? PayloadHash);
 
+public sealed record ManifestAuditRefDto(
+    string EventId,
+    string EventType,
+    string EventPayloadHash);
+
 public sealed record EvidenceManifestDto(
     string EvidencePackageId,
     string VerificationSessionId,
@@ -18,7 +23,7 @@ public sealed record EvidenceManifestDto(
     string ManifestHash,
     string PackageHash,
     IReadOnlyList<ManifestEvidenceRefDto> EvidenceRefs,
-    IReadOnlyList<string> AuditEventRefs,
+    IReadOnlyList<ManifestAuditRefDto> AuditEventRefs,
     string ResultRef,
     SignaturePlaceholderStatusDto EvidencePackageSignatureStatus,
     DateTimeOffset CreatedAt);

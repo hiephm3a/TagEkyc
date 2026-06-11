@@ -29,12 +29,23 @@ public sealed class Tip04ApiEndpointTests
         builder.Services.AddSingleton<ICaptureArtifactRepository>(sp => sp.GetRequiredService<LocalDevInMemoryCaptureArtifactRepository>());
         builder.Services.AddSingleton<LocalDevInMemoryEvidenceResultRepository>();
         builder.Services.AddSingleton<IEvidenceResultRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceResultRepository>());
+        builder.Services.AddSingleton<LocalDevInMemoryVerificationDecisionRepository>();
+        builder.Services.AddSingleton<IVerificationDecisionRepository>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationDecisionRepository>());
+        builder.Services.AddSingleton<LocalDevInMemoryEvidencePackageRepository>();
+        builder.Services.AddSingleton<IEvidencePackageRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidencePackageRepository>());
+        builder.Services.AddSingleton<LocalDevInMemoryEvidenceManifestRepository>();
+        builder.Services.AddSingleton<IInternalEvidenceManifestRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceManifestRepository>());
+        builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
+        builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
         builder.Services.AddSingleton<VerificationSessionApplicationService>();
         builder.Services.AddSingleton<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
         builder.Services.AddSingleton<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
         builder.Services.AddSingleton<VerificationEvidenceApplicationService>();
         builder.Services.AddSingleton<ICaptureArtifactCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
         builder.Services.AddSingleton<ITrustedEvidenceResultCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
+        builder.Services.AddSingleton<VerificationCompletionApplicationService>();
+        builder.Services.AddSingleton<IVerificationSessionCompletionCommands>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
+        builder.Services.AddSingleton<IEvidencePackageQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
         var app = builder.Build();
 
         app.MapVerificationSessionEndpoints();
@@ -59,6 +70,11 @@ public sealed class Tip04ApiEndpointTests
             routes,
             route =>
             {
+                Assert.Equal("/api/ekyc/evidence-packages/{id}", route.Pattern);
+                Assert.Equal(["GET"], route.Methods);
+            },
+            route =>
+            {
                 Assert.Equal("/api/ekyc/verification-sessions", route.Pattern);
                 Assert.Equal(["POST"], route.Methods);
             },
@@ -70,6 +86,11 @@ public sealed class Tip04ApiEndpointTests
             route =>
             {
                 Assert.Equal("/api/ekyc/verification-sessions/{id}/capture-artifacts", route.Pattern);
+                Assert.Equal(["POST"], route.Methods);
+            },
+            route =>
+            {
+                Assert.Equal("/api/ekyc/verification-sessions/{id}/complete", route.Pattern);
                 Assert.Equal(["POST"], route.Methods);
             },
             route =>

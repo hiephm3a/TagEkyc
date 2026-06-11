@@ -18,6 +18,8 @@ public static class VerificationSessionEndpoints
         endpoints.MapGet("/api/ekyc/verification-sessions/{id}", GetAsync);
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/capture-artifacts", AppendCaptureArtifactAsync);
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/evidence-results", AppendEvidenceResultAsync);
+        endpoints.MapPost("/api/ekyc/verification-sessions/{id}/complete", CompleteAsync);
+        endpoints.MapGet("/api/ekyc/evidence-packages/{id}", GetEvidencePackageAsync);
         return endpoints;
     }
 
@@ -114,6 +116,51 @@ public static class VerificationSessionEndpoints
         return Results.Created(
             $"/api/ekyc/verification-sessions/{id}/evidence-results/{result.Value!.EvidenceResultId}",
             result.Value);
+    }
+
+    private static async Task<IResult> CompleteAsync(
+        HttpContext httpContext,
+        string id,
+        CompleteVerificationSessionRequestDto request,
+        ILocalDevApiKeyAuthenticator authenticator,
+        IVerificationSessionCompletionCommands commands,
+        CancellationToken cancellationToken)
+    {
+        var authentication = authenticator.Authenticate(httpContext);
+        if (!authentication.IsSuccess)
+        {
+            return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        var result = await commands.CompleteAsync(authentication.Value!, id, request, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return ToError(result.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        return Results.Ok(result.Value);
+    }
+
+    private static async Task<IResult> GetEvidencePackageAsync(
+        HttpContext httpContext,
+        string id,
+        ILocalDevApiKeyAuthenticator authenticator,
+        IEvidencePackageQueries queries,
+        CancellationToken cancellationToken)
+    {
+        var authentication = authenticator.Authenticate(httpContext);
+        if (!authentication.IsSuccess)
+        {
+            return ToError(authentication.Error!, httpContext.TraceIdentifier);
+        }
+
+        var result = await queries.GetEvidencePackageAsync(authentication.Value!, id, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return ToError(result.Error!, httpContext.TraceIdentifier);
+        }
+
+        return Results.Ok(result.Value);
     }
 
     private static IResult ToError(SessionOperationError error, string correlationId) =>

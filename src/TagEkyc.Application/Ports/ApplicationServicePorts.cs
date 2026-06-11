@@ -15,6 +15,15 @@ public interface IVerificationSessionCommands
         CancellationToken cancellationToken = default);
 }
 
+public interface IVerificationSessionCompletionCommands
+{
+    Task<SessionOperationResult<CompleteVerificationSessionResponseDto>> CompleteAsync(
+        AuthenticatedClientContext caller,
+        string verificationSessionId,
+        CompleteVerificationSessionRequestDto request,
+        CancellationToken cancellationToken = default);
+}
+
 public interface IVerificationSessionQueries
 {
     Task<SessionOperationResult<VerificationSessionSummaryDto>> GetSummaryAsync(
@@ -38,5 +47,13 @@ public interface ITrustedEvidenceResultCommands
         AuthenticatedClientContext caller,
         string verificationSessionId,
         EvidenceResultSubmissionRequestDto request,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IEvidencePackageQueries
+{
+    Task<SessionOperationResult<EvidencePackageSummaryDto>> GetEvidencePackageAsync(
+        AuthenticatedClientContext caller,
+        string evidencePackageId,
         CancellationToken cancellationToken = default);
 }
