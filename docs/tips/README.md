@@ -1,13 +1,23 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.10
+**Version:** 0.12
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.12 - TIP-11 planning accepted
+
+- Recorded TIP-11 planning brief as accepted.
+- Preserved Option B as the next kickoff candidate only, with no implementation dispatch.
+
+### v0.11 - TIP-11 S2 planning opened
+
+- Added TIP-11 production data boundary and durable state foundation planning brief.
+- Recorded TIP-11 as S2 planning-only with no implementation dispatch.
 
 ### v0.10 - TIP-10 planning accepted
 
@@ -91,3 +101,4 @@ Canonical artifact names:
 | TIP-08 | `tip_08_signflow_transaction_bound_profile/` | [`tip_08_planning_brief_v0_3.md`](tip_08_signflow_transaction_bound_profile/tip_08_planning_brief_v0_3.md), [`tip_08_kickoff_v0_4.md`](tip_08_signflow_transaction_bound_profile/tip_08_kickoff_v0_4.md) |
 | TIP-09 | `tip_09_s1_hardening_closeout/` | [`tip_09_closeout_v0_1.md`](tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md) |
 | TIP-10 | `tip_10_production_readiness_planning_compass/` | [`tip_10_planning_brief_v0_1.md`](tip_10_production_readiness_planning_compass/tip_10_planning_brief_v0_1.md) - accepted planning-only |
+| TIP-11 | `tip_11_production_data_boundary_durable_state_foundation/` | [`tip_11_planning_brief_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_planning_brief_v0_1.md) - accepted planning-only |

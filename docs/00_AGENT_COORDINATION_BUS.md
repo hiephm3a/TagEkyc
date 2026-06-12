@@ -1,13 +1,26 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.7
+**Version:** 1.9
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.9 - TIP-11 planning accepted
+
+- Recorded GPT Gate acceptance of TIP-11 planning brief v0.1 with no blocker findings.
+- Recorded TIP-11 as accepted only for S2 production foundation / non-production hardening planning.
+- Preserved Option B as the next kickoff candidate: domain/application metadata boundary without DB provider, migrations, raw artifact storage, webhook/outbox/retry, production crypto, or SignFlow runtime dependency.
+- Reconfirmed that no implementation, kickoff, DB/provider/migration, local durable adapter, vault lifecycle, retention enforcement, webhook/outbox/retry, production crypto, vendor/provider selection, raw artifact storage, pilot readiness, production readiness, or SignFlow runtime dependency is authorized.
+
+### v1.8 - TIP-11 S2 planning opened
+
+- Opened TIP-11 production data boundary and durable state foundation as S2 planning-only.
+- Recorded S2 goal as production foundation and non-production hardening, not pilot readiness or production readiness.
+- Reconfirmed that TIP-11 planning does not dispatch implementation, DB/migrations, webhook/outbox/retry, production crypto, vendor selection, raw artifact storage, or SignFlow runtime dependency work.
 
 ### v1.7 - TIP-10 planning accepted
 
@@ -265,6 +278,18 @@ No open inbound agent messages.
 
 ### Active Work
 
+#### MSG-20260612-0004-tip11-s2-data-boundary-planning
+
+- From: Builder
+- To: User / Next agent
+- Status: Done
+- Gate: None
+- Scope: TIP-11 S2 planning only.
+- Context: TIP-11 planning opened at `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_planning_brief_v0_1.md`. GPT Gate accepted TIP-11 planning brief v0.1 with no blocker findings. TIP-11 is accepted only as S2 production foundation / non-production hardening planning. Option B may be prepared as the next kickoff candidate, but no implementation or kickoff is authorized by this planning acceptance.
+- Requested action: Completed.
+- Output expected: None. Prepare a separate TIP-11 kickoff for Option B and submit it for review before any implementation.
+- Links: `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_planning_brief_v0_1.md`, `docs/tips/README.md`
+
 #### MSG-20260612-0003-tip10-production-readiness-planning
 
 - From: Builder
@@ -327,7 +352,7 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-No pending user gates. TIP-10 planning was accepted and does not authorize implementation.
+No pending user gates. TIP-11 planning was accepted and does not authorize implementation or kickoff.
 
 TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 code/test implementation, and TIP-09 S1 closeout acceptance are synchronized in governance state.
 
@@ -370,12 +395,13 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - Runtime implementation work is closed.
 - Webhook delivery, retry, outbox, specialized evidence endpoints, fingerprint default enablement, durable persistence, production cryptography, public contract changes, and production readiness remain deferred or not claimed unless a later STOP/RRI is explicitly accepted. SignFlow runtime/source/database/network dependency work remains prohibited by the current Product Brief boundary.
 - TIP-10 production readiness planning is accepted as docs-only planning and recommends `TIP-11 - Production Data Boundary and Durable State Foundation` as the safest first runtime TIP after S1. TIP-10 does not dispatch TIP-11.
+- TIP-11 S2 planning is accepted as planning-only. S2 goal is production foundation and non-production hardening, not pilot readiness or production readiness. Option B is the next kickoff candidate and requires separate review before implementation.
 
 ### Next Recommended Action
 
-No active in-scope implementation work. The next recommended planning action is TIP-11 planning for `Production Data Boundary and Durable State Foundation`; do not open runtime implementation unless a later accepted TIP explicitly dispatches it.
+Prepare a separate TIP-11 kickoff for Option B and submit it for review. Do not open runtime implementation unless a later accepted TIP kickoff explicitly dispatches it.
 
-Future durable persistence, vault lifecycle, production auth/client trust, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, and production readiness remain deferred to later accepted planning slices and are not opened by TIP-10. SignFlow must remain an external consumer profile only.
+Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-11 planning. SignFlow must remain an external consumer profile only.
 
 ### Outbox
 
