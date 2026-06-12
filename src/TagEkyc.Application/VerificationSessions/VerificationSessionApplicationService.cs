@@ -135,7 +135,8 @@ public sealed class VerificationSessionApplicationService(
             request.ExternalTransactionId,
             bindingNonceHash,
             request.RequestId,
-            request.CorrelationId);
+            request.CorrelationId,
+            DataBoundaryMetadata.CreateDefault(policy!.PolicySnapshotId, requiredChecks));
 
         await sessions.AddAsync(session, cancellationToken);
         await auditEvents.AppendAsync(CreateAuditEvent(caller, session, "SESSION_CREATED"), cancellationToken);

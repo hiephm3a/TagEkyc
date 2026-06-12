@@ -145,6 +145,7 @@ public sealed class LocalDevRuntimePolicySource : ILocalDevClientPolicyProvider
         new(
             clientApplicationId,
             status,
+            PolicySnapshotId.LocalDevS1,
             new HashSet<VerificationProfile>
             {
                 VerificationProfile.StandardEkycProfile,

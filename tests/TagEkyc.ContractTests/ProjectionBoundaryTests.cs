@@ -21,6 +21,12 @@ public sealed class ProjectionBoundaryTests
             "Plaintext",
             "ApiKey",
             "PayloadHash",
+            "PolicySnapshot",
+            "Retention",
+            "LegalHold",
+            "Purge",
+            "DeletionEligibility",
+            "AccessAudit",
         };
         var businessTypes = typeof(CreateVerificationSessionRequestDto).Assembly
             .GetTypes()

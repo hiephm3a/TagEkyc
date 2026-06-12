@@ -5,6 +5,7 @@ namespace TagEkyc.Application.VerificationSessions;
 public sealed record LocalDevClientPolicy(
     Guid ClientApplicationId,
     ClientApplicationStatus Status,
+    PolicySnapshotId PolicySnapshotId,
     IReadOnlySet<VerificationProfile> AllowedProfiles,
     IReadOnlySet<string> AllowedPurposes,
     IReadOnlySet<RequiredCheckType> AllowedRequiredChecks,

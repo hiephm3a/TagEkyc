@@ -21,6 +21,7 @@ public sealed record VerificationSession
         Guid? evidencePackageId,
         HashRef? evidencePackageHash,
         HashRef? manifestHash,
+        DataBoundaryMetadata metadata,
         DateTimeOffset expiresAt,
         DateTimeOffset createdAt,
         DateTimeOffset? completedAt)
@@ -43,6 +44,7 @@ public sealed record VerificationSession
         EvidencePackageId = evidencePackageId;
         EvidencePackageHash = evidencePackageHash;
         ManifestHash = manifestHash;
+        Metadata = metadata;
         ExpiresAt = expiresAt;
         CreatedAt = createdAt;
         CompletedAt = completedAt;
@@ -66,6 +68,7 @@ public sealed record VerificationSession
     public Guid? EvidencePackageId { get; }
     public HashRef? EvidencePackageHash { get; }
     public HashRef? ManifestHash { get; }
+    public DataBoundaryMetadata Metadata { get; }
     public DateTimeOffset ExpiresAt { get; }
     public DateTimeOffset CreatedAt { get; }
     public DateTimeOffset? CompletedAt { get; }
@@ -82,7 +85,8 @@ public sealed record VerificationSession
         string? externalTransactionId = null,
         HashRef? bindingNonceHash = null,
         string? requestId = null,
-        string? correlationId = null)
+        string? correlationId = null,
+        DataBoundaryMetadata? metadata = null)
     {
         if (clientApplicationId == Guid.Empty)
         {
@@ -137,6 +141,7 @@ public sealed record VerificationSession
             evidencePackageId: null,
             evidencePackageHash: null,
             manifestHash: null,
+            metadata ?? DataBoundaryMetadata.LocalDevDefault(checkSet),
             expiresAt,
             createdAt,
             completedAt: null);
@@ -162,6 +167,7 @@ public sealed record VerificationSession
             EvidencePackageId,
             EvidencePackageHash,
             ManifestHash,
+            Metadata,
             ExpiresAt,
             CreatedAt,
             CompletedAt);
@@ -195,6 +201,7 @@ public sealed record VerificationSession
             evidencePackageId,
             evidencePackageHash,
             manifestHash,
+            Metadata,
             ExpiresAt,
             CreatedAt,
             completedAt);

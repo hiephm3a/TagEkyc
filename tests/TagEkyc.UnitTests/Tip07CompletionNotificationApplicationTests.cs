@@ -8,6 +8,7 @@ using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.CaptureAgent;
 using TagEkyc.Contracts.Common;
 using TagEkyc.Contracts.TrustedAdapter;
+using TagEkyc.Domain;
 
 namespace TagEkyc.UnitTests;
 
@@ -62,10 +63,14 @@ public sealed class Tip07CompletionNotificationApplicationTests
         Assert.DoesNotContain("TrustedAdapter", notificationJson, StringComparison.Ordinal);
         Assert.DoesNotContain("CaptureAgent", notificationJson, StringComparison.Ordinal);
         Assert.DoesNotContain("SignFlow", notificationJson, StringComparison.Ordinal);
+        AssertTip11MetadataNotExposed(notificationJson);
 
         Assert.DoesNotContain("clientApplicationId", JsonSerializer.Serialize(completed, JsonOptions), StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("clientApplicationId", JsonSerializer.Serialize(summary.Value, JsonOptions), StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("clientApplicationId", JsonSerializer.Serialize(package.Value, JsonOptions), StringComparison.OrdinalIgnoreCase);
+        AssertTip11MetadataNotExposed(JsonSerializer.Serialize(completed, JsonOptions));
+        AssertTip11MetadataNotExposed(JsonSerializer.Serialize(summary.Value, JsonOptions));
+        AssertTip11MetadataNotExposed(JsonSerializer.Serialize(package.Value, JsonOptions));
     }
 
     [Fact]
@@ -270,6 +275,17 @@ public sealed class Tip07CompletionNotificationApplicationTests
         var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
         options.Converters.Add(new JsonStringEnumConverter());
         return options;
+    }
+
+    private static void AssertTip11MetadataNotExposed(string json)
+    {
+        Assert.DoesNotContain("policySnapshot", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("retention", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("legalHold", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("purge", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("deletionEligibility", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("accessAudit", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(PolicySnapshotId.LocalDevS1Value, json, StringComparison.Ordinal);
     }
 
     private sealed record TestFixture(
