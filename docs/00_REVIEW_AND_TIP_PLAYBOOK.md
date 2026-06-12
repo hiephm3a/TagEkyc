@@ -1,13 +1,17 @@
 # TagEkyc Review and TIP Playbook
 
 **File:** `docs/00_REVIEW_AND_TIP_PLAYBOOK.md`
-**Version:** 0.1-draft
+**Version:** 0.2-draft
 **Status:** Draft for review
-**Date:** 2026-06-08
+**Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Captures reusable review, planning, and dispatch practices for TagEkyc TIP work.
 
 ## Changelog
+
+### v0.2-draft - Proof claim evidence-source rule
+
+- Added `L-TAG-Proof-01` after TIP-08 showed proof/E2E claims need explicit runtime, persisted, or application-output evidence sources rather than input echo assertions.
 
 ### v0.1-draft - Initial cross-project playbook draft
 
@@ -340,6 +344,17 @@ When committing with a dirty worktree:
 - Check `git diff --cached --name-only` before commit.
 - Verify excluded dirty files remain unstaged.
 - Do not include unrelated playbook, coordination, note, or prior-TIP files in a feature commit unless explicitly requested.
+
+### L-TAG-Proof-01 - Proof Claim Evidence Source Rule
+
+For any proof/E2E/evidence/legal-binding TIP, every proof claim must name its evidence source.
+
+A proof must not pass only by echoing test input variables. Assertions that claim preservation, binding, persistence, or evidence-chain linkage must be backed by TagEkyc runtime/persisted/application output state, not merely by values captured before the operation.
+
+Review rubric:
+
+| Claim | Evidence Source | Runtime/Persisted? | DTO field exact? | Leakage boundary? | Could pass by input echo? |
+| --- | --- | --- | --- | --- | --- |
 
 ## 13. Current TIP-01 Application
 

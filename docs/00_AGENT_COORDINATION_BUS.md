@@ -1,13 +1,27 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.0
+**Version:** 1.2
 **Status:** Active
-**Date:** 2026-06-11
+**Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.2 - TIP-08 code/test closeout recorded
+
+- Recorded TIP-08 code/test commit `282eb821b7500f2965b336a5e67467bffc68adf4`.
+- Recorded post-commit validation: 64 passed, 0 failed, 0 skipped.
+- Cleared the TIP-08 review-state active work packet after implementation acceptance.
+- Recorded that TIP-08 docs remain the only closeout scope for the docs/governance commit.
+
+### v1.1 - TIP-08 preflight state recorded
+
+- Recorded that TIP-08 planning is accepted but kickoff v0.4 remains draft pending semantic proof validity review.
+- Recorded that the worktree contains an untracked TIP-08 unit proof test outside the kickoff preflight allowlist.
+- Recorded current validation: `dotnet test TagEkyc.sln --no-restore` passed with 64 total tests.
+- Replaced the stale "no active work" guidance with TIP-08 review-state coordination.
 
 ### v1.0 - TIP-07 docs closeout synchronized
 
@@ -218,7 +232,17 @@ No open inbound agent messages.
 
 ### Active Work
 
-No active in-scope coordination work.
+#### MSG-20260612-0001-tip08-preflight-state
+
+- From: Coordinator
+- To: User / Next agent
+- Status: Done
+- Gate: None
+- Scope: TIP-08 code/test implementation and docs/governance closeout.
+- Context: TIP-08 semantic proof review accepted the test/proof-only implementation. Code/test commit `282eb821b7500f2965b336a5e67467bffc68adf4` (`test: prove TIP-08 transaction-bound SignFlow S1 flow`) added only `tests/TagEkyc.UnitTests/Tip08TransactionBoundE2eProofTests.cs`. Post-commit `dotnet test TagEkyc.sln --no-restore` passed with `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 39 passed, total 64 passed and 0 failed. Implementation scope remained test/proof-only with no `src/**`, endpoint/query/service/runtime projection, DTO/contract, or SignFlow runtime/source/database/network changes.
+- Requested action: Completed. Stage only TIP-08 docs/governance files for the closeout commit when ready.
+- Output expected: None.
+- Links: `docs/tips/tip_08_signflow_transaction_bound_profile/tip_08_planning_brief_v0_3.md`, `docs/tips/tip_08_signflow_transaction_bound_profile/tip_08_kickoff_v0_4.md`, `docs/00_REVIEW_AND_TIP_PLAYBOOK.md`, commit `282eb821b7500f2965b336a5e67467bffc68adf4`
 
 #### MSG-20260610-0003-tip03-review
 
@@ -246,7 +270,7 @@ No active in-scope coordination work.
 
 ### Pending User Gates
 
-No pending user gates. TIP-06 runtime/docs closeout and TIP-07 Option A code/test implementation are synchronized in governance state.
+No pending user gates. TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, and TIP-08 code/test implementation are synchronized in governance state.
 
 ### Decisions Recorded
 
@@ -273,10 +297,14 @@ No pending user gates. TIP-06 runtime/docs closeout and TIP-07 Option A code/tes
 - TIP-07 post-commit validation passed: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 38 passed, total 63 passed and 0 failed.
 - TIP-07 review accepted the early implementation after targeted evidence review; confirmed no public route, webhook dispatcher/subscription, durable outbox, retry scheduler, EF/DbContext/migration/durable persistence, or SignFlow runtime/source/database dependency drift.
 - TIP-07 docs/governance closeout is synchronized.
+- TIP-08 planning brief v0.3 and kickoff v0.4 are closed as implemented by code/test commit `282eb821b7500f2965b336a5e67467bffc68adf4`.
+- TIP-08 post-commit validation on 2026-06-12 passed `dotnet test TagEkyc.sln --no-restore`: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 39 passed, total 64 passed and 0 failed.
+- TIP-08 remained test/proof-only with no `src/**`, endpoint/query/service/runtime projection, DTO/contract, or SignFlow runtime/source/database/network changes.
+- TIP-08 proof validity corrections are recorded: stored-session evidence source, digest-shaped/computed `bindingNonceHash`, sentinel-backed leakage assertions where feasible, canonical `DocumentNfc` mapped to `NfcValidation` evidence result as current repo behavior, and package `PackageHash` versus completion/notification `EvidencePackageHash` linkage.
 
 ### Next Recommended Action
 
-No active in-scope coordination work. Do not modify `src/` or `tests/` without a separate accepted implementation gate.
+No active in-scope implementation work. Stage and commit only the TIP-08 docs/governance closeout files when ready.
 
 Future webhook delivery/retry work remains deferred to a later accepted planning slice and is not opened by TIP-07 Option A.
 

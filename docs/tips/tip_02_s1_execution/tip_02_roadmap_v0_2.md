@@ -1,13 +1,19 @@
 # TIP-02 S1 Execution Roadmap v0.2
 
 **File:** `docs/tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md`
-**Version:** 0.5
-**Status:** Planning - TIP-07 Option A implemented; webhook runtime deferred
-**Date:** 2026-06-11
+**Version:** 0.6
+**Status:** Planning - TIP-08 implemented; TIP-09 hardening/closeout remains
+**Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines the execution plan from the completed TIP-01 skeleton to TagEkyc S1 completion.
 
 ## Changelog
+
+### v0.6 - TIP-08 state synchronized
+
+- Recorded TIP-08 code/test commit `282eb821b7500f2965b336a5e67467bffc68adf4`.
+- Recorded post-commit validation: 64 passed, 0 failed, 0 skipped.
+- Clarified that TIP-08 stayed test/proof-only and did not add SignFlow runtime/source/database/network dependency or public runtime behavior.
 
 ### v0.5 - TIP-07 state synchronized
 
@@ -61,9 +67,10 @@ Current implementation state:
 - Unit, contract, and architecture smoke tests exist.
 - TIP-03 through TIP-06 cover core domain/contracts, local development persistence boundary, API key/session lifecycle, capture/evidence recording, final decision, evidence package, and audit manifest behavior.
 - TIP-07 Option A adds an internal/application-service completion notification projection with deterministic LocalDev placeholder delivery semantics and no public route.
+- TIP-08 adds a test/proof-only LocalDev transaction-bound SignFlow S1 flow at `282eb821b7500f2965b336a5e67467bffc68adf4`, with no `src/**`, DTO/contract, endpoint/query/service/runtime projection, or SignFlow runtime/source/database/network changes.
 - Webhook runtime, retry/outbox behavior, production cryptography, production storage/vault lifecycle, production adapter trust, and real raw artifact handling remain deferred to later accepted TIPs.
 
-TIP-02A recorded clean post-hygiene evidence and the user accepted TIP-01 as the clean S1 skeleton baseline. TIP-03 kickoff/checklist v0.2 was accepted, implemented, reviewed, and closed on 2026-06-10. TIP-04, TIP-05, and TIP-06 moved the roadmap through final decision and evidence package implementation, with TIP-06 code/test committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`. TIP-07 Planning Brief v0.3 was then accepted for Option A only and implemented at `916dd2918c2ab47ab0658ebf271fae45e22fb3ca` with post-commit validation of 63 passed and 0 failed.
+TIP-02A recorded clean post-hygiene evidence and the user accepted TIP-01 as the clean S1 skeleton baseline. TIP-03 kickoff/checklist v0.2 was accepted, implemented, reviewed, and closed on 2026-06-10. TIP-04, TIP-05, and TIP-06 moved the roadmap through final decision and evidence package implementation, with TIP-06 code/test committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`. TIP-07 Planning Brief v0.3 was then accepted for Option A only and implemented at `916dd2918c2ab47ab0658ebf271fae45e22fb3ca` with post-commit validation of 63 passed and 0 failed. TIP-08 was implemented at `282eb821b7500f2965b336a5e67467bffc68adf4` with post-commit validation of 64 passed and 0 failed.
 
 ## 2. S1 Definition of Done
 
@@ -283,6 +290,8 @@ Deferred follow-on after TIP-07:
 ### TIP-08 - SignFlow Transaction-Bound Profile and End-to-End S1 Flow
 
 Goal: Prove the S1 happy path for SignFlow without importing SignFlow internals.
+
+Status: Implemented and accepted at `282eb821b7500f2965b336a5e67467bffc68adf4` (`test: prove TIP-08 transaction-bound SignFlow S1 flow`). Post-commit validation passed with 64 passed and 0 failed.
 
 Scope:
 
