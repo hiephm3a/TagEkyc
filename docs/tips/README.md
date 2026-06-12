@@ -1,13 +1,23 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.8
+**Version:** 0.10
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.10 - TIP-10 planning accepted
+
+- Recorded TIP-10 planning brief as accepted.
+- Preserved TIP-11 as the accepted next runtime-TIP recommendation, not an implementation dispatch.
+
+### v0.9 - TIP-10 planning indexed
+
+- Added TIP-10 production readiness planning compass to the TIP index.
+- Preserved TIP-10 as planning-only with no runtime dispatch.
 
 ### v0.8 - TIP-09 closeout indexed
 
@@ -80,3 +90,4 @@ Canonical artifact names:
 | TIP-07 | `tip_07_completion_notification/` | [`tip_07_planning_brief_v0_3.md`](tip_07_completion_notification/tip_07_planning_brief_v0_3.md) |
 | TIP-08 | `tip_08_signflow_transaction_bound_profile/` | [`tip_08_planning_brief_v0_3.md`](tip_08_signflow_transaction_bound_profile/tip_08_planning_brief_v0_3.md), [`tip_08_kickoff_v0_4.md`](tip_08_signflow_transaction_bound_profile/tip_08_kickoff_v0_4.md) |
 | TIP-09 | `tip_09_s1_hardening_closeout/` | [`tip_09_closeout_v0_1.md`](tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md) |
+| TIP-10 | `tip_10_production_readiness_planning_compass/` | [`tip_10_planning_brief_v0_1.md`](tip_10_production_readiness_planning_compass/tip_10_planning_brief_v0_1.md) - accepted planning-only |
