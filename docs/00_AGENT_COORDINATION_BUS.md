@@ -1,13 +1,35 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.9
+**Version:** 1.12
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.12 - TIP-11 Option B kickoff accepted
+
+- Recorded GPT Gate acceptance of TIP-11 Option B kickoff v0.3.
+- Recorded that public contract/API/BusinessConsumer escape hatches are resolved.
+- Recorded that `PolicySnapshotId` is internal domain/application metadata only and excluded from package, manifest, hash, completion, package summary, notification, and public JSON surfaces.
+- Recorded that API/serialization impact triggers STOP/RRI.
+- Preserved implementation as a separate next step under the accepted Option B dispatch allowlist.
+
+### v1.11 - TIP-11 Option B kickoff blocker patch
+
+- Recorded GPT Gate review verdict `NEEDS PATCHES` for TIP-11 Option B kickoff v0.1.
+- Patched the kickoff draft to add Option B implementation pattern / allowed shape, pin `LOCALDEV-S1-POLICY-V1`, and constrain `PurgeBlockReason` to enum/code-only.
+- Reran self-review A/B with no blocker findings after the patch.
+- Reconfirmed the kickoff remains review-only and does not authorize implementation.
+
+### v1.10 - TIP-11 Option B kickoff draft opened
+
+- Added TIP-11 Option B kickoff draft for domain/application metadata boundary.
+- Recorded self-review A/B results with no blocker findings.
+- Preserved the kickoff as review-only with no implementation authorization.
+- Reconfirmed no DB/provider/migration, local durable adapter, vault lifecycle, retention enforcement, webhook/outbox/retry, production crypto, vendor/provider selection, raw artifact storage, pilot readiness, production readiness, or SignFlow runtime dependency is authorized.
 
 ### v1.9 - TIP-11 planning accepted
 
@@ -278,6 +300,18 @@ No open inbound agent messages.
 
 ### Active Work
 
+#### MSG-20260612-0005-tip11-option-b-kickoff-draft
+
+- From: Builder
+- To: User / GPT Gate / Next agent
+- Status: Done
+- Gate: None
+- Scope: TIP-11 Option B kickoff draft only.
+- Context: TIP-11 Option B kickoff exists at `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_kickoff_option_b_v0_1.md`. GPT Gate accepted kickoff v0.3 after blocker patches resolved public contract/API/BusinessConsumer escape hatches, pinned `PolicySnapshotId` as internal domain/application metadata only, excluded it from package/manifest/hash/completion/package summary/notification/public JSON surfaces, and made API/serialization impact trigger STOP/RRI. The accepted kickoff selects Option B only: domain/application metadata boundary without DB provider, migrations, raw artifact storage, webhook/outbox/retry, production crypto, or SignFlow runtime dependency.
+- Requested action: Completed.
+- Output expected: Implementation remains a separate next step under the accepted Option B dispatch allowlist.
+- Links: `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_kickoff_option_b_v0_1.md`, `docs/tips/README.md`
+
 #### MSG-20260612-0004-tip11-s2-data-boundary-planning
 
 - From: Builder
@@ -352,7 +386,7 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-No pending user gates. TIP-11 planning was accepted and does not authorize implementation or kickoff.
+No pending user gates. TIP-11 Option B kickoff was accepted; implementation remains a separate next step under the accepted Option B dispatch allowlist.
 
 TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 code/test implementation, and TIP-09 S1 closeout acceptance are synchronized in governance state.
 
@@ -396,10 +430,11 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - Webhook delivery, retry, outbox, specialized evidence endpoints, fingerprint default enablement, durable persistence, production cryptography, public contract changes, and production readiness remain deferred or not claimed unless a later STOP/RRI is explicitly accepted. SignFlow runtime/source/database/network dependency work remains prohibited by the current Product Brief boundary.
 - TIP-10 production readiness planning is accepted as docs-only planning and recommends `TIP-11 - Production Data Boundary and Durable State Foundation` as the safest first runtime TIP after S1. TIP-10 does not dispatch TIP-11.
 - TIP-11 S2 planning is accepted as planning-only. S2 goal is production foundation and non-production hardening, not pilot readiness or production readiness. Option B is the next kickoff candidate and requires separate review before implementation.
+- TIP-11 Option B kickoff is accepted. Implementation remains a separate next step under the accepted Option B dispatch allowlist.
 
 ### Next Recommended Action
 
-Prepare a separate TIP-11 kickoff for Option B and submit it for review. Do not open runtime implementation unless a later accepted TIP kickoff explicitly dispatches it.
+Proceed to TIP-11 Option B implementation only as a separate step under the accepted dispatch allowlist. Do not include implementation in the docs-only acceptance commit.
 
 Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-11 planning. SignFlow must remain an external consumer profile only.
 
