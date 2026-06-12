@@ -1,13 +1,27 @@
 # TIP-02 S1 Execution Roadmap v0.2
 
 **File:** `docs/tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md`
-**Version:** 0.6
-**Status:** Planning - TIP-08 implemented; TIP-09 hardening/closeout remains
+**Version:** 0.8
+**Status:** S1 closeable - TIP-09 accepted
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines the execution plan from the completed TIP-01 skeleton to TagEkyc S1 completion.
 
 ## Changelog
+
+### v0.8 - TIP-09 closeout accepted
+
+- Recorded homeowner acceptance of the TIP-09 closeout draft.
+- Recorded S1 status as closeable LocalDev evidence-ready, non-production, and non-certified.
+- Recorded runtime implementation work as closed.
+- Preserved webhook/outbox/retry, specialized evidence endpoints, fingerprint default enablement, and production readiness as deferred or not claimed.
+
+### v0.7 - TIP-09 closeout draft recorded
+
+- Recorded TIP-09 documentation/audit hardening draft at `docs/tips/tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md`.
+- Recorded that TIP-09 reconciles S1 DoD wording against accepted deferred webhook delivery, retry, and outbox scope.
+- Recorded that generic `/evidence-results` is the implemented S1 evidence result route, while specialized evidence endpoints remain deferred.
+- Recorded that fingerprint remains optional/demo/deferred and is not a default SignFlow S1 required check.
 
 ### v0.6 - TIP-08 state synchronized
 
@@ -68,7 +82,9 @@ Current implementation state:
 - TIP-03 through TIP-06 cover core domain/contracts, local development persistence boundary, API key/session lifecycle, capture/evidence recording, final decision, evidence package, and audit manifest behavior.
 - TIP-07 Option A adds an internal/application-service completion notification projection with deterministic LocalDev placeholder delivery semantics and no public route.
 - TIP-08 adds a test/proof-only LocalDev transaction-bound SignFlow S1 flow at `282eb821b7500f2965b336a5e67467bffc68adf4`, with no `src/**`, DTO/contract, endpoint/query/service/runtime projection, or SignFlow runtime/source/database/network changes.
+- TIP-09 documentation/audit hardening is accepted and records S1 closeout evidence, DoD reconciliation, deferred webhook/retry/outbox scope, generic evidence endpoint reconciliation, fingerprint optional/demo/deferred clarification, `L-TAG-Proof-01` evidence-source coverage, security/data-boundary review, API contract review, non-production statement, and fresh validation.
 - Webhook runtime, retry/outbox behavior, production cryptography, production storage/vault lifecycle, production adapter trust, and real raw artifact handling remain deferred to later accepted TIPs.
+- S1 is closeable as LocalDev evidence-ready, non-production, and non-certified. Runtime implementation work is closed.
 
 TIP-02A recorded clean post-hygiene evidence and the user accepted TIP-01 as the clean S1 skeleton baseline. TIP-03 kickoff/checklist v0.2 was accepted, implemented, reviewed, and closed on 2026-06-10. TIP-04, TIP-05, and TIP-06 moved the roadmap through final decision and evidence package implementation, with TIP-06 code/test committed at `c7fa9a50d303fd1d7f48eb7b8a4296a8c11698ef`. TIP-07 Planning Brief v0.3 was then accepted for Option A only and implemented at `916dd2918c2ab47ab0658ebf271fae45e22fb3ca` with post-commit validation of 63 passed and 0 failed. TIP-08 was implemented at `282eb821b7500f2965b336a5e67467bffc68adf4` with post-commit validation of 64 passed and 0 failed.
 
@@ -393,6 +409,6 @@ Default recommendation:
 
 ## 8. Immediate Next Action
 
-No active in-scope implementation is opened by this roadmap update.
+S1 closeout is accepted as LocalDev evidence-ready, non-production, and non-certified.
 
-If webhook delivery/retry is later needed, open a separate accepted planning slice after TIP-07 Option A rather than treating it as already authorized.
+Runtime implementation work is closed. If webhook delivery, retry, outbox, specialized evidence endpoints, fingerprint default enablement, durable persistence, production cryptography, production readiness, or SignFlow runtime integration is later needed, open a separate accepted planning slice rather than treating it as already authorized.

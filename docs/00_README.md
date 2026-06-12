@@ -34,7 +34,7 @@ Responsibility split:
 
 ## S1 Target
 
-TagEkyc S1 is an evidence-ready eKYC platform with mock/PoC verification engines. S1 MUST include stable result shapes, session state, client application/API key authentication, RequiredChecks policy, Evidence VaultRef model, append-only audit log, webhook delivery, and SignFlow integration contract. S1 is NOT production-certified eKYC.
+TagEkyc S1 is an evidence-ready LocalDev eKYC platform with mock/PoC verification engines. Current S1 includes stable result shapes, session state, client application/API key authentication, RequiredChecks policy, Evidence VaultRef/hash model, append-only audit log, an internal completion notification projection, and a SignFlow transaction-bound integration contract. Public webhook delivery, retry, and outbox behavior remain deferred as recorded in the TIP-09 closeout. S1 is NOT production-certified eKYC.
 
 ## Document Index
 
@@ -52,6 +52,7 @@ TagEkyc S1 is an evidence-ready eKYC platform with mock/PoC verification engines
 12. [TIP-01 Execution Report](tips/tip_01_project_skeleton/tip_01_execution_report_v0_1.md)
 13. [Agent Coordination Bus](00_AGENT_COORDINATION_BUS.md)
 14. [TIP-02 S1 Execution Roadmap](tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md)
+15. [TIP-09 S1 Hardening Closeout](tips/tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md)
 
 ## Documentation Version History
 

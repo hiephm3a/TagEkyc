@@ -1,13 +1,18 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.7
+**Version:** 0.8
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.8 - TIP-09 closeout indexed
+
+- Added TIP-09 S1 hardening closeout to the TIP index.
+- Added previously omitted TIP-04, TIP-05, and TIP-06 implementation artifacts to the index table for continuity.
 
 ### v0.7 - TIP-08 indexed
 
@@ -69,5 +74,9 @@ Canonical artifact names:
 | TIP-01 | `tip_01_project_skeleton/` | [`tip_01_brief_v0_1.md`](tip_01_project_skeleton/tip_01_brief_v0_1.md), [`tip_01_execution_report_v0_1.md`](tip_01_project_skeleton/tip_01_execution_report_v0_1.md), [`tip_01_review_v0_1.md`](tip_01_project_skeleton/tip_01_review_v0_1.md) |
 | TIP-02 | `tip_02_s1_execution/` | [`tip_02_roadmap_v0_2.md`](tip_02_s1_execution/tip_02_roadmap_v0_2.md), [`tip_02_review_v0_3.md`](tip_02_s1_execution/tip_02_review_v0_3.md), [`tip_02a_confirmation_report_v0_1.md`](tip_02_s1_execution/tip_02a_confirmation_report_v0_1.md) |
 | TIP-03 | `tip_03_core_domain_contracts/` | [`tip_03_kickoff_v0_2.md`](tip_03_core_domain_contracts/tip_03_kickoff_v0_2.md), [`tip_03_execution_report_v0_1.md`](tip_03_core_domain_contracts/tip_03_execution_report_v0_1.md), [`tip_03_review_v0_1.md`](tip_03_core_domain_contracts/tip_03_review_v0_1.md), [`tip_03_closeout_v0_1.md`](tip_03_core_domain_contracts/tip_03_closeout_v0_1.md) |
+| TIP-04 | `tip_04_api_key_policy_session_lifecycle/` | [`tip_04_kickoff_v0_3.md`](tip_04_api_key_policy_session_lifecycle/tip_04_kickoff_v0_3.md), [`tip_04_execution_report_v0_1.md`](tip_04_api_key_policy_session_lifecycle/tip_04_execution_report_v0_1.md) |
+| TIP-05 | `tip_05_capture_artifact_evidence_recording/` | [`tip_05_kickoff_v0_3.md`](tip_05_capture_artifact_evidence_recording/tip_05_kickoff_v0_3.md), [`tip_05_execution_report_v0_1.md`](tip_05_capture_artifact_evidence_recording/tip_05_execution_report_v0_1.md) |
+| TIP-06 | `tip_06_final_decision_evidence_package/` | [`tip_06_kickoff_v0_1.md`](tip_06_final_decision_evidence_package/tip_06_kickoff_v0_1.md) |
 | TIP-07 | `tip_07_completion_notification/` | [`tip_07_planning_brief_v0_3.md`](tip_07_completion_notification/tip_07_planning_brief_v0_3.md) |
 | TIP-08 | `tip_08_signflow_transaction_bound_profile/` | [`tip_08_planning_brief_v0_3.md`](tip_08_signflow_transaction_bound_profile/tip_08_planning_brief_v0_3.md), [`tip_08_kickoff_v0_4.md`](tip_08_signflow_transaction_bound_profile/tip_08_kickoff_v0_4.md) |
+| TIP-09 | `tip_09_s1_hardening_closeout/` | [`tip_09_closeout_v0_1.md`](tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md) |

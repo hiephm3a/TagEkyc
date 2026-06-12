@@ -16,7 +16,7 @@
 - Evidence VaultRef/hash model
 - `EkycEvidencePackage` manifest model
 - Append-only audit event model
-- Webhook/callback result delivery model
+- Webhook/callback result delivery model, with actual delivery/retry/outbox deferred after TIP-07 Option A
 - SignFlow integration contract
 - Mock or PoC adapters behind interfaces
 
@@ -68,9 +68,11 @@
 - Final verification result can be calculated from evidence summaries.
 - Evidence package can be built using VaultRefs/hashes and a deterministic manifest hash.
 - Audit events are written for key lifecycle actions.
-- Webhook completion result can be delivered or retried.
+- Completion notification result can be prepared through the LocalDev application projection. Actual webhook delivery, retry, and outbox behavior are deferred after TIP-07 Option A and must not be claimed as implemented in S1 closeout.
 - SignFlow contract is documented as a transaction-bound profile with binding validation rules.
 - Documentation clearly states S1 is not production-certified eKYC.
+
+TIP-09 reconciliation note: current implemented S1 uses generic TrustedAdapter `/evidence-results` for evidence recording, not specialized evidence result routes. Fingerprint remains optional/demo/deferred and is not part of the default SignFlow S1 required checks unless explicitly enabled by policy in a later accepted slice.
 
 ## Risk Registry
 

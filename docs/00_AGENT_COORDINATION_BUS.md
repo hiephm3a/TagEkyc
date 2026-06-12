@@ -1,13 +1,28 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.2
+**Version:** 1.4
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.4 - TIP-09 closeout accepted
+
+- Recorded homeowner acceptance of the TIP-09 closeout draft.
+- Recorded S1 status as closeable LocalDev evidence-ready, non-production, and non-certified.
+- Recorded runtime implementation work as closed.
+- Preserved webhook/outbox/retry, specialized evidence endpoints, fingerprint default enablement, and production readiness as deferred or not claimed.
+- Recorded post-acceptance validation: `dotnet test TagEkyc.sln --no-restore` passed with 64 passed, 0 failed, 0 skipped.
+
+### v1.3 - TIP-09 closeout draft recorded
+
+- Recorded GPT Gate acceptance of TIP-09 section 0 dry-run with verdict `NEEDS_PATCHES_WITHIN_TIP_09`.
+- Recorded TIP-09 documentation/audit hardening draft at `docs/tips/tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md`.
+- Recorded fresh validation: `dotnet test TagEkyc.sln --no-restore` passed with 64 passed, 0 failed, 0 skipped.
+- Replaced stale TIP-08 docs-governance next action with TIP-09 homeowner closeout review.
 
 ### v1.2 - TIP-08 code/test closeout recorded
 
@@ -232,6 +247,18 @@ No open inbound agent messages.
 
 ### Active Work
 
+#### MSG-20260612-0002-tip09-closeout-draft
+
+- From: Builder
+- To: User / Next agent
+- Status: Done
+- Gate: None
+- Scope: TIP-09 documentation/audit hardening only.
+- Context: GPT Gate accepted the TIP-09 section 0 dry-run verdict `NEEDS_PATCHES_WITHIN_TIP_09` and authorized TIP-09 proper with documentation/audit hardening only. The closeout draft records S1 DoD reconciliation, deferred webhook/retry/outbox scope, generic `/evidence-results` reconciliation, fingerprint optional/demo/deferred clarification, `L-TAG-Proof-01` evidence-source coverage, security/data-boundary review, API contract review, non-production/non-certified statement, production blockers, and validation. The homeowner accepted the closeout draft and set S1 status to closeable as LocalDev evidence-ready, non-production, and non-certified. No `src/**`, `tests/**`, runtime route, public contract, durable persistence, webhook/outbox/retry, or SignFlow runtime/source/database/network dependency was added.
+- Requested action: Completed.
+- Output expected: None.
+- Links: `docs/tips/tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md`, `docs/tips/tip_02_s1_execution/tip_02_roadmap_v0_2.md`, `docs/tips/README.md`
+
 #### MSG-20260612-0001-tip08-preflight-state
 
 - From: Coordinator
@@ -270,7 +297,7 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-No pending user gates. TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, and TIP-08 code/test implementation are synchronized in governance state.
+No pending user gates. TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 code/test implementation, and TIP-09 S1 closeout acceptance are synchronized in governance state.
 
 ### Decisions Recorded
 
@@ -301,12 +328,20 @@ No pending user gates. TIP-06 runtime/docs closeout, TIP-07 Option A code/test i
 - TIP-08 post-commit validation on 2026-06-12 passed `dotnet test TagEkyc.sln --no-restore`: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 39 passed, total 64 passed and 0 failed.
 - TIP-08 remained test/proof-only with no `src/**`, endpoint/query/service/runtime projection, DTO/contract, or SignFlow runtime/source/database/network changes.
 - TIP-08 proof validity corrections are recorded: stored-session evidence source, digest-shaped/computed `bindingNonceHash`, sentinel-backed leakage assertions where feasible, canonical `DocumentNfc` mapped to `NfcValidation` evidence result as current repo behavior, and package `PackageHash` versus completion/notification `EvidencePackageHash` linkage.
+- TIP-09 section 0 dry-run was accepted by GPT Gate with final verdict `NEEDS_PATCHES_WITHIN_TIP_09`.
+- TIP-09 proper is documentation/audit hardening only; no separate runtime evidence snapshot TIP is opened.
+- TIP-09 closeout draft exists at `docs/tips/tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md`.
+- TIP-09 validation on 2026-06-12 passed `dotnet test TagEkyc.sln --no-restore`: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 39 passed, total 64 passed and 0 failed.
+- TIP-09 closeout draft was accepted by the homeowner. S1 status is closeable as LocalDev evidence-ready, non-production, and non-certified.
+- TIP-09 post-acceptance validation on 2026-06-12 passed `dotnet test TagEkyc.sln --no-restore`: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 39 passed, total 64 passed and 0 failed.
+- Runtime implementation work is closed.
+- Webhook delivery, retry, outbox, specialized evidence endpoints, fingerprint default enablement, durable persistence, production cryptography, public contract changes, production readiness, and SignFlow runtime/source/database/network dependencies remain deferred or not claimed unless a later STOP/RRI is explicitly accepted.
 
 ### Next Recommended Action
 
-No active in-scope implementation work. Stage and commit only the TIP-08 docs/governance closeout files when ready.
+No active in-scope implementation work.
 
-Future webhook delivery/retry work remains deferred to a later accepted planning slice and is not opened by TIP-07 Option A.
+Future webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, durable persistence, production readiness, and SignFlow runtime integration remain deferred to later accepted planning slices and are not opened by TIP-09.
 
 ### Outbox
 
