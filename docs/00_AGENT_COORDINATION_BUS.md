@@ -1,13 +1,20 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.12
+**Version:** 1.13
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.13 - TIP-11 Option B implementation closeout recorded
+
+- Recorded TIP-11 Option B implementation commit `4f5ebec71f72c7189975fc3105ede0ef689196cb`.
+- Recorded validation: `dotnet test TagEkyc.sln --no-restore` passed with 71 passed, 0 failed, 0 skipped.
+- Marked active TIP-11 Option B implementation work as completed and pending homeowner/GPT closeout review.
+- Preserved that no next runtime work, TIP-12, persistence/vault/auth/webhook work, or production-readiness claim is opened.
 
 ### v1.12 - TIP-11 Option B kickoff accepted
 
@@ -300,6 +307,18 @@ No open inbound agent messages.
 
 ### Active Work
 
+#### MSG-20260612-0006-tip11-option-b-closeout
+
+- From: Builder
+- To: Homeowner / GPT Gate / Next agent
+- Status: Active
+- Gate: Review
+- Scope: TIP-11 Option B closeout review only.
+- Context: TIP-11 Option B implementation was committed at `4f5ebec71f72c7189975fc3105ede0ef689196cb` (`feat: implement TIP-11 Option B metadata boundary`). The implementation scope was domain/application metadata boundary only. Validation passed with `dotnet test TagEkyc.sln --no-restore`: 71 passed, 0 failed, 0 skipped. Closeout is recorded at `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_closeout_v0_1.md`.
+- Requested action: Homeowner/GPT closeout review.
+- Output expected: Review finding or acceptance decision. Do not dispatch new runtime work from this closeout.
+- Links: `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_closeout_v0_1.md`, `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_execution_report_v0_1.md`, commit `4f5ebec71f72c7189975fc3105ede0ef689196cb`
+
 #### MSG-20260612-0005-tip11-option-b-kickoff-draft
 
 - From: Builder
@@ -308,8 +327,8 @@ No open inbound agent messages.
 - Gate: None
 - Scope: TIP-11 Option B kickoff draft only.
 - Context: TIP-11 Option B kickoff exists at `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_kickoff_option_b_v0_1.md`. GPT Gate accepted kickoff v0.3 after blocker patches resolved public contract/API/BusinessConsumer escape hatches, pinned `PolicySnapshotId` as internal domain/application metadata only, excluded it from package/manifest/hash/completion/package summary/notification/public JSON surfaces, and made API/serialization impact trigger STOP/RRI. The accepted kickoff selects Option B only: domain/application metadata boundary without DB provider, migrations, raw artifact storage, webhook/outbox/retry, production crypto, or SignFlow runtime dependency.
-- Requested action: Completed.
-- Output expected: Implementation remains a separate next step under the accepted Option B dispatch allowlist.
+- Requested action: Completed. TIP-11 Option B implementation commit `4f5ebec71f72c7189975fc3105ede0ef689196cb` is recorded separately and now pending closeout review.
+- Output expected: None.
 - Links: `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_kickoff_option_b_v0_1.md`, `docs/tips/README.md`
 
 #### MSG-20260612-0004-tip11-s2-data-boundary-planning
@@ -386,7 +405,7 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-No pending user gates. TIP-11 Option B kickoff was accepted; implementation remains a separate next step under the accepted Option B dispatch allowlist.
+No pending user gates. TIP-11 Option B implementation is complete and pending homeowner/GPT closeout review.
 
 TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 code/test implementation, and TIP-09 S1 closeout acceptance are synchronized in governance state.
 
@@ -429,14 +448,18 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - Runtime implementation work is closed.
 - Webhook delivery, retry, outbox, specialized evidence endpoints, fingerprint default enablement, durable persistence, production cryptography, public contract changes, and production readiness remain deferred or not claimed unless a later STOP/RRI is explicitly accepted. SignFlow runtime/source/database/network dependency work remains prohibited by the current Product Brief boundary.
 - TIP-10 production readiness planning is accepted as docs-only planning and recommends `TIP-11 - Production Data Boundary and Durable State Foundation` as the safest first runtime TIP after S1. TIP-10 does not dispatch TIP-11.
-- TIP-11 S2 planning is accepted as planning-only. S2 goal is production foundation and non-production hardening, not pilot readiness or production readiness. Option B is the next kickoff candidate and requires separate review before implementation.
-- TIP-11 Option B kickoff is accepted. Implementation remains a separate next step under the accepted Option B dispatch allowlist.
+- TIP-11 S2 planning is accepted as planning-only. S2 goal is production foundation and non-production hardening, not pilot readiness or production readiness. Option B kickoff and implementation are now recorded separately.
+- TIP-11 Option B kickoff is accepted.
+- TIP-11 Option B implementation was committed at `4f5ebec71f72c7189975fc3105ede0ef689196cb` (`feat: implement TIP-11 Option B metadata boundary`).
+- TIP-11 Option B post-commit validation on 2026-06-12 passed `dotnet test TagEkyc.sln --no-restore`: 71 passed, 0 failed, 0 skipped.
+- TIP-11 Option B implementation scope was domain/application metadata boundary only.
+- TIP-11 Option B preserved no Api changes, no Infrastructure changes, no Adapters changes, no SignFlow runtime changes, no DB/EF/migrations/durable adapter, no local durable storage, no vault lifecycle, no raw artifact/biometric storage, no retention/legal-hold enforcement, no webhook/outbox/retry, no production crypto/signing/replay, no public DTO/API JSON changes, no BusinessConsumer metadata exposure, no package/hash/manifest/notification semantic changes, and no pilot/production readiness claim.
 
 ### Next Recommended Action
 
-Proceed to TIP-11 Option B implementation only as a separate step under the accepted dispatch allowlist. Do not include implementation in the docs-only acceptance commit.
+Proceed to homeowner/GPT review of TIP-11 Option B closeout. Do not dispatch new runtime work from this closeout.
 
-Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-11 planning. SignFlow must remain an external consumer profile only.
+TIP-12 is not opened. Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-11 Option B closeout. SignFlow must remain an external consumer profile only.
 
 ### Outbox
 
