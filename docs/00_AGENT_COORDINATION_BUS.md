@@ -1,13 +1,19 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.4
+**Version:** 1.5
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.5 - TIP-09 dispatch clarification
+
+- Clarified that TIP-09 did not require a separate runtime kickoff or implementation dispatch document.
+- Recorded that the accepted TIP-09 section 0 dry-run verdict `NEEDS_PATCHES_WITHIN_TIP_09` authorized docs-only hardening.
+- Reconfirmed that TIP-09 did not reopen runtime implementation, source/test changes, runtime evidence snapshot work, webhook/outbox/retry, durable persistence, public contract changes, or SignFlow runtime dependency work.
 
 ### v1.4 - TIP-09 closeout accepted
 
@@ -330,6 +336,7 @@ No pending user gates. TIP-06 runtime/docs closeout, TIP-07 Option A code/test i
 - TIP-08 proof validity corrections are recorded: stored-session evidence source, digest-shaped/computed `bindingNonceHash`, sentinel-backed leakage assertions where feasible, canonical `DocumentNfc` mapped to `NfcValidation` evidence result as current repo behavior, and package `PackageHash` versus completion/notification `EvidencePackageHash` linkage.
 - TIP-09 section 0 dry-run was accepted by GPT Gate with final verdict `NEEDS_PATCHES_WITHIN_TIP_09`.
 - TIP-09 proper is documentation/audit hardening only; no separate runtime evidence snapshot TIP is opened.
+- TIP-09 was roadmap-defined as hardening, documentation, and closeout only. It intentionally has no separate runtime kickoff or implementation dispatch document; the accepted section 0 dry-run verdict `NEEDS_PATCHES_WITHIN_TIP_09` authorized only docs/audit hardening.
 - TIP-09 closeout draft exists at `docs/tips/tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md`.
 - TIP-09 validation on 2026-06-12 passed `dotnet test TagEkyc.sln --no-restore`: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 16 passed, `TagEkyc.UnitTests` 39 passed, total 64 passed and 0 failed.
 - TIP-09 closeout draft was accepted by the homeowner. S1 status is closeable as LocalDev evidence-ready, non-production, and non-certified.

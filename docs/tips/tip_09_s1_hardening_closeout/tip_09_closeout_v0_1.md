@@ -1,13 +1,19 @@
 # TIP-09 S1 Hardening, Documentation, and Closeout v0.1
 
 **File:** `docs/tips/tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md`
-**Version:** 0.2
+**Version:** 0.3
 **Status:** Closed - accepted
 **Date:** 2026-06-12
 **Baseline:** `23b6d5e4e5794b7b84627bd3e9e7361c1ce56aeb`
 **Purpose:** Records the S1 closeout audit, DoD reconciliation, deferred-scope decisions, data-boundary review, API contract review, proof evidence-source coverage, validation result, and remaining production blockers.
 
 ## Changelog
+
+### v0.3 - Docs-only authorization clarification
+
+- Clarified why TIP-09 has no separate runtime kickoff or implementation dispatch document.
+- Recorded that the accepted section 0 dry-run verdict `NEEDS_PATCHES_WITHIN_TIP_09` served as authorization for documentation/audit hardening only.
+- Reconfirmed that TIP-09 did not reopen implementation, runtime dispatch, source changes, tests, feature work, webhook/outbox/retry, durable persistence, or SignFlow runtime dependency work.
 
 ### v0.2 - S1 closeout accepted
 
@@ -33,6 +39,8 @@
 TIP-09 is documentation and audit hardening only.
 
 This closeout does not implement runtime behavior, add tests, add public contracts, add public routes, add durable persistence, or change source code.
+
+TIP-09 intentionally has no separate runtime kickoff or implementation dispatch document. The S1 roadmap defined TIP-09 as hardening, documentation, and closeout, not as a runtime implementation slice. The accepted section 0 dry-run verdict `NEEDS_PATCHES_WITHIN_TIP_09` was therefore the authorization for this docs-only hardening pass. It did not open source or test implementation, feature work, runtime evidence snapshot work, webhook/outbox/retry work, durable persistence work, public contract changes, or SignFlow runtime/source/database/network dependency work.
 
 Explicit non-goals preserved:
 
