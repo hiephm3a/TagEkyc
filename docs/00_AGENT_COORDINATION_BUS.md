@@ -1,13 +1,20 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.19
+**Version:** 1.20
 **Status:** Active
 **Date:** 2026-06-14
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.20 - TIP-14 planning opened
+
+- Added TIP-14 Post-TIP-13 S2 Debt Registry Convergence planning brief at `docs/tips/tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md`.
+- Recorded TIP-14 as docs-only planning to reclassify remaining post-S1 / S2 production-readiness debts after TIP-10, TIP-11, TIP-12, and TIP-13.
+- Preserved that TIP-14 opens no implementation, no source/test/API changes, no DB/EF/migrations, no durable persistence, no production auth, no credential store, no webhook/outbox/retry, no vault lifecycle, no crypto/signing/replay, no provider/vendor integration, no pilot/production/certification readiness claim, and no SignFlow platform dependency.
+- Recorded TIP-14 recommendation: next governed slice should be production auth / credential lifecycle planning before durable persistence implementation freezes identity assumptions.
 
 ### v1.19 - TIP-13 closeout drafted
 
@@ -347,6 +354,18 @@ No open inbound agent messages.
 
 ### Active Work
 
+#### MSG-20260614-0002-tip14-planning-opened
+
+- From: Planning contractor
+- To: Homeowner / GPT Gate / Next agent
+- Status: New
+- Gate: Review
+- Scope: TIP-14 docs-only planning brief.
+- Context: TIP-14 planning brief was drafted at `docs/tips/tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md`. It reclassifies remaining post-S1 / S2 production-readiness debts after TIP-10 through TIP-13, records STOP/RRI items, preserves SignFlow as an external consumer profile only, and recommends production auth / credential lifecycle planning as the next governed slice before durable persistence implementation freezes identity assumptions.
+- Requested action: Review TIP-14 planning. Do not dispatch runtime implementation from TIP-14.
+- Output expected: Review findings or acceptance of planning-only brief.
+- Links: `docs/tips/tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md`, `docs/tips/README.md`
+
 #### MSG-20260614-0001-tip13-closeout
 
 - From: Builder
@@ -554,9 +573,9 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 
 ### Next Recommended Action
 
-Run a short post-TIP-13 reclassification / S2 debt convergence check before choosing the next production-readiness slice.
+Review TIP-14 Post-TIP-13 S2 Debt Registry Convergence planning before choosing the next production-readiness slice.
 
-Candidate directions are durable persistence foundation, production auth / credential lifecycle, S2 debt registry consolidation, or webhook/outbox foundation. Do not open a random TIP-14 directly from momentum.
+TIP-14 recommendation is to prepare a separate production auth / credential lifecycle planning-only decision TIP before durable persistence implementation freezes identity, credential reference, and audit identity assumptions.
 
 Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by the accepted TIP-13 kickoff. SignFlow must remain an external consumer profile only.
 
