@@ -14,19 +14,13 @@ public sealed class VerificationEvidenceApplicationService(
     ILocalDevClientPolicyProvider policies)
     : ICaptureArtifactCommands, ITrustedEvidenceResultCommands
 {
-    private const string CaptureScope = "capture.artifact.append";
-    private const string EvidenceScope = "trusted.evidence.append";
-
     public async Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> AppendCaptureArtifactAsync(
         AuthenticatedClientContext caller,
         string verificationSessionId,
         CaptureArtifactSubmissionRequestDto request,
         CancellationToken cancellationToken = default)
     {
-        var callerError = ValidateCaller<CaptureArtifactSubmissionResponseDto>(
-            caller,
-            AuthenticatedCallerCategory.CaptureAgent,
-            CaptureScope);
+        var callerError = ApplicationAuthorization.RequireCaptureArtifactAppend<CaptureArtifactSubmissionResponseDto>(caller);
         if (callerError is not null)
         {
             return callerError;
@@ -123,10 +117,7 @@ public sealed class VerificationEvidenceApplicationService(
         EvidenceResultSubmissionRequestDto request,
         CancellationToken cancellationToken = default)
     {
-        var callerError = ValidateCaller<EvidenceResultSubmissionResponseDto>(
-            caller,
-            AuthenticatedCallerCategory.TrustedAdapter,
-            EvidenceScope);
+        var callerError = ApplicationAuthorization.RequireTrustedEvidenceAppend<EvidenceResultSubmissionResponseDto>(caller);
         if (callerError is not null)
         {
             return callerError;
@@ -317,7 +308,7 @@ public sealed class VerificationEvidenceApplicationService(
                 404);
         }
 
-        if (!CanWriteSession(caller, session.ClientApplicationId))
+        if (!ApplicationAuthorization.CanAccessClientApplication(caller, session.ClientApplicationId))
         {
             await auditEvents.AppendAsync(CreateAuditEvent(caller, session, "SESSION_ACCESS_DENIED"), cancellationToken);
             return SessionOperationResult<WritableSessionContext<T>>.Failure(
@@ -364,32 +355,6 @@ public sealed class VerificationEvidenceApplicationService(
 
         return SessionOperationResult<WritableSessionContext<T>>.Success(new WritableSessionContext<T>(session, policy));
     }
-
-    private static SessionOperationResult<T>? ValidateCaller<T>(
-        AuthenticatedClientContext caller,
-        AuthenticatedCallerCategory expectedCategory,
-        string requiredScope)
-    {
-        if (caller.CallerCategory != expectedCategory)
-        {
-            return Forbidden<T>(
-                "CALLER_CATEGORY_NOT_ALLOWED",
-                "The API key caller category is not allowed for this endpoint.");
-        }
-
-        if (!caller.Scopes.Contains(requiredScope))
-        {
-            return Forbidden<T>(
-                "MISSING_SCOPE",
-                "The API key is not scoped for this endpoint.");
-        }
-
-        return null;
-    }
-
-    private static bool CanWriteSession(AuthenticatedClientContext caller, Guid sessionClientApplicationId) =>
-        caller.ClientApplicationId == sessionClientApplicationId ||
-        caller.AllowedClientApplicationIds?.Contains(sessionClientApplicationId) == true;
 
     private static SessionOperationResult<T>? ValidateArtifactPolicy<T>(
         VerificationSession session,

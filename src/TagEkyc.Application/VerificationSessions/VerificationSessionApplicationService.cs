@@ -11,18 +11,16 @@ public sealed class VerificationSessionApplicationService(
     ILocalDevClientPolicyProvider policies)
     : IVerificationSessionCommands, IVerificationSessionQueries
 {
-    private const string CreateScope = "business.session.create";
-    private const string ReadScope = "business.session.read";
-
     public async Task<SessionOperationResult<CreateVerificationSessionResponseDto>> CreateAsync(
         AuthenticatedClientContext caller,
         CreateVerificationSessionRequestDto request,
         string? idempotencyKey = null,
         CancellationToken cancellationToken = default)
     {
-        if (!caller.Scopes.Contains(CreateScope))
+        var callerError = ApplicationAuthorization.RequireBusinessSessionCreate<CreateVerificationSessionResponseDto>(caller);
+        if (callerError is not null)
         {
-            return Forbidden<CreateVerificationSessionResponseDto>("MISSING_SCOPE", "The API key is not scoped for session creation.");
+            return callerError;
         }
 
         var policy = await policies.GetPolicyAsync(caller.ClientApplicationId, cancellationToken);
@@ -156,9 +154,10 @@ public sealed class VerificationSessionApplicationService(
         string verificationSessionId,
         CancellationToken cancellationToken = default)
     {
-        if (!caller.Scopes.Contains(ReadScope))
+        var callerError = ApplicationAuthorization.RequireBusinessSessionRead<VerificationSessionSummaryDto>(caller);
+        if (callerError is not null)
         {
-            return Forbidden<VerificationSessionSummaryDto>("MISSING_SCOPE", "The API key is not scoped for session reads.");
+            return callerError;
         }
 
         if (!Guid.TryParse(verificationSessionId, out var sessionId))

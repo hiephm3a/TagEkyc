@@ -1,13 +1,19 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.16
+**Version:** 1.17
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.17 - TIP-13 implementation accepted for commit
+
+- Recorded GPT Gate acceptance of the TIP-13 Option A implementation for commit.
+- Recorded validation against the accepted worktree: `dotnet test TagEkyc.sln --no-restore` passed with 81 passed, 0 failed, 0 skipped.
+- Preserved current LocalDev auth only, no public API/DTO/JSON/status/error behavior changes, no forbidden paths, and no runtime work outside TIP-13 Option A.
 
 ### v1.16 - TIP-13 kickoff accepted
 
@@ -329,6 +335,18 @@ No open inbound agent messages.
 
 ### Active Work
 
+#### MSG-20260613-0002-tip13-implementation-accepted-for-commit
+
+- From: Coordinator
+- To: Homeowner / Next agent
+- Status: Accepted for commit
+- Gate: Commit
+- Scope: TIP-13 Option A implementation only.
+- Context: GPT Gate accepted the TIP-13 Option A implementation for commit. The change set centralizes current LocalDev application-layer authorization checks, intentionally hardens session create/read to require BusinessConsumer caller category in addition to business session scopes, adds focused actor/scope/ownership coverage, and records the execution report. Local validation passed with `dotnet test TagEkyc.sln --no-restore`: 81 passed, 0 failed, 0 skipped.
+- Requested action: Commit the accepted TIP-13 Option A implementation using explicit allowlist staging only.
+- Output expected: Commit hash, staged file list, validation result, final status, and confirmations that forbidden paths and public contracts were not changed.
+- Links: `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md`, `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_option_a_execution_report_v0_1.md`, `src/TagEkyc.Application/VerificationSessions/ApplicationAuthorization.cs`, `tests/TagEkyc.UnitTests/Tip13ApplicationAuthorizationBoundaryTests.cs`, `tests/TagEkyc.ArchTests/Tip13AuthorizationBoundaryTests.cs`
+
 #### MSG-20260613-0001-tip13-option-a-kickoff-draft
 
 - From: Builder
@@ -451,7 +469,7 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-No pending user gates. TIP-13 Option A kickoff is accepted; implementation requires a separate dispatch command.
+TIP-13 Option A implementation is accepted for commit using explicit allowlist staging only.
 
 TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 code/test implementation, and TIP-09 S1 closeout acceptance are synchronized in governance state.
 
@@ -511,7 +529,7 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 
 ### Next Recommended Action
 
-Await separate dispatch for TIP-13 Option A implementation. Do not implement TIP-13 from kickoff acceptance alone.
+Commit the accepted TIP-13 Option A implementation with explicit allowlist staging. Do not extend scope beyond the accepted implementation.
 
 Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by the accepted TIP-13 kickoff. SignFlow must remain an external consumer profile only.
 

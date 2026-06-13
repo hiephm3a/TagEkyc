@@ -20,8 +20,6 @@ public sealed class VerificationCompletionApplicationService(
     IVerificationFinalizationBoundary finalizationBoundary)
     : IVerificationSessionCompletionCommands, IEvidencePackageQueries, ICompletionNotificationQueries
 {
-    private const string CompleteScope = "session.complete";
-    private const string ReadScope = "business.session.read";
     private const string PackageVersion = "tip-06-localdev-v1";
     private static readonly JsonSerializerOptions CanonicalJsonOptions = new(JsonSerializerDefaults.Web);
 
@@ -31,7 +29,7 @@ public sealed class VerificationCompletionApplicationService(
         CompleteVerificationSessionRequestDto request,
         CancellationToken cancellationToken = default)
     {
-        var callerError = ValidateBusinessCaller<CompleteVerificationSessionResponseDto>(caller, CompleteScope);
+        var callerError = ApplicationAuthorization.RequireBusinessCompletion<CompleteVerificationSessionResponseDto>(caller);
         if (callerError is not null)
         {
             return callerError;
@@ -284,7 +282,7 @@ public sealed class VerificationCompletionApplicationService(
         string evidencePackageId,
         CancellationToken cancellationToken = default)
     {
-        var callerError = ValidateBusinessCaller<EvidencePackageSummaryDto>(caller, ReadScope);
+        var callerError = ApplicationAuthorization.RequireBusinessReadEndpoint<EvidencePackageSummaryDto>(caller);
         if (callerError is not null)
         {
             return callerError;
@@ -341,7 +339,7 @@ public sealed class VerificationCompletionApplicationService(
         string verificationSessionId,
         CancellationToken cancellationToken = default)
     {
-        var callerError = ValidateBusinessCaller<VerificationCompletedEventDto>(caller, ReadScope);
+        var callerError = ApplicationAuthorization.RequireBusinessReadEndpoint<VerificationCompletedEventDto>(caller);
         if (callerError is not null)
         {
             return callerError;
@@ -423,27 +421,6 @@ public sealed class VerificationCompletionApplicationService(
         }
 
         return SessionOperationResult<CompleteVerificationSessionResponseDto>.Success(ToCompleteResponse(session, package));
-    }
-
-    private static SessionOperationResult<T>? ValidateBusinessCaller<T>(
-        AuthenticatedClientContext caller,
-        string requiredScope)
-    {
-        if (caller.CallerCategory != AuthenticatedCallerCategory.BusinessConsumer)
-        {
-            return Forbidden<T>(
-                "CALLER_CATEGORY_NOT_ALLOWED",
-                "The API key caller category is not allowed for this endpoint.");
-        }
-
-        if (!caller.Scopes.Contains(requiredScope))
-        {
-            return Forbidden<T>(
-                "MISSING_SCOPE",
-                "The API key is not scoped for this endpoint.");
-        }
-
-        return null;
     }
 
     private static IReadOnlyDictionary<RequiredCheckType, EvidenceResult> LatestEvidenceByRequiredCheck(IEnumerable<EvidenceResult> evidence) =>
