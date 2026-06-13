@@ -1,13 +1,25 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.18
+**Version:** 0.20
 **Status:** Active
-**Date:** 2026-06-12
+**Date:** 2026-06-14
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.20 - TIP-13 closeout indexed
+
+- Added the TIP-13 closeout document to the index.
+- Recorded TIP-13 Option A as closed after implementation commit `6b9c672`.
+- Preserved that no TIP-14 or new runtime work is opened by the closeout.
+
+### v0.19 - TIP-13 implementation indexed
+
+- Recorded TIP-13 Option A implementation commit `6b9c672`.
+- Added the TIP-13 execution report to the index row.
+- Cleared the stale "implementation not yet dispatched" wording.
 
 ### v0.18 - TIP-13 kickoff accepted
 
@@ -139,4 +151,4 @@ Canonical artifact names:
 | TIP-10 | `tip_10_production_readiness_planning_compass/` | [`tip_10_planning_brief_v0_1.md`](tip_10_production_readiness_planning_compass/tip_10_planning_brief_v0_1.md) - accepted planning-only |
 | TIP-11 | `tip_11_production_data_boundary_durable_state_foundation/` | [`tip_11_planning_brief_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_planning_brief_v0_1.md) - accepted planning-only, [`tip_11_kickoff_option_b_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_kickoff_option_b_v0_1.md) - accepted Option B kickoff, [`tip_11_option_b_execution_report_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_execution_report_v0_1.md) - implemented, [`tip_11_option_b_closeout_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_closeout_v0_1.md) - committed closeout baseline |
 | TIP-12 | `tip_12_actor_trust_caller_scopes_access_boundary/` | [`tip_12_planning_brief_v0_1.md`](tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md) - accepted planning-only |
-| TIP-13 | `tip_13_application_authorization_boundary_foundation/` | [`tip_13_kickoff_option_a_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md) - accepted kickoff, implementation not yet dispatched |
+| TIP-13 | `tip_13_application_authorization_boundary_foundation/` | [`tip_13_kickoff_option_a_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md) - accepted kickoff, [`tip_13_option_a_execution_report_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_option_a_execution_report_v0_1.md) - implemented by commit `6b9c672`, [`tip_13_closeout_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_closeout_v0_1.md) - closed |

@@ -1,13 +1,25 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.17
+**Version:** 1.19
 **Status:** Active
-**Date:** 2026-06-12
+**Date:** 2026-06-14
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.19 - TIP-13 closeout drafted
+
+- Added TIP-13 Option A closeout at `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_closeout_v0_1.md`.
+- Recorded TIP-13 Option A as closed after implementation commit `6b9c672`.
+- Preserved that the closeout opens no TIP-14, runtime work, public contract change, production auth, persistence, webhook/outbox/retry, crypto/signing/replay, provider/vendor selection, production readiness claim, or SignFlow runtime dependency.
+
+### v1.18 - TIP-13 commit state synchronized
+
+- Recorded TIP-13 Option A implementation commit `6b9c672` (`feat: implement TIP-13 application authorization boundary`).
+- Revalidated current `HEAD` with `dotnet test TagEkyc.sln --no-restore`: 81 passed, 0 failed, 0 skipped.
+- Cleared the stale TIP-13 commit gate and recorded that no new safe runtime action is currently open.
 
 ### v1.17 - TIP-13 implementation accepted for commit
 
@@ -335,16 +347,28 @@ No open inbound agent messages.
 
 ### Active Work
 
-#### MSG-20260613-0002-tip13-implementation-accepted-for-commit
+#### MSG-20260614-0001-tip13-closeout
+
+- From: Builder
+- To: Homeowner / GPT Gate / Next agent
+- Status: Done
+- Gate: Review
+- Scope: TIP-13 Option A docs closeout only.
+- Context: TIP-13 Option A closeout was drafted at `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_closeout_v0_1.md`. It records implementation commit `6b9c67248cd05e47a2f71ef4e5cc2e10968ecdf0`, kickoff commit `ec9c19669fed745a037627d5f756d863889be29f`, TIP-12 predecessor commit `cc42076299ed7a1d7fac4f64ced554740633f2b4`, validation `dotnet test TagEkyc.sln --no-restore` with 81 passed, and the intentional BusinessConsumer category hardening for direct session create/read.
+- Requested action: Review and commit the allowed closeout docs when accepted.
+- Output expected: Closeout docs commit only.
+- Links: `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_closeout_v0_1.md`, `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_option_a_execution_report_v0_1.md`, commit `6b9c67248cd05e47a2f71ef4e5cc2e10968ecdf0`
+
+#### MSG-20260613-0002-tip13-implementation-committed
 
 - From: Coordinator
 - To: Homeowner / Next agent
-- Status: Accepted for commit
-- Gate: Commit
+- Status: Done
+- Gate: None
 - Scope: TIP-13 Option A implementation only.
-- Context: GPT Gate accepted the TIP-13 Option A implementation for commit. The change set centralizes current LocalDev application-layer authorization checks, intentionally hardens session create/read to require BusinessConsumer caller category in addition to business session scopes, adds focused actor/scope/ownership coverage, and records the execution report. Local validation passed with `dotnet test TagEkyc.sln --no-restore`: 81 passed, 0 failed, 0 skipped.
-- Requested action: Commit the accepted TIP-13 Option A implementation using explicit allowlist staging only.
-- Output expected: Commit hash, staged file list, validation result, final status, and confirmations that forbidden paths and public contracts were not changed.
+- Context: The accepted TIP-13 Option A implementation was committed at `6b9c672` (`feat: implement TIP-13 application authorization boundary`). The committed change set centralizes current LocalDev application-layer authorization checks, hardens session create/read to require BusinessConsumer caller category in addition to the business session scopes, adds focused actor/scope/ownership coverage, and records the execution report. Current validation passed with `dotnet test TagEkyc.sln --no-restore`: 81 passed, 0 failed, 0 skipped.
+- Requested action: Completed. Keep future work inside later accepted TIP slices only.
+- Output expected: None.
 - Links: `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md`, `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_option_a_execution_report_v0_1.md`, `src/TagEkyc.Application/VerificationSessions/ApplicationAuthorization.cs`, `tests/TagEkyc.UnitTests/Tip13ApplicationAuthorizationBoundaryTests.cs`, `tests/TagEkyc.ArchTests/Tip13AuthorizationBoundaryTests.cs`
 
 #### MSG-20260613-0001-tip13-option-a-kickoff-draft
@@ -469,8 +493,6 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-TIP-13 Option A implementation is accepted for commit using explicit allowlist staging only.
-
 TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 code/test implementation, and TIP-09 S1 closeout acceptance are synchronized in governance state.
 
 ### Decisions Recorded
@@ -525,11 +547,16 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - TIP-12 planning was accepted by GPT Gate as planning-only.
 - TIP-13 `Application Authorization Boundary Foundation` kickoff is accepted at `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md`.
 - TIP-13 selected candidate is Option A: application authorization boundary hardening using current LocalDev auth only.
-- TIP-13 remains kickoff-only. Implementation requires a separate dispatch command.
+- TIP-13 Option A implementation was committed at `6b9c672` (`feat: implement TIP-13 application authorization boundary`).
+- TIP-13 current validation on 2026-06-14 passed `dotnet test TagEkyc.sln --no-restore`: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 19 passed, `TagEkyc.UnitTests` 53 passed, total 81 passed and 0 failed.
+- TIP-13 preserved current LocalDev auth only, no public API/DTO/JSON/status/error behavior changes, no forbidden path changes, and no SignFlow runtime dependency.
+- TIP-13 Option A closeout draft exists at `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_closeout_v0_1.md` and records TIP-13 as closed pending closeout docs commit.
 
 ### Next Recommended Action
 
-Commit the accepted TIP-13 Option A implementation with explicit allowlist staging. Do not extend scope beyond the accepted implementation.
+Run a short post-TIP-13 reclassification / S2 debt convergence check before choosing the next production-readiness slice.
+
+Candidate directions are durable persistence foundation, production auth / credential lifecycle, S2 debt registry consolidation, or webhook/outbox foundation. Do not open a random TIP-14 directly from momentum.
 
 Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by the accepted TIP-13 kickoff. SignFlow must remain an external consumer profile only.
 
