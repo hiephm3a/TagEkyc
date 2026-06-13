@@ -1,13 +1,19 @@
 # TIP-11 Option B Closeout v0.1
 
 **File:** `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_closeout_v0_1.md`
-**Version:** 0.1
-**Status:** Implemented - pending homeowner/GPT closeout review
+**Version:** 0.2
+**Status:** Closed - closeout baseline recorded
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Records TIP-11 Option B implementation closeout state, validation, preserved boundaries, and next review action.
 
 ## Changelog
+
+### v0.2 - Closeout baseline recorded
+
+- Recorded closeout commit `1baaf6be2ee3a71fcc990ae501f21f7bd62bdbc4` as the baseline preceding TIP-12 planning.
+- Updated closeout status from pending review to closed baseline recorded.
+- Clarified that TIP-12 planning opened separately and that this closeout dispatches no further runtime work.
 
 ### v0.1 - Initial closeout draft
 
@@ -17,14 +23,16 @@
 
 **Implementation commit:** `4f5ebec71f72c7189975fc3105ede0ef689196cb`
 **Commit message:** `feat: implement TIP-11 Option B metadata boundary`
+**Closeout commit:** `1baaf6be2ee3a71fcc990ae501f21f7bd62bdbc4`
+**Closeout commit message:** `docs: close TIP-11 Option B metadata boundary`
 
 ## 1. Closeout Summary
 
-TIP-11 Option B is implemented as a domain/application metadata boundary only.
+TIP-11 Option B is closed as a domain/application metadata boundary only.
 
-This closeout does not open TIP-12, durable persistence, vault lifecycle, production auth, webhook/outbox/retry, provider/vendor selection, production crypto/signing, or any additional runtime work.
+This closeout is the committed baseline preceding TIP-12 planning. It does not dispatch durable persistence, vault lifecycle, production auth, webhook/outbox/retry, provider/vendor selection, production crypto/signing, or any additional runtime work.
 
-Recommended next action: homeowner/GPT review of this closeout, then decide the next planning direction. Do not dispatch new runtime work from this closeout.
+Recorded next action after closeout: homeowner/GPT review of TIP-12 planning, not new runtime work from this closeout.
 
 ## 2. Validation
 
@@ -110,7 +118,7 @@ TIP-11 Option B added or extended coverage for:
 
 The following work remains deferred and is not opened by this closeout:
 
-- TIP-12 not opened.
+- TIP-12 planning opened separately; no runtime implementation is dispatched from it.
 - Durable persistence still not implemented.
 - Vault lifecycle still deferred.
 - Production auth/client trust still deferred.
@@ -120,6 +128,6 @@ The following work remains deferred and is not opened by this closeout:
 
 ## 8. Closeout Recommendation
 
-Proceed with homeowner/GPT review of this closeout. After review, decide the next planning direction explicitly.
+Closeout is recorded. Proceed with homeowner/GPT review of TIP-12 planning as the next planning direction.
 
 Do not dispatch new runtime work from this closeout.

@@ -1,13 +1,18 @@
 # TIP-10 Production Readiness Planning Compass v0.1
 
 **File:** `docs/tips/tip_10_production_readiness_planning_compass/tip_10_planning_brief_v0_1.md`
-**Version:** 0.2
+**Version:** 0.3
 **Status:** Accepted - planning only
 **Date:** 2026-06-12
 **Baseline:** `4f780cc8fa519d5c3febfeb94e9563a658a29749`
 **Purpose:** Ranks post-S1 deferred production-readiness work, maps dependencies, and recommends the safest first runtime TIP after S1 without dispatching implementation.
 
 ## Changelog
+
+### v0.3 - TIP-12/TIP-13 continuity alignment
+
+- Recorded that actor-trust work is now split between TIP-12 planning and the likely TIP-13 implementation candidate.
+- Replaced the production auth implementation candidate's hard-coded future TIP number with descriptive wording so the runtime TIP table stays aligned without reserving conflicting ids.
 
 ### v0.2 - Planning accepted
 
@@ -184,7 +189,7 @@ Operational hardening:
 | Candidate | Scope summary | Pros | Risks / why not first |
 | --- | --- | --- | --- |
 | TIP-11 - Production Data Boundary and Durable State Foundation | Introduce durable metadata boundary, repository/storage posture, migration policy, policy snapshot identity, VaultRef-only raw-artifact separation, and retention/legal-hold classifications. | Unblocks most later work; reduces risk before real-user data; gives webhook/outbox and evidence signing a safe substrate. | Needs careful STOP/RRI on database posture, vault lifecycle, and legal retention; must avoid raw storage or vendor lock-in in the first slice. |
-| TIP-12 - Production Auth and Actor Trust Foundation | Define and implement non-LocalDev client/capture/trusted-adapter/operator identity, scopes, credential lifecycle, and ownership enforcement. | Directly addresses pilot access risk and prevents business clients from submitting arbitrary evidence. | Durable client/application storage and secret lifecycle decisions may depend on TIP-11 unless intentionally staged as non-production scaffolding. |
+| Post-TIP-12 runtime slice - Production Auth and Actor Trust Foundation | Define and implement non-LocalDev client/capture/trusted-adapter/operator identity, scopes, credential references, and ownership enforcement after TIP-12 planning findings are accepted. | Directly addresses pilot access risk and prevents business clients from submitting arbitrary evidence. | Durable client/application storage and secret lifecycle decisions may depend on TIP-11 unless intentionally staged as non-production scaffolding. |
 | TIP-13 - Vault Lifecycle and Retention Enforcement | Implement vault-object lifecycle, retention, deletion, legal hold, audit, and access policy around raw artifacts. | Essential before storing real artifacts or biometrics. | Should follow TIP-11 durable metadata boundary and legal STOP/RRI decisions; must not select storage vendors without approval. |
 | TIP-14 - Policy Versioning and Decision Reproducibility | Version RequiredChecks/risk policies and persist decision-policy snapshots. | Critical for auditability and multi-client behavior. | Best paired with or immediately after TIP-11 because policy identity belongs in durable session/evidence records. |
 | TIP-15 - Webhook Reliability and Signing Foundation | Add subscription model, durable outbox/delivery ledger, retry, idempotent delivery ids, signing/replay protection. | Delivers deferred consumer integration value. | Unsafe as first runtime TIP because it depends on durable state, production auth/client trust, subscription trust, and signing/replay decisions. |
