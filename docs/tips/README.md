@@ -1,13 +1,26 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.16
+**Version:** 0.18
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.18 - TIP-13 kickoff accepted
+
+- Recorded GPT Gate acceptance of TIP-13 Option A kickoff.
+- Preserved TIP-13 as kickoff-only with implementation not yet dispatched.
+- Reconfirmed public API/DTO behavior changes are out of scope for TIP-13 Option A and require a separate reviewed TIP/kickoff.
+
+### v0.17 - TIP-12 accepted and TIP-13 kickoff draft opened
+
+- Recorded TIP-12 planning as accepted planning-only.
+- Added TIP-13 application authorization boundary foundation kickoff draft to the TIP index.
+- Recorded TIP-13 Option A as kickoff/planning only, pending review, with no implementation authorization.
+- Preserved current LocalDev auth only and no production auth provider, credential store, durable persistence, webhook/outbox/retry, crypto/signing/replay, provider/vendor selection, pilot/production readiness, or SignFlow runtime dependency work.
 
 ### v0.16 - TIP-12 planning opened
 
@@ -125,4 +138,5 @@ Canonical artifact names:
 | TIP-09 | `tip_09_s1_hardening_closeout/` | [`tip_09_closeout_v0_1.md`](tip_09_s1_hardening_closeout/tip_09_closeout_v0_1.md) |
 | TIP-10 | `tip_10_production_readiness_planning_compass/` | [`tip_10_planning_brief_v0_1.md`](tip_10_production_readiness_planning_compass/tip_10_planning_brief_v0_1.md) - accepted planning-only |
 | TIP-11 | `tip_11_production_data_boundary_durable_state_foundation/` | [`tip_11_planning_brief_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_planning_brief_v0_1.md) - accepted planning-only, [`tip_11_kickoff_option_b_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_kickoff_option_b_v0_1.md) - accepted Option B kickoff, [`tip_11_option_b_execution_report_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_execution_report_v0_1.md) - implemented, [`tip_11_option_b_closeout_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_closeout_v0_1.md) - committed closeout baseline |
-| TIP-12 | `tip_12_actor_trust_caller_scopes_access_boundary/` | [`tip_12_planning_brief_v0_1.md`](tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md) - open planning-only |
+| TIP-12 | `tip_12_actor_trust_caller_scopes_access_boundary/` | [`tip_12_planning_brief_v0_1.md`](tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md) - accepted planning-only |
+| TIP-13 | `tip_13_application_authorization_boundary_foundation/` | [`tip_13_kickoff_option_a_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md) - accepted kickoff, implementation not yet dispatched |

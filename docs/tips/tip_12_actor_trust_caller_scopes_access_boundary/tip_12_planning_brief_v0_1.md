@@ -1,13 +1,20 @@
 # TIP-12 Actor Trust, Caller Scopes, and Access Boundary Planning v0.1
 
 **File:** `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md`
-**Version:** 0.1
-**Status:** Open - planning only
+**Version:** 0.2
+**Status:** Accepted - planning only
 **Date:** 2026-06-12
 **Baseline:** `1baaf6be2ee3a71fcc990ae501f21f7bd62bdbc4`
 **Purpose:** Opens TIP-12 as a planning-only actor trust, caller scope, ownership, and access-boundary brief before durable persistence, vault lifecycle, production auth, webhook/outbox, provider trust, or production readiness work proceeds.
 
 ## Changelog
+
+### v0.2 - Planning accepted
+
+- Recorded GPT Gate acceptance of TIP-12 planning.
+- Preserved TIP-12 as planning-only with no kickoff and no implementation.
+- Recorded TIP-13 `Application Authorization Boundary Foundation` as the next safe kickoff/planning direction only.
+- Reconfirmed durable persistence remains deferred until after actor/scope/ownership enforcement is clarified unless homeowner explicitly accepts a narrower exception.
 
 ### v0.1 - Initial planning draft
 
@@ -220,7 +227,7 @@ Future support exceptions require STOP/RRI and must define:
 
 | Candidate | Scope | Notes |
 | --- | --- | --- |
-| TIP-13 - Production Auth and Actor Trust Foundation | Implement production-ready actor categories, scope catalog, credential references, and ownership enforcement without selecting a full external provider unless accepted. | Requires separate kickoff. No credential store or auth provider is opened by TIP-12. |
+| TIP-13 - Application Authorization Boundary Foundation | Draft and review application authorization boundary hardening using current LocalDev auth only. | Selected next kickoff/planning direction. No production auth provider, credential store, or implementation is opened by TIP-12. |
 | TIP-14 - Durable Persistence Foundation Re-plan | Revisit durable metadata schema after TIP-12 owner/actor findings. | Must not proceed unless homeowner accepts TIP-12 findings or a narrower exception. |
 | TIP-15 - Adapter and Device Trust Planning | Define CaptureAgent/TrustedAdapter onboarding, allowed result types, device identity, and provider trust. | Should follow TIP-12 actor model. |
 | TIP-16 - Operator/Admin Access and Support Workflow Planning | Define privileged read, audit-read, support lookup, reason code, and admin policy management model. | Required before operator console/admin APIs. |
@@ -277,13 +284,23 @@ TIP-12 planning is acceptable when:
 - Production auth/client trust blockers are listed.
 - Durable persistence assumptions are blocked until TIP-12 actor/ownership findings are accepted, unless homeowner explicitly accepts a narrower exception.
 - Non-goals preserve planning-only scope and prohibit runtime/source/test/auth/credential/database/webhook/crypto/vendor/readiness/SignFlow dependency creep.
-- Governance docs identify TIP-12 as open planning only.
+- Governance docs identify TIP-12 as accepted planning only.
 - Validation is run with `dotnet test TagEkyc.sln --no-restore` and reported by the agent final response.
 
 ## 15. Recommended Next Action
 
-Review TIP-12 planning brief.
+TIP-12 planning is accepted as planning-only.
 
-If accepted, prepare a separate reviewed kickoff for the smallest safe actor-trust implementation slice. The likely first implementation candidate is production-auth-adjacent scope/actor modeling and ownership enforcement, but no implementation is authorized by this planning brief.
+Prepare a separate reviewed kickoff for:
+
+```text
+TIP-13 - Application Authorization Boundary Foundation
+```
+
+Selected candidate:
+
+```text
+Option A - Application authorization boundary hardening using current LocalDev auth only.
+```
 
 Do not dispatch durable persistence, vault lifecycle, webhook/outbox/retry, production auth, credential lifecycle, crypto/signing, provider/vendor readiness, pilot readiness, production readiness, or SignFlow runtime dependency work from TIP-12.

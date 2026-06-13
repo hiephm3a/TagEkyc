@@ -1,13 +1,28 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.14
+**Version:** 1.16
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.16 - TIP-13 kickoff accepted
+
+- Recorded GPT Gate acceptance of TIP-13 Option A kickoff.
+- Preserved TIP-13 as kickoff-only with implementation requiring a separate dispatch command.
+- Reconfirmed public API/DTO behavior changes are out of scope for TIP-13 Option A and require a separate reviewed TIP/kickoff.
+
+### v1.15 - TIP-12 accepted and TIP-13 kickoff draft opened
+
+- Recorded GPT Gate acceptance of TIP-12 planning as planning-only.
+- Recorded that TIP-12 intentionally has no kickoff and no implementation.
+- Opened TIP-13 `Application Authorization Boundary Foundation` kickoff draft at `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md`.
+- Recorded selected TIP-13 candidate as Option A: application authorization boundary hardening using current LocalDev auth only.
+- Preserved BusinessConsumer / CaptureAgent / TrustedAdapter separation; Operator/Admin/System remain reserved or STOP/RRI.
+- Reconfirmed public API/DTO behavior changes are out of scope for TIP-13 Option A and require a separate reviewed TIP/kickoff; no production auth provider, no credential store, no durable persistence, no webhook/outbox/retry, no crypto/signing/replay, no provider/vendor selection, no pilot/production readiness claim, and no SignFlow runtime dependency.
 
 ### v1.14 - TIP-12 planning opened
 
@@ -314,16 +329,28 @@ No open inbound agent messages.
 
 ### Active Work
 
+#### MSG-20260613-0001-tip13-option-a-kickoff-draft
+
+- From: Builder
+- To: Homeowner / GPT Gate / Next agent
+- Status: Done
+- Gate: None
+- Scope: TIP-13 Option A kickoff review only.
+- Context: TIP-13 kickoff exists at `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md`. GPT Gate accepted Option A: application authorization boundary hardening using current LocalDev auth only. The kickoff preserves BusinessConsumer / CaptureAgent / TrustedAdapter separation, keeps Operator/Admin/System reserved or STOP/RRI, and makes public API/DTO behavior changes out of scope unless a separate reviewed TIP/kickoff authorizes them. It forbids production auth provider, credential store, durable persistence, webhook/outbox/retry, crypto/signing/replay, provider/vendor selection, pilot/production readiness, and SignFlow runtime dependency work.
+- Requested action: Completed. Implementation requires a separate dispatch command.
+- Output expected: None.
+- Links: `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md`, `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md`
+
 #### MSG-20260612-0007-tip12-actor-trust-planning
 
 - From: Builder
 - To: Homeowner / GPT Gate / Next agent
-- Status: Active
-- Gate: Review
+- Status: Done
+- Gate: None
 - Scope: TIP-12 planning-only review.
-- Context: TIP-12 is opened at `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md` to define actor trust, caller scopes, ownership, audit actor identity, and access-boundary findings before durable persistence, vault lifecycle, production auth/client trust, webhook/outbox/retry, provider trust, or production readiness work proceeds. Durable Persistence Foundation Planning is blocked on TIP-12 actor/ownership findings unless homeowner explicitly accepts a narrower exception.
-- Requested action: Homeowner/GPT planning review.
-- Output expected: Acceptance, findings, or STOP/RRI decisions. Do not dispatch runtime implementation from this planning brief.
+- Context: TIP-12 was accepted by GPT Gate as planning-only. It defines actor trust, caller scopes, ownership, audit actor identity, and access-boundary findings before durable persistence, vault lifecycle, production auth/client trust, webhook/outbox/retry, provider trust, or production readiness work proceeds. Durable Persistence Foundation Planning remains blocked on TIP-12 actor/ownership findings unless homeowner explicitly accepts a narrower exception.
+- Requested action: Completed. TIP-13 kickoff review is recorded separately.
+- Output expected: None.
 - Links: `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md`, `docs/tips/README.md`
 
 #### MSG-20260612-0006-tip11-option-b-closeout
@@ -424,7 +451,7 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-No pending user gates. TIP-12 planning is open and pending homeowner/GPT planning review.
+No pending user gates. TIP-13 Option A kickoff is accepted; implementation requires a separate dispatch command.
 
 TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 code/test implementation, and TIP-09 S1 closeout acceptance are synchronized in governance state.
 
@@ -474,15 +501,19 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - TIP-11 Option B implementation scope was domain/application metadata boundary only.
 - TIP-11 Option B preserved no Api changes, no Infrastructure changes, no Adapters changes, no SignFlow runtime changes, no DB/EF/migrations/durable adapter, no local durable storage, no vault lifecycle, no raw artifact/biometric storage, no retention/legal-hold enforcement, no webhook/outbox/retry, no production crypto/signing/replay, no public DTO/API JSON changes, no BusinessConsumer metadata exposure, no package/hash/manifest/notification semantic changes, and no pilot/production readiness claim.
 - TIP-11 Option B closeout commit `1baaf6be2ee3a71fcc990ae501f21f7bd62bdbc4` is the baseline preceding TIP-12.
-- TIP-12 actor trust, caller scopes, and access boundary planning is open at `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md`.
+- TIP-12 actor trust, caller scopes, and access boundary planning is accepted at `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md`.
 - TIP-12 is planning-only. It opens no runtime implementation, no kickoff, no `src/**` or `tests/**` changes, no production auth, no credential lifecycle, no durable persistence, no webhook/outbox/retry, no crypto/signing/replay, no provider/vendor selection, no pilot/production readiness claim, and no SignFlow runtime dependency.
 - Durable Persistence Foundation Planning is blocked on TIP-12 actor/ownership findings unless homeowner explicitly accepts a narrower exception.
+- TIP-12 planning was accepted by GPT Gate as planning-only.
+- TIP-13 `Application Authorization Boundary Foundation` kickoff is accepted at `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md`.
+- TIP-13 selected candidate is Option A: application authorization boundary hardening using current LocalDev auth only.
+- TIP-13 remains kickoff-only. Implementation requires a separate dispatch command.
 
 ### Next Recommended Action
 
-Proceed to homeowner/GPT review of TIP-12 planning brief. Do not dispatch runtime implementation from this planning brief.
+Await separate dispatch for TIP-13 Option A implementation. Do not implement TIP-13 from kickoff acceptance alone.
 
-Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-12. SignFlow must remain an external consumer profile only.
+Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by the accepted TIP-13 kickoff. SignFlow must remain an external consumer profile only.
 
 ### Outbox
 
