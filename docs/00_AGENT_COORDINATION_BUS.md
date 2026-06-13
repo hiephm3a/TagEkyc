@@ -1,13 +1,20 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.20
+**Version:** 1.21
 **Status:** Active
 **Date:** 2026-06-14
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.21 - TIP-15 planning opened
+
+- Added TIP-15 Production Auth / Credential Lifecycle Boundary planning brief at `docs/tips/tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md`.
+- Recorded TIP-15 as docs-only planning to separate LocalDev auth from future production auth, define credential-bearing principals, credential references, lifecycle requirements, tenant/client scope grants, audit identity, LocalDev compatibility, and durable persistence identity concepts.
+- Preserved that TIP-15 opens no implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations, no credential store, no secret backend, no production identity provider integration, no OAuth/OIDC/mTLS/certificate implementation, no durable persistence, no webhook/outbox/retry, no vault/raw artifact lifecycle, no crypto/signing/replay, no provider/vendor integration, no pilot/production/certification readiness claim, and no SignFlow platform dependency.
+- Recorded TIP-15 recommendation: durable persistence foundation planning/kickoff may proceed next only if it preserves provider-neutral principal, credential reference, tenant binding, scope grant, lifecycle, and audit identity concepts without implementing production auth or storing raw secrets.
 
 ### v1.20 - TIP-14 planning opened
 
@@ -354,16 +361,28 @@ No open inbound agent messages.
 
 ### Active Work
 
-#### MSG-20260614-0002-tip14-planning-opened
+#### MSG-20260614-0003-tip15-planning-opened
 
 - From: Planning contractor
 - To: Homeowner / GPT Gate / Next agent
 - Status: New
 - Gate: Review
+- Scope: TIP-15 docs-only planning brief.
+- Context: TIP-15 planning brief was drafted at `docs/tips/tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md`. It separates LocalDev API-key trust from future production authentication, defines credential-bearing actor posture for BusinessConsumer, CaptureAgent, TrustedAdapter, Operator, Admin, and System/InternalService, records credential reference and lifecycle requirements, and identifies STOP/RRI topics before production auth or durable persistence implementation.
+- Requested action: Review TIP-15 planning. Do not dispatch runtime implementation from TIP-15.
+- Output expected: Review findings or acceptance of planning-only brief.
+- Links: `docs/tips/tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md`, `docs/tips/README.md`
+
+#### MSG-20260614-0002-tip14-planning-opened
+
+- From: Planning contractor
+- To: Homeowner / GPT Gate / Next agent
+- Status: Done
+- Gate: Review
 - Scope: TIP-14 docs-only planning brief.
 - Context: TIP-14 planning brief was drafted at `docs/tips/tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md`. It reclassifies remaining post-S1 / S2 production-readiness debts after TIP-10 through TIP-13, records STOP/RRI items, preserves SignFlow as an external consumer profile only, and recommends production auth / credential lifecycle planning as the next governed slice before durable persistence implementation freezes identity assumptions.
-- Requested action: Review TIP-14 planning. Do not dispatch runtime implementation from TIP-14.
-- Output expected: Review findings or acceptance of planning-only brief.
+- Requested action: Completed. TIP-14 is accepted as planning-only baseline for TIP-15. Do not dispatch runtime implementation from TIP-14.
+- Output expected: None.
 - Links: `docs/tips/tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md`, `docs/tips/README.md`
 
 #### MSG-20260614-0001-tip13-closeout
@@ -570,14 +589,20 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - TIP-13 current validation on 2026-06-14 passed `dotnet test TagEkyc.sln --no-restore`: `TagEkyc.ContractTests` 9 passed, `TagEkyc.ArchTests` 19 passed, `TagEkyc.UnitTests` 53 passed, total 81 passed and 0 failed.
 - TIP-13 preserved current LocalDev auth only, no public API/DTO/JSON/status/error behavior changes, no forbidden path changes, and no SignFlow runtime dependency.
 - TIP-13 Option A closeout draft exists at `docs/tips/tip_13_application_authorization_boundary_foundation/tip_13_closeout_v0_1.md` and records TIP-13 as closed pending closeout docs commit.
+- TIP-14 Post-TIP-13 S2 Debt Registry Convergence is accepted as planning-only and committed at `7eed6e1`.
+- TIP-14 recommended production auth / credential lifecycle planning before durable persistence implementation freezes identity assumptions.
+- TIP-15 Production Auth / Credential Lifecycle Boundary draft exists at `docs/tips/tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md`.
+- TIP-15 is planning-only. It opens no implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations, no credential store, no secret backend, no production identity provider integration, no OAuth/OIDC/mTLS/certificate implementation, no durable persistence, no webhook/outbox/retry, no vault/raw artifact lifecycle, no crypto/signing/replay, no provider/vendor integration, no pilot/production/certification readiness claim, and no SignFlow platform dependency.
 
 ### Next Recommended Action
 
-Review TIP-14 Post-TIP-13 S2 Debt Registry Convergence planning before choosing the next production-readiness slice.
+Review TIP-15 Production Auth / Credential Lifecycle Boundary planning before choosing the next production-readiness slice.
 
-TIP-14 recommendation is to prepare a separate production auth / credential lifecycle planning-only decision TIP before durable persistence implementation freezes identity, credential reference, and audit identity assumptions.
+TIP-15 recommendation is to allow durable persistence foundation planning/kickoff next only if it preserves provider-neutral principal, credential reference, tenant binding, scope grant, lifecycle, and audit identity concepts without implementing production auth or storing raw secrets.
 
-Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by the accepted TIP-13 kickoff. SignFlow must remain an external consumer profile only.
+If TIP-15 STOP/RRI items remain unresolved, prefer privileged support workflow planning or production completion authority decision before production auth implementation kickoff.
+
+Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-15. SignFlow must remain an external consumer profile only.
 
 ### Outbox
 

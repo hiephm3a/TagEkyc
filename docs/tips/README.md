@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.21
+**Version:** 0.22
 **Status:** Active
 **Date:** 2026-06-14
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.22 - TIP-15 planning indexed
+
+- Added TIP-15 Production Auth / Credential Lifecycle Boundary planning brief to the index.
+- Recorded TIP-15 as docs-only planning with no runtime implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations, no credential store, no secret backend, no production identity provider integration, no OAuth/OIDC/mTLS/certificate implementation, no durable persistence, no webhook/outbox/retry, no vault/raw artifact lifecycle, no crypto/signing/replay, no provider/vendor integration, no readiness claim, and no SignFlow platform dependency.
+- Synchronized TIP-14 as accepted planning-only baseline feeding TIP-15.
 
 ### v0.21 - TIP-14 planning indexed
 
@@ -157,4 +163,5 @@ Canonical artifact names:
 | TIP-11 | `tip_11_production_data_boundary_durable_state_foundation/` | [`tip_11_planning_brief_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_planning_brief_v0_1.md) - accepted planning-only, [`tip_11_kickoff_option_b_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_kickoff_option_b_v0_1.md) - accepted Option B kickoff, [`tip_11_option_b_execution_report_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_execution_report_v0_1.md) - implemented, [`tip_11_option_b_closeout_v0_1.md`](tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_closeout_v0_1.md) - committed closeout baseline |
 | TIP-12 | `tip_12_actor_trust_caller_scopes_access_boundary/` | [`tip_12_planning_brief_v0_1.md`](tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md) - accepted planning-only |
 | TIP-13 | `tip_13_application_authorization_boundary_foundation/` | [`tip_13_kickoff_option_a_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md) - accepted kickoff, [`tip_13_option_a_execution_report_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_option_a_execution_report_v0_1.md) - implemented by commit `6b9c672`, [`tip_13_closeout_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_closeout_v0_1.md) - closed |
-| TIP-14 | `tip_14_post_tip_13_s2_debt_registry_convergence/` | [`tip_14_planning_brief_v0_1.md`](tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md) - draft planning-only |
+| TIP-14 | `tip_14_post_tip_13_s2_debt_registry_convergence/` | [`tip_14_planning_brief_v0_1.md`](tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md) - accepted planning-only |
+| TIP-15 | `tip_15_production_auth_credential_lifecycle_boundary/` | [`tip_15_planning_brief_v0_1.md`](tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md) - draft planning-only |
