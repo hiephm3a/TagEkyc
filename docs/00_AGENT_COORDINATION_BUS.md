@@ -1,13 +1,20 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.13
+**Version:** 1.14
 **Status:** Active
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.14 - TIP-12 planning opened
+
+- Recorded TIP-11 Option B closeout commit `1baaf6be2ee3a71fcc990ae501f21f7bd62bdbc4` as the baseline preceding TIP-12.
+- Opened TIP-12 actor trust, caller scopes, and access boundary planning at `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md`.
+- Recorded TIP-12 as planning-only with no runtime implementation, no kickoff, no `src/**` or `tests/**` changes, no production auth, no credential lifecycle, no durable persistence, no webhook/outbox/retry, no crypto/signing/replay, no provider/vendor selection, no pilot/production readiness claim, and no SignFlow runtime dependency.
+- Recorded that durable persistence foundation planning is blocked on TIP-12 actor/ownership findings unless homeowner explicitly accepts a narrower exception.
 
 ### v1.13 - TIP-11 Option B implementation closeout recorded
 
@@ -307,17 +314,29 @@ No open inbound agent messages.
 
 ### Active Work
 
-#### MSG-20260612-0006-tip11-option-b-closeout
+#### MSG-20260612-0007-tip12-actor-trust-planning
 
 - From: Builder
 - To: Homeowner / GPT Gate / Next agent
 - Status: Active
 - Gate: Review
+- Scope: TIP-12 planning-only review.
+- Context: TIP-12 is opened at `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md` to define actor trust, caller scopes, ownership, audit actor identity, and access-boundary findings before durable persistence, vault lifecycle, production auth/client trust, webhook/outbox/retry, provider trust, or production readiness work proceeds. Durable Persistence Foundation Planning is blocked on TIP-12 actor/ownership findings unless homeowner explicitly accepts a narrower exception.
+- Requested action: Homeowner/GPT planning review.
+- Output expected: Acceptance, findings, or STOP/RRI decisions. Do not dispatch runtime implementation from this planning brief.
+- Links: `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md`, `docs/tips/README.md`
+
+#### MSG-20260612-0006-tip11-option-b-closeout
+
+- From: Builder
+- To: Homeowner / GPT Gate / Next agent
+- Status: Done
+- Gate: None
 - Scope: TIP-11 Option B closeout review only.
-- Context: TIP-11 Option B implementation was committed at `4f5ebec71f72c7189975fc3105ede0ef689196cb` (`feat: implement TIP-11 Option B metadata boundary`). The implementation scope was domain/application metadata boundary only. Validation passed with `dotnet test TagEkyc.sln --no-restore`: 71 passed, 0 failed, 0 skipped. Closeout is recorded at `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_closeout_v0_1.md`.
-- Requested action: Homeowner/GPT closeout review.
-- Output expected: Review finding or acceptance decision. Do not dispatch new runtime work from this closeout.
-- Links: `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_closeout_v0_1.md`, `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_execution_report_v0_1.md`, commit `4f5ebec71f72c7189975fc3105ede0ef689196cb`
+- Context: TIP-11 Option B implementation was committed at `4f5ebec71f72c7189975fc3105ede0ef689196cb` (`feat: implement TIP-11 Option B metadata boundary`). The closeout commit `1baaf6be2ee3a71fcc990ae501f21f7bd62bdbc4` (`docs: close TIP-11 Option B metadata boundary`) is the baseline preceding TIP-12. Validation passed with `dotnet test TagEkyc.sln --no-restore`: 71 passed, 0 failed, 0 skipped.
+- Requested action: Completed. TIP-12 planning is recorded separately.
+- Output expected: None.
+- Links: `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_closeout_v0_1.md`, `docs/tips/tip_11_production_data_boundary_durable_state_foundation/tip_11_option_b_execution_report_v0_1.md`, commit `4f5ebec71f72c7189975fc3105ede0ef689196cb`, closeout commit `1baaf6be2ee3a71fcc990ae501f21f7bd62bdbc4`
 
 #### MSG-20260612-0005-tip11-option-b-kickoff-draft
 
@@ -405,7 +424,7 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-No pending user gates. TIP-11 Option B implementation is complete and pending homeowner/GPT closeout review.
+No pending user gates. TIP-12 planning is open and pending homeowner/GPT planning review.
 
 TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 code/test implementation, and TIP-09 S1 closeout acceptance are synchronized in governance state.
 
@@ -454,12 +473,16 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - TIP-11 Option B post-commit validation on 2026-06-12 passed `dotnet test TagEkyc.sln --no-restore`: 71 passed, 0 failed, 0 skipped.
 - TIP-11 Option B implementation scope was domain/application metadata boundary only.
 - TIP-11 Option B preserved no Api changes, no Infrastructure changes, no Adapters changes, no SignFlow runtime changes, no DB/EF/migrations/durable adapter, no local durable storage, no vault lifecycle, no raw artifact/biometric storage, no retention/legal-hold enforcement, no webhook/outbox/retry, no production crypto/signing/replay, no public DTO/API JSON changes, no BusinessConsumer metadata exposure, no package/hash/manifest/notification semantic changes, and no pilot/production readiness claim.
+- TIP-11 Option B closeout commit `1baaf6be2ee3a71fcc990ae501f21f7bd62bdbc4` is the baseline preceding TIP-12.
+- TIP-12 actor trust, caller scopes, and access boundary planning is open at `docs/tips/tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md`.
+- TIP-12 is planning-only. It opens no runtime implementation, no kickoff, no `src/**` or `tests/**` changes, no production auth, no credential lifecycle, no durable persistence, no webhook/outbox/retry, no crypto/signing/replay, no provider/vendor selection, no pilot/production readiness claim, and no SignFlow runtime dependency.
+- Durable Persistence Foundation Planning is blocked on TIP-12 actor/ownership findings unless homeowner explicitly accepts a narrower exception.
 
 ### Next Recommended Action
 
-Proceed to homeowner/GPT review of TIP-11 Option B closeout. Do not dispatch new runtime work from this closeout.
+Proceed to homeowner/GPT review of TIP-12 planning brief. Do not dispatch runtime implementation from this planning brief.
 
-TIP-12 is not opened. Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-11 Option B closeout. SignFlow must remain an external consumer profile only.
+Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-12. SignFlow must remain an external consumer profile only.
 
 ### Outbox
 
