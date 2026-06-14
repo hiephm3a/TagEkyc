@@ -1,13 +1,20 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.23
+**Version:** 0.24
 **Status:** Active
 **Date:** 2026-06-14
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.24 - TIP-17 kickoff draft indexed
+
+- Added TIP-17 Provider-Neutral Durable Metadata Repository Boundary kickoff draft to the index.
+- Recorded TIP-17 as docs-only kickoff draft with no implementation dispatch, no `src/**`, no `tests/**`, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations/packages, no durable repository implementation, no production auth, no credential store, no secret backend, no raw secret or hashed secret storage, no raw artifact or biometric storage, no vault lifecycle, no retention enforcement, no deletion/purge/legal hold workflow, no webhook/outbox/retry/delivery implementation, no crypto/signing/replay, no provider/vendor integration, no readiness claim, and no SignFlow platform dependency.
+- Recorded TIP-17 recommendation: remain kickoff-only pending homeowner/GPT review, then either prepare a separate extremely narrow implementation dispatch limited to provider-neutral durable metadata repository boundaries and forbidden-data leakage tests or keep TIP-17 kickoff-only if STOP/RRI gates remain unresolved.
+- Synchronized TIP-16 as the accepted planning baseline feeding TIP-17.
 
 ### v0.23 - TIP-16 planning/kickoff draft indexed
 
@@ -173,3 +180,4 @@ Canonical artifact names:
 | TIP-14 | `tip_14_post_tip_13_s2_debt_registry_convergence/` | [`tip_14_planning_brief_v0_1.md`](tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md) - accepted planning-only |
 | TIP-15 | `tip_15_production_auth_credential_lifecycle_boundary/` | [`tip_15_planning_brief_v0_1.md`](tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md) - accepted planning-only |
 | TIP-16 | `tip_16_durable_persistence_foundation/` | [`tip_16_planning_brief_v0_1.md`](tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md) - draft planning/kickoff only |
+| TIP-17 | `tip_17_provider_neutral_durable_metadata_repository_boundary/` | [`tip_17_kickoff_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md) - draft kickoff only, implementation not dispatched |

@@ -1,13 +1,21 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.22
+**Version:** 1.23
 **Status:** Active
 **Date:** 2026-06-14
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.23 - TIP-17 kickoff draft opened
+
+- Added TIP-17 Provider-Neutral Durable Metadata Repository Boundary kickoff draft at `docs/tips/tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md`.
+- Recorded TIP-17 as docs-only kickoff draft for a possible later provider-neutral durable metadata repository boundary.
+- Preserved that TIP-17 opens no implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations/packages, no durable repository implementation, no production auth, no credential store, no secret backend, no raw secret or hashed secret storage, no raw artifact or biometric storage, no vault lifecycle, no retention enforcement, no deletion/purge/legal hold workflow, no webhook/outbox/retry/delivery implementation, no crypto/signing/replay, no provider/vendor integration, no pilot/production/certification readiness claim, and no SignFlow platform dependency.
+- Recorded TIP-17 recommendation: remain kickoff-only pending homeowner/GPT review, then either prepare a separate extremely narrow implementation dispatch limited to provider-neutral durable metadata repository boundaries and forbidden-data leakage tests or keep TIP-17 kickoff-only if STOP/RRI gates remain unresolved.
+- Synchronized TIP-16 as the accepted planning baseline feeding TIP-17.
 
 ### v1.22 - TIP-16 planning/kickoff draft opened
 
@@ -369,16 +377,28 @@ No open inbound agent messages.
 
 ### Active Work
 
-#### MSG-20260614-0004-tip16-planning-kickoff-opened
+#### MSG-20260614-0005-tip17-kickoff-opened
 
 - From: Planning contractor
 - To: Homeowner / GPT Gate / Next agent
 - Status: New
 - Gate: Review
+- Scope: TIP-17 docs-only kickoff draft.
+- Context: TIP-17 kickoff draft was created at `docs/tips/tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md`. It narrows TIP-16 into a provider-neutral durable metadata repository boundary candidate only, with application-port/domain-interface/infrastructure-adapter dependency decisions, durable metadata concepts, transaction/audit questions, and STOP/RRI gates before any source or test changes.
+- Requested action: Review TIP-17 kickoff draft. Do not dispatch runtime implementation from TIP-17.
+- Output expected: Review findings or acceptance of kickoff-only draft, with STOP/RRI decisions before any later implementation dispatch.
+- Links: `docs/tips/tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md`, `docs/tips/README.md`
+
+#### MSG-20260614-0004-tip16-planning-kickoff-opened
+
+- From: Planning contractor
+- To: Homeowner / GPT Gate / Next agent
+- Status: Done
+- Gate: Review
 - Scope: TIP-16 docs-only planning/kickoff brief.
 - Context: TIP-16 planning/kickoff brief was drafted at `docs/tips/tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md`. It defines the durable metadata persistence boundary using TIP-15 provider-neutral `principalId`, `credentialRef`, credential lifecycle, tenant/client, scope grant, policy reference, audit identity, retention/legal marker, evidence package metadata, and completion authority concepts. It separates LocalDev current state, future durable metadata persistence, future raw artifact/vault storage, and future credential/secret storage.
-- Requested action: Review TIP-16 planning/kickoff draft. Do not dispatch runtime implementation from TIP-16.
-- Output expected: Review findings or acceptance of planning-only/kickoff-only brief, with STOP/RRI decisions before any later implementation kickoff.
+- Requested action: Completed as baseline input for TIP-17 kickoff draft. Do not dispatch runtime implementation from TIP-16.
+- Output expected: None.
 - Links: `docs/tips/tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md`, `docs/tips/README.md`
 
 #### MSG-20260614-0003-tip15-planning-opened
@@ -615,16 +635,18 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - TIP-15 opens no implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations, no credential store, no secret backend, no production identity provider integration, no OAuth/OIDC/mTLS/certificate implementation, no durable persistence, no webhook/outbox/retry, no vault/raw artifact lifecycle, no crypto/signing/replay, no provider/vendor integration, no pilot/production/certification readiness claim, and no SignFlow platform dependency.
 - TIP-16 Durable Persistence Foundation planning/kickoff draft exists at `docs/tips/tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md`.
 - TIP-16 is planning/kickoff only. It opens no implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations, no durable repository implementation, no production auth, no credential store, no secret backend, no raw secret storage, no raw artifact or biometric storage, no vault lifecycle, no retention enforcement, no deletion or legal hold workflow, no webhook/outbox/retry/delivery implementation, no crypto/signing/replay, no provider/vendor integration, no pilot/production/certification readiness claim, and no SignFlow platform dependency.
+- TIP-17 Provider-Neutral Durable Metadata Repository Boundary kickoff draft exists at `docs/tips/tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md`.
+- TIP-17 is kickoff-only. It opens no implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations/packages, no durable repository implementation, no production auth, no credential store, no secret backend, no raw secret or hashed secret storage, no raw artifact or biometric storage, no vault lifecycle, no retention enforcement, no deletion/purge/legal hold workflow, no webhook/outbox/retry/delivery implementation, no crypto/signing/replay, no provider/vendor integration, no pilot/production/certification readiness claim, and no SignFlow platform dependency.
 
 ### Next Recommended Action
 
-Review TIP-16 Durable Persistence Foundation planning/kickoff draft before choosing any persistence implementation slice.
+Review TIP-17 Provider-Neutral Durable Metadata Repository Boundary kickoff draft before choosing any persistence implementation slice.
 
-TIP-16 recommendation is to remain planning-only now. After homeowner/GPT review, prepare a separate extremely narrow implementation kickoff only if the review accepts the provider-neutral durable metadata repository posture, transaction/audit boundary, credentialRef-without-secret-storage posture, raw artifact/vault boundary, and STOP/RRI guardrails.
+TIP-17 recommendation is to remain kickoff-only now. After homeowner/GPT review, either prepare a separate extremely narrow implementation dispatch limited to provider-neutral durable metadata repository boundaries and forbidden-data leakage tests, or keep TIP-17 kickoff-only if any STOP/RRI gate remains unresolved.
 
-If TIP-16 STOP/RRI items remain unresolved, prefer narrower decision TIPs for DB/provider posture, repository boundary, audit retention, legal hold/delete enforcement, policy catalog durability, System/InternalService completion authority, cross-client support lookup, outbox substrate, raw artifact/vault boundary, or backup/recovery before any implementation kickoff.
+If TIP-17 STOP/RRI items remain unresolved, prefer narrower decision TIPs for whether repository contracts may touch `src/**`, whether tests may be added, whether a LocalDev adapter is allowed, repository abstraction location, audit shape, transaction consistency, policy catalog reference shape, completion authority metadata, retention/legal markers, or outbox substrate deferral before any implementation dispatch.
 
-Future durable persistence implementation, vault lifecycle implementation, production auth/client trust implementation, credential store/secret backend work, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-16. SignFlow must remain an external consumer profile only.
+Future durable repository implementation, DB/EF/migrations/provider selection, vault lifecycle implementation, production auth/client trust implementation, credential store/secret backend work, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-17. SignFlow must remain an external consumer profile only.
 
 ### Outbox
 
