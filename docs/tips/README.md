@@ -1,13 +1,20 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.22
+**Version:** 0.23
 **Status:** Active
 **Date:** 2026-06-14
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.23 - TIP-16 planning/kickoff draft indexed
+
+- Added TIP-16 Durable Persistence Foundation planning/kickoff brief to the index.
+- Recorded TIP-16 as docs-only planning/kickoff draft with no runtime implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations, no durable repository implementation, no production auth, no credential store, no secret backend, no raw secret storage, no raw artifact or biometric storage, no vault lifecycle, no webhook/outbox/retry/delivery implementation, no crypto/signing/replay, no provider/vendor integration, no readiness claim, and no SignFlow platform dependency.
+- Recorded TIP-16 recommendation: remain planning-only now and prepare a later extremely narrow implementation kickoff only after homeowner/GPT review accepts the durable metadata repository posture and STOP/RRI guardrails.
+- Synchronized TIP-15 as the accepted planning-only baseline feeding TIP-16.
 
 ### v0.22 - TIP-15 planning indexed
 
@@ -164,4 +171,5 @@ Canonical artifact names:
 | TIP-12 | `tip_12_actor_trust_caller_scopes_access_boundary/` | [`tip_12_planning_brief_v0_1.md`](tip_12_actor_trust_caller_scopes_access_boundary/tip_12_planning_brief_v0_1.md) - accepted planning-only |
 | TIP-13 | `tip_13_application_authorization_boundary_foundation/` | [`tip_13_kickoff_option_a_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md) - accepted kickoff, [`tip_13_option_a_execution_report_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_option_a_execution_report_v0_1.md) - implemented by commit `6b9c672`, [`tip_13_closeout_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_closeout_v0_1.md) - closed |
 | TIP-14 | `tip_14_post_tip_13_s2_debt_registry_convergence/` | [`tip_14_planning_brief_v0_1.md`](tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md) - accepted planning-only |
-| TIP-15 | `tip_15_production_auth_credential_lifecycle_boundary/` | [`tip_15_planning_brief_v0_1.md`](tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md) - draft planning-only |
+| TIP-15 | `tip_15_production_auth_credential_lifecycle_boundary/` | [`tip_15_planning_brief_v0_1.md`](tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md) - accepted planning-only |
+| TIP-16 | `tip_16_durable_persistence_foundation/` | [`tip_16_planning_brief_v0_1.md`](tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md) - draft planning/kickoff only |
