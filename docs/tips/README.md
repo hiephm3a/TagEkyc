@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.28
+**Version:** 0.29
 **Status:** Active
 **Date:** 2026-06-15
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.29 - TIP-19 closeout draft indexed
+
+- Added TIP-19 Transaction / Audit Consistency Planning closeout draft to the index.
+- Recorded TIP-19 as closed docs-only / planning-only around provider-neutral transaction and audit consistency semantics.
+- Preserved that TIP-19 opened no runtime implementation, selected no DB/provider, made no EF/non-EF, migration, schema, package, repository, Infrastructure adapter, LocalDev adapter, outbox/webhook/retry, backup/recovery, readiness, or SignFlow runtime dependency claim.
 
 ### v0.28 - TIP-19 transaction/audit consistency planning draft indexed
 
@@ -206,4 +212,4 @@ Canonical artifact names:
 | TIP-16 | `tip_16_durable_persistence_foundation/` | [`tip_16_planning_brief_v0_1.md`](tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md) - accepted and committed planning/kickoff |
 | TIP-17 | `tip_17_provider_neutral_durable_metadata_repository_boundary/` | [`tip_17_kickoff_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md) - accepted kickoff, implemented by commit `f6f65b8`, [`tip_17_closeout_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_closeout_v0_1.md) - closed by closeout commit `7424d55` |
 | TIP-18 | `tip_18_db_provider_posture_decision/` | [`tip_18_planning_brief_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_planning_brief_v0_1.md) - planning/decision draft, [`tip_18_closeout_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_closeout_v0_1.md) - closeout draft; closed docs-only, not implemented |
-| TIP-19 | `tip_19_transaction_audit_consistency_planning/` | [`tip_19_planning_brief_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_planning_brief_v0_1.md) - planning draft; docs-only, provider-neutral consistency semantics |
+| TIP-19 | `tip_19_transaction_audit_consistency_planning/` | [`tip_19_planning_brief_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_planning_brief_v0_1.md) - accepted planning baseline, [`tip_19_closeout_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_closeout_v0_1.md) - closed docs-only / planning-only; no runtime implementation and no DB/provider selection |
