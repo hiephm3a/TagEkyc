@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.25
+**Version:** 0.26
 **Status:** Active
 **Date:** 2026-06-15
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.26 - TIP-18 DB/provider posture decision draft indexed
+
+- Added TIP-18 DB / Provider Posture Decision planning brief to the index.
+- Recorded TIP-18 as docs-only planning/decision draft, not implemented and not closed.
+- Preserved that TIP-18 does not select a production DB/provider, does not authorize EF/non-EF, migrations, packages, schema, repository implementation, Infrastructure adapter, LocalDev adapter, runtime tests, readiness claims, or SignFlow runtime dependency.
 
 ### v0.25 - TIP-17 implementation closeout indexed
 
@@ -185,5 +191,6 @@ Canonical artifact names:
 | TIP-13 | `tip_13_application_authorization_boundary_foundation/` | [`tip_13_kickoff_option_a_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_kickoff_option_a_v0_1.md) - accepted kickoff, [`tip_13_option_a_execution_report_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_option_a_execution_report_v0_1.md) - implemented by commit `6b9c672`, [`tip_13_closeout_v0_1.md`](tip_13_application_authorization_boundary_foundation/tip_13_closeout_v0_1.md) - closed |
 | TIP-14 | `tip_14_post_tip_13_s2_debt_registry_convergence/` | [`tip_14_planning_brief_v0_1.md`](tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md) - accepted planning-only |
 | TIP-15 | `tip_15_production_auth_credential_lifecycle_boundary/` | [`tip_15_planning_brief_v0_1.md`](tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md) - accepted planning-only |
-| TIP-16 | `tip_16_durable_persistence_foundation/` | [`tip_16_planning_brief_v0_1.md`](tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md) - draft planning/kickoff only |
-| TIP-17 | `tip_17_provider_neutral_durable_metadata_repository_boundary/` | [`tip_17_kickoff_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md) - accepted kickoff, implemented by commit `f6f65b8`, [`tip_17_closeout_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_closeout_v0_1.md) - closeout draft; no TIP-18 opened |
+| TIP-16 | `tip_16_durable_persistence_foundation/` | [`tip_16_planning_brief_v0_1.md`](tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md) - accepted and committed planning/kickoff |
+| TIP-17 | `tip_17_provider_neutral_durable_metadata_repository_boundary/` | [`tip_17_kickoff_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md) - accepted kickoff, implemented by commit `f6f65b8`, [`tip_17_closeout_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_closeout_v0_1.md) - closed by closeout commit `7424d55` |
+| TIP-18 | `tip_18_db_provider_posture_decision/` | [`tip_18_planning_brief_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_planning_brief_v0_1.md) - planning/decision draft only; not implemented, not closed |
