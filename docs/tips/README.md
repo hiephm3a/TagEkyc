@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.27
+**Version:** 0.28
 **Status:** Active
 **Date:** 2026-06-15
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.28 - TIP-19 transaction/audit consistency planning draft indexed
+
+- Added TIP-19 Transaction / Audit Consistency Planning planning brief to the index.
+- Recorded TIP-19 as docs-only, provider-neutral consistency semantics planning before any DB/provider, EF, migration, schema, package, repository, Infrastructure adapter, LocalDev adapter, outbox, webhook, retry, runtime test, readiness claim, or SignFlow runtime dependency work.
+- Preserved that TIP-19 does not implement transaction consistency, audit durability, outbox delivery, backup/recovery, repository behavior, or production durability.
 
 ### v0.27 - TIP-18 closeout draft indexed
 
@@ -200,3 +206,4 @@ Canonical artifact names:
 | TIP-16 | `tip_16_durable_persistence_foundation/` | [`tip_16_planning_brief_v0_1.md`](tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md) - accepted and committed planning/kickoff |
 | TIP-17 | `tip_17_provider_neutral_durable_metadata_repository_boundary/` | [`tip_17_kickoff_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md) - accepted kickoff, implemented by commit `f6f65b8`, [`tip_17_closeout_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_closeout_v0_1.md) - closed by closeout commit `7424d55` |
 | TIP-18 | `tip_18_db_provider_posture_decision/` | [`tip_18_planning_brief_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_planning_brief_v0_1.md) - planning/decision draft, [`tip_18_closeout_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_closeout_v0_1.md) - closeout draft; closed docs-only, not implemented |
+| TIP-19 | `tip_19_transaction_audit_consistency_planning/` | [`tip_19_planning_brief_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_planning_brief_v0_1.md) - planning draft; docs-only, provider-neutral consistency semantics |
