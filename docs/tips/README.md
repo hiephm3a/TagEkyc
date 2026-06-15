@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.24
+**Version:** 0.25
 **Status:** Active
-**Date:** 2026-06-14
+**Date:** 2026-06-15
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.25 - TIP-17 implementation closeout indexed
+
+- Recorded TIP-17 implementation commit `f6f65b8` as the provider-neutral durable metadata repository boundary baseline.
+- Added TIP-17 closeout draft to the index.
+- Preserved that TIP-17 closeout opens no TIP-18, DB/EF/migrations, adapter, production auth, credential store, public API/DTO behavior, webhook/outbox/retry, crypto/signing/replay, provider/vendor integration, readiness claim, or SignFlow runtime dependency.
 
 ### v0.24 - TIP-17 kickoff draft indexed
 
@@ -180,4 +186,4 @@ Canonical artifact names:
 | TIP-14 | `tip_14_post_tip_13_s2_debt_registry_convergence/` | [`tip_14_planning_brief_v0_1.md`](tip_14_post_tip_13_s2_debt_registry_convergence/tip_14_planning_brief_v0_1.md) - accepted planning-only |
 | TIP-15 | `tip_15_production_auth_credential_lifecycle_boundary/` | [`tip_15_planning_brief_v0_1.md`](tip_15_production_auth_credential_lifecycle_boundary/tip_15_planning_brief_v0_1.md) - accepted planning-only |
 | TIP-16 | `tip_16_durable_persistence_foundation/` | [`tip_16_planning_brief_v0_1.md`](tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md) - draft planning/kickoff only |
-| TIP-17 | `tip_17_provider_neutral_durable_metadata_repository_boundary/` | [`tip_17_kickoff_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md) - draft kickoff only, implementation not dispatched |
+| TIP-17 | `tip_17_provider_neutral_durable_metadata_repository_boundary/` | [`tip_17_kickoff_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md) - accepted kickoff, implemented by commit `f6f65b8`, [`tip_17_closeout_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_closeout_v0_1.md) - closeout draft; no TIP-18 opened |

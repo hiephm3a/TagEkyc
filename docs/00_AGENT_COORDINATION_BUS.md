@@ -1,13 +1,21 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.23
+**Version:** 1.24
 **Status:** Active
-**Date:** 2026-06-14
+**Date:** 2026-06-15
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.24 - TIP-17 implementation closeout drafted
+
+- Recorded TIP-17 implementation commit `f6f65b8` (`feat: add TIP-17 durable metadata repository boundary`) as completed and pending closeout review.
+- Recorded validation: `dotnet test TagEkyc.sln --no-restore` passed with 103 passed, 0 failed, 0 skipped.
+- Added TIP-17 closeout draft at `docs/tips/tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_closeout_v0_1.md`.
+- Preserved known dirty local GDriveSync tooling files as unrelated local tooling: `.gitignore`, `tools/TagEkyc.GDriveSync/Program.cs`, and `tools/TagEkyc.GDriveSync/README.md`.
+- Cleared stale TIP-17 kickoff-only implementation-not-open guidance. TIP-17 implementation is complete, but TIP-18 is not opened by this closeout.
 
 ### v1.23 - TIP-17 kickoff draft opened
 
@@ -636,17 +644,20 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - TIP-16 Durable Persistence Foundation planning/kickoff draft exists at `docs/tips/tip_16_durable_persistence_foundation/tip_16_planning_brief_v0_1.md`.
 - TIP-16 is planning/kickoff only. It opens no implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations, no durable repository implementation, no production auth, no credential store, no secret backend, no raw secret storage, no raw artifact or biometric storage, no vault lifecycle, no retention enforcement, no deletion or legal hold workflow, no webhook/outbox/retry/delivery implementation, no crypto/signing/replay, no provider/vendor integration, no pilot/production/certification readiness claim, and no SignFlow platform dependency.
 - TIP-17 Provider-Neutral Durable Metadata Repository Boundary kickoff draft exists at `docs/tips/tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md`.
-- TIP-17 is kickoff-only. It opens no implementation, no `src/**`, no tests, no public API/DTO/JSON/status/error behavior changes, no DB/EF/migrations/packages, no durable repository implementation, no production auth, no credential store, no secret backend, no raw secret or hashed secret storage, no raw artifact or biometric storage, no vault lifecycle, no retention enforcement, no deletion/purge/legal hold workflow, no webhook/outbox/retry/delivery implementation, no crypto/signing/replay, no provider/vendor integration, no pilot/production/certification readiness claim, and no SignFlow platform dependency.
+- TIP-17 implementation was committed at `f6f65b8` (`feat: add TIP-17 durable metadata repository boundary`).
+- TIP-17 validation passed: `dotnet test TagEkyc.sln --no-restore` = 103 passed, 0 failed, 0 skipped.
+- TIP-17 implementation scope was provider-neutral durable metadata repository boundary only: Application port `IDurableMetadataRepository`, durable metadata records for session, actor credential, audit identity, evidence package, completion authority, write set, and Domain metadata value objects/enums `PrincipalId`, `CredentialRef`, `CredentialType`, `CredentialStatus`, and `ScopeGrantSetId`.
+- TIP-17 preserved no DB/EF/migrations/packages, no Infrastructure adapter, no LocalDev adapter, no durable repository implementation, no production auth, no credential store, no secret backend, no raw or hashed secret storage, no raw artifact/biometric/vault storage, no retention/legal enforcement, no webhook/outbox/retry/delivery, no crypto/signing/replay, no provider/vendor integration, no public API/DTO/JSON/status/error behavior change, no pilot/production/certification readiness claim, and no SignFlow runtime/source/database/network/package/internal-model dependency.
+- TIP-17 closeout draft exists at `docs/tips/tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_closeout_v0_1.md` and is pending homeowner/GPT review. It does not open TIP-18.
+- Current worktree is not claimed clean because known unrelated local GDriveSync tooling files remain dirty: `.gitignore`, `tools/TagEkyc.GDriveSync/Program.cs`, and `tools/TagEkyc.GDriveSync/README.md`.
 
 ### Next Recommended Action
 
-Review TIP-17 Provider-Neutral Durable Metadata Repository Boundary kickoff draft before choosing any persistence implementation slice.
+Homeowner/GPT review of the TIP-17 closeout draft is the next recommended action.
 
-TIP-17 recommendation is to remain kickoff-only now. After homeowner/GPT review, either prepare a separate extremely narrow implementation dispatch limited to provider-neutral durable metadata repository boundaries and forbidden-data leakage tests, or keep TIP-17 kickoff-only if any STOP/RRI gate remains unresolved.
+Do not open TIP-18 implementation immediately from the closeout. The safest next governed slice is a DB/provider posture decision TIP because TIP-17 deliberately stopped at provider-neutral contracts. Later alternatives include LocalDev-only durable metadata adapter kickoff, transaction/audit consistency planning, or policy catalog durability planning.
 
-If TIP-17 STOP/RRI items remain unresolved, prefer narrower decision TIPs for whether repository contracts may touch `src/**`, whether tests may be added, whether a LocalDev adapter is allowed, repository abstraction location, audit shape, transaction consistency, policy catalog reference shape, completion authority metadata, retention/legal markers, or outbox substrate deferral before any implementation dispatch.
-
-Future durable repository implementation, DB/EF/migrations/provider selection, vault lifecycle implementation, production auth/client trust implementation, credential store/secret backend work, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-17. SignFlow must remain an external consumer profile only.
+Future durable repository implementation, DB/EF/migrations/provider selection, Infrastructure adapter work, LocalDev adapter work, vault lifecycle implementation, production auth/client trust implementation, credential store/secret backend work, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-17 closeout. SignFlow must remain an external consumer profile only.
 
 ### Outbox
 
