@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.29
+**Version:** 0.30
 **Status:** Active
-**Date:** 2026-06-15
+**Date:** 2026-06-16
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.30 - TIP-20 provider evaluation criteria planning draft indexed
+
+- Added TIP-20 DB / Provider Evaluation Criteria Planning planning brief to the index.
+- Recorded TIP-20 as planning-only, docs-only, and provider-neutral criteria before any durable metadata provider choice.
+- Preserved that TIP-20 does not accept or close a provider decision and does not open runtime implementation, project/package changes, schema/index/migration decisions, repository implementation, adapters, backup/recovery claims, readiness claims, or SignFlow runtime/source/database/package/internal-model dependency.
 
 ### v0.29 - TIP-19 closeout draft indexed
 
@@ -213,3 +219,4 @@ Canonical artifact names:
 | TIP-17 | `tip_17_provider_neutral_durable_metadata_repository_boundary/` | [`tip_17_kickoff_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_kickoff_v0_1.md) - accepted kickoff, implemented by commit `f6f65b8`, [`tip_17_closeout_v0_1.md`](tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_closeout_v0_1.md) - closed by closeout commit `7424d55` |
 | TIP-18 | `tip_18_db_provider_posture_decision/` | [`tip_18_planning_brief_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_planning_brief_v0_1.md) - planning/decision draft, [`tip_18_closeout_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_closeout_v0_1.md) - closeout draft; closed docs-only, not implemented |
 | TIP-19 | `tip_19_transaction_audit_consistency_planning/` | [`tip_19_planning_brief_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_planning_brief_v0_1.md) - accepted planning baseline, [`tip_19_closeout_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_closeout_v0_1.md) - closed docs-only / planning-only; no runtime implementation and no DB/provider selection |
+| TIP-20 | `tip_20_db_provider_evaluation_criteria_planning/` | [`tip_20_planning_brief_v0_1.md`](tip_20_db_provider_evaluation_criteria_planning/tip_20_planning_brief_v0_1.md) - draft planning-only, docs-only, provider-neutral DB/provider evaluation criteria; criteria before choice |
