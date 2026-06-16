@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.31
+**Version:** 0.32
 **Status:** Active
 **Date:** 2026-06-16
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.32 - TIP-21 provider decision path planning draft indexed
+
+- Added TIP-21 Provider Decision Path Planning planning brief to the index.
+- Recorded TIP-21 as planning-only, docs-only, and provider-neutral provider decision path planning.
+- Preserved that TIP-21 does not choose a provider, authorize runtime implementation, open project/package changes, decide schema/index/migration ownership, introduce repository or adapter work, claim backup/recovery or readiness, or create a SignFlow dependency.
 
 ### v0.31 - TIP-20 closeout draft indexed
 
@@ -226,3 +232,4 @@ Canonical artifact names:
 | TIP-18 | `tip_18_db_provider_posture_decision/` | [`tip_18_planning_brief_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_planning_brief_v0_1.md) - planning/decision draft, [`tip_18_closeout_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_closeout_v0_1.md) - closeout draft; closed docs-only, not implemented |
 | TIP-19 | `tip_19_transaction_audit_consistency_planning/` | [`tip_19_planning_brief_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_planning_brief_v0_1.md) - accepted planning baseline, [`tip_19_closeout_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_closeout_v0_1.md) - closed docs-only / planning-only; no runtime implementation and no DB/provider selection |
 | TIP-20 | `tip_20_db_provider_evaluation_criteria_planning/` | [`tip_20_planning_brief_v0_1.md`](tip_20_db_provider_evaluation_criteria_planning/tip_20_planning_brief_v0_1.md) - accepted planning baseline, [`tip_20_closeout_v0_1.md`](tip_20_db_provider_evaluation_criteria_planning/tip_20_closeout_v0_1.md) - closed docs-only / planning-only provider evaluation criteria; no provider selected and no runtime implementation authorized |
+| TIP-21 | `tip_21_provider_decision_path_planning/` | [`tip_21_planning_brief_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_planning_brief_v0_1.md) - draft planning-only, docs-only, provider-neutral provider decision path planning; not accepted, not closed, and no provider choice authorized |
