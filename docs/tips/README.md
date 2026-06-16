@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.38
+**Version:** 0.39
 **Status:** Active
 **Date:** 2026-06-16
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.39 - TIP-24 closeout draft indexed
+
+- Added TIP-24 Provider Decision Evidence Packet Assembly Planning closeout draft to the index.
+- Recorded TIP-24 as closed docs-only / planning-only provider-neutral evidence packet assembly planning.
+- Preserved that TIP-24 accepts only the packet assembly discipline for a future provider-neutral evidence packet: mandatory sections, source mapping to TIP-17 through TIP-23, proof checklist, pass/fail/block criteria, visible evidence gap register, reviewer responsibilities, and STOP/RRI gates; it chooses no provider, compares no provider options, names no concrete provider/package/tool/runtime dependency, collects no provider-specific evidence, authorizes no implementation, and makes no durability, backup/recovery, readiness, legal reliance, external audit reliance, or durable audit-store claim.
 
 ### v0.38 - TIP-24 provider decision evidence packet assembly planning draft indexed
 
@@ -271,4 +277,4 @@ Canonical artifact names:
 | TIP-21 | `tip_21_provider_decision_path_planning/` | [`tip_21_planning_brief_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_planning_brief_v0_1.md) - accepted planning baseline, [`tip_21_closeout_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_closeout_v0_1.md) - closed docs-only / planning-only provider decision path planning; no provider selected and no runtime implementation authorized |
 | TIP-22 | `tip_22_localdev_only_durable_metadata_adapter_planning/` | [`tip_22_planning_brief_v0_1.md`](tip_22_localdev_only_durable_metadata_adapter_planning/tip_22_planning_brief_v0_1.md) - accepted planning baseline, [`tip_22_closeout_v0_1.md`](tip_22_localdev_only_durable_metadata_adapter_planning/tip_22_closeout_v0_1.md) - closed docs-only / planning-only LocalDev-only durable metadata adapter planning; no LocalDev adapter implementation and no production provider decision authorized |
 | TIP-23 | `tip_23_production_provider_decision_evidence_packet_planning/` | [`tip_23_planning_brief_v0_1.md`](tip_23_production_provider_decision_evidence_packet_planning/tip_23_planning_brief_v0_1.md) - accepted planning baseline, [`tip_23_closeout_v0_1.md`](tip_23_production_provider_decision_evidence_packet_planning/tip_23_closeout_v0_1.md) - closed docs-only / planning-only provider decision evidence packet planning; no provider selected, compared, named, or implemented |
-| TIP-24 | `tip_24_provider_decision_evidence_packet_assembly_planning/` | [`tip_24_planning_brief_v0_1.md`](tip_24_provider_decision_evidence_packet_assembly_planning/tip_24_planning_brief_v0_1.md) - draft docs-only / planning-only provider-neutral evidence packet assembly planning; no provider selected, compared, named, or implemented |
+| TIP-24 | `tip_24_provider_decision_evidence_packet_assembly_planning/` | [`tip_24_planning_brief_v0_1.md`](tip_24_provider_decision_evidence_packet_assembly_planning/tip_24_planning_brief_v0_1.md) - accepted planning baseline, [`tip_24_closeout_v0_1.md`](tip_24_provider_decision_evidence_packet_assembly_planning/tip_24_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral evidence packet assembly planning; no provider selected, compared, named, evidenced, or implemented |
