@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.32
+**Version:** 0.33
 **Status:** Active
 **Date:** 2026-06-16
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.33 - TIP-21 closeout draft indexed
+
+- Added TIP-21 Provider Decision Path Planning closeout draft to the index.
+- Recorded TIP-21 as closed docs-only / planning-only provider decision path planning.
+- Preserved that TIP-21 chose no provider, authorized no runtime implementation, opened no project/package, schema/index/migration, repository, Infrastructure adapter, LocalDev adapter, backup/recovery, readiness, or SignFlow dependency work.
 
 ### v0.32 - TIP-21 provider decision path planning draft indexed
 
@@ -232,4 +238,4 @@ Canonical artifact names:
 | TIP-18 | `tip_18_db_provider_posture_decision/` | [`tip_18_planning_brief_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_planning_brief_v0_1.md) - planning/decision draft, [`tip_18_closeout_v0_1.md`](tip_18_db_provider_posture_decision/tip_18_closeout_v0_1.md) - closeout draft; closed docs-only, not implemented |
 | TIP-19 | `tip_19_transaction_audit_consistency_planning/` | [`tip_19_planning_brief_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_planning_brief_v0_1.md) - accepted planning baseline, [`tip_19_closeout_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_closeout_v0_1.md) - closed docs-only / planning-only; no runtime implementation and no DB/provider selection |
 | TIP-20 | `tip_20_db_provider_evaluation_criteria_planning/` | [`tip_20_planning_brief_v0_1.md`](tip_20_db_provider_evaluation_criteria_planning/tip_20_planning_brief_v0_1.md) - accepted planning baseline, [`tip_20_closeout_v0_1.md`](tip_20_db_provider_evaluation_criteria_planning/tip_20_closeout_v0_1.md) - closed docs-only / planning-only provider evaluation criteria; no provider selected and no runtime implementation authorized |
-| TIP-21 | `tip_21_provider_decision_path_planning/` | [`tip_21_planning_brief_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_planning_brief_v0_1.md) - draft planning-only, docs-only, provider-neutral provider decision path planning; not accepted, not closed, and no provider choice authorized |
+| TIP-21 | `tip_21_provider_decision_path_planning/` | [`tip_21_planning_brief_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_planning_brief_v0_1.md) - accepted planning baseline, [`tip_21_closeout_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_closeout_v0_1.md) - closed docs-only / planning-only provider decision path planning; no provider selected and no runtime implementation authorized |
