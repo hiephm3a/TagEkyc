@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.33
+**Version:** 0.34
 **Status:** Active
 **Date:** 2026-06-16
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.34 - TIP-22 LocalDev-only durable metadata adapter planning draft indexed
+
+- Added TIP-22 LocalDev-Only Durable Metadata Adapter Planning planning brief to the index.
+- Recorded TIP-22 as planning-only, docs-only, and LocalDev-only durable metadata adapter planning.
+- Preserved that TIP-22 does not authorize LocalDev adapter implementation, does not choose a production provider, and does not open runtime, project/package, schema/index/migration, repository, Infrastructure adapter, backup/recovery, readiness, or SignFlow dependency work.
 
 ### v0.33 - TIP-21 closeout draft indexed
 
@@ -239,3 +245,4 @@ Canonical artifact names:
 | TIP-19 | `tip_19_transaction_audit_consistency_planning/` | [`tip_19_planning_brief_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_planning_brief_v0_1.md) - accepted planning baseline, [`tip_19_closeout_v0_1.md`](tip_19_transaction_audit_consistency_planning/tip_19_closeout_v0_1.md) - closed docs-only / planning-only; no runtime implementation and no DB/provider selection |
 | TIP-20 | `tip_20_db_provider_evaluation_criteria_planning/` | [`tip_20_planning_brief_v0_1.md`](tip_20_db_provider_evaluation_criteria_planning/tip_20_planning_brief_v0_1.md) - accepted planning baseline, [`tip_20_closeout_v0_1.md`](tip_20_db_provider_evaluation_criteria_planning/tip_20_closeout_v0_1.md) - closed docs-only / planning-only provider evaluation criteria; no provider selected and no runtime implementation authorized |
 | TIP-21 | `tip_21_provider_decision_path_planning/` | [`tip_21_planning_brief_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_planning_brief_v0_1.md) - accepted planning baseline, [`tip_21_closeout_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_closeout_v0_1.md) - closed docs-only / planning-only provider decision path planning; no provider selected and no runtime implementation authorized |
+| TIP-22 | `tip_22_localdev_only_durable_metadata_adapter_planning/` | [`tip_22_planning_brief_v0_1.md`](tip_22_localdev_only_durable_metadata_adapter_planning/tip_22_planning_brief_v0_1.md) - draft planning-only / docs-only LocalDev-only durable metadata adapter planning; does not authorize LocalDev adapter implementation and does not choose a production provider |
