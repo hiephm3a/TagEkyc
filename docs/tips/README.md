@@ -1,13 +1,19 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.35
+**Version:** 0.36
 **Status:** Active
 **Date:** 2026-06-16
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.36 - TIP-23 production provider decision evidence packet planning draft indexed
+
+- Added TIP-23 Production Provider Decision Evidence Packet Planning planning brief to the index.
+- Recorded TIP-23 as docs-only, planning-only, provider-neutral evidence-packet planning before any production durable metadata provider decision.
+- Preserved that TIP-23 chooses no provider, compares no provider options, names no concrete provider/package/tool/runtime dependency, authorizes no implementation, and makes no durability, backup/recovery, readiness, legal reliance, external audit reliance, or durable audit-store claim.
 
 ### v0.35 - TIP-22 closeout draft indexed
 
@@ -252,3 +258,4 @@ Canonical artifact names:
 | TIP-20 | `tip_20_db_provider_evaluation_criteria_planning/` | [`tip_20_planning_brief_v0_1.md`](tip_20_db_provider_evaluation_criteria_planning/tip_20_planning_brief_v0_1.md) - accepted planning baseline, [`tip_20_closeout_v0_1.md`](tip_20_db_provider_evaluation_criteria_planning/tip_20_closeout_v0_1.md) - closed docs-only / planning-only provider evaluation criteria; no provider selected and no runtime implementation authorized |
 | TIP-21 | `tip_21_provider_decision_path_planning/` | [`tip_21_planning_brief_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_planning_brief_v0_1.md) - accepted planning baseline, [`tip_21_closeout_v0_1.md`](tip_21_provider_decision_path_planning/tip_21_closeout_v0_1.md) - closed docs-only / planning-only provider decision path planning; no provider selected and no runtime implementation authorized |
 | TIP-22 | `tip_22_localdev_only_durable_metadata_adapter_planning/` | [`tip_22_planning_brief_v0_1.md`](tip_22_localdev_only_durable_metadata_adapter_planning/tip_22_planning_brief_v0_1.md) - accepted planning baseline, [`tip_22_closeout_v0_1.md`](tip_22_localdev_only_durable_metadata_adapter_planning/tip_22_closeout_v0_1.md) - closed docs-only / planning-only LocalDev-only durable metadata adapter planning; no LocalDev adapter implementation and no production provider decision authorized |
+| TIP-23 | `tip_23_production_provider_decision_evidence_packet_planning/` | [`tip_23_planning_brief_v0_1.md`](tip_23_production_provider_decision_evidence_packet_planning/tip_23_planning_brief_v0_1.md) - draft docs-only / planning-only production provider decision evidence packet planning; no provider selected, compared, named, or implemented |
