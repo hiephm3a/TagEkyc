@@ -1,13 +1,22 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.46
+**Version:** 0.47
 **Status:** Active
 **Date:** 2026-06-17
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.47 - TIP-29 migration reversibility rollback exit planning draft indexed
+
+- Added TIP-29 Migration / Reversibility / Rollback / Exit Planning draft to the index.
+- Recorded TIP-29 as docs-only, planning-only, provider-neutral migration, reversibility, rollback, abandon, replacement, exit, and provider-mechanics containment requirements planning.
+- Recorded that TIP-29 defines introduction requirements, provider-mechanics containment requirements, schema/index/migration authorization requirements, metadata shape evolution requirements, rollback requirements, abandon/failed decision requirements, replacement/exit requirements, durable truth preservation requirements, audit history/correction requirements, idempotency/duplicate/conflict preservation requirements, package/completion preservation requirements, forbidden-data preservation requirements, configuration/environment separation alignment, operational/incident alignment, backup/restore alignment, and evidence required before provider decision.
+- Recorded that TIP-29 resolves TIP-25 `G-004` at planning level only, subject to homeowner/GPT acceptance, with no migration implementation, rollback implementation, provider-specific exit evidence, provider decision, capability, or readiness claim.
+- Preserved that `G-001` remains partially blocked pending accepted RPO/RTO target decisions, `G-002` remains resolved at planning level, `G-003` remains resolved at planning level, and provider decision remains blocked.
+- Preserved that TIP-29 chooses no provider, compares no provider options, names no concrete provider/package/tool/runtime dependency, collects no provider-specific evidence, authorizes no runtime implementation, and opens no LocalDev adapter work.
 
 ### v0.46 - TIP-28 configuration environment separation closeout indexed
 
@@ -341,3 +350,4 @@ Canonical artifact names:
 | TIP-26 | `tip_26_backup_recovery_requirements_planning/` | [`tip_26_planning_brief_v0_1.md`](tip_26_backup_recovery_requirements_planning/tip_26_planning_brief_v0_1.md) - accepted planning baseline, [`tip_26_closeout_v0_1.md`](tip_26_backup_recovery_requirements_planning/tip_26_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral backup/recovery requirements planning; narrows TIP-25 `G-001` by defining requirement shape while leaving it partially blocked pending accepted RPO/RTO target decisions and operational ownership alignment, with no capability, readiness, provider suitability, provider decision, or implementation claim |
 | TIP-27 | `tip_27_operational_ownership_incident_handling_planning/` | [`tip_27_planning_brief_v0_1.md`](tip_27_operational_ownership_incident_handling_planning/tip_27_planning_brief_v0_1.md) - accepted planning baseline, [`tip_27_closeout_v0_1.md`](tip_27_operational_ownership_incident_handling_planning/tip_27_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral operational ownership and incident handling requirements planning; resolves TIP-25 `G-002` at planning level only, further narrows the ownership-alignment side of `G-001`, and leaves provider decision blocked pending unresolved `G-001`, `G-003`, and `G-004` |
 | TIP-28 | `tip_28_configuration_environment_separation_planning/` | [`tip_28_planning_brief_v0_1.md`](tip_28_configuration_environment_separation_planning/tip_28_planning_brief_v0_1.md) - accepted planning baseline, [`tip_28_closeout_v0_1.md`](tip_28_configuration_environment_separation_planning/tip_28_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral configuration and environment separation requirements planning; resolves TIP-25 `G-003` at planning level only, leaves provider decision blocked pending unresolved `G-001` and `G-004`, and makes no runtime configuration implementation, environment enforcement, capability, provider decision, or readiness claim |
+| TIP-29 | `tip_29_migration_reversibility_rollback_exit_planning/` | [`tip_29_planning_brief_v0_1.md`](tip_29_migration_reversibility_rollback_exit_planning/tip_29_planning_brief_v0_1.md) - draft planning baseline; docs-only / planning-only provider-neutral migration, reversibility, rollback, abandon, replacement, exit, and provider-mechanics containment requirements planning; resolves TIP-25 `G-004` at planning level only, subject to homeowner/GPT acceptance, leaves provider decision blocked pending unresolved `G-001`, and makes no migration implementation, rollback implementation, provider-specific exit evidence, capability, provider decision, or readiness claim |
