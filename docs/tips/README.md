@@ -1,13 +1,22 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.43
+**Version:** 0.44
 **Status:** Active
 **Date:** 2026-06-17
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.44 - TIP-27 operational ownership incident handling closeout indexed
+
+- Added TIP-27 Operational Ownership / Incident Handling Planning closeout draft to the index.
+- Recorded TIP-27 as closed docs-only / planning-only provider-neutral operational ownership and incident handling requirements planning.
+- Recorded that TIP-27 accepts the role/function ownership baseline for durable metadata operations, incident handling, quarantine, reconciliation, correction workflow, backup/recovery requirement approval, restore validation evidence, RPO/RTO target decision preparation or review, monitoring, alerting, logging, runbook, escalation, and STOP/RRI requirements.
+- Recorded that TIP-27 resolves TIP-25 `G-002` at planning level only, subject to homeowner/GPT acceptance of the closeout, with no operational readiness, incident readiness, monitoring readiness, alerting readiness, logging readiness, runbook readiness, support, capability, provider suitability, or implementation claim.
+- Recorded that TIP-27 further narrows the ownership-alignment side of `G-001`, while `G-001` remains partially blocked pending accepted RPO/RTO target decisions, and `G-003` and `G-004` remain blocked.
+- Preserved that provider decision remains blocked and that TIP-27 closeout chooses no provider, compares no provider options, names no concrete provider/package/tool/runtime dependency, collects no provider-specific evidence, authorizes no runtime implementation, and opens no LocalDev adapter work.
 
 ### v0.43 - TIP-27 operational ownership incident handling planning draft indexed
 
@@ -312,4 +321,4 @@ Canonical artifact names:
 | TIP-24 | `tip_24_provider_decision_evidence_packet_assembly_planning/` | [`tip_24_planning_brief_v0_1.md`](tip_24_provider_decision_evidence_packet_assembly_planning/tip_24_planning_brief_v0_1.md) - accepted planning baseline, [`tip_24_closeout_v0_1.md`](tip_24_provider_decision_evidence_packet_assembly_planning/tip_24_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral evidence packet assembly planning; no provider selected, compared, named, evidenced, or implemented |
 | TIP-25 | `tip_25_provider_neutral_evidence_packet_assembly/` | [`tip_25_evidence_packet_v0_1.md`](tip_25_provider_neutral_evidence_packet_assembly/tip_25_evidence_packet_v0_1.md) - draft docs-only provider-neutral evidence packet assembly; provider decision remains blocked by visible planning gaps |
 | TIP-26 | `tip_26_backup_recovery_requirements_planning/` | [`tip_26_planning_brief_v0_1.md`](tip_26_backup_recovery_requirements_planning/tip_26_planning_brief_v0_1.md) - accepted planning baseline, [`tip_26_closeout_v0_1.md`](tip_26_backup_recovery_requirements_planning/tip_26_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral backup/recovery requirements planning; narrows TIP-25 `G-001` by defining requirement shape while leaving it partially blocked pending accepted RPO/RTO target decisions and operational ownership alignment, with no capability, readiness, provider suitability, provider decision, or implementation claim |
-| TIP-27 | `tip_27_operational_ownership_incident_handling_planning/` | [`tip_27_planning_brief_v0_1.md`](tip_27_operational_ownership_incident_handling_planning/tip_27_planning_brief_v0_1.md) - draft docs-only / planning-only provider-neutral operational ownership and incident handling requirements planning; resolves TIP-25 `G-002` at planning level only if accepted, further narrows the ownership-alignment side of `G-001`, and leaves provider decision blocked pending unresolved `G-001`, `G-003`, and `G-004` |
+| TIP-27 | `tip_27_operational_ownership_incident_handling_planning/` | [`tip_27_planning_brief_v0_1.md`](tip_27_operational_ownership_incident_handling_planning/tip_27_planning_brief_v0_1.md) - accepted planning baseline, [`tip_27_closeout_v0_1.md`](tip_27_operational_ownership_incident_handling_planning/tip_27_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral operational ownership and incident handling requirements planning; resolves TIP-25 `G-002` at planning level only, further narrows the ownership-alignment side of `G-001`, and leaves provider decision blocked pending unresolved `G-001`, `G-003`, and `G-004` |
