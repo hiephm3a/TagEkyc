@@ -1,13 +1,23 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.48
+**Version:** 0.49
 **Status:** Active
 **Date:** 2026-06-17
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.49 - TIP-30 RPO RTO target decision planning draft indexed
+
+- Added TIP-30 RPO / RTO Target Decision Planning draft to the index.
+- Recorded TIP-30 as docs-only, planning-only, provider-neutral RPO/RTO target decision planning for the remaining TIP-25 `G-001` blocker.
+- Recorded that TIP-30 defines acceptable target-decision forms, recommended acceptance criteria, RPO requirement baseline, RTO requirement baseline, restore validation evidence requirements, false-success prevention requirements, partial/unknown/interrupted outcome requirements, same-boundary write-set preservation requirements, idempotency/duplicate/conflict preservation requirements, audit/business consistency preservation requirements, package/completion preservation requirements, forbidden-data preservation requirements, operational ownership alignment, configuration/environment separation alignment, migration/rollback/exit alignment, evidence requirements, forbidden claims, and STOP/RRI requirements.
+- Recorded that TIP-30 does not set numeric or otherwise concrete RPO/RTO targets because no homeowner/GPT-accepted concrete target decision exists in the prompt or accepted repo baseline.
+- Recorded that TIP-30 partially narrows `G-001`, which remains blocked pending homeowner/GPT acceptance of concrete RPO/RTO target decisions or accepted target classes.
+- Preserved that `G-002`, `G-003`, and `G-004` remain resolved at planning level by prior accepted baselines, while provider decision remains blocked by unresolved `G-001`.
+- Preserved that TIP-30 chooses no provider, compares no provider options, names no concrete provider/package/tool/runtime dependency, collects no provider-specific evidence, authorizes no runtime implementation, and opens no backup, restore, monitoring, alerting, logging, runbook, LocalDev adapter, schema, migration, repository, adapter, package, or dependency work.
 
 ### v0.48 - TIP-29 migration rollback exit closeout indexed
 
@@ -360,3 +370,4 @@ Canonical artifact names:
 | TIP-27 | `tip_27_operational_ownership_incident_handling_planning/` | [`tip_27_planning_brief_v0_1.md`](tip_27_operational_ownership_incident_handling_planning/tip_27_planning_brief_v0_1.md) - accepted planning baseline, [`tip_27_closeout_v0_1.md`](tip_27_operational_ownership_incident_handling_planning/tip_27_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral operational ownership and incident handling requirements planning; resolves TIP-25 `G-002` at planning level only, further narrows the ownership-alignment side of `G-001`, and leaves provider decision blocked pending unresolved `G-001`, `G-003`, and `G-004` |
 | TIP-28 | `tip_28_configuration_environment_separation_planning/` | [`tip_28_planning_brief_v0_1.md`](tip_28_configuration_environment_separation_planning/tip_28_planning_brief_v0_1.md) - accepted planning baseline, [`tip_28_closeout_v0_1.md`](tip_28_configuration_environment_separation_planning/tip_28_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral configuration and environment separation requirements planning; resolves TIP-25 `G-003` at planning level only, leaves provider decision blocked pending unresolved `G-001` and `G-004`, and makes no runtime configuration implementation, environment enforcement, capability, provider decision, or readiness claim |
 | TIP-29 | `tip_29_migration_reversibility_rollback_exit_planning/` | [`tip_29_planning_brief_v0_1.md`](tip_29_migration_reversibility_rollback_exit_planning/tip_29_planning_brief_v0_1.md) - accepted planning baseline, [`tip_29_closeout_v0_1.md`](tip_29_migration_reversibility_rollback_exit_planning/tip_29_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral migration, reversibility, rollback, abandon, replacement, exit, and provider-mechanics containment requirements planning; resolves TIP-25 `G-004` at planning level only, leaves provider decision blocked pending unresolved `G-001`, and makes no migration implementation, rollback implementation, provider-specific exit evidence, capability, provider decision, or readiness claim |
+| TIP-30 | `tip_30_rpo_rto_target_decision_planning/` | [`tip_30_planning_brief_v0_1.md`](tip_30_rpo_rto_target_decision_planning/tip_30_planning_brief_v0_1.md) - draft docs-only / planning-only provider-neutral RPO/RTO target decision planning; partially narrows TIP-25 `G-001` by defining target-decision posture and acceptance criteria, leaves `G-001` blocked pending homeowner/GPT acceptance of concrete RPO/RTO target decisions or accepted target classes, and makes no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim |
