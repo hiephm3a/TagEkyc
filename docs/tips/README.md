@@ -1,13 +1,21 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.40
+**Version:** 0.41
 **Status:** Active
 **Date:** 2026-06-17
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.41 - TIP-26 backup recovery requirements planning draft indexed
+
+- Added TIP-26 Backup / Recovery Requirements Planning draft to the index.
+- Recorded TIP-26 as docs-only, planning-only, provider-neutral backup/recovery requirements planning.
+- Preserved that TIP-26 defines backup/recovery, restore consistency, restore scenarios, RPO/RTO, restore validation, quarantine, reconciliation, and false-success prevention requirements as requirements only.
+- Recorded that TIP-26 narrows TIP-25 `G-001` by defining provider-neutral backup/recovery requirements, while `G-001` remains partially blocked pending accepted RPO/RTO target decisions and operational ownership alignment.
+- Preserved that TIP-26 chooses no provider, compares no provider options, names no concrete provider/package/tool/runtime dependency, collects no provider-specific evidence, authorizes no implementation, and makes no backup/recovery, restore capability, RPO/RTO support, operational durability, readiness, legal reliance, external audit reliance, durable audit-store, or provider suitability claim.
 
 ### v0.40 - TIP-25 evidence packet draft indexed
 
@@ -286,3 +294,4 @@ Canonical artifact names:
 | TIP-23 | `tip_23_production_provider_decision_evidence_packet_planning/` | [`tip_23_planning_brief_v0_1.md`](tip_23_production_provider_decision_evidence_packet_planning/tip_23_planning_brief_v0_1.md) - accepted planning baseline, [`tip_23_closeout_v0_1.md`](tip_23_production_provider_decision_evidence_packet_planning/tip_23_closeout_v0_1.md) - closed docs-only / planning-only provider decision evidence packet planning; no provider selected, compared, named, or implemented |
 | TIP-24 | `tip_24_provider_decision_evidence_packet_assembly_planning/` | [`tip_24_planning_brief_v0_1.md`](tip_24_provider_decision_evidence_packet_assembly_planning/tip_24_planning_brief_v0_1.md) - accepted planning baseline, [`tip_24_closeout_v0_1.md`](tip_24_provider_decision_evidence_packet_assembly_planning/tip_24_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral evidence packet assembly planning; no provider selected, compared, named, evidenced, or implemented |
 | TIP-25 | `tip_25_provider_neutral_evidence_packet_assembly/` | [`tip_25_evidence_packet_v0_1.md`](tip_25_provider_neutral_evidence_packet_assembly/tip_25_evidence_packet_v0_1.md) - draft docs-only provider-neutral evidence packet assembly; provider decision remains blocked by visible planning gaps |
+| TIP-26 | `tip_26_backup_recovery_requirements_planning/` | [`tip_26_planning_brief_v0_1.md`](tip_26_backup_recovery_requirements_planning/tip_26_planning_brief_v0_1.md) - draft docs-only / planning-only provider-neutral backup/recovery requirements planning; narrows TIP-25 `G-001` by defining requirement shape while leaving it partially blocked pending accepted RPO/RTO target decisions and operational ownership alignment, with no capability, readiness, provider suitability, provider decision, or implementation claim |
