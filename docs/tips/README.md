@@ -1,13 +1,22 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.45
+**Version:** 0.46
 **Status:** Active
 **Date:** 2026-06-17
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.46 - TIP-28 configuration environment separation closeout indexed
+
+- Added TIP-28 Configuration / Environment Separation Planning closeout draft to the index.
+- Recorded TIP-28 as closed docs-only / planning-only provider-neutral configuration and environment separation requirements planning.
+- Recorded that TIP-28 accepts environment category requirements, production versus non-production separation requirements, LocalDev exclusion requirements, missing/ambiguous/invalid configuration behavior, fallback/default behavior requirements, credential/identity/reference separation requirements, runtime registration guardrail requirements, restore/incident/operations environment requirements, evidence requirements, and STOP/RRI requirements.
+- Recorded that TIP-28 resolves TIP-25 `G-003` at planning level only, subject to homeowner/GPT acceptance of the closeout, with no runtime configuration implementation, environment enforcement, configuration enforcement capability, environment separation capability, provider decision, provider comparison, provider-specific evidence collection, readiness claim, or capability claim.
+- Preserved that `G-001` remains partially blocked pending accepted RPO/RTO target decisions, `G-002` remains resolved at planning level, `G-004` remains blocked, and provider decision remains blocked.
+- Preserved that TIP-28 closeout chooses no provider, compares no provider options, names no concrete provider/package/tool/runtime dependency, collects no provider-specific evidence, authorizes no runtime implementation, and opens no LocalDev adapter work.
 
 ### v0.45 - TIP-28 configuration environment separation planning draft indexed
 
@@ -331,4 +340,4 @@ Canonical artifact names:
 | TIP-25 | `tip_25_provider_neutral_evidence_packet_assembly/` | [`tip_25_evidence_packet_v0_1.md`](tip_25_provider_neutral_evidence_packet_assembly/tip_25_evidence_packet_v0_1.md) - draft docs-only provider-neutral evidence packet assembly; provider decision remains blocked by visible planning gaps |
 | TIP-26 | `tip_26_backup_recovery_requirements_planning/` | [`tip_26_planning_brief_v0_1.md`](tip_26_backup_recovery_requirements_planning/tip_26_planning_brief_v0_1.md) - accepted planning baseline, [`tip_26_closeout_v0_1.md`](tip_26_backup_recovery_requirements_planning/tip_26_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral backup/recovery requirements planning; narrows TIP-25 `G-001` by defining requirement shape while leaving it partially blocked pending accepted RPO/RTO target decisions and operational ownership alignment, with no capability, readiness, provider suitability, provider decision, or implementation claim |
 | TIP-27 | `tip_27_operational_ownership_incident_handling_planning/` | [`tip_27_planning_brief_v0_1.md`](tip_27_operational_ownership_incident_handling_planning/tip_27_planning_brief_v0_1.md) - accepted planning baseline, [`tip_27_closeout_v0_1.md`](tip_27_operational_ownership_incident_handling_planning/tip_27_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral operational ownership and incident handling requirements planning; resolves TIP-25 `G-002` at planning level only, further narrows the ownership-alignment side of `G-001`, and leaves provider decision blocked pending unresolved `G-001`, `G-003`, and `G-004` |
-| TIP-28 | `tip_28_configuration_environment_separation_planning/` | [`tip_28_planning_brief_v0_1.md`](tip_28_configuration_environment_separation_planning/tip_28_planning_brief_v0_1.md) - draft docs-only / planning-only provider-neutral configuration and environment separation requirements planning; resolves TIP-25 `G-003` at planning level only, subject to homeowner/GPT acceptance, with no runtime configuration implementation, environment enforcement, provider decision, capability, or readiness claim |
+| TIP-28 | `tip_28_configuration_environment_separation_planning/` | [`tip_28_planning_brief_v0_1.md`](tip_28_configuration_environment_separation_planning/tip_28_planning_brief_v0_1.md) - accepted planning baseline, [`tip_28_closeout_v0_1.md`](tip_28_configuration_environment_separation_planning/tip_28_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral configuration and environment separation requirements planning; resolves TIP-25 `G-003` at planning level only, leaves provider decision blocked pending unresolved `G-001` and `G-004`, and makes no runtime configuration implementation, environment enforcement, capability, provider decision, or readiness claim |
