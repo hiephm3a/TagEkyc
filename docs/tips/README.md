@@ -1,13 +1,22 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.57
+**Version:** 0.58
 **Status:** Active
 **Date:** 2026-06-18
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.58 - TIP-35 S2 branch debt traceability and artifact gap registration indexed
+
+- Added TIP-35 S2 Branch Debt Traceability / Artifact Gap Registration planning brief to the index.
+- Recorded TIP-35 as draft docs-only / traceability-only / gap-registration-only.
+- Recorded that TIP-35 registers final S2 branch/deferred-scope crosswalk from TIP-10, TIP-11, TIP-14, TIP-25, TIP-32, TIP-33, the Phase 1 debt registry, and the logical data model into current S2/S3 gate status.
+- Recorded new debt `GOV-001` for incomplete branch/deferred-scope debt traceability.
+- Recorded new artifact/raw evidence debts `ART-001` through `ART-009` covering storage boundary, durable metadata reference resolution, evidence package object completeness, retention/expiry, purge/disposal, legal hold sync, access/audit/security, metadata-artifact orphan handling, and raw payload policy.
+- Preserved TIP-34 as valid only while protocol-only and recorded that S3 must not proceed to provider-specific evidence collection, provider comparison, provider acceptance/rejection, implementation, or production readiness claims until `GOV-001` and `ART-001` through `ART-009` are accepted as blockers/deferred with explicit gates or resolved by later reviewed TIPs.
 
 ### v0.57 - TIP-34 S3 provider decision planning closeout indexed
 
@@ -448,3 +457,4 @@ Canonical artifact names:
 | TIP-32 | `tip_32_provider_neutral_evidence_gate_recheck/` | [`tip_32_precheck_brief_v0_1.md`](tip_32_provider_neutral_evidence_gate_recheck/tip_32_precheck_brief_v0_1.md) - accepted precheck brief, [`tip_32_closeout_v0_1.md`](tip_32_provider_neutral_evidence_gate_recheck/tip_32_closeout_v0_1.md) - closeout draft; closed docs-only / precheck-only provider-neutral evidence gate recheck and provider decision readiness precheck; accepts `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`, meaning ready to propose a later provider decision slice, not ready to choose or name a provider in TIP-32; makes no provider decision, implementation, capability, support, or readiness claim |
 | TIP-33 | `tip_33_s2_final_closeout_s3_handoff/` | [`tip_33_s2_closeout_v0_1.md`](tip_33_s2_final_closeout_s3_handoff/tip_33_s2_closeout_v0_1.md) - draft docs-only / closeout-only / handoff-only provider-neutral S2 final closeout and S3 handoff; closes S2 only as provider-neutral durable metadata foundation / evidence readiness with result `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`; hands off any provider decision work to S3 under separate scope and review; makes no provider decision, implementation, capability, support, or readiness claim |
 | TIP-34 | `tip_34_production_durable_metadata_provider_decision_planning/` | [`tip_34_planning_brief_v0_1.md`](tip_34_production_durable_metadata_provider_decision_planning/tip_34_planning_brief_v0_1.md) - accepted planning brief, [`tip_34_closeout_v0_1.md`](tip_34_production_durable_metadata_provider_decision_planning/tip_34_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only S3 provider decision planning protocol; accepts only protocol, evidence requirements, reviewer responsibilities, and STOP/RRI gates for a later provider decision brief; does not answer the provider decision question, authorize provider-specific evidence collection, choose, name, compare, score, shortlist, recommend, accept, reject, or evidence any provider, authorize implementation, or make capability, support, or readiness claims |
+| TIP-35 | `tip_35_s2_branch_debt_traceability_artifact_gap_registration/` | [`tip_35_planning_brief_v0_1.md`](tip_35_s2_branch_debt_traceability_artifact_gap_registration/tip_35_planning_brief_v0_1.md) - draft docs-only / traceability-only / gap-registration-only S2 branch/deferred-scope debt crosswalk and artifact/raw evidence gap registration; records `GOV-001` and `ART-001` through `ART-009`; preserves TIP-34 as protocol-only and blocks S3 provider-specific evidence collection, provider comparison, provider acceptance/rejection, implementation, or production readiness claims until the new GOV/ART debts are accepted as blockers/deferred with explicit gates or resolved by later reviewed TIPs |
