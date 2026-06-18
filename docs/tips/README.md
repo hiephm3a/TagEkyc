@@ -1,13 +1,22 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.53
+**Version:** 0.54
 **Status:** Active
 **Date:** 2026-06-18
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.54 - TIP-32 provider-neutral evidence gate recheck closeout indexed
+
+- Added TIP-32 Provider-Neutral Evidence Gate Recheck / Provider Decision Readiness Precheck closeout draft to the index.
+- Recorded TIP-32 as closed docs-only / precheck-only / provider-neutral evidence gate recheck and provider decision readiness precheck.
+- Recorded homeowner/GPT acceptance of TIP-32 result `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`.
+- Recorded that TIP-32 result means ready to propose a later separate provider decision slice, not ready to choose, compare, score, shortlist, recommend, accept, name, or evidence any provider in TIP-32.
+- Recorded that TIP-32 closes with `G-001` resolved at decision-class level by accepted `DMT-LOSSLESS-VALIDATED`, `G-002` resolved at planning level by TIP-27, `G-003` resolved at planning level by TIP-28, and `G-004` resolved at planning level by TIP-29.
+- Preserved that TIP-32 closeout authorizes no provider decision, provider naming, provider comparison, provider scoring, provider shortlisting, provider recommendation, provider acceptance, provider-specific evidence collection, implementation, runtime work, schema/index/migration work, package/dependency work, adapter work, LocalDev adapter work, backup/restore implementation, support, capability, readiness, legal reliance, external audit reliance, durable audit-store readiness, real durability, or provider suitability claim.
 
 ### v0.53 - TIP-32 provider-neutral evidence gate recheck indexed
 
@@ -408,4 +417,4 @@ Canonical artifact names:
 | TIP-29 | `tip_29_migration_reversibility_rollback_exit_planning/` | [`tip_29_planning_brief_v0_1.md`](tip_29_migration_reversibility_rollback_exit_planning/tip_29_planning_brief_v0_1.md) - accepted planning baseline, [`tip_29_closeout_v0_1.md`](tip_29_migration_reversibility_rollback_exit_planning/tip_29_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral migration, reversibility, rollback, abandon, replacement, exit, and provider-mechanics containment requirements planning; resolves TIP-25 `G-004` at planning level only, leaves provider decision blocked pending unresolved `G-001`, and makes no migration implementation, rollback implementation, provider-specific exit evidence, capability, provider decision, or readiness claim |
 | TIP-30 | `tip_30_rpo_rto_target_decision_planning/` | [`tip_30_planning_brief_v0_1.md`](tip_30_rpo_rto_target_decision_planning/tip_30_planning_brief_v0_1.md) - accepted planning baseline, [`tip_30_closeout_v0_1.md`](tip_30_rpo_rto_target_decision_planning/tip_30_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral RPO/RTO target decision planning; partially narrows TIP-25 `G-001` at planning level only, leaves `G-001` blocked pending homeowner/GPT acceptance of concrete RPO/RTO target decisions or accepted target classes, and makes no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim |
 | TIP-31 | `tip_31_rpo_rto_target_class_decision/` | [`tip_31_decision_brief_v0_1.md`](tip_31_rpo_rto_target_class_decision/tip_31_decision_brief_v0_1.md) - accepted decision brief, [`tip_31_closeout_v0_1.md`](tip_31_rpo_rto_target_class_decision/tip_31_closeout_v0_1.md) - closeout draft; closed docs-only / decision-only provider-neutral RPO/RTO target class decision; resolves TIP-25 `G-001` at decision-class level by accepted target class `DMT-LOSSLESS-VALIDATED`, with no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim |
-| TIP-32 | `tip_32_provider_neutral_evidence_gate_recheck/` | [`tip_32_precheck_brief_v0_1.md`](tip_32_provider_neutral_evidence_gate_recheck/tip_32_precheck_brief_v0_1.md) - draft precheck brief; docs-only / precheck-only provider-neutral evidence gate recheck and provider decision readiness precheck; classifies the project as `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`, meaning ready to propose a later provider decision slice, not ready to choose or name a provider in TIP-32; makes no provider decision, implementation, capability, support, or readiness claim |
+| TIP-32 | `tip_32_provider_neutral_evidence_gate_recheck/` | [`tip_32_precheck_brief_v0_1.md`](tip_32_provider_neutral_evidence_gate_recheck/tip_32_precheck_brief_v0_1.md) - accepted precheck brief, [`tip_32_closeout_v0_1.md`](tip_32_provider_neutral_evidence_gate_recheck/tip_32_closeout_v0_1.md) - closeout draft; closed docs-only / precheck-only provider-neutral evidence gate recheck and provider decision readiness precheck; accepts `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`, meaning ready to propose a later provider decision slice, not ready to choose or name a provider in TIP-32; makes no provider decision, implementation, capability, support, or readiness claim |
