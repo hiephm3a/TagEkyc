@@ -1,13 +1,20 @@
 # TagEkyc Review and TIP Playbook
 
 **File:** `docs/00_REVIEW_AND_TIP_PLAYBOOK.md`
-**Version:** 0.2-draft
+**Version:** 0.3-draft
 **Status:** Draft for review
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Captures reusable review, planning, and dispatch practices for TagEkyc TIP work.
 
 ## Changelog
+
+### v0.3-draft - TIP Analytical Summary / Intent Ledger rule
+
+- Added `L-TAG-Gov-01` requiring a TIP Analytical Summary / Intent Ledger before implementation dispatch for implementation TIPs and before or inside closeout for docs-only TIPs.
+- Added Outcome vs Intent reconciliation requirements for all TIP closeouts/archives.
+- Added templates for intent ledger, closeout/archive reconciliation, branch disposition, and debt/gap final state.
+- Added STOP/RRI and NEEDS PATCHES gates for missing ledgers, missing closeout reconciliation, missing branch disposition, docs-only authorization misuse, LocalDev evidence misuse, and omitted TIP-35 GOV/ART gates.
 
 ### v0.2-draft - Proof claim evidence-source rule
 
@@ -100,6 +107,94 @@ TIP planning docs SHOULD include:
 - Completion report expectations when applicable.
 
 TIP planning MUST state what is deferred.
+
+### L-TAG-Gov-01 - TIP Analytical Summary / Intent Ledger
+
+Every TIP MUST carry a clear analytical summary / intent ledger.
+
+For implementation TIPs:
+
+- The TIP Analytical Summary / Intent Ledger is required before implementation dispatch or kickoff acceptance.
+- If missing, STOP/RRI.
+- The ledger MUST be reviewed before code work begins.
+- Implementation dispatch MUST NOT begin until intent, expected outcome, accepted decisions, rejected/deferred branches, debt/gap impact, non-claims, allowed files/surfaces, and remaining STOP/RRI gates are explicit.
+
+For docs-only TIPs:
+
+- The TIP Analytical Summary / Intent Ledger is required before closeout or inside closeout.
+- If missing at closeout review, NEEDS PATCHES.
+- The ledger MAY be in the planning artifact, decision artifact, closeout artifact, or archive artifact, as long as it is easy to find and complete before the TIP is closed.
+
+For all TIP closeouts/archives:
+
+- Closeout/archive MUST include Outcome vs Intent reconciliation.
+- Closeout/archive MUST carry forward branch/deferred-scope decisions as explicit debt/gate if unresolved.
+- Closeout/archive MUST NOT treat planning-level gaps as capability proof.
+- Closeout/archive MUST preserve non-claims and implementation non-authorization boundaries unless a later accepted TIP explicitly changes them.
+
+Required analytical summary template:
+
+```markdown
+## TIP Analytical Summary / Intent Ledger
+
+### Intent
+What this TIP is trying to accomplish.
+
+### Expected Outcome
+What should be true after the TIP.
+
+### Accepted Decisions
+| Decision | Why accepted | Scope impact | Non-claims |
+| --- | --- | --- | --- |
+
+### Rejected / Deferred Branches
+| Branch / option | Disposition | Why | Follow-up debt/gate |
+| --- | --- | --- | --- |
+
+### Debt / Gap Impact
+| Debt/gap | Action | Result | Carry-forward gate |
+| --- | --- | --- | --- |
+
+### Non-Claims
+What this TIP must not be used to claim.
+
+### Dispatch Readiness
+For implementation TIPs only:
+- Is implementation dispatch allowed?
+- What exact files/surfaces may change?
+- What STOP/RRI gates remain?
+```
+
+Required closeout/archive reconciliation template:
+
+```markdown
+## Outcome vs Intent
+
+| Intended outcome | Actual result | Status | Notes / carry-forward |
+| --- | --- | --- | --- |
+
+## Decision / Branch Disposition
+
+| Decision / option | Final disposition | Why | Follow-up debt/gate |
+| --- | --- | --- | --- |
+
+## Debt / Gap Final State
+
+| Debt/gap | Final state | Resolved? | Evidence / next gate |
+| --- | --- | --- | --- |
+```
+
+Review gates:
+
+| Condition | Review result |
+| --- | --- |
+| Implementation TIP is missing Analytical Summary / Intent Ledger before dispatch | STOP/RRI |
+| Closeout/archive is missing Outcome vs Intent reconciliation | NEEDS PATCHES |
+| Branch/deferred option has no final disposition | NEEDS GAP REGISTRATION |
+| Planning-level gap is claimed as capability proof | STOP/RRI |
+| Docs-only TIP is used as implementation authorization | STOP/RRI |
+| LocalDev evidence is used as production evidence | STOP/RRI |
+| Relevant S3 provider-specific work omits TIP-35 `GOV-001` or `ART-001` through `ART-009` gates | STOP/RRI |
 
 ## 6. Skeleton-Only Guardrails
 
@@ -210,6 +305,7 @@ The reviewer prompt for dispatch readiness SHOULD explicitly ask:
 
 Before dispatching a TIP, check:
 
+- TIP Analytical Summary / Intent Ledger is present and reviewed.
 - Product Brief alignment.
 - Generic platform vs consumer profile boundary.
 - S1 scope control.
@@ -241,12 +337,14 @@ For skeleton-only dispatch, also check:
 
 A TIP completion report SHOULD include:
 
+- Outcome vs Intent reconciliation.
 - Files changed.
 - Summary of work.
 - Scope boundaries respected.
 - Tests/build run.
 - Deviations or STOP+REPORT items.
 - Deferred items.
+- Decision / branch disposition and unresolved debt/gap carry-forward gates.
 - Git status.
 - Self-check against non-goals.
 
