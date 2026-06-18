@@ -1,13 +1,22 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.56
+**Version:** 0.57
 **Status:** Active
 **Date:** 2026-06-18
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.57 - TIP-34 S3 provider decision planning closeout indexed
+
+- Added TIP-34 Production Durable Metadata Provider Decision Planning closeout to the index.
+- Recorded TIP-34 as closed docs-only / planning-only / S3 opening slice / provider-decision protocol-only.
+- Recorded homeowner/GPT acceptance of TIP-34 as landed at commit `30519d8`.
+- Recorded that TIP-34 accepts only the protocol for a later provider decision brief and does not answer the provider decision question.
+- Recorded that TIP-34 does not authorize provider-specific evidence collection, provider naming, provider comparison, provider scoring, provider shortlisting, provider recommendation, provider acceptance, provider rejection, provider evidence, or implementation.
+- Preserved S2 result `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE` and all TIP-17 through TIP-33 boundaries, including `IDurableMetadataRepository`, `DurableMetadataWriteSet`, TIP-19 same-boundary semantics, forbidden-data absence, credential and secret non-storage boundaries, criteria-before-choice, decision-path-before-provider-choice, LocalDev evidence limits, provider-neutral evidence packet discipline, visible gap register discipline, `DMT-LOSSLESS-VALIDATED`, and all capability/readiness non-claims.
 
 ### v0.56 - TIP-34 S3 provider decision planning indexed
 
@@ -438,4 +447,4 @@ Canonical artifact names:
 | TIP-31 | `tip_31_rpo_rto_target_class_decision/` | [`tip_31_decision_brief_v0_1.md`](tip_31_rpo_rto_target_class_decision/tip_31_decision_brief_v0_1.md) - accepted decision brief, [`tip_31_closeout_v0_1.md`](tip_31_rpo_rto_target_class_decision/tip_31_closeout_v0_1.md) - closeout draft; closed docs-only / decision-only provider-neutral RPO/RTO target class decision; resolves TIP-25 `G-001` at decision-class level by accepted target class `DMT-LOSSLESS-VALIDATED`, with no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim |
 | TIP-32 | `tip_32_provider_neutral_evidence_gate_recheck/` | [`tip_32_precheck_brief_v0_1.md`](tip_32_provider_neutral_evidence_gate_recheck/tip_32_precheck_brief_v0_1.md) - accepted precheck brief, [`tip_32_closeout_v0_1.md`](tip_32_provider_neutral_evidence_gate_recheck/tip_32_closeout_v0_1.md) - closeout draft; closed docs-only / precheck-only provider-neutral evidence gate recheck and provider decision readiness precheck; accepts `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`, meaning ready to propose a later provider decision slice, not ready to choose or name a provider in TIP-32; makes no provider decision, implementation, capability, support, or readiness claim |
 | TIP-33 | `tip_33_s2_final_closeout_s3_handoff/` | [`tip_33_s2_closeout_v0_1.md`](tip_33_s2_final_closeout_s3_handoff/tip_33_s2_closeout_v0_1.md) - draft docs-only / closeout-only / handoff-only provider-neutral S2 final closeout and S3 handoff; closes S2 only as provider-neutral durable metadata foundation / evidence readiness with result `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`; hands off any provider decision work to S3 under separate scope and review; makes no provider decision, implementation, capability, support, or readiness claim |
-| TIP-34 | `tip_34_production_durable_metadata_provider_decision_planning/` | [`tip_34_planning_brief_v0_1.md`](tip_34_production_durable_metadata_provider_decision_planning/tip_34_planning_brief_v0_1.md) - draft docs-only / planning-only S3 provider decision planning brief; defines protocol, evidence requirements, reviewer responsibilities, and STOP/RRI gates for a later provider decision brief; does not answer the provider decision question, authorize provider-specific evidence collection, choose, name, compare, score, shortlist, recommend, accept, reject, or evidence any provider, authorize implementation, or make capability, support, or readiness claims |
+| TIP-34 | `tip_34_production_durable_metadata_provider_decision_planning/` | [`tip_34_planning_brief_v0_1.md`](tip_34_production_durable_metadata_provider_decision_planning/tip_34_planning_brief_v0_1.md) - accepted planning brief, [`tip_34_closeout_v0_1.md`](tip_34_production_durable_metadata_provider_decision_planning/tip_34_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only S3 provider decision planning protocol; accepts only protocol, evidence requirements, reviewer responsibilities, and STOP/RRI gates for a later provider decision brief; does not answer the provider decision question, authorize provider-specific evidence collection, choose, name, compare, score, shortlist, recommend, accept, reject, or evidence any provider, authorize implementation, or make capability, support, or readiness claims |
