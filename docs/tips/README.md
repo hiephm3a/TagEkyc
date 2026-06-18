@@ -1,13 +1,23 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.54
+**Version:** 0.55
 **Status:** Active
 **Date:** 2026-06-18
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.55 - TIP-33 S2 final closeout / S3 handoff indexed
+
+- Added TIP-33 S2 Final Closeout / S3 Handoff brief to the index.
+- Recorded TIP-33 as draft docs-only / closeout-only / handoff-only / provider-neutral S2 final closeout and S3 handoff.
+- Recorded S2 as closed only as provider-neutral durable metadata foundation / evidence readiness, with result `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`.
+- Recorded that S2 does not choose, name, compare, score, shortlist, recommend, accept, or evidence any provider and does not authorize implementation.
+- Recorded that TIP-33 hands off to S3 for any separately governed provider decision work.
+- Recorded final TIP-25 gap register status: `G-001` resolved at decision-class level by accepted `DMT-LOSSLESS-VALIDATED`, `G-002` resolved at planning level by TIP-27, `G-003` resolved at planning level by TIP-28, and `G-004` resolved at planning level by TIP-29.
+- Preserved all TIP-17 through TIP-32 boundaries, including `IDurableMetadataRepository`, `DurableMetadataWriteSet`, TIP-19 same-boundary semantics, forbidden-data absence, credential and secret non-storage boundaries, criteria-before-choice, decision-path-before-provider-choice, LocalDev evidence limits, provider-neutral evidence packet discipline, visible gap register discipline, and all capability/readiness non-claims.
 
 ### v0.54 - TIP-32 provider-neutral evidence gate recheck closeout indexed
 
@@ -418,3 +428,4 @@ Canonical artifact names:
 | TIP-30 | `tip_30_rpo_rto_target_decision_planning/` | [`tip_30_planning_brief_v0_1.md`](tip_30_rpo_rto_target_decision_planning/tip_30_planning_brief_v0_1.md) - accepted planning baseline, [`tip_30_closeout_v0_1.md`](tip_30_rpo_rto_target_decision_planning/tip_30_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral RPO/RTO target decision planning; partially narrows TIP-25 `G-001` at planning level only, leaves `G-001` blocked pending homeowner/GPT acceptance of concrete RPO/RTO target decisions or accepted target classes, and makes no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim |
 | TIP-31 | `tip_31_rpo_rto_target_class_decision/` | [`tip_31_decision_brief_v0_1.md`](tip_31_rpo_rto_target_class_decision/tip_31_decision_brief_v0_1.md) - accepted decision brief, [`tip_31_closeout_v0_1.md`](tip_31_rpo_rto_target_class_decision/tip_31_closeout_v0_1.md) - closeout draft; closed docs-only / decision-only provider-neutral RPO/RTO target class decision; resolves TIP-25 `G-001` at decision-class level by accepted target class `DMT-LOSSLESS-VALIDATED`, with no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim |
 | TIP-32 | `tip_32_provider_neutral_evidence_gate_recheck/` | [`tip_32_precheck_brief_v0_1.md`](tip_32_provider_neutral_evidence_gate_recheck/tip_32_precheck_brief_v0_1.md) - accepted precheck brief, [`tip_32_closeout_v0_1.md`](tip_32_provider_neutral_evidence_gate_recheck/tip_32_closeout_v0_1.md) - closeout draft; closed docs-only / precheck-only provider-neutral evidence gate recheck and provider decision readiness precheck; accepts `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`, meaning ready to propose a later provider decision slice, not ready to choose or name a provider in TIP-32; makes no provider decision, implementation, capability, support, or readiness claim |
+| TIP-33 | `tip_33_s2_final_closeout_s3_handoff/` | [`tip_33_s2_closeout_v0_1.md`](tip_33_s2_final_closeout_s3_handoff/tip_33_s2_closeout_v0_1.md) - draft docs-only / closeout-only / handoff-only provider-neutral S2 final closeout and S3 handoff; closes S2 only as provider-neutral durable metadata foundation / evidence readiness with result `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`; hands off any provider decision work to S3 under separate scope and review; makes no provider decision, implementation, capability, support, or readiness claim |
