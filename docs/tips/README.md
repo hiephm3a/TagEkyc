@@ -1,13 +1,22 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.51
+**Version:** 0.52
 **Status:** Active
 **Date:** 2026-06-18
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.52 - TIP-31 RPO RTO target class decision closeout indexed
+
+- Added TIP-31 Concrete RPO / RTO Target Class Decision closeout draft to the index.
+- Recorded TIP-31 as closed docs-only / decision-only provider-neutral RPO/RTO target class decision.
+- Recorded homeowner/GPT acceptance of target class `DMT-LOSSLESS-VALIDATED` as the requirement-only decision-class resolution for TIP-25 `G-001`.
+- Recorded that `G-001` is resolved at decision-class level by accepted target class `DMT-LOSSLESS-VALIDATED`, with no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim.
+- Preserved that provider decision remains blocked until accepted provider-neutral evidence packet gates are rechecked and satisfied under a separate governed slice.
+- Preserved that TIP-31 closeout chooses no provider, compares no provider options, names no concrete provider/package/tool/runtime dependency, collects no provider-specific evidence, authorizes no runtime implementation, and opens no backup, restore, monitoring, alerting, logging, runbook, LocalDev adapter, schema, migration, repository, adapter, package, or dependency work.
 
 ### v0.51 - TIP-31 RPO RTO target class decision brief indexed
 
@@ -389,4 +398,4 @@ Canonical artifact names:
 | TIP-28 | `tip_28_configuration_environment_separation_planning/` | [`tip_28_planning_brief_v0_1.md`](tip_28_configuration_environment_separation_planning/tip_28_planning_brief_v0_1.md) - accepted planning baseline, [`tip_28_closeout_v0_1.md`](tip_28_configuration_environment_separation_planning/tip_28_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral configuration and environment separation requirements planning; resolves TIP-25 `G-003` at planning level only, leaves provider decision blocked pending unresolved `G-001` and `G-004`, and makes no runtime configuration implementation, environment enforcement, capability, provider decision, or readiness claim |
 | TIP-29 | `tip_29_migration_reversibility_rollback_exit_planning/` | [`tip_29_planning_brief_v0_1.md`](tip_29_migration_reversibility_rollback_exit_planning/tip_29_planning_brief_v0_1.md) - accepted planning baseline, [`tip_29_closeout_v0_1.md`](tip_29_migration_reversibility_rollback_exit_planning/tip_29_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral migration, reversibility, rollback, abandon, replacement, exit, and provider-mechanics containment requirements planning; resolves TIP-25 `G-004` at planning level only, leaves provider decision blocked pending unresolved `G-001`, and makes no migration implementation, rollback implementation, provider-specific exit evidence, capability, provider decision, or readiness claim |
 | TIP-30 | `tip_30_rpo_rto_target_decision_planning/` | [`tip_30_planning_brief_v0_1.md`](tip_30_rpo_rto_target_decision_planning/tip_30_planning_brief_v0_1.md) - accepted planning baseline, [`tip_30_closeout_v0_1.md`](tip_30_rpo_rto_target_decision_planning/tip_30_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only provider-neutral RPO/RTO target decision planning; partially narrows TIP-25 `G-001` at planning level only, leaves `G-001` blocked pending homeowner/GPT acceptance of concrete RPO/RTO target decisions or accepted target classes, and makes no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim |
-| TIP-31 | `tip_31_rpo_rto_target_class_decision/` | [`tip_31_decision_brief_v0_1.md`](tip_31_rpo_rto_target_class_decision/tip_31_decision_brief_v0_1.md) - decision brief draft; docs-only / decision-only provider-neutral RPO/RTO target class decision candidate `DMT-LOSSLESS-VALIDATED`; classifies TIP-25 `G-001` as resolved by accepted target class subject to homeowner/GPT acceptance, with no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim |
+| TIP-31 | `tip_31_rpo_rto_target_class_decision/` | [`tip_31_decision_brief_v0_1.md`](tip_31_rpo_rto_target_class_decision/tip_31_decision_brief_v0_1.md) - accepted decision brief, [`tip_31_closeout_v0_1.md`](tip_31_rpo_rto_target_class_decision/tip_31_closeout_v0_1.md) - closeout draft; closed docs-only / decision-only provider-neutral RPO/RTO target class decision; resolves TIP-25 `G-001` at decision-class level by accepted target class `DMT-LOSSLESS-VALIDATED`, with no backup/recovery capability, restore capability, RPO/RTO support, provider decision, implementation, or readiness claim |
