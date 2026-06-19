@@ -1,13 +1,23 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.65
+**Version:** 0.66
 **Status:** Active
 **Date:** 2026-06-19
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.66 - TIP-39 artifact/raw evidence storage boundary planning indexed
+
+- Added TIP-39 Artifact / Raw Evidence Storage Boundary Planning brief to the index.
+- Recorded TIP-39 as draft docs-only / provider-neutral / `ART-001` storage boundary planning.
+- Recorded that TIP-39 defines storage-boundary requirements before any artifact/raw evidence persistence can be authorized.
+- Recorded that TIP-38 is used as raw payload policy-planning input only and is not over-claimed as runtime enforcement, artifact readiness, provider evidence readiness, or raw payload persistence authorization.
+- Recorded that raw payload collection and raw payload persistence remain denied by default.
+- Recorded that no implementation, provider selection, storage provider selection, provider-specific evidence collection, raw payload collection, or raw payload persistence is authorized.
+- Preserved that `ART-002` through `ART-009` and `GOV-001` remain unresolved except where only requirements are cross-referenced.
 
 ### v0.65 - TIP-38 provider raw payload policy planning closeout indexed
 
@@ -529,3 +539,4 @@ Canonical artifact names:
 | TIP-36 | `tip_36_tip_analytical_summary_intent_ledger_governance/` | [`tip_36_planning_brief_v0_1.md`](tip_36_tip_analytical_summary_intent_ledger_governance/tip_36_planning_brief_v0_1.md) - accepted planning brief, [`tip_36_closeout_v0_1.md`](tip_36_tip_analytical_summary_intent_ledger_governance/tip_36_closeout_v0_1.md) - closeout draft; closed docs-only / governance-only / process-rule-only; establishes the mandatory TIP Analytical Summary / Intent Ledger rule before implementation dispatch for implementation TIPs and before or inside closeout for docs-only TIPs; requires Outcome vs Intent reconciliation in every closeout/archive; preserves missing-ledger, missing-reconciliation, branch-disposition, planning-as-proof, docs-only-authorization, LocalDev-as-production, and TIP-35 GOV/ART omission gates; does not authorize implementation, provider work, provider-specific evidence collection, API changes, runtime changes, readiness claims, or resolution of `GOV-001` / `ART-001` through `ART-009` |
 | TIP-37 | `tip_37_s3_provider_decision_evidence_scope_gov_art_gate_carry_forward/` | [`tip_37_planning_brief_v0_1.md`](tip_37_s3_provider_decision_evidence_scope_gov_art_gate_carry_forward/tip_37_planning_brief_v0_1.md) - accepted planning brief, [`tip_37_closeout_v0_1.md`](tip_37_s3_provider_decision_evidence_scope_gov_art_gate_carry_forward/tip_37_closeout_v0_1.md) - closeout draft; closed docs-only / S3 evidence-scope planning / provider-neutral; carries TIP-35 `GOV-001` and `ART-001` through `ART-009` explicitly into S3 provider decision governance; preserves TIP-34 as protocol-only; classifies `ART-009` as hard blocker for provider-specific evidence collection while unresolved; defines minimum evidence-scope and STOP/RRI conditions for any later provider decision brief; resolves no GOV/ART debt; selects, names, compares, scores, shortlists, recommends, accepts, rejects, and evidences no provider; authorizes no implementation, provider-specific evidence collection, readiness, capability, legal, or audit claims |
 | TIP-38 | `tip_38_provider_raw_payload_policy_planning/` | [`tip_38_planning_brief_v0_1.md`](tip_38_provider_raw_payload_policy_planning/tip_38_planning_brief_v0_1.md) - accepted planning brief, [`tip_38_closeout_v0_1.md`](tip_38_provider_raw_payload_policy_planning/tip_38_closeout_v0_1.md) - closeout draft; closed docs-only / provider-neutral / `ART-009` raw payload policy planning; GPT verdict ACCEPT FOR CLOSEOUT; narrows/accepts `ART-009` at policy-planning level only, not as runtime capability, artifact readiness, provider evidence readiness, or production/legal/audit readiness; provider-specific evidence collection remains blocked until a later reviewed evidence authorization packet explicitly permits a narrow provider-specific collection scope; selects, names, compares, scores, shortlists, recommends, accepts, rejects, and evidences no provider; authorizes no raw payload collection or persistence, provider-specific evidence collection, implementation, runtime enforcement, readiness, capability, legal, audit, external-audit, production, pilot, or certification claims; resolves no `GOV-001` or `ART-001` through `ART-008`; records GDrive mirror verification as review workflow only, not product behavior |
+| TIP-39 | `tip_39_artifact_raw_evidence_storage_boundary_planning/` | [`tip_39_planning_brief_v0_1.md`](tip_39_artifact_raw_evidence_storage_boundary_planning/tip_39_planning_brief_v0_1.md) - draft docs-only / provider-neutral / `ART-001` artifact/raw evidence storage boundary planning; defines storage-boundary requirements before any artifact/raw evidence persistence can be authorized; uses TIP-38 as raw payload policy-planning input only and does not over-claim TIP-38 as runtime enforcement, artifact readiness, provider evidence readiness, or raw payload persistence authorization; records default deny for raw payload collection and persistence; selects no provider or storage provider; authorizes no implementation, provider-specific evidence collection, raw payload collection, raw payload persistence, runtime enforcement, readiness, legal, audit, external-audit, production, pilot, certification, support, or capability claim; preserves `ART-002` through `ART-009` and `GOV-001` as unresolved except where only requirements are cross-referenced |
