@@ -11,6 +11,9 @@ This tool is intentionally separate from the TagEkyc runtime projects. It uses G
 - Creates missing Drive folders and files.
 - Updates existing Drive files when content changes.
 - Skips unchanged files by comparing local MD5 with Drive `md5Checksum`.
+- Can sync only uncommitted dirty files from `git status`.
+- Emits synced file path, Drive file ID, SHA256, and public view link.
+- Maintains a generated docs index file, defaulting to `docs/00_GDRIVE_FILE_INDEX.md`, so reviewers can fetch files by path without listing the Drive folder.
 - Supports multiple Google accounts through named profiles.
 - Does not delete remote files by default.
 
@@ -58,7 +61,8 @@ Edit `.gdrive/config.local.json`:
       "clientSecret": "YOUR_GOOGLE_OAUTH_CLIENT_SECRET",
       "tokenPath": ".gdrive/tokens/main",
       "driveFolderId": "YOUR_TARGET_GOOGLE_DRIVE_FOLDER_ID",
-      "localRoot": "docs"
+      "localRoot": "docs",
+      "indexPath": "00_GDRIVE_FILE_INDEX.md"
     }
   }
 }
@@ -86,10 +90,30 @@ Run a full docs sync:
 dotnet run --project tools\TagEkyc.GDriveSync -- sync --profile main
 ```
 
+By default, sync commands update `docs/00_GDRIVE_FILE_INDEX.md` and sync it to Drive. The generated index includes repo path, Drive file ID, SHA256, Drive MD5 when available, size, commit label, sync timestamp, view link, and download link.
+
 Sync files changed in the latest commit:
 
 ```powershell
 dotnet run --project tools\TagEkyc.GDriveSync -- sync-changed --profile main --commit HEAD
+```
+
+Sync uncommitted modified and untracked docs files:
+
+```powershell
+dotnet run --project tools\TagEkyc.GDriveSync -- sync-dirty --profile main
+```
+
+Use a custom index path, relative to the synced local root:
+
+```powershell
+dotnet run --project tools\TagEkyc.GDriveSync -- sync-dirty --profile main --index 00_GDRIVE_FILE_INDEX.md
+```
+
+Skip index generation for a one-off run:
+
+```powershell
+dotnet run --project tools\TagEkyc.GDriveSync -- sync-changed --profile main --commit HEAD --no-index
 ```
 
 Optionally trash remote files missing locally during full sync:
@@ -98,7 +122,7 @@ Optionally trash remote files missing locally during full sync:
 dotnet run --project tools\TagEkyc.GDriveSync -- sync --profile main --delete-missing
 ```
 
-Use `--delete-missing` carefully. It is ignored by `sync-changed`.
+Use `--delete-missing` carefully. It is ignored by `sync-changed` and `sync-dirty`.
 
 ## Multi-Account Profiles
 
@@ -112,14 +136,16 @@ Add another profile:
       "clientSecret": "...",
       "tokenPath": ".gdrive/tokens/main",
       "driveFolderId": "...",
-      "localRoot": "docs"
+      "localRoot": "docs",
+      "indexPath": "00_GDRIVE_FILE_INDEX.md"
     },
     "clientA": {
       "clientId": "...",
       "clientSecret": "...",
       "tokenPath": ".gdrive/tokens/clientA",
       "driveFolderId": "...",
-      "localRoot": "docs"
+      "localRoot": "docs",
+      "indexPath": "00_GDRIVE_FILE_INDEX.md"
     }
   }
 }

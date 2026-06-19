@@ -6,7 +6,8 @@
       "clientSecret": "YOUR_GOOGLE_OAUTH_CLIENT_SECRET",
       "tokenPath": ".gdrive/tokens/main",
       "driveFolderId": "YOUR_TARGET_GOOGLE_DRIVE_FOLDER_ID",
-      "localRoot": "docs"
+      "localRoot": "docs",
+      "indexPath": "00_GDRIVE_FILE_INDEX.md"
     }
   }
 }
