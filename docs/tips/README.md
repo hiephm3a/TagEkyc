@@ -1,13 +1,23 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.60
+**Version:** 0.61
 **Status:** Active
 **Date:** 2026-06-18
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.61 - TIP-36 analytical summary governance closeout indexed
+
+- Added TIP-36 TIP Analytical Summary / Intent Ledger Governance closeout to the index.
+- Recorded TIP-36 as closed docs-only / governance-only / process-rule-only.
+- Recorded GPT review verdict ACCEPT TIP-36, no blockers.
+- Recorded accepted TIP-36 commit `13a64ad docs: open TIP-36 analytical summary governance`.
+- Recorded that TIP-36 establishes the mandatory TIP Analytical Summary / Intent Ledger rule and Outcome vs Intent closeout/archive reconciliation requirement.
+- Preserved that TIP-36 does not resolve `GOV-001` or `ART-001` through `ART-009`.
+- Preserved that TIP-36 does not authorize implementation, provider work, provider-specific evidence collection, API changes, runtime changes, or readiness claims.
 
 ### v0.60 - TIP-36 analytical summary governance indexed
 
@@ -477,4 +487,4 @@ Canonical artifact names:
 | TIP-33 | `tip_33_s2_final_closeout_s3_handoff/` | [`tip_33_s2_closeout_v0_1.md`](tip_33_s2_final_closeout_s3_handoff/tip_33_s2_closeout_v0_1.md) - draft docs-only / closeout-only / handoff-only provider-neutral S2 final closeout and S3 handoff; closes S2 only as provider-neutral durable metadata foundation / evidence readiness with result `READY_TO_PROPOSE_PROVIDER_DECISION_SLICE`; hands off any provider decision work to S3 under separate scope and review; makes no provider decision, implementation, capability, support, or readiness claim |
 | TIP-34 | `tip_34_production_durable_metadata_provider_decision_planning/` | [`tip_34_planning_brief_v0_1.md`](tip_34_production_durable_metadata_provider_decision_planning/tip_34_planning_brief_v0_1.md) - accepted planning brief, [`tip_34_closeout_v0_1.md`](tip_34_production_durable_metadata_provider_decision_planning/tip_34_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only S3 provider decision planning protocol; accepts only protocol, evidence requirements, reviewer responsibilities, and STOP/RRI gates for a later provider decision brief; does not answer the provider decision question, authorize provider-specific evidence collection, choose, name, compare, score, shortlist, recommend, accept, reject, or evidence any provider, authorize implementation, or make capability, support, or readiness claims |
 | TIP-35 | `tip_35_s2_branch_debt_traceability_artifact_gap_registration/` | [`tip_35_planning_brief_v0_1.md`](tip_35_s2_branch_debt_traceability_artifact_gap_registration/tip_35_planning_brief_v0_1.md) - accepted planning brief, [`tip_35_closeout_v0_1.md`](tip_35_s2_branch_debt_traceability_artifact_gap_registration/tip_35_closeout_v0_1.md) - closeout draft; closed docs-only / traceability-only / gap-registration-only S2 branch/deferred-scope debt crosswalk and artifact/raw evidence gap registration; records `GOV-001` and `ART-001` through `ART-009` as registered but unresolved gates; preserves TIP-34 as protocol-only and blocks S3 provider-specific evidence collection, provider comparison, provider acceptance/rejection, implementation, artifact readiness, legal/audit reliance, or production readiness claims until the new GOV/ART debts are accepted as blockers/deferred with explicit gates or resolved by later reviewed TIPs |
-| TIP-36 | `tip_36_tip_analytical_summary_intent_ledger_governance/` | [`tip_36_planning_brief_v0_1.md`](tip_36_tip_analytical_summary_intent_ledger_governance/tip_36_planning_brief_v0_1.md) - draft docs-only / governance-only / process-rule-only planning brief; adds the mandatory TIP Analytical Summary / Intent Ledger rule before implementation dispatch for implementation TIPs and before or inside closeout for docs-only TIPs; requires Outcome vs Intent reconciliation in every closeout/archive; does not authorize implementation, provider work, provider-specific evidence collection, API changes, runtime changes, readiness claims, or resolution of `GOV-001` / `ART-001` through `ART-009` |
+| TIP-36 | `tip_36_tip_analytical_summary_intent_ledger_governance/` | [`tip_36_planning_brief_v0_1.md`](tip_36_tip_analytical_summary_intent_ledger_governance/tip_36_planning_brief_v0_1.md) - accepted planning brief, [`tip_36_closeout_v0_1.md`](tip_36_tip_analytical_summary_intent_ledger_governance/tip_36_closeout_v0_1.md) - closeout draft; closed docs-only / governance-only / process-rule-only; establishes the mandatory TIP Analytical Summary / Intent Ledger rule before implementation dispatch for implementation TIPs and before or inside closeout for docs-only TIPs; requires Outcome vs Intent reconciliation in every closeout/archive; preserves missing-ledger, missing-reconciliation, branch-disposition, planning-as-proof, docs-only-authorization, LocalDev-as-production, and TIP-35 GOV/ART omission gates; does not authorize implementation, provider work, provider-specific evidence collection, API changes, runtime changes, readiness claims, or resolution of `GOV-001` / `ART-001` through `ART-009` |
