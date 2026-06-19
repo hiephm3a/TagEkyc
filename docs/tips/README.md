@@ -1,13 +1,22 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 0.61
+**Version:** 0.62
 **Status:** Active
-**Date:** 2026-06-18
+**Date:** 2026-06-19
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v0.62 - TIP-37 S3 evidence-scope gate carry-forward indexed
+
+- Added TIP-37 S3 Provider Decision Evidence Scope / GOV-ART Gate Carry-Forward planning brief to the index.
+- Recorded TIP-37 as draft docs-only / S3 evidence-scope planning / provider-neutral.
+- Recorded that TIP-37 carries TIP-35 `GOV-001` and `ART-001` through `ART-009` explicitly into S3 provider decision governance.
+- Recorded that TIP-37 prevents TIP-34 protocol-only planning from being treated as provider-specific evidence authorization.
+- Recorded that no provider is selected, named, compared, scored, shortlisted, recommended, accepted, rejected, or evidenced.
+- Recorded that no implementation is authorized.
 
 ### v0.61 - TIP-36 analytical summary governance closeout indexed
 
@@ -488,3 +497,4 @@ Canonical artifact names:
 | TIP-34 | `tip_34_production_durable_metadata_provider_decision_planning/` | [`tip_34_planning_brief_v0_1.md`](tip_34_production_durable_metadata_provider_decision_planning/tip_34_planning_brief_v0_1.md) - accepted planning brief, [`tip_34_closeout_v0_1.md`](tip_34_production_durable_metadata_provider_decision_planning/tip_34_closeout_v0_1.md) - closeout draft; closed docs-only / planning-only S3 provider decision planning protocol; accepts only protocol, evidence requirements, reviewer responsibilities, and STOP/RRI gates for a later provider decision brief; does not answer the provider decision question, authorize provider-specific evidence collection, choose, name, compare, score, shortlist, recommend, accept, reject, or evidence any provider, authorize implementation, or make capability, support, or readiness claims |
 | TIP-35 | `tip_35_s2_branch_debt_traceability_artifact_gap_registration/` | [`tip_35_planning_brief_v0_1.md`](tip_35_s2_branch_debt_traceability_artifact_gap_registration/tip_35_planning_brief_v0_1.md) - accepted planning brief, [`tip_35_closeout_v0_1.md`](tip_35_s2_branch_debt_traceability_artifact_gap_registration/tip_35_closeout_v0_1.md) - closeout draft; closed docs-only / traceability-only / gap-registration-only S2 branch/deferred-scope debt crosswalk and artifact/raw evidence gap registration; records `GOV-001` and `ART-001` through `ART-009` as registered but unresolved gates; preserves TIP-34 as protocol-only and blocks S3 provider-specific evidence collection, provider comparison, provider acceptance/rejection, implementation, artifact readiness, legal/audit reliance, or production readiness claims until the new GOV/ART debts are accepted as blockers/deferred with explicit gates or resolved by later reviewed TIPs |
 | TIP-36 | `tip_36_tip_analytical_summary_intent_ledger_governance/` | [`tip_36_planning_brief_v0_1.md`](tip_36_tip_analytical_summary_intent_ledger_governance/tip_36_planning_brief_v0_1.md) - accepted planning brief, [`tip_36_closeout_v0_1.md`](tip_36_tip_analytical_summary_intent_ledger_governance/tip_36_closeout_v0_1.md) - closeout draft; closed docs-only / governance-only / process-rule-only; establishes the mandatory TIP Analytical Summary / Intent Ledger rule before implementation dispatch for implementation TIPs and before or inside closeout for docs-only TIPs; requires Outcome vs Intent reconciliation in every closeout/archive; preserves missing-ledger, missing-reconciliation, branch-disposition, planning-as-proof, docs-only-authorization, LocalDev-as-production, and TIP-35 GOV/ART omission gates; does not authorize implementation, provider work, provider-specific evidence collection, API changes, runtime changes, readiness claims, or resolution of `GOV-001` / `ART-001` through `ART-009` |
+| TIP-37 | `tip_37_s3_provider_decision_evidence_scope_gov_art_gate_carry_forward/` | [`tip_37_planning_brief_v0_1.md`](tip_37_s3_provider_decision_evidence_scope_gov_art_gate_carry_forward/tip_37_planning_brief_v0_1.md) - draft docs-only / S3 evidence-scope planning / provider-neutral; carries TIP-35 `GOV-001` and `ART-001` through `ART-009` explicitly into S3 provider decision governance; prevents TIP-34 protocol-only planning from being treated as provider-specific evidence authorization; defines minimum evidence-scope and STOP/RRI conditions for any later provider decision brief; selects, names, compares, scores, shortlists, recommends, accepts, rejects, and evidences no provider; authorizes no implementation |
