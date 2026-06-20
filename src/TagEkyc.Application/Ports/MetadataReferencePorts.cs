@@ -18,7 +18,27 @@ public sealed record MetadataReferenceRecord(
     DateTimeOffset? LastObservedAt);
 
 public sealed record MetadataReferenceQueryResult(
-    MetadataReferenceRecord? Reference);
+    MetadataReferenceRecord? Reference)
+{
+    public bool HasRegisteredMetadata() =>
+        Reference?.State == MetadataReferenceState.RegisteredMetadata;
+
+    public bool IsNonSuccess() => !HasRegisteredMetadata();
+
+    public bool RequiresPacketBeforeReliance() => true;
+
+    public bool IsNotReliableForEvidenceReliance() => true;
+
+    public bool DeniesEvidenceAvailabilityProof() => true;
+
+    public bool DeniesCompletePackageProof() => true;
+
+    public bool DeniesArtifactAccessProof() => true;
+
+    public bool DeniesProviderEvidenceAvailabilityProof() => true;
+
+    public bool DeniesReadinessProof() => true;
+}
 
 public interface IMetadataReferenceRegistry
 {
