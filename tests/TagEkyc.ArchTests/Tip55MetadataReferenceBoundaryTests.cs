@@ -1,4 +1,5 @@
 using System.Reflection;
+using TagEkyc.Application.LocalDev;
 using TagEkyc.Application.Ports;
 using TagEkyc.Domain;
 
@@ -16,14 +17,16 @@ public sealed class Tip55MetadataReferenceBoundaryTests
     }
 
     [Fact]
-    public void Metadata_reference_registry_has_no_runtime_implementation()
+    public void Metadata_reference_registry_allows_only_tip60_localdev_runtime_implementation()
     {
         var implementationTypes = typeof(IMetadataReferenceRegistry).Assembly
             .GetTypes()
             .Where(type => type.IsClass && typeof(IMetadataReferenceRegistry).IsAssignableFrom(type))
             .ToArray();
 
-        Assert.Empty(implementationTypes);
+        var implementationType = Assert.Single(implementationTypes);
+        Assert.Equal(typeof(LocalDevInMemoryMetadataReferenceRegistry), implementationType);
+        Assert.Equal("TagEkyc.Application.LocalDev", implementationType.Namespace);
     }
 
     [Fact]
