@@ -9,6 +9,48 @@ This document defines the logical data model only. It is not a SQL migration and
 - Confidential: identifiers, correlation values, or operational secrets.
 - Restricted: raw identity document data, biometrics, biometric templates, or high-risk evidence artifacts.
 
+## Provider-Neutral Artifact Evidence Lifecycle Design Requirements
+
+This section carries provider-neutral artifact evidence lifecycle design requirements only. It is not a schema, migration, DTO, API contract, resolver design, storage design, access-control design, audit schema, security mechanism, legal-hold implementation, or package-builder implementation.
+
+Durable metadata fields may hold classified metadata-safe references, hashes, identifiers, and sanitized summaries only. A metadata reference is not evidence availability proof, and a package completeness candidate is not a complete package. Artifact/raw evidence persistence remains denied unless a later reviewed storage authorization packet explicitly permits a narrow classified scope.
+
+Packet/checklist references in this LLD are requirements to carry into later review work, not approved packets:
+
+- Storage authorization packet for `ART-001`.
+- Reference resolution packet for `ART-002`.
+- Package completeness packet for `ART-003`.
+- Retention/expiry packet for `ART-004`.
+- Purge/disposal packet for `ART-005`.
+- Legal-hold sync packet for `ART-006`.
+- Access/audit/security packet for `ART-007`.
+- Orphan handling packet for `ART-008`.
+- Provider evidence authorization packet for `ART-009`.
+
+The design must carry these state families as planning/design requirements only:
+
+| State family | Required states to carry |
+| --- | --- |
+| Reference resolution | `NotPresent`, `PresentButUnresolved`, `ResolvedAvailable`, `Missing`, `Expired`, `Deleted`, `Inaccessible`, `Unauthorized`, `Quarantined`, `OrphanSuspected` |
+| Orphan handling | `NotChecked`, `NoReference`, `ReferencePresentUnresolved`, `ArtifactAvailable`, `ArtifactMissing`, `ArtifactExpired`, `ArtifactDeleted`, `ArtifactInaccessible`, `ArtifactUnauthorized`, `ArtifactQuarantined`, `OrphanSuspected`, `OrphanConfirmed`, `Reconciled` |
+| Package completeness | `NotProfiled`, `ProfiledNotChecked`, `MissingRequiredClass`, `ReferenceUnresolved`, `OrphanRiskUnresolved`, `LifecycleBlocked`, `AccessBlocked`, `Quarantined`, `ReviewPending`, `CompleteCandidate`, `CompleteForReviewedUse`, `Invalidated` |
+| Retention/expiry | `RetentionUnclassified`, `RetentionClassifiedNotReviewed`, `RetainedWithinWindow`, `ReviewWindowOpen`, `ReviewWindowClosed`, `Expired`, `ExpiryUnknown`, `DisputeReviewHoldPending`, `DisputeReviewHoldAccepted`, `EnvironmentMismatch`, `ExpiredReferenceNonSuccess` |
+| Purge/disposal | `DisposalUnclassified`, `DisposalNotAuthorized`, `DisposalAuthorizedNotExecuted`, `DisposalBlockedByHold`, `DisposalQuarantined`, `DisposalFailed`, `DisposalPartial`, `DisposalRetried`, `DisposedTombstoned`, `ReferenceInvalidated` |
+| Legal-hold sync | `HoldUnclassified`, `HoldUnknown`, `HoldCandidate`, `HoldAccepted`, `HoldConflicted`, `HoldReleased`, `HoldRejected`, `HoldStale` |
+| Access/audit/security | `AccessUnclassified`, `AccessDeniedDefault`, `AccessRestricted`, `AccessApprovedPlanning`, `AccessRevokedOrExpired`, `AccessConflicted`, `AuditExpected`, `AuditMissing`, `SecurityUnproven`, `DependencyBlocked` |
+
+Non-success states include missing, unresolved, expired, deleted, inaccessible, unauthorized, quarantined, orphan-suspected, orphan-confirmed, inconsistent, unreviewed, hold-conflicted, access-denied, audit-missing, security-unproven, dependency-blocked, and raw-payload-denied states. These states must not support evidence availability or package completeness claims without a later reviewed packet.
+
+`ResolvedAvailable`, `ArtifactAvailable`, `CompleteForReviewedUse`, `RetainedWithinWindow`, `DisputeReviewHoldAccepted`, `DisposedTombstoned`, `HoldAccepted`, `HoldReleased`, `HoldRejected`, and `AccessApprovedPlanning` are narrow packet-scoped states only. They are not general readiness, capability, implementation, evidence availability, package completeness, legal, audit, security, production, pilot, certification, or support claims.
+
+Raw payload collection and persistence are denied by default. Provider-specific evidence collection requires a later reviewed provider evidence authorization packet and must STOP/RRI before any exception. Restricted artifact access requires a later reviewed access/audit/security packet and must STOP/RRI before access is treated as authorized.
+
+STOP/RRI is required before runtime implementation, provider-specific evidence collection, raw payload handling, artifact/raw evidence persistence, restricted artifact access, or any claim that this LLD section provides readiness, legal, audit, security, production, pilot, certification, support, evidence availability, package completeness, or capability proof.
+
+Existing sequence, API, and adapter LLD wording that mentions vault, storage, package, or artifact handling is governed by this lifecycle section. Those existing mentions do not authorize artifact/raw evidence persistence, raw payload handling, resolver capability, package completeness, restricted artifact access, evidence availability, or runtime implementation.
+
+`GOV-001` branch/deferred-scope traceability and `ART-001` through `ART-009` must be carried until later reviewed TIPs resolve them beyond planning/design requirements.
+
 ## Entity: client_applications
 
 Purpose: Represents an external system allowed to create verification sessions.

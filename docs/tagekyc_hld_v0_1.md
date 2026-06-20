@@ -155,6 +155,31 @@ Production readiness SHOULD add:
 - Evidence packages SHOULD include adapter name/version and confidence values.
 - Result decisions MUST be reproducible from the evidence manifest where possible.
 
+## Provider-Neutral Artifact Evidence Lifecycle
+
+The artifact evidence lifecycle is a provider-neutral planning/design requirement. It governs how HLD/LLD docs describe durable metadata, references, artifact/raw evidence boundaries, package candidates, lifecycle states, and later review packets. It does not implement runtime behavior, approve packets, select providers/storage/resolvers/tools, authorize artifact/raw evidence persistence, authorize raw payload handling, authorize restricted artifact access, or claim readiness.
+
+Durable metadata may carry classified metadata-safe references, hashes, identifiers, and sanitized summaries. Durable metadata is not artifact/raw evidence storage, and metadata references are not evidence availability proof. Any later reliance on a reference requires a reviewed reference resolution packet.
+
+Artifact/raw evidence storage remains authorization-gated. Candidate artifact object classes, package manifest positions, and package completeness candidates are planning/design concepts only. They are not complete packages, artifact availability proof, storage capability, or persistence authorization.
+
+Raw payload collection and persistence are denied by default. Provider-specific evidence collection remains blocked until a later reviewed provider evidence authorization packet explicitly permits a narrow classified scope. `ART-009` must be treated as a hard blocker before provider-specific evidence collection.
+
+The high-level lifecycle dependency ordering must be carried as:
+
+1. `GOV-001` branch/deferred-scope traceability must be carried forward until resolved by a later reviewed TIP.
+2. `ART-009` raw payload default-deny posture before provider-specific evidence collection.
+3. `ART-001` storage boundary before artifact/raw evidence persistence.
+4. `ART-002` reference resolution before evidence availability reliance.
+5. `ART-008` orphan handling before orphan-risk references support evidence or package positions.
+6. `ART-004` retention/expiry before retained, unexpired, or reviewable reliance.
+7. `ART-005` purge/disposal before disposal, tombstone, quarantine, or reference/package impact reliance.
+8. `ART-006` legal-hold sync before hold state becomes authoritative for retention, expiry, disposal, reference, package, or evidence decisions.
+9. `ART-007` access/audit/security before access, audit, restricted evidence, or security reliance.
+10. `ART-003` package completeness after required object classes and dependency gates are carried or resolved for the reviewed package use.
+
+STOP/RRI is required before runtime implementation, provider-specific evidence collection, provider/storage/resolver/tool/schema/API/package selection, raw payload collection or persistence, artifact/raw evidence persistence, restricted artifact access, packet approval, reference-as-proof use, package-complete claims, or any claim that `GOV-001` or `ART-001` through `ART-009` are resolved beyond planning/design requirements. STOP/RRI is also required before HLD/LLD documentation is treated as legal, audit, security, production, pilot, certification, readiness, support, evidence availability, package completeness, or capability proof.
+
 ## SignFlow Integration Overview
 
 SignFlow is the first named `TRANSACTION_BOUND_EKYC_PROFILE` consumer, not the generic TagEkyc platform model. Generic sessions do not default to `externalSystem = SignFlow` or `purpose = SIGNING_AUTH`.
