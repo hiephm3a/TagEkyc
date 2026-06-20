@@ -1,13 +1,19 @@
 # TagEkyc Review and TIP Playbook
 
 **File:** `docs/00_REVIEW_AND_TIP_PLAYBOOK.md`
-**Version:** 0.3-draft
+**Version:** 0.4-draft
 **Status:** Draft for review
 **Date:** 2026-06-12
 **Baseline:** Product Brief v0.1.1
 **Purpose:** Captures reusable review, planning, and dispatch practices for TagEkyc TIP work.
 
 ## Changelog
+
+### v0.4-draft - Autonomous Slice Review Ladder / Quality Gate
+
+- Added the Autonomous Slice Review Ladder / Quality Gate for future autonomous Codex slices.
+- Defined V1 deep bounded review, V2 patch verification review, V3 free adversarial review, zero-finding justification, loop-limit/non-convergence handling, out-of-scope finding handling, final report review ladder summary, and STOP/RRI behavior.
+- Preserved that review workflow governance does not authorize implementation, provider-specific evidence collection, raw payload or artifact persistence, restricted artifact access, provider/storage/resolver/tool selection, packet approval, or readiness/legal/audit/security/production/certification/capability claims.
 
 ### v0.3-draft - TIP Analytical Summary / Intent Ledger rule
 
@@ -196,7 +202,176 @@ Review gates:
 | LocalDev evidence is used as production evidence | STOP/RRI |
 | Relevant S3 provider-specific work omits TIP-35 `GOV-001` or `ART-001` through `ART-009` gates | STOP/RRI |
 
-## 6. Skeleton-Only Guardrails
+## 6. Autonomous Slice Review Ladder / Quality Gate
+
+For autonomous Codex slices, review must use a ladder. The goal is to reduce human bus overhead without allowing narrow, prompt-boxed, or self-confirming review.
+
+This review ladder is workflow governance only. It does not authorize implementation, source/test/schema/API/package changes, packet approval, provider-specific evidence collection, raw payload collection or persistence, artifact/raw evidence persistence, restricted artifact access, provider/storage/resolver/tool selection, or readiness/legal/audit/security/production/certification/capability claims.
+
+### V1 - Deep bounded review
+
+Run one deep reviewer pass after the initial implementation or draft.
+
+The reviewer must not be limited to changed files. Review attention should be allocated approximately as:
+
+- 40% changed files and direct diff
+- 25% adjacent caller/callee/test surfaces
+- 20% governance, HLD, LLD, TIP gate consistency
+- 15% free-roam adversarial scan
+
+V1 must report:
+
+- files inspected
+- adjacent surfaces inspected
+- tests inspected or missing
+- governance/HLD/LLD/TIP gates checked
+- findings with file/line references where possible
+- scope risks
+- over-claim risks
+- test blind spots
+- hidden coupling risks
+- naming/cohesion drift risks
+
+V1 must check at least:
+
+- hidden coupling outside changed files
+- nearby call sites and consumers
+- test coverage gaps
+- naming/cohesion drift
+- HLD/LLD mismatch
+- TIP gate mismatch
+- runtime/provider/raw-payload/readiness over-claim
+- scope creep
+- missing STOP/RRI condition
+
+If V1 finds issues, patch them only inside the current slice's authorized scope. If a finding requires work outside the authorized scope, report it as out-of-scope carry-forward unless it triggers STOP/RRI.
+
+### V2 - Patch verification review
+
+After patching V1 findings, run a lighter verification pass.
+
+V2 must check:
+
+- each V1 finding is actually fixed
+- no adjacent regression was introduced
+- no scope expansion happened
+- validation/tests still match the slice
+- no new over-claim or gate violation was introduced
+
+If V2 finds issues, patch once more inside the current slice's authorized scope. If a second patch would exceed scope or create a STOP/RRI condition, stop and report.
+
+### V3 - Free adversarial review
+
+Run at least one free adversarial review before final commit/report.
+
+V3 must not be limited only to changed files or the author's intended narrow framing.
+
+V3 prompt:
+
+```text
+Forget the author's intended narrow framing for a moment. Search for hidden coupling, missed nearby surfaces, incorrect assumptions, test blind spots, governance mismatch, HLD/LLD mismatch, naming/cohesion drift, and any way this slice could accidentally imply runtime/provider/raw-payload/readiness authorization. Do not invent speculative blockers, but do not restrict yourself only to changed files.
+```
+
+V3 must report:
+
+- files inspected
+- free-roam areas sampled
+- at least three plausible risks considered
+- whether each risk was confirmed or dismissed
+- concrete findings or explicit clean result
+
+### Zero-finding quality rule
+
+If a reviewer returns zero findings, it must include a zero-finding justification:
+
+- files inspected
+- adjacent surfaces inspected
+- tests/validation inspected
+- governance/HLD/LLD gates inspected
+- three plausible risks considered
+- why each risk was dismissed
+- remaining uncertainty
+
+If two consecutive review passes return zero findings without meaningful justification, treat the review prompt as possibly over-constrained and run one additional relaxed free adversarial review.
+
+Zero findings are not readiness, legal, audit, security, production, certification, support, capability, evidence availability, package completeness, or implementation proof.
+
+### Loop limit / non-convergence rule
+
+Do not loop indefinitely.
+
+If review/patch does not converge after five total review rounds, STOP and produce Review Failure Analysis instead of continuing to patch.
+
+Review Failure Analysis must include:
+
+- repeated findings
+- root cause hypothesis
+- whether the problem is unclear scope, conflicting docs, weak prompt, hidden coupling, insufficient tests, or implementation complexity
+- what needs to change in the prompt or slice boundary
+- whether user decision is required
+- recommended next action
+
+### Out-of-scope finding handling
+
+Do not suppress review findings just because they are outside the original narrow diff.
+
+If a finding is outside scope but relevant, report it as:
+
+```text
+OUT-OF-SCOPE FINDING / CARRY-FORWARD
+```
+
+Do not treat it as a blocker unless it violates a STOP/RRI gate or makes the current slice unsafe to accept.
+
+Out-of-scope findings must not be patched unless the current slice explicitly authorizes that file/surface and behavior.
+
+### STOP/RRI behavior
+
+Autonomous review must preserve existing STOP/RRI gates.
+
+STOP/RRI is required when review identifies:
+
+- implementation work without accepted implementation authorization;
+- packet approval implied by docs-only, planning-only, trial-only, or governance-only work;
+- provider-specific evidence collection without explicit reviewed authorization;
+- raw payload collection/persistence or artifact/raw evidence persistence without explicit reviewed authorization;
+- restricted artifact access without explicit reviewed authorization;
+- provider, storage, resolver, tool, package, schema, API, adapter, or runtime selection without explicit reviewed authorization;
+- LocalDev, docs, tests, review mirror, packet template, or planning evidence being claimed as production/legal/audit/security/readiness/capability proof;
+- scope expansion that would stage or commit files outside the current allowed set;
+- non-convergence after the review loop limit.
+
+### Final report requirement
+
+Every autonomous slice final report must include:
+
+- Objective
+- Scope actually touched
+- Commits
+- Files changed
+- Tests run and result
+- Architecture decisions made autonomously
+- STOP/RRI decisions avoided or encountered
+- Known residual debt
+- GDrive sync/hash if docs changed
+- Suggested next slice
+
+Every autonomous slice final report must also include:
+
+Review Ladder Summary:
+
+- V1 result
+- V1 files/surfaces inspected
+- V1 findings
+- V2 result
+- V2 findings
+- V3 free review result
+- zero-finding justification if applicable
+- total review rounds
+- non-convergence yes/no
+- lessons for next slice
+
+## 7. Skeleton-Only Guardrails
 
 When a TIP is skeleton-only, it MUST NOT implement business behavior.
 
@@ -224,7 +399,7 @@ Skeleton-only MUST NOT include:
 - LLD03 business API routes/controllers.
 - Full LLD03 DTO surface.
 
-## 7. Security and Data Boundary Guardrails
+## 8. Security and Data Boundary Guardrails
 
 TagEkyc docs and implementation plans SHOULD preserve these boundaries:
 
@@ -239,7 +414,7 @@ TagEkyc docs and implementation plans SHOULD preserve these boundaries:
 
 Any plan that weakens these boundaries SHOULD STOP+REPORT before implementation.
 
-## 8. Integration Boundary Rules
+## 9. Integration Boundary Rules
 
 Consumer integrations must not become the base platform model.
 
@@ -251,7 +426,7 @@ For SignFlow:
 - TagEkyc.SignFlow placeholders must be TagEkyc-owned contracts only.
 - No SignFlow source code, database, runtime packages, or internal models may be referenced.
 
-## 9. Subagent Review Pattern
+## 10. Subagent Review Pattern
 
 Subagents are useful when review questions are independent and can be separated by role.
 
@@ -301,7 +476,7 @@ The reviewer prompt for dispatch readiness SHOULD explicitly ask:
 - Can tests assert the chosen behavior without guessing?
 - Are LocalDev/NonProduction shortcuts clearly named and gated?
 
-## 10. Dispatch Review Checklist
+## 11. Dispatch Review Checklist
 
 Before dispatching a TIP, check:
 
@@ -333,7 +508,7 @@ For skeleton-only dispatch, also check:
 - No fake adapter behavior.
 - Architecture tests verify dependency direction if feasible.
 
-## 11. Completion Report Expectations
+## 12. Completion Report Expectations
 
 A TIP completion report SHOULD include:
 
@@ -350,7 +525,7 @@ A TIP completion report SHOULD include:
 
 If an expected check is not feasible, the completion report MUST explain why.
 
-## 12. Runtime TIP Review Rules
+## 13. Runtime TIP Review Rules
 
 TIP-05 showed that accepted service behavior is not enough when a TIP adds runtime HTTP endpoints.
 
@@ -454,7 +629,7 @@ Review rubric:
 | Claim | Evidence Source | Runtime/Persisted? | DTO field exact? | Leakage boundary? | Could pass by input echo? |
 | --- | --- | --- | --- | --- | --- |
 
-## 13. Current TIP-01 Application
+## 14. Current TIP-01 Application
 
 For TIP-01, this playbook implies:
 
