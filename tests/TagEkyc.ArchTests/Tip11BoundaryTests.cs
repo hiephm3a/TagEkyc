@@ -12,7 +12,6 @@ public sealed class Tip11BoundaryTests
         {
             typeof(TagEkyc.Domain.AssemblyMarker).Assembly,
             typeof(TagEkyc.Application.AssemblyMarker).Assembly,
-            typeof(TagEkyc.Infrastructure.AssemblyMarker).Assembly,
             typeof(TagEkyc.Adapters.AssemblyMarker).Assembly,
             typeof(TagEkyc.SignFlow.AssemblyMarker).Assembly,
         };

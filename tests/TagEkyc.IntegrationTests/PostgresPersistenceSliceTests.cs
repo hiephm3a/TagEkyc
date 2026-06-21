@@ -1,0 +1,478 @@
+using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.Extensions.DependencyInjection;
+using Npgsql;
+using TagEkyc.Application;
+using TagEkyc.Application.LocalDev;
+using TagEkyc.Application.Ports;
+using TagEkyc.Application.VerificationSessions;
+using TagEkyc.Contracts.BusinessConsumer;
+using TagEkyc.Contracts.CaptureAgent;
+using TagEkyc.Contracts.Common;
+using TagEkyc.Contracts.InternalAudit.Manifest;
+using TagEkyc.Contracts.TrustedAdapter;
+using TagEkyc.Domain;
+using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.Persistence.Entities;
+
+namespace TagEkyc.IntegrationTests;
+
+[Collection(PostgresPersistenceCollection.Name)]
+public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture postgres) : IAsyncLifetime
+{
+    public Task InitializeAsync() => postgres.ResetDatabaseAsync();
+
+    public Task DisposeAsync() => Task.CompletedTask;
+
+    [Fact]
+    public async Task S1_flow_persists_idempotently_and_survives_service_restart()
+    {
+        await using var provider = BuildProvider();
+        var session = await CreateCaptureQualitySessionAsync(provider, "external-pg-happy");
+        var artifact = await AppendArtifactAsync(provider, session.VerificationSessionId);
+        await AppendEvidenceAsync(provider, session.VerificationSessionId, artifact.CaptureArtifactId);
+
+        var completed = await CompleteAsync(provider, session.VerificationSessionId);
+        var second = await CompleteAsync(provider, session.VerificationSessionId);
+
+        Assert.Equal(completed.EvidencePackageId, second.EvidencePackageId);
+        Assert.Equal(completed.EvidencePackageHash, second.EvidencePackageHash);
+        await AssertPersistedCountsAsync(decisions: 1, packages: 1, manifests: 1, completionAudits: 1);
+
+        await using var restarted = BuildProvider();
+        await using var scope = restarted.CreateAsyncScope();
+        var summary = await scope.ServiceProvider.GetRequiredService<VerificationSessionApplicationService>()
+            .GetSummaryAsync(BusinessCaller(), session.VerificationSessionId, CancellationToken.None);
+        var package = await scope.ServiceProvider.GetRequiredService<VerificationCompletionApplicationService>()
+            .GetEvidencePackageAsync(BusinessCaller(), completed.EvidencePackageId, CancellationToken.None);
+
+        Assert.True(summary.IsSuccess);
+        Assert.True(package.IsSuccess);
+        Assert.Equal(VerificationSessionStateDto.Completed, summary.Value?.State);
+        Assert.Equal(completed.EvidencePackageId, package.Value?.EvidencePackageId);
+        Assert.Equal(completed.EvidencePackageHash, package.Value?.PackageHash);
+    }
+
+    [Fact]
+    public void Production_postgres_composition_does_not_register_fault_injector()
+    {
+        var services = new ServiceCollection();
+
+        services.AddTagEkycPostgresPersistence(postgres.ConnectionString);
+
+        using var provider = services.BuildServiceProvider(new ServiceProviderOptions
+        {
+            ValidateScopes = true,
+            ValidateOnBuild = true,
+        });
+        using var scope = provider.CreateScope();
+
+        Assert.Null(scope.ServiceProvider.GetService<EfPersistenceFaultInjector>());
+    }
+
+    [Fact]
+    public async Task Verification_session_uses_xmin_as_concurrency_token()
+    {
+        await using var db = postgres.CreateDbContext();
+
+        var entity = db.Model.FindEntityType(typeof(VerificationSessionRow))
+            ?? throw new InvalidOperationException("VerificationSessionRow model missing.");
+        var token = entity.FindProperty("xmin");
+
+        Assert.NotNull(token);
+        Assert.True(token!.IsConcurrencyToken);
+        Assert.True(token.IsShadowProperty());
+        Assert.Equal(ValueGenerated.OnAddOrUpdate, token.ValueGenerated);
+    }
+
+    [Fact]
+    public async Task Append_only_tables_reject_update_and_delete()
+    {
+        await using var provider = BuildProvider();
+        var session = await CreateCaptureQualitySessionAsync(provider, "external-pg-append-only");
+        var artifact = await AppendArtifactAsync(provider, session.VerificationSessionId);
+        await AppendEvidenceAsync(provider, session.VerificationSessionId, artifact.CaptureArtifactId);
+
+        await using var db = postgres.CreateDbContext();
+        await Assert.ThrowsAsync<PostgresException>(() =>
+            db.Database.ExecuteSqlRawAsync("""UPDATE tagekyc.evidence_results SET "Result" = "Result";"""));
+        await Assert.ThrowsAsync<PostgresException>(() =>
+            db.Database.ExecuteSqlRawAsync("""DELETE FROM tagekyc.audit_events;"""));
+    }
+
+    [Fact]
+    public async Task Concurrent_finalization_uses_xmin_conflict_without_partial_rows_or_pk_collision()
+    {
+        await using var provider = BuildProvider();
+        var session = await CreateCaptureQualitySessionAsync(provider, "external-pg-concurrent-finalize");
+        var artifact = await AppendArtifactAsync(provider, session.VerificationSessionId);
+        await AppendEvidenceAsync(provider, session.VerificationSessionId, artifact.CaptureArtifactId);
+
+        await using var scope1 = provider.CreateAsyncScope();
+        await using var scope2 = provider.CreateAsyncScope();
+        var expected1 = await scope1.ServiceProvider.GetRequiredService<IVerificationSessionRepository>()
+            .GetAsync(Guid.Parse(session.VerificationSessionId), CancellationToken.None)
+            ?? throw new InvalidOperationException("First expected session missing.");
+        var expected2 = await scope2.ServiceProvider.GetRequiredService<IVerificationSessionRepository>()
+            .GetAsync(Guid.Parse(session.VerificationSessionId), CancellationToken.None)
+            ?? throw new InvalidOperationException("Second expected session missing.");
+        var gate = new TwoPartyAsyncGate();
+        scope1.ServiceProvider.GetRequiredService<EfPersistenceFaultInjector>().BeforeFinalizationSaveAsync = gate.SignalAndWaitAsync;
+        scope2.ServiceProvider.GetRequiredService<EfPersistenceFaultInjector>().BeforeFinalizationSaveAsync = gate.SignalAndWaitAsync;
+
+        var task1 = scope1.ServiceProvider.GetRequiredService<IVerificationFinalizationBoundary>()
+            .TryFinalizeAsync(CreateFinalizationWrite(expected1, "11111111-1111-5111-8111-111111111111"), CancellationToken.None);
+        var task2 = scope2.ServiceProvider.GetRequiredService<IVerificationFinalizationBoundary>()
+            .TryFinalizeAsync(CreateFinalizationWrite(expected2, "22222222-2222-5222-8222-222222222222"), CancellationToken.None);
+
+        var results = await Task.WhenAll(task1, task2);
+
+        Assert.Single(results, result => result.Status == VerificationFinalizationWriteStatus.Applied);
+        Assert.Single(results, result => result.Status == VerificationFinalizationWriteStatus.StateMismatch);
+        await AssertPersistedCountsAsync(decisions: 1, packages: 1, manifests: 1, completionAudits: 1);
+    }
+
+    [Fact]
+    public async Task Finalization_rollback_keeps_session_and_derived_records_consistent()
+    {
+        await using var provider = BuildProvider();
+        var session = await CreateCaptureQualitySessionAsync(provider, "external-pg-rollback");
+        var artifact = await AppendArtifactAsync(provider, session.VerificationSessionId);
+        await AppendEvidenceAsync(provider, session.VerificationSessionId, artifact.CaptureArtifactId);
+
+        await using (var scope = provider.CreateAsyncScope())
+        {
+            scope.ServiceProvider.GetRequiredService<EfPersistenceFaultInjector>().ThrowAfterSessionUpdateInFinalization = true;
+            await Assert.ThrowsAsync<InvalidOperationException>(() =>
+                scope.ServiceProvider.GetRequiredService<VerificationCompletionApplicationService>()
+                    .CompleteAsync(BusinessCaller(), session.VerificationSessionId, new CompleteVerificationSessionRequestDto(), CancellationToken.None));
+        }
+
+        await using var checkScope = provider.CreateAsyncScope();
+        var summary = await checkScope.ServiceProvider.GetRequiredService<VerificationSessionApplicationService>()
+            .GetSummaryAsync(BusinessCaller(), session.VerificationSessionId, CancellationToken.None);
+
+        Assert.Equal(VerificationSessionStateDto.ReadyToComplete, summary.Value?.State);
+        Assert.Null(summary.Value?.EvidencePackageId);
+        await AssertPersistedCountsAsync(decisions: 0, packages: 0, manifests: 0, completionAudits: 0);
+    }
+
+    [Fact]
+    public async Task Stale_finalization_write_returns_state_mismatch()
+    {
+        await using var provider = BuildProvider();
+        var session = await CreateCaptureQualitySessionAsync(provider, "external-pg-conflict");
+
+        await using var scope = provider.CreateAsyncScope();
+        var sessionRepo = scope.ServiceProvider.GetRequiredService<IVerificationSessionRepository>();
+        var boundary = scope.ServiceProvider.GetRequiredService<IVerificationFinalizationBoundary>();
+        var expected = await sessionRepo.GetAsync(Guid.Parse(session.VerificationSessionId), CancellationToken.None)
+            ?? throw new InvalidOperationException("Session missing.");
+        var completed = expected.WithCompletion(
+            VerificationResult.Passed,
+            AssuranceLevel.Medium,
+            Guid.Parse("aaaaaaaa-aaaa-5aaa-8aaa-aaaaaaaaaaaa"),
+            Guid.Parse("bbbbbbbb-bbbb-5bbb-8bbb-bbbbbbbbbbbb"),
+            new HashRef("sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+            new HashRef("sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
+            "req-conflict",
+            "corr-conflict",
+            DateTimeOffset.UtcNow);
+
+        await sessionRepo.SetStateAsync(expected.Id, VerificationSessionState.TechnicalTerminal, CancellationToken.None);
+
+        var result = await boundary.TryFinalizeAsync(
+            new VerificationFinalizationWrite(
+                expected,
+                completed,
+                new VerificationDecision(
+                    Guid.Parse("aaaaaaaa-aaaa-5aaa-8aaa-aaaaaaaaaaaa"),
+                    expected.Id,
+                    VerificationResult.Passed,
+                    AssuranceLevel.Medium,
+                    RiskScore: null,
+                    FailedChecks: [],
+                    CompletedChecks: [RequiredCheckType.CaptureQuality],
+                    DecisionReasonCodes: ["ALL_REQUIRED_CHECKS_PASSED"],
+                    RetryReasonCodes: [],
+                    DateTimeOffset.UtcNow),
+                new EvidencePackage(
+                    Guid.Parse("bbbbbbbb-bbbb-5bbb-8bbb-bbbbbbbbbbbb"),
+                    expected.Id,
+                    "test",
+                    new HashRef("sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
+                    EvidenceRefs: [],
+                    AuditEventRefs: [],
+                    Guid.Parse("aaaaaaaa-aaaa-5aaa-8aaa-aaaaaaaaaaaa"),
+                    new HashRef("sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
+                    SignaturePlaceholderStatus.PlaceholderUnverified,
+                    DateTimeOffset.UtcNow),
+                new EvidenceManifestDto(
+                    "bbbbbbbbbbbb5bbb8bbbbbbbbbbbbbbb",
+                    expected.Id.ToString("N"),
+                    "test",
+                    "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+                    "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+                    [],
+                    [],
+                    "aaaaaaaaaaaa5aaa8aaaaaaaaaaaaaaaa",
+                    SignaturePlaceholderStatusDto.PlaceholderUnverified,
+                    DateTimeOffset.UtcNow),
+                new AuditEvent(
+                    Guid.Parse("cccccccc-cccc-5ccc-8ccc-cccccccccccc"),
+                    expected.ClientApplicationId,
+                    expected.Id,
+                    "BusinessConsumer",
+                    "ldev_biz",
+                    "VERIFICATION_COMPLETED",
+                    new HashRef("sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"),
+                    EventPayloadRef: null,
+                    "req-conflict",
+                    "corr-conflict",
+                    DateTimeOffset.UtcNow)),
+            CancellationToken.None);
+
+        Assert.Equal(VerificationFinalizationWriteStatus.StateMismatch, result.Status);
+    }
+
+    [Fact]
+    public void Production_inmemory_configuration_refuses_to_start()
+    {
+        using var factory = new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.UseSetting("environment", "Production");
+                builder.UseSetting("TagEkyc:Persistence:Provider", "InMemory");
+            });
+
+        var exception = Assert.Throws<InvalidOperationException>(() => factory.CreateClient());
+        Assert.Contains("Production requires TagEkyc:Persistence:Provider=Postgres", exception.ToString(), StringComparison.Ordinal);
+    }
+
+    private ServiceProvider BuildProvider()
+    {
+        var services = new ServiceCollection();
+        services.AddSingleton<LocalDevRuntimePolicySource>();
+        services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
+        services.AddTagEkycPostgresPersistence(postgres.ConnectionString);
+        services.AddScoped<EfPersistenceFaultInjector>();
+        services.AddScoped<VerificationSessionApplicationService>();
+        services.AddScoped<VerificationEvidenceApplicationService>();
+        services.AddScoped<VerificationCompletionApplicationService>();
+
+        return services.BuildServiceProvider(new ServiceProviderOptions
+        {
+            ValidateScopes = true,
+            ValidateOnBuild = true,
+        });
+    }
+
+    private static async Task<CreateVerificationSessionResponseDto> CreateCaptureQualitySessionAsync(
+        IServiceProvider provider,
+        string externalSessionId)
+    {
+        await using var scope = provider.CreateAsyncScope();
+        var result = await scope.ServiceProvider.GetRequiredService<VerificationSessionApplicationService>()
+            .CreateAsync(
+                BusinessCaller(),
+                new CreateVerificationSessionRequestDto(
+                    externalSessionId,
+                    "subject-ref",
+                    "PATIENT_REGISTRATION",
+                    VerificationProfileDto.StandardEkycProfile,
+                    [new RequiredCheckRequestDto(RequiredCheckTypeDto.CaptureQuality, Required: true, MinimumConfidence: null)],
+                    DateTimeOffset.UtcNow.AddMinutes(30),
+                    RequestId: "req-create",
+                    CorrelationId: "corr-create"),
+                cancellationToken: CancellationToken.None);
+
+        Assert.True(result.IsSuccess, result.Error?.Code);
+        return result.Value!;
+    }
+
+    private static async Task<CaptureArtifactSubmissionResponseDto> AppendArtifactAsync(IServiceProvider provider, string sessionId)
+    {
+        await using var scope = provider.CreateAsyncScope();
+        var result = await scope.ServiceProvider.GetRequiredService<VerificationEvidenceApplicationService>()
+            .AppendCaptureArtifactAsync(
+                CaptureCaller(),
+                sessionId,
+                new CaptureArtifactSubmissionRequestDto(
+                    CaptureArtifactTypeDto.DeviceCaptureMetadata,
+                    CaptureSourceDto.MobileSdk,
+                    "ldev_capture",
+                    "device-1",
+                    ArtifactHash: null,
+                    MetadataHash: "sha256:metadata",
+                    RequestId: "req-artifact",
+                    CorrelationId: "corr-artifact"),
+                CancellationToken.None);
+
+        Assert.True(result.IsSuccess, result.Error?.Code);
+        return result.Value!;
+    }
+
+    private static async Task AppendEvidenceAsync(IServiceProvider provider, string sessionId, string artifactId)
+    {
+        await using var scope = provider.CreateAsyncScope();
+        var result = await scope.ServiceProvider.GetRequiredService<VerificationEvidenceApplicationService>()
+            .AppendEvidenceResultAsync(
+                TrustedCaller(),
+                sessionId,
+                new EvidenceResultSubmissionRequestDto(
+                    EvidenceResultTypeDto.CaptureQuality,
+                    [artifactId],
+                    VerificationResultDto.Passed,
+                    Confidence: 0.9m,
+                    ReasonCodes: [],
+                    RetryReasonCode: null,
+                    SanitizedSummaryRef: "summary:capture-quality",
+                    PayloadHash: "sha256:payload",
+                    SignaturePlaceholderStatusDto.PlaceholderUnverified,
+                    "localdev-quality",
+                    "s1",
+                    RequestId: "req-evidence",
+                    CorrelationId: "corr-evidence"),
+                CancellationToken.None);
+
+        Assert.True(result.IsSuccess, result.Error?.Code);
+    }
+
+    private static async Task<CompleteVerificationSessionResponseDto> CompleteAsync(IServiceProvider provider, string sessionId)
+    {
+        await using var scope = provider.CreateAsyncScope();
+        var result = await scope.ServiceProvider.GetRequiredService<VerificationCompletionApplicationService>()
+            .CompleteAsync(
+                BusinessCaller(),
+                sessionId,
+                new CompleteVerificationSessionRequestDto(
+                    RequestId: "req-complete",
+                    CorrelationId: "corr-complete"),
+                CancellationToken.None);
+
+        Assert.True(result.IsSuccess, result.Error?.Code);
+        return result.Value!;
+    }
+
+    private async Task AssertPersistedCountsAsync(int decisions, int packages, int manifests, int completionAudits)
+    {
+        await using var db = postgres.CreateDbContext();
+        Assert.Equal(decisions, await db.VerificationDecisions.CountAsync());
+        Assert.Equal(packages, await db.EvidencePackages.CountAsync());
+        Assert.Equal(manifests, await db.EvidenceManifests.CountAsync());
+        Assert.Equal(completionAudits, await db.AuditEvents.CountAsync(audit => audit.EventType == "VERIFICATION_COMPLETED"));
+    }
+
+    private static VerificationFinalizationWrite CreateFinalizationWrite(VerificationSession expected, string idSeed)
+    {
+        var decisionId = Guid.Parse(idSeed);
+        var packageId = Guid.Parse(idSeed.Replace('1', '3').Replace('2', '4'));
+        var auditId = Guid.Parse(idSeed.Replace('1', '5').Replace('2', '6'));
+        var completedAt = DateTimeOffset.UtcNow;
+        var packageHash = new HashRef($"sha256:{new string(idSeed[0], 64)}");
+        var manifestHash = new HashRef($"sha256:{new string(idSeed[1], 64)}");
+        var completed = expected.WithCompletion(
+            VerificationResult.Passed,
+            AssuranceLevel.Medium,
+            decisionId,
+            packageId,
+            packageHash,
+            manifestHash,
+            $"req-{idSeed[0]}",
+            $"corr-{idSeed[0]}",
+            completedAt);
+
+        return new VerificationFinalizationWrite(
+            expected,
+            completed,
+            new VerificationDecision(
+                decisionId,
+                expected.Id,
+                VerificationResult.Passed,
+                AssuranceLevel.Medium,
+                RiskScore: null,
+                FailedChecks: [],
+                CompletedChecks: [RequiredCheckType.CaptureQuality],
+                DecisionReasonCodes: ["ALL_REQUIRED_CHECKS_PASSED"],
+                RetryReasonCodes: [],
+                completedAt),
+            new EvidencePackage(
+                packageId,
+                expected.Id,
+                "test",
+                manifestHash,
+                EvidenceRefs: [],
+                AuditEventRefs: [],
+                decisionId,
+                packageHash,
+                SignaturePlaceholderStatus.PlaceholderUnverified,
+                completedAt),
+            new EvidenceManifestDto(
+                packageId.ToString("N"),
+                expected.Id.ToString("N"),
+                "test",
+                manifestHash.ToString(),
+                packageHash.ToString(),
+                [],
+                [],
+                decisionId.ToString("N"),
+                SignaturePlaceholderStatusDto.PlaceholderUnverified,
+                completedAt),
+            new AuditEvent(
+                auditId,
+                expected.ClientApplicationId,
+                expected.Id,
+                "BusinessConsumer",
+                "ldev_biz",
+                "VERIFICATION_COMPLETED",
+                new HashRef($"sha256:{new string(idSeed[2], 64)}"),
+                EventPayloadRef: null,
+                $"req-{idSeed[0]}",
+                $"corr-{idSeed[0]}",
+                completedAt));
+    }
+
+    private sealed class TwoPartyAsyncGate
+    {
+        private readonly TaskCompletionSource release = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private int arrivals;
+
+        public async Task SignalAndWaitAsync(CancellationToken cancellationToken)
+        {
+            if (Interlocked.Increment(ref arrivals) == 2)
+            {
+                release.TrySetResult();
+            }
+
+            await release.Task.WaitAsync(TimeSpan.FromSeconds(10), cancellationToken);
+        }
+    }
+
+    private static AuthenticatedClientContext BusinessCaller() =>
+        new(
+            Guid.Parse("20000000-0000-0000-0000-000000000001"),
+            LocalDevRuntimePolicySource.BusinessClientId,
+            "ldev_biz",
+            AuthenticatedCallerCategory.BusinessConsumer,
+            new HashSet<string> { "business.session.create", "business.session.read", "session.complete" });
+
+    private static AuthenticatedClientContext CaptureCaller() =>
+        new(
+            Guid.Parse("20000000-0000-0000-0000-000000000007"),
+            LocalDevRuntimePolicySource.BusinessClientId,
+            "ldev_capture",
+            AuthenticatedCallerCategory.CaptureAgent,
+            new HashSet<string> { "capture.artifact.append" },
+            new HashSet<Guid> { LocalDevRuntimePolicySource.BusinessClientId },
+            new HashSet<string> { "ldev_capture" });
+
+    private static AuthenticatedClientContext TrustedCaller() =>
+        new(
+            Guid.Parse("20000000-0000-0000-0000-000000000008"),
+            LocalDevRuntimePolicySource.BusinessClientId,
+            "ldev_adapter",
+            AuthenticatedCallerCategory.TrustedAdapter,
+            new HashSet<string> { "trusted.evidence.append" },
+            new HashSet<Guid> { LocalDevRuntimePolicySource.BusinessClientId });
+}

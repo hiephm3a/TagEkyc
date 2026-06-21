@@ -13,7 +13,6 @@ public sealed class Tip03BoundaryTests
             typeof(TagEkyc.Domain.AssemblyMarker).Assembly,
             typeof(TagEkyc.Contracts.AssemblyMarker).Assembly,
             typeof(TagEkyc.Application.AssemblyMarker).Assembly,
-            typeof(TagEkyc.Infrastructure.AssemblyMarker).Assembly,
         };
 
         var forbiddenReferences = new[]
@@ -38,6 +37,7 @@ public sealed class Tip03BoundaryTests
             .GetAssemblies()
             .Where(assembly => assembly.GetName().Name?.StartsWith("TagEkyc.", StringComparison.Ordinal) == true)
             .SelectMany(LoadableTypes)
+            .Where(type => type.Assembly != typeof(TagEkyc.Infrastructure.AssemblyMarker).Assembly)
             .Select(type => type.Name)
             .ToArray();
 

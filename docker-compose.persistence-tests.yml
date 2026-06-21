@@ -1,0 +1,15 @@
+services:
+  tagekyc-postgres-test:
+    image: postgres:16
+    container_name: tagekyc-postgres-test
+    environment:
+      POSTGRES_DB: tagekyc_persistence_tests
+      POSTGRES_USER: tagekyc
+      POSTGRES_PASSWORD: tagekyc
+    ports:
+      - "55432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tagekyc -d tagekyc_persistence_tests"]
+      interval: 2s
+      timeout: 5s
+      retries: 30

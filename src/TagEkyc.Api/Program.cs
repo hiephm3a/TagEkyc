@@ -5,6 +5,7 @@ using TagEkyc.Api.LocalDev;
 using TagEkyc.Application.LocalDev;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
+using TagEkyc.Infrastructure.Persistence;
 using ApplicationMarker = TagEkyc.Application.AssemblyMarker;
 using TagEkyc.Contracts;
 
@@ -21,32 +22,17 @@ builder.Services.AddSingleton<LocalDevApiKeyValidator>();
 builder.Services.AddSingleton<ILocalDevApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
 builder.Services.AddSingleton<LocalDevInMemoryMetadataReferenceRegistry>();
 builder.Services.AddSingleton<IMetadataReferenceRegistry>(sp => sp.GetRequiredService<LocalDevInMemoryMetadataReferenceRegistry>());
-builder.Services.AddSingleton<LocalDevInMemoryVerificationSessionRepository>();
-builder.Services.AddSingleton<IVerificationSessionRepository>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationSessionRepository>());
-builder.Services.AddSingleton<LocalDevInMemoryAuditEventRepository>();
-builder.Services.AddSingleton<IAuditEventRepository>(sp => sp.GetRequiredService<LocalDevInMemoryAuditEventRepository>());
-builder.Services.AddSingleton<LocalDevInMemoryCaptureArtifactRepository>();
-builder.Services.AddSingleton<ICaptureArtifactRepository>(sp => sp.GetRequiredService<LocalDevInMemoryCaptureArtifactRepository>());
-builder.Services.AddSingleton<LocalDevInMemoryEvidenceResultRepository>();
-builder.Services.AddSingleton<IEvidenceResultRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceResultRepository>());
-builder.Services.AddSingleton<LocalDevInMemoryVerificationDecisionRepository>();
-builder.Services.AddSingleton<IVerificationDecisionRepository>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationDecisionRepository>());
-builder.Services.AddSingleton<LocalDevInMemoryEvidencePackageRepository>();
-builder.Services.AddSingleton<IEvidencePackageRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidencePackageRepository>());
-builder.Services.AddSingleton<LocalDevInMemoryEvidenceManifestRepository>();
-builder.Services.AddSingleton<IInternalEvidenceManifestRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceManifestRepository>());
-builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
-builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
-builder.Services.AddSingleton<VerificationSessionApplicationService>();
-builder.Services.AddSingleton<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
-builder.Services.AddSingleton<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
-builder.Services.AddSingleton<VerificationEvidenceApplicationService>();
-builder.Services.AddSingleton<ICaptureArtifactCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
-builder.Services.AddSingleton<ITrustedEvidenceResultCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
-builder.Services.AddSingleton<VerificationCompletionApplicationService>();
-builder.Services.AddSingleton<IVerificationSessionCompletionCommands>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
-builder.Services.AddSingleton<IEvidencePackageQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
-builder.Services.AddSingleton<ICompletionNotificationQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
+ConfigurePersistence(builder);
+builder.Services.AddScoped<VerificationSessionApplicationService>();
+builder.Services.AddScoped<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
+builder.Services.AddScoped<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
+builder.Services.AddScoped<VerificationEvidenceApplicationService>();
+builder.Services.AddScoped<ICaptureArtifactCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
+builder.Services.AddScoped<ITrustedEvidenceResultCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
+builder.Services.AddScoped<VerificationCompletionApplicationService>();
+builder.Services.AddScoped<IVerificationSessionCompletionCommands>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
+builder.Services.AddScoped<IEvidencePackageQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
+builder.Services.AddScoped<ICompletionNotificationQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
 
 var app = builder.Build();
 
@@ -75,3 +61,45 @@ app.MapGet("/", () => Results.Ok(new SessionStatusPlaceholder(
 app.MapVerificationSessionEndpoints();
 
 app.Run();
+
+static void ConfigurePersistence(WebApplicationBuilder builder)
+{
+    var options = builder.Configuration
+        .GetSection(TagEkycPersistenceOptions.SectionName)
+        .Get<TagEkycPersistenceOptions>() ?? new TagEkycPersistenceOptions();
+
+    if (builder.Environment.IsProduction() && !options.IsPostgres)
+    {
+        throw new InvalidOperationException("Production requires TagEkyc:Persistence:Provider=Postgres.");
+    }
+
+    if (options.IsPostgres)
+    {
+        builder.Services.AddTagEkycPostgresPersistence(options.ConnectionString ?? string.Empty);
+        return;
+    }
+
+    if (!options.IsInMemory)
+    {
+        throw new InvalidOperationException($"Unsupported TagEkyc persistence provider '{options.Provider}'.");
+    }
+
+    builder.Services.AddSingleton<LocalDevInMemoryVerificationSessionRepository>();
+    builder.Services.AddSingleton<IVerificationSessionRepository>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationSessionRepository>());
+    builder.Services.AddSingleton<LocalDevInMemoryAuditEventRepository>();
+    builder.Services.AddSingleton<IAuditEventRepository>(sp => sp.GetRequiredService<LocalDevInMemoryAuditEventRepository>());
+    builder.Services.AddSingleton<LocalDevInMemoryCaptureArtifactRepository>();
+    builder.Services.AddSingleton<ICaptureArtifactRepository>(sp => sp.GetRequiredService<LocalDevInMemoryCaptureArtifactRepository>());
+    builder.Services.AddSingleton<LocalDevInMemoryEvidenceResultRepository>();
+    builder.Services.AddSingleton<IEvidenceResultRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceResultRepository>());
+    builder.Services.AddSingleton<LocalDevInMemoryVerificationDecisionRepository>();
+    builder.Services.AddSingleton<IVerificationDecisionRepository>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationDecisionRepository>());
+    builder.Services.AddSingleton<LocalDevInMemoryEvidencePackageRepository>();
+    builder.Services.AddSingleton<IEvidencePackageRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidencePackageRepository>());
+    builder.Services.AddSingleton<LocalDevInMemoryEvidenceManifestRepository>();
+    builder.Services.AddSingleton<IInternalEvidenceManifestRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceManifestRepository>());
+    builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
+    builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
+}
+
+public partial class Program;

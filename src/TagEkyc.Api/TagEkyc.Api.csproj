@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\TagEkyc.Application\TagEkyc.Application.csproj" />
     <ProjectReference Include="..\TagEkyc.Contracts\TagEkyc.Contracts.csproj" />
+    <ProjectReference Include="..\TagEkyc.Infrastructure\TagEkyc.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

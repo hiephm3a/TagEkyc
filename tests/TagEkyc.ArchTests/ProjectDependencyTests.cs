@@ -21,7 +21,7 @@ public sealed class ProjectDependencyTests
 
     public static IEnumerable<object[]> AllowedReferences()
     {
-        yield return [typeof(TagEkyc.Api.AssemblyMarker).Assembly, new[] { "TagEkyc.Application", "TagEkyc.Contracts" }];
+        yield return [typeof(TagEkyc.Api.AssemblyMarker).Assembly, new[] { "TagEkyc.Application", "TagEkyc.Contracts", "TagEkyc.Infrastructure" }];
         yield return [typeof(TagEkyc.Application.AssemblyMarker).Assembly, new[] { "TagEkyc.Contracts", "TagEkyc.Domain" }];
         yield return [typeof(TagEkyc.Adapters.AssemblyMarker).Assembly, new[] { "TagEkyc.Application", "TagEkyc.Contracts", "TagEkyc.Domain" }];
         yield return [typeof(TagEkyc.Infrastructure.AssemblyMarker).Assembly, new[] { "TagEkyc.Application", "TagEkyc.Contracts", "TagEkyc.Domain" }];

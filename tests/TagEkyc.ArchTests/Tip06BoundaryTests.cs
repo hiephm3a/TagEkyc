@@ -41,7 +41,6 @@ public sealed class Tip06BoundaryTests
         {
             typeof(TagEkyc.Api.AssemblyMarker).Assembly,
             typeof(TagEkyc.Application.AssemblyMarker).Assembly,
-            typeof(TagEkyc.Infrastructure.AssemblyMarker).Assembly,
         };
         var forbiddenReferences = new[]
         {

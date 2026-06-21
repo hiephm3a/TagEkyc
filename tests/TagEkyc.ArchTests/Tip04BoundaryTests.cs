@@ -54,6 +54,6 @@ public sealed class Tip04BoundaryTests
             .OrderBy(name => name)
             .ToArray();
 
-        Assert.Equal(["TagEkyc.Application", "TagEkyc.Contracts"], references);
+        Assert.Equal(["TagEkyc.Application", "TagEkyc.Contracts", "TagEkyc.Infrastructure"], references);
     }
 }
