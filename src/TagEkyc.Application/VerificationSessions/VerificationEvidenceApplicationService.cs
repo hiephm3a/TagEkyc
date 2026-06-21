@@ -11,7 +11,8 @@ public sealed class VerificationEvidenceApplicationService(
     ICaptureArtifactRepository captureArtifacts,
     IEvidenceResultRepository evidenceResults,
     IAuditEventRepository auditEvents,
-    ILocalDevClientPolicyProvider policies)
+    ILocalDevClientPolicyProvider policies,
+    IMetadataReferenceRegistry? metadataReferences = null)
     : ICaptureArtifactCommands, ITrustedEvidenceResultCommands
 {
     public async Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> AppendCaptureArtifactAsync(
@@ -93,6 +94,7 @@ public sealed class VerificationEvidenceApplicationService(
 
         var finalState = session.State;
         await captureArtifacts.AppendAsync(artifact, cancellationToken);
+        await RegisterCaptureArtifactMetadataReferenceAsync(artifact, now, cancellationToken);
         if (session.State == VerificationSessionState.Created)
         {
             finalState = VerificationSessionState.InProgress;
@@ -451,6 +453,32 @@ public sealed class VerificationEvidenceApplicationService(
         }
 
         return null;
+    }
+
+    private async Task RegisterCaptureArtifactMetadataReferenceAsync(
+        CaptureArtifact artifact,
+        DateTimeOffset registeredAt,
+        CancellationToken cancellationToken)
+    {
+        if (metadataReferences is null)
+        {
+            return;
+        }
+
+        var metadataHash = artifact.MetadataHash ?? artifact.ArtifactHash;
+        if (metadataHash is null)
+        {
+            return;
+        }
+
+        await metadataReferences.RegisterAsync(
+            new MetadataReferenceRegistration(
+                new MetadataReferenceId($"capture-artifact-metadata:{artifact.Id:N}"),
+                "capture-artifact-metadata",
+                MetadataReferenceState.RegisteredMetadata,
+                metadataHash,
+                registeredAt),
+            cancellationToken);
     }
 
     private static bool IsCompatibleInput(

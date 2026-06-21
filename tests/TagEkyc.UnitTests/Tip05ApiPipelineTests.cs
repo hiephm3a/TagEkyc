@@ -15,6 +15,7 @@ using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.CaptureAgent;
 using TagEkyc.Contracts.Common;
 using TagEkyc.Contracts.TrustedAdapter;
+using TagEkyc.Domain;
 
 namespace TagEkyc.UnitTests;
 
@@ -65,6 +66,14 @@ public sealed class Tip05ApiPipelineTests
         var artifactJson = await ReadJsonAsync(artifactResponse);
         Assert.Equal("InProgress", artifactJson["sessionState"]?.GetValue<string>());
         var artifactId = artifactJson["captureArtifactId"]!.GetValue<string>();
+        var registry = api.App.Services.GetRequiredService<IMetadataReferenceRegistry>();
+        var metadataReference = await registry.QueryAsync(new MetadataReferenceId($"capture-artifact-metadata:{artifactId}"));
+        Assert.True(metadataReference.HasRegisteredMetadata());
+        Assert.Equal("capture-artifact-metadata", metadataReference.Reference?.ReferenceKind);
+        Assert.True(metadataReference.DeniesArtifactAccessProof());
+        Assert.True(metadataReference.DeniesCompletePackageProof());
+        Assert.True(metadataReference.DeniesProviderEvidenceAvailabilityProof());
+        Assert.True(metadataReference.DeniesReadinessProof());
 
         var evidenceResponse = await PostJsonAsync(
             api.Client,
@@ -158,6 +167,28 @@ public sealed class Tip05ApiPipelineTests
                 new { correlationId = "corr-specialized" });
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        var metadataReferenceRoutes = new[]
+        {
+            "/api/ekyc/metadata-references/capture-artifact-metadata:test",
+            $"/api/ekyc/verification-sessions/{sessionId}/metadata-references",
+        };
+
+        foreach (var path in metadataReferenceRoutes)
+        {
+            using var getRequest = new HttpRequestMessage(HttpMethod.Get, path);
+            getRequest.Headers.Add(LocalDevApiKeyAuthenticator.HeaderName, BusinessKey);
+            var getResponse = await api.Client.SendAsync(getRequest);
+
+            var postResponse = await PostJsonAsync(
+                api.Client,
+                path,
+                BusinessKey,
+                new { correlationId = "corr-metadata-route" });
+
+            Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
+            Assert.Equal(HttpStatusCode.NotFound, postResponse.StatusCode);
         }
     }
 
@@ -290,6 +321,8 @@ public sealed class Tip05ApiPipelineTests
             builder.Services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
             builder.Services.AddSingleton<LocalDevApiKeyValidator>();
             builder.Services.AddSingleton<ILocalDevApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
+            builder.Services.AddSingleton<LocalDevInMemoryMetadataReferenceRegistry>();
+            builder.Services.AddSingleton<IMetadataReferenceRegistry>(sp => sp.GetRequiredService<LocalDevInMemoryMetadataReferenceRegistry>());
             builder.Services.AddSingleton<LocalDevInMemoryVerificationSessionRepository>();
             builder.Services.AddSingleton<IVerificationSessionRepository>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationSessionRepository>());
             builder.Services.AddSingleton<LocalDevInMemoryAuditEventRepository>();

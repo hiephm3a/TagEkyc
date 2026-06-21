@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using TagEkyc.Application;
 using TagEkyc.Application.LocalDev;
+using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.CaptureAgent;
@@ -58,6 +59,42 @@ public sealed class Tip05EvidenceApplicationTests
         Assert.True(accepted.IsSuccess);
         Assert.Equal("InProgress", accepted.Value?.SessionState);
         Assert.Single(fixture.Artifacts.Artifacts);
+    }
+
+    [Fact]
+    public async Task Accepted_capture_artifact_registers_internal_metadata_reference_without_proof_claims()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateSessionAsync(fixture, [RequiredCheckTypeDto.CaptureQuality]);
+
+        var accepted = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            DeviceMetadataArtifact(),
+            CancellationToken.None);
+
+        Assert.True(accepted.IsSuccess);
+        var referenceId = new MetadataReferenceId($"capture-artifact-metadata:{accepted.Value!.CaptureArtifactId}");
+        var registered = await fixture.MetadataReferences.QueryAsync(referenceId);
+        var unknown = await fixture.MetadataReferences.QueryAsync(
+            new MetadataReferenceId("capture-artifact-metadata:unknown-tip62"));
+
+        Assert.True(registered.HasRegisteredMetadata());
+        Assert.False(registered.IsNonSuccess());
+        Assert.NotNull(registered.Reference);
+        Assert.Equal("capture-artifact-metadata", registered.Reference.ReferenceKind);
+        Assert.Equal(MetadataReferenceState.RegisteredMetadata, registered.Reference.State);
+        Assert.Equal(new HashRef("sha256:metadata"), registered.Reference.MetadataHash);
+        Assert.True(registered.RequiresPacketBeforeReliance());
+        Assert.True(registered.IsNotReliableForEvidenceReliance());
+        Assert.True(registered.DeniesEvidenceAvailabilityProof());
+        Assert.True(registered.DeniesArtifactAccessProof());
+        Assert.True(registered.DeniesCompletePackageProof());
+        Assert.True(registered.DeniesProviderEvidenceAvailabilityProof());
+        Assert.True(registered.DeniesReadinessProof());
+        Assert.Null(unknown.Reference);
+        Assert.True(unknown.IsNonSuccess());
+        Assert.True(unknown.IsNotReliableForEvidenceReliance());
     }
 
     [Fact]
@@ -197,10 +234,17 @@ public sealed class Tip05EvidenceApplicationTests
         var evidence = new LocalDevInMemoryEvidenceResultRepository();
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
+        var metadataReferences = new LocalDevInMemoryMetadataReferenceRegistry();
         var sessionService = new VerificationSessionApplicationService(sessions, audit, policies);
-        var service = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
+        var service = new VerificationEvidenceApplicationService(
+            sessions,
+            artifacts,
+            evidence,
+            audit,
+            policies,
+            metadataReferences);
 
-        return new TestFixture(service, sessionService, sessions, artifacts, evidence, audit);
+        return new TestFixture(service, sessionService, sessions, artifacts, evidence, audit, metadataReferences);
     }
 
     private static CaptureArtifactSubmissionRequestDto DocumentFrontArtifact() =>
@@ -274,5 +318,6 @@ public sealed class Tip05EvidenceApplicationTests
         LocalDevInMemoryVerificationSessionRepository Sessions,
         LocalDevInMemoryCaptureArtifactRepository Artifacts,
         LocalDevInMemoryEvidenceResultRepository Evidence,
-        LocalDevInMemoryAuditEventRepository Audit);
+        LocalDevInMemoryAuditEventRepository Audit,
+        LocalDevInMemoryMetadataReferenceRegistry MetadataReferences);
 }
