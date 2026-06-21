@@ -7,8 +7,13 @@ public sealed class TagEkycDesignTimeDbContextFactory : IDesignTimeDbContextFact
 {
     public TagEkycDbContext CreateDbContext(string[] args)
     {
+        var connectionString =
+            Environment.GetEnvironmentVariable("TAGEKYC_DESIGN_TIME_CONNECTION_STRING") ??
+            Environment.GetEnvironmentVariable("TAGEKYC_POSTGRES_CONNECTION_STRING") ??
+            "Host=localhost;Port=5432;Database=tagekyc_design_time;Username=tagekyc;Password=tagekyc";
+
         var options = new DbContextOptionsBuilder<TagEkycDbContext>()
-            .UseNpgsql("Host=localhost;Port=5432;Database=tagekyc_design_time;Username=postgres;Password=postgres")
+            .UseNpgsql(connectionString)
             .Options;
 
         return new TagEkycDbContext(options);

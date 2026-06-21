@@ -22,7 +22,7 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
         await ResetDatabaseAsync();
     }
 
-    public Task DisposeAsync() => Task.CompletedTask;
+    public async Task DisposeAsync() => await RunDockerComposeAsync("down");
 
     public async Task ResetDatabaseAsync()
     {

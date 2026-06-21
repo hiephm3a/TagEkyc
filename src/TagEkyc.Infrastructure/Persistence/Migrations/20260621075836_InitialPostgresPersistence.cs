@@ -15,146 +15,6 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                 name: "tagekyc");
 
             migrationBuilder.CreateTable(
-                name: "audit_events",
-                schema: "tagekyc",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    ClientApplicationId = table.Column<Guid>(type: "uuid", nullable: false),
-                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ActorType = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    ActorId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    EventType = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    EventPayloadHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    EventPayloadRef = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    RequestId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    CorrelationId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    OccurredAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_audit_events", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "capture_artifacts",
-                schema: "tagekyc",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    ArtifactType = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    CaptureSource = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    CaptureAgentId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    DeviceId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    VaultRef = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
-                    ArtifactHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    MetadataHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    QualityState = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    RetryReasonCode = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    RequestId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    CorrelationId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_capture_artifacts", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "evidence_manifests",
-                schema: "tagekyc",
-                columns: table => new
-                {
-                    EvidencePackageId = table.Column<string>(type: "text", nullable: false),
-                    SessionGuid = table.Column<Guid>(type: "uuid", nullable: false),
-                    VerificationSessionId = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    PackageVersion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    ManifestHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    PackageHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    EvidenceRefsJson = table.Column<string>(type: "jsonb", nullable: false),
-                    AuditEventRefsJson = table.Column<string>(type: "jsonb", nullable: false),
-                    ResultRef = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
-                    EvidencePackageSignatureStatus = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_evidence_manifests", x => x.EvidencePackageId);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "evidence_packages",
-                schema: "tagekyc",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    PackageVersion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    ManifestHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    EvidenceRefsJson = table.Column<string>(type: "jsonb", nullable: false),
-                    AuditEventRefsJson = table.Column<string>(type: "jsonb", nullable: false),
-                    ResultRef = table.Column<Guid>(type: "uuid", nullable: false),
-                    PackageHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    EvidencePackageSignatureStatus = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_evidence_packages", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "evidence_results",
-                schema: "tagekyc",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    VerificationCheckId = table.Column<Guid>(type: "uuid", nullable: true),
-                    ResultType = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    InputCaptureArtifactIdsJson = table.Column<string>(type: "jsonb", nullable: false),
-                    Result = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    Confidence = table.Column<decimal>(type: "numeric", nullable: true),
-                    ReasonCodesJson = table.Column<string>(type: "jsonb", nullable: false),
-                    RetryReasonCode = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    SanitizedSummaryRef = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
-                    PayloadHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
-                    PayloadSignatureStatus = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    EngineName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    EngineVersion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    RequestId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    CorrelationId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_evidence_results", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "verification_decisions",
-                schema: "tagekyc",
-                columns: table => new
-                {
-                    Id = table.Column<Guid>(type: "uuid", nullable: false),
-                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: false),
-                    Result = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    AssuranceLevel = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
-                    RiskScore = table.Column<decimal>(type: "numeric", nullable: true),
-                    FailedChecksJson = table.Column<string>(type: "jsonb", nullable: false),
-                    CompletedChecksJson = table.Column<string>(type: "jsonb", nullable: false),
-                    DecisionReasonCodesJson = table.Column<string>(type: "jsonb", nullable: false),
-                    RetryReasonCodesJson = table.Column<string>(type: "jsonb", nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_verification_decisions", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "verification_sessions",
                 schema: "tagekyc",
                 columns: table => new
@@ -187,11 +47,194 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     ActorCategory = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: true),
                     ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
                     CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
-                    CompletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                    CompletedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true),
+                    xmin = table.Column<uint>(type: "xid", rowVersion: true, nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_verification_sessions", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "audit_events",
+                schema: "tagekyc",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    ClientApplicationId = table.Column<Guid>(type: "uuid", nullable: false),
+                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ActorType = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    ActorId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    EventType = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    EventPayloadHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    EventPayloadRef = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    RequestId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    CorrelationId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    OccurredAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_audit_events", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_audit_events_verification_sessions_VerificationSessionId",
+                        column: x => x.VerificationSessionId,
+                        principalSchema: "tagekyc",
+                        principalTable: "verification_sessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "capture_artifacts",
+                schema: "tagekyc",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ArtifactType = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    CaptureSource = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    CaptureAgentId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    DeviceId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    VaultRef = table.Column<string>(type: "character varying(256)", maxLength: 256, nullable: true),
+                    ArtifactHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    MetadataHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    QualityState = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    RetryReasonCode = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    RequestId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    CorrelationId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    ExpiresAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_capture_artifacts", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_capture_artifacts_verification_sessions_VerificationSession~",
+                        column: x => x.VerificationSessionId,
+                        principalSchema: "tagekyc",
+                        principalTable: "verification_sessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "evidence_packages",
+                schema: "tagekyc",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    PackageVersion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    ManifestHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    EvidenceRefsJson = table.Column<string>(type: "jsonb", nullable: false),
+                    AuditEventRefsJson = table.Column<string>(type: "jsonb", nullable: false),
+                    ResultRef = table.Column<Guid>(type: "uuid", nullable: false),
+                    PackageHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    EvidencePackageSignatureStatus = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_evidence_packages", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_evidence_packages_verification_sessions_VerificationSession~",
+                        column: x => x.VerificationSessionId,
+                        principalSchema: "tagekyc",
+                        principalTable: "verification_sessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "evidence_results",
+                schema: "tagekyc",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    VerificationCheckId = table.Column<Guid>(type: "uuid", nullable: true),
+                    ResultType = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    InputCaptureArtifactIdsJson = table.Column<string>(type: "jsonb", nullable: false),
+                    Result = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    Confidence = table.Column<decimal>(type: "numeric", nullable: true),
+                    ReasonCodesJson = table.Column<string>(type: "jsonb", nullable: false),
+                    RetryReasonCode = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    SanitizedSummaryRef = table.Column<string>(type: "character varying(512)", maxLength: 512, nullable: true),
+                    PayloadHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: true),
+                    PayloadSignatureStatus = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    EngineName = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    EngineVersion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    RequestId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    CorrelationId = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_evidence_results", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_evidence_results_verification_sessions_VerificationSessionId",
+                        column: x => x.VerificationSessionId,
+                        principalSchema: "tagekyc",
+                        principalTable: "verification_sessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "verification_decisions",
+                schema: "tagekyc",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uuid", nullable: false),
+                    VerificationSessionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Result = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    AssuranceLevel = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    RiskScore = table.Column<decimal>(type: "numeric", nullable: true),
+                    FailedChecksJson = table.Column<string>(type: "jsonb", nullable: false),
+                    CompletedChecksJson = table.Column<string>(type: "jsonb", nullable: false),
+                    DecisionReasonCodesJson = table.Column<string>(type: "jsonb", nullable: false),
+                    RetryReasonCodesJson = table.Column<string>(type: "jsonb", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_verification_decisions", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_verification_decisions_verification_sessions_VerificationSe~",
+                        column: x => x.VerificationSessionId,
+                        principalSchema: "tagekyc",
+                        principalTable: "verification_sessions",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "evidence_manifests",
+                schema: "tagekyc",
+                columns: table => new
+                {
+                    EvidencePackageId = table.Column<Guid>(type: "uuid", nullable: false),
+                    SessionGuid = table.Column<Guid>(type: "uuid", nullable: false),
+                    VerificationSessionId = table.Column<string>(type: "character varying(32)", maxLength: 32, nullable: false),
+                    PackageVersion = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    ManifestHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    PackageHash = table.Column<string>(type: "character varying(128)", maxLength: 128, nullable: false),
+                    EvidenceRefsJson = table.Column<string>(type: "jsonb", nullable: false),
+                    AuditEventRefsJson = table.Column<string>(type: "jsonb", nullable: false),
+                    ResultRef = table.Column<Guid>(type: "uuid", nullable: false),
+                    EvidencePackageSignatureStatus = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_evidence_manifests", x => x.EvidencePackageId);
+                    table.ForeignKey(
+                        name: "FK_evidence_manifests_evidence_packages_EvidencePackageId",
+                        column: x => x.EvidencePackageId,
+                        principalSchema: "tagekyc",
+                        principalTable: "evidence_packages",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -302,15 +345,15 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                 schema: "tagekyc");
 
             migrationBuilder.DropTable(
-                name: "evidence_packages",
-                schema: "tagekyc");
-
-            migrationBuilder.DropTable(
                 name: "evidence_results",
                 schema: "tagekyc");
 
             migrationBuilder.DropTable(
                 name: "verification_decisions",
+                schema: "tagekyc");
+
+            migrationBuilder.DropTable(
+                name: "evidence_packages",
                 schema: "tagekyc");
 
             migrationBuilder.DropTable(

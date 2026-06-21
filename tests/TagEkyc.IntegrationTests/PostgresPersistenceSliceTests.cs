@@ -87,6 +87,114 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
     }
 
     [Fact]
+    public async Task Child_tables_reject_orphan_verification_session_ids()
+    {
+        await using var db = postgres.CreateDbContext();
+        var missingSessionId = Guid.Parse("99999999-9999-5999-8999-999999999999");
+        var now = DateTimeOffset.UtcNow;
+
+        db.CaptureArtifacts.Add(new CaptureArtifactRow
+        {
+            Id = Guid.Parse("10000000-0000-5000-8000-000000000001"),
+            VerificationSessionId = missingSessionId,
+            ArtifactType = "DeviceCaptureMetadata",
+            CaptureSource = "MobileSdk",
+            QualityState = "Accepted",
+            RequestId = "req-orphan-capture",
+            CorrelationId = "corr-orphan-capture",
+            CreatedAt = now,
+        });
+        await AssertForeignKeyViolationAsync(() => db.SaveChangesAsync());
+        db.ChangeTracker.Clear();
+
+        db.EvidenceResults.Add(new EvidenceResultRow
+        {
+            Id = Guid.Parse("10000000-0000-5000-8000-000000000002"),
+            VerificationSessionId = missingSessionId,
+            ResultType = "CaptureQuality",
+            InputCaptureArtifactIdsJson = "[]",
+            Result = "Passed",
+            ReasonCodesJson = "[]",
+            PayloadSignatureStatus = "PlaceholderUnverified",
+            EngineName = "localdev-quality",
+            EngineVersion = "s1",
+            RequestId = "req-orphan-evidence",
+            CorrelationId = "corr-orphan-evidence",
+            CreatedAt = now,
+        });
+        await AssertForeignKeyViolationAsync(() => db.SaveChangesAsync());
+        db.ChangeTracker.Clear();
+
+        db.VerificationDecisions.Add(new VerificationDecisionRow
+        {
+            Id = Guid.Parse("10000000-0000-5000-8000-000000000003"),
+            VerificationSessionId = missingSessionId,
+            Result = "Passed",
+            AssuranceLevel = "Medium",
+            FailedChecksJson = "[]",
+            CompletedChecksJson = """["CaptureQuality"]""",
+            DecisionReasonCodesJson = "[]",
+            RetryReasonCodesJson = "[]",
+            CreatedAt = now,
+        });
+        await AssertForeignKeyViolationAsync(() => db.SaveChangesAsync());
+        db.ChangeTracker.Clear();
+
+        db.EvidencePackages.Add(new EvidencePackageRow
+        {
+            Id = Guid.Parse("10000000-0000-5000-8000-000000000004"),
+            VerificationSessionId = missingSessionId,
+            PackageVersion = "test",
+            ManifestHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            EvidenceRefsJson = "[]",
+            AuditEventRefsJson = "[]",
+            ResultRef = Guid.Parse("10000000-0000-5000-8000-000000000003"),
+            PackageHash = "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            EvidencePackageSignatureStatus = "PlaceholderUnverified",
+            CreatedAt = now,
+        });
+        await AssertForeignKeyViolationAsync(() => db.SaveChangesAsync());
+        db.ChangeTracker.Clear();
+
+        db.AuditEvents.Add(new AuditEventRow
+        {
+            Id = Guid.Parse("10000000-0000-5000-8000-000000000005"),
+            ClientApplicationId = LocalDevRuntimePolicySource.BusinessClientId,
+            VerificationSessionId = missingSessionId,
+            ActorType = "BusinessConsumer",
+            EventType = "VERIFICATION_COMPLETED",
+            EventPayloadHash = "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            RequestId = "req-orphan-audit",
+            CorrelationId = "corr-orphan-audit",
+            OccurredAt = now,
+        });
+        await AssertForeignKeyViolationAsync(() => db.SaveChangesAsync());
+    }
+
+    [Fact]
+    public async Task Evidence_manifest_rejects_orphan_evidence_package_id()
+    {
+        await using var db = postgres.CreateDbContext();
+
+        db.EvidenceManifests.Add(new EvidenceManifestRow
+        {
+            EvidencePackageId = Guid.Parse("10000000-0000-5000-8000-000000000006"),
+            SessionGuid = Guid.Parse("99999999-9999-5999-8999-999999999999"),
+            VerificationSessionId = "99999999999959998999999999999999",
+            PackageVersion = "test",
+            ManifestHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            PackageHash = "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            EvidenceRefsJson = "[]",
+            AuditEventRefsJson = "[]",
+            ResultRef = Guid.Parse("10000000-0000-5000-8000-000000000003"),
+            EvidencePackageSignatureStatus = "PlaceholderUnverified",
+            CreatedAt = DateTimeOffset.UtcNow,
+        });
+
+        await AssertForeignKeyViolationAsync(() => db.SaveChangesAsync());
+    }
+
+    [Fact]
     public async Task Append_only_tables_reject_update_and_delete()
     {
         await using var provider = BuildProvider();
@@ -362,6 +470,14 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
         Assert.Equal(packages, await db.EvidencePackages.CountAsync());
         Assert.Equal(manifests, await db.EvidenceManifests.CountAsync());
         Assert.Equal(completionAudits, await db.AuditEvents.CountAsync(audit => audit.EventType == "VERIFICATION_COMPLETED"));
+    }
+
+    private static async Task AssertForeignKeyViolationAsync(Func<Task> action)
+    {
+        var exception = await Assert.ThrowsAsync<DbUpdateException>(action);
+        var postgresException = Assert.IsType<PostgresException>(exception.GetBaseException());
+
+        Assert.Equal(PostgresErrorCodes.ForeignKeyViolation, postgresException.SqlState);
     }
 
     private static VerificationFinalizationWrite CreateFinalizationWrite(VerificationSession expected, string idSeed)

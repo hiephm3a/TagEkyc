@@ -230,7 +230,7 @@ internal static class DomainRowMapper
     public static EvidenceManifestRow ToRow(EvidenceManifestDto manifest) =>
         new()
         {
-            EvidencePackageId = manifest.EvidencePackageId,
+            EvidencePackageId = Guid.Parse(manifest.EvidencePackageId),
             SessionGuid = Guid.Parse(manifest.VerificationSessionId),
             VerificationSessionId = manifest.VerificationSessionId,
             PackageVersion = manifest.PackageVersion,
@@ -238,21 +238,21 @@ internal static class DomainRowMapper
             PackageHash = manifest.PackageHash,
             EvidenceRefsJson = PersistenceJson.Serialize(manifest.EvidenceRefs),
             AuditEventRefsJson = PersistenceJson.Serialize(manifest.AuditEventRefs),
-            ResultRef = manifest.ResultRef,
+            ResultRef = Guid.Parse(manifest.ResultRef),
             EvidencePackageSignatureStatus = manifest.EvidencePackageSignatureStatus.ToString(),
             CreatedAt = manifest.CreatedAt,
         };
 
     public static EvidenceManifestDto ToDomain(EvidenceManifestRow row) =>
         new(
-            row.EvidencePackageId,
+            row.EvidencePackageId.ToString("N"),
             row.VerificationSessionId,
             row.PackageVersion,
             row.ManifestHash,
             row.PackageHash,
             PersistenceJson.Deserialize<ManifestEvidenceRefDto[]>(row.EvidenceRefsJson),
             PersistenceJson.Deserialize<ManifestAuditRefDto[]>(row.AuditEventRefsJson),
-            row.ResultRef,
+            row.ResultRef.ToString("N"),
             Parse<SignaturePlaceholderStatusDto>(row.EvidencePackageSignatureStatus),
             row.CreatedAt);
 

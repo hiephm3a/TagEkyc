@@ -151,8 +151,8 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.EvidenceManifestRow", b =>
                 {
-                    b.Property<string>("EvidencePackageId")
-                        .HasColumnType("text");
+                    b.Property<Guid>("EvidencePackageId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("AuditEventRefsJson")
                         .IsRequired()
@@ -185,10 +185,8 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
 
-                    b.Property<string>("ResultRef")
-                        .IsRequired()
-                        .HasMaxLength(32)
-                        .HasColumnType("character varying(32)");
+                    b.Property<Guid>("ResultRef")
+                        .HasColumnType("uuid");
 
                     b.Property<Guid>("SessionGuid")
                         .HasColumnType("uuid");
@@ -507,6 +505,12 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<uint>("xmin")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasColumnType("xid")
+                        .HasColumnName("xmin");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ClientApplicationId", "ExternalSessionId")
@@ -514,6 +518,59 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .HasFilter("\"ExternalSessionId\" IS NOT NULL");
 
                     b.ToTable("verification_sessions", "tagekyc");
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.AuditEventRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.VerificationSessionRow", null)
+                        .WithMany()
+                        .HasForeignKey("VerificationSessionId")
+                        .OnDelete(DeleteBehavior.Restrict);
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureArtifactRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.VerificationSessionRow", null)
+                        .WithMany()
+                        .HasForeignKey("VerificationSessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.EvidenceManifestRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.EvidencePackageRow", null)
+                        .WithOne()
+                        .HasForeignKey("TagEkyc.Infrastructure.Persistence.Entities.EvidenceManifestRow", "EvidencePackageId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.EvidencePackageRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.VerificationSessionRow", null)
+                        .WithMany()
+                        .HasForeignKey("VerificationSessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.EvidenceResultRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.VerificationSessionRow", null)
+                        .WithMany()
+                        .HasForeignKey("VerificationSessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.VerificationDecisionRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.VerificationSessionRow", null)
+                        .WithMany()
+                        .HasForeignKey("VerificationSessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

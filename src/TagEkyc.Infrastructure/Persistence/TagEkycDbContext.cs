@@ -72,6 +72,10 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.RequestId).HasMaxLength(128).IsRequired();
             entity.Property(row => row.CorrelationId).HasMaxLength(128).IsRequired();
             entity.HasIndex(row => row.VerificationSessionId);
+            entity.HasOne<VerificationSessionRow>()
+                .WithMany()
+                .HasForeignKey(row => row.VerificationSessionId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<EvidenceResultRow>(entity =>
@@ -91,6 +95,10 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.RequestId).HasMaxLength(128).IsRequired();
             entity.Property(row => row.CorrelationId).HasMaxLength(128).IsRequired();
             entity.HasIndex(row => row.VerificationSessionId);
+            entity.HasOne<VerificationSessionRow>()
+                .WithMany()
+                .HasForeignKey(row => row.VerificationSessionId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<VerificationDecisionRow>(entity =>
@@ -104,6 +112,10 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.DecisionReasonCodesJson).HasColumnType("jsonb").IsRequired();
             entity.Property(row => row.RetryReasonCodesJson).HasColumnType("jsonb").IsRequired();
             entity.HasIndex(row => row.VerificationSessionId);
+            entity.HasOne<VerificationSessionRow>()
+                .WithMany()
+                .HasForeignKey(row => row.VerificationSessionId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<EvidencePackageRow>(entity =>
@@ -117,6 +129,10 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.PackageHash).HasMaxLength(128).IsRequired();
             entity.Property(row => row.EvidencePackageSignatureStatus).HasMaxLength(64).IsRequired();
             entity.HasIndex(row => row.VerificationSessionId);
+            entity.HasOne<VerificationSessionRow>()
+                .WithMany()
+                .HasForeignKey(row => row.VerificationSessionId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<EvidenceManifestRow>(entity =>
@@ -129,9 +145,12 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.PackageHash).HasMaxLength(128).IsRequired();
             entity.Property(row => row.EvidenceRefsJson).HasColumnType("jsonb").IsRequired();
             entity.Property(row => row.AuditEventRefsJson).HasColumnType("jsonb").IsRequired();
-            entity.Property(row => row.ResultRef).HasMaxLength(32).IsRequired();
             entity.Property(row => row.EvidencePackageSignatureStatus).HasMaxLength(64).IsRequired();
             entity.HasIndex(row => row.SessionGuid);
+            entity.HasOne<EvidencePackageRow>()
+                .WithOne()
+                .HasForeignKey<EvidenceManifestRow>(row => row.EvidencePackageId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<AuditEventRow>(entity =>
@@ -146,6 +165,10 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.RequestId).HasMaxLength(128).IsRequired();
             entity.Property(row => row.CorrelationId).HasMaxLength(128).IsRequired();
             entity.HasIndex(row => row.VerificationSessionId);
+            entity.HasOne<VerificationSessionRow>()
+                .WithMany()
+                .HasForeignKey(row => row.VerificationSessionId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

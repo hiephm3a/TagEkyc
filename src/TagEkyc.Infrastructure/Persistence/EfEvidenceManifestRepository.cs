@@ -14,8 +14,7 @@ public sealed class EfEvidenceManifestRepository(TagEkycDbContext db) : IInterna
 
     public async Task<EvidenceManifestDto?> GetByPackageAsync(Guid evidencePackageId, CancellationToken cancellationToken = default)
     {
-        var packageId = evidencePackageId.ToString("N");
-        var row = await db.EvidenceManifests.AsNoTracking().SingleOrDefaultAsync(candidate => candidate.EvidencePackageId == packageId, cancellationToken);
+        var row = await db.EvidenceManifests.AsNoTracking().SingleOrDefaultAsync(candidate => candidate.EvidencePackageId == evidencePackageId, cancellationToken);
         return row is null ? null : DomainRowMapper.ToDomain(row);
     }
 }
