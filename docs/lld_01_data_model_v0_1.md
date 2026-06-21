@@ -1,6 +1,23 @@
-# Logical Data Model v0.1
+# Logical Data Model
 
-This document defines the logical data model only. It is not a SQL migration and does not prescribe database technology.
+**File:** `docs/lld_01_data_model_v0_1.md`
+**Version:** 0.2
+**Status:** Active - S1 data-model and evidence-integrity consolidation
+**Date:** 2026-06-21
+**Baseline:** `dc9d0ee`
+**Purpose:** Authoritative S1 logical data model and as-built evidence-integrity contract for TagEkyc. This document is not a SQL migration and does not prescribe database technology.
+
+## Changelog
+
+### v0.2 - TIP-64 S1 evidence-integrity consolidation
+
+- Added the as-built Evidence-Integrity contract for `HashCanonical`, deterministic ids, manifest/package hash chaining, completion audit hashing, and placeholder signature statuses.
+- Reconciled stale signature-field names on `evidence_results` and `evidence_packages` to as-built `...SignatureStatus` fields.
+- Recorded Tier-2 open items for non-JCS canonicalization and placeholder-only signatures.
+
+### v0.1 - Initial logical data model
+
+- Defined the initial provider-neutral logical entities and artifact evidence lifecycle requirements.
 
 ## Classification
 
@@ -50,6 +67,86 @@ STOP/RRI is required before runtime implementation, provider-specific evidence c
 Existing sequence, API, and adapter LLD wording that mentions vault, storage, package, or artifact handling is governed by this lifecycle section. Those existing mentions do not authorize artifact/raw evidence persistence, raw payload handling, resolver capability, package completeness, restricted artifact access, evidence availability, or runtime implementation.
 
 `GOV-001` branch/deferred-scope traceability and `ART-001` through `ART-009` must be carried until later reviewed TIPs resolve them beyond planning/design requirements.
+
+## Evidence-Integrity
+
+This section describes the as-built S1 evidence-integrity behavior in `VerificationCompletionApplicationService`, the domain records, and the manifest/BusinessConsumer contracts. Code wins over older TIP wording. This section is persistence-agnostic: it does not define database constraints, migrations, append-only triggers, durability behavior, or provider-specific storage behavior.
+
+### Canonicalization
+
+`HashCanonical(label, value)` serializes `value` with `System.Text.Json` using `JsonSerializerDefaults.Web`, then computes SHA-256 over the UTF-8 bytes of:
+
+```text
+{label}
+{compactJson}
+```
+
+The returned hash format is `sha256:<lowercase-hex>`, enforced by `HashRef`.
+
+The JSON property order is implementation-dependent. It is the current anonymous-object declaration order in the .NET implementation, not a portable canonical ordering. Timestamps are captured from `DateTimeOffset.UtcNow` once as `operationNow`, reused as `completedAt`/`createdAt`, and serialized by System.Text.Json Web defaults. There is no whole-second truncation and no canonical timestamp formatter; sub-second precision and offset rendering are part of the hash input as emitted by the serializer.
+
+> note: TIP-06 section 14 described whole-second UTC canonical timestamp formatting. The as-built code does not implement that rule; code wins.
+
+### Deterministic Ids
+
+`DeterministicGuid(label, value)` uses the same `"{label}\n{compactJson}"` input style as `HashCanonical`, SHA-256 hashes it, copies the first 16 bytes, sets the GUID version nibble to 5, sets the RFC 4122 variant bits, and returns a `Guid`.
+
+The as-built labels and input fields are:
+
+| Derived id | Label | Input fields, in declaration order |
+| --- | --- | --- |
+| `decisionId` | `tip-06-decision` | `SessionId`, `EvidenceIds`, `Result`, `AssuranceLevel`, `ForceReview`, `RequestId`, `CorrelationId`, `CompletedAt` |
+| `evidencePackageId` | `tip-06-evidence-package` | `SessionId`, `DecisionId` |
+| completion `auditEventId` | `tip-06-completion-audit` | `SessionId`, `PackageId` |
+
+### Hash Chain
+
+The S1 completion path builds a three-step hash chain:
+
+| Hash | Label | Input fields, in declaration order |
+| --- | --- | --- |
+| `manifestBodyHash` | `tip-06-manifest-body` | `EvidencePackageId`, `VerificationSessionId`, `PackageVersion`, `EvidenceRefs`, `AuditEventRefs`, `ResultRef`, `Result`, `AssuranceLevel`, `RequestId`, `CorrelationId`, `CreatedAt` |
+| `packageHash` | `tip-06-evidence-package` | `EvidencePackageId`, `VerificationSessionId`, `PackageVersion`, `ManifestBodyHash`, `ResultRef`, `EvidenceRefs`, `Result`, `AssuranceLevel`, `CreatedAt` |
+| `manifestHash` | `tip-06-evidence-manifest` | `BodyHash`, `PackageHash` |
+
+`PackageVersion` is `tip-06-localdev-v1`. `ResultRef` is the deterministic final decision id. In `manifestBodyHash`, `EvidenceRefs` are `ManifestEvidenceRefDto` values ordered by `ResultType` then evidence result id, with fields `Type`, `Id`, `VaultRef`, `ArtifactHash`, and `PayloadHash`. `VaultRef` is `null` in the as-built completion service. `AuditEventRefs` are `ManifestAuditRefDto` values with `EventId`, `EventType`, and `EventPayloadHash`.
+
+`packageHash` uses only the selected evidence result ids for `EvidenceRefs`, in the selected evidence order used by the completion service, not the full manifest evidence-ref objects.
+
+### Audit Hashing And Manifest Audit Refs
+
+The as-built completion path creates exactly one completion audit event:
+
+| Audit event | Value |
+| --- | --- |
+| `EventType` | `VERIFICATION_COMPLETED` |
+| Event id label | `tip-06-completion-audit` |
+| Payload-hash label | `tip-06-completion-audit-payload` |
+| Payload-hash fields, in declaration order | `SessionId`, `DecisionId`, `EvidencePackageId`, `Result`, `RequestId`, `CorrelationId`, `CompletedAt` |
+
+The manifest `AuditEventRefs` are all existing audit events for the verification session plus the new completion audit event, converted to `ManifestAuditRefDto(EventId, EventType, EventPayloadHash)`, then sorted by `EventId` using ordinal string ordering. The `EvidencePackage.AuditEventRefs` list stores the sorted audit event ids.
+
+> note: TIP-06 section 16 described a three-event audit model (`FINAL_DECISION_CALCULATED`, `EVIDENCE_PACKAGE_CREATED`, `SESSION_COMPLETED`), a pre/post audit-ref split, and exclusion of prior events from the manifest/package refs. That model is not as-built in S1; code wins.
+
+### Signature-Status Model
+
+`SignaturePlaceholderStatus` has one value: `PlaceholderUnverified`. S1 stores or returns signature-status markers only; it does not create, verify, or persist cryptographic signatures.
+
+As-built signature-status locations:
+
+| Location | Field | Meaning |
+| --- | --- | --- |
+| `EvidenceResult` | `PayloadSignatureStatus` | Per-evidence payload signature status marker only. |
+| `EvidencePackage` and package DTOs | `EvidencePackageSignatureStatus` | Evidence package signature status marker only. |
+| `VerificationCompletedEventDto` | `WebhookSignatureStatus` | Completion-notification projection marker only; not a persisted webhook delivery field. |
+
+`webhook_deliveries` is a deferred/conceptual entity in S1. The as-built runtime has a completion-notification projection DTO, not webhook dispatch or persisted webhook-delivery signing.
+
+### Tier-2 Open Items
+
+T2-1 canonicalization is implementation-deterministic, not a portable standard. The hash input depends on the .NET `System.Text.Json` Web serializer and current anonymous-object declaration order. It is not RFC 8785 JCS. A future serializer change, field reorder, or timestamp-format change can break historical hash reproducibility, and a non-.NET verifier cannot independently reproduce the hashes from a portable canonicalization standard. This requires legal/crypto sign-off before any production or legal reliance; candidate follow-ups include RFC 8785 JCS, COSE, or JWS. Link: EBS-01.
+
+T2-2 signatures are placeholders only. All signature statuses are `PlaceholderUnverified`; S1 has no key, signing operation, signature verification, HSM/KMS integration, replay protection, or non-repudiation. The evidence is not cryptographically signed, is not legally sufficient by itself, is not production-grade signing, and does not provide legal-audit reliance. This requires legal/crypto sign-off and a production signing decision. Link: EBS-07.
 
 ## Entity: client_applications
 
@@ -157,13 +254,15 @@ Suggested statuses: `PENDING`, `RUNNING`, `PASSED`, `RETRY_REQUIRED`, `FAILED_CA
 
 Purpose: Stores sanitized processed verification outputs derived from one or more capture artifacts.
 
-Key fields: `id`, `verificationSessionId`, `verificationCheckId`, `resultType`, `inputArtifactRefs`, `result`, `confidence`, `reasonCodes`, `retryReasonCode`, `sanitizedSummaryRef`, `payloadHash`, `payloadSignature`, `engineName`, `engineVersion`, `requestId`, `correlationId`, `createdAt`.
+Key fields: `id`, `verificationSessionId`, `verificationCheckId`, `resultType`, `inputArtifactRefs`, `result`, `confidence`, `reasonCodes`, `retryReasonCode`, `sanitizedSummaryRef`, `payloadHash`, `PayloadSignatureStatus`, `engineName`, `engineVersion`, `requestId`, `correlationId`, `createdAt`.
 
 Append-only requirement: MUST be append-only. Corrections MUST create a new evidence result version.
 
 Sensitive classification: Confidential with Restricted references.
 
 Raw data policy: Evidence results MUST expose sanitized outputs only. Raw sensitive data remains in vault or secure adapter boundary.
+
+Signature notes: `payloadSignature` was the stale v0.1 name. The as-built field is `PayloadSignatureStatus = PlaceholderUnverified`; no cryptographic payload signature exists in S1.
 
 Suggested result types: `CAPTURE_QUALITY`, `DOCUMENT_OCR`, `NFC_VALIDATION`, `FACE_MATCH`, `LIVENESS`, `FINGERPRINT_MATCH`, `FRAUD_RISK`.
 
@@ -247,7 +346,7 @@ Suggested assurance levels: `NONE`, `LOW`, `MEDIUM`, `HIGH`, `UNKNOWN`.
 
 Purpose: Stores the manifest and integrity metadata for evidence delivered to consumers.
 
-Key fields: `id`, `verificationSessionId`, `packageVersion`, `manifestHash`, `evidenceRefs`, `auditEventRefs`, `resultRef`, `packageHash`, `evidencePackageSignature`, `createdAt`.
+Key fields: `id`, `verificationSessionId`, `packageVersion`, `manifestHash`, `evidenceRefs`, `auditEventRefs`, `resultRef`, `packageHash`, `EvidencePackageSignatureStatus`, `createdAt`.
 
 Append-only requirement: MUST be append-only.
 
@@ -255,7 +354,7 @@ Sensitive classification: Confidential with Restricted references.
 
 Raw data policy: Package MUST contain VaultRefs/hashes, not raw CCCD, face, liveness, or fingerprint data.
 
-Signature notes: `evidencePackageSignature` is the long-term audit signature placeholder. It is distinct from per-payload `payloadSignature` and callback `webhookSignature`.
+Signature notes: `evidencePackageSignature` was the stale v0.1 placeholder-material name. The as-built field is `EvidencePackageSignatureStatus = PlaceholderUnverified`; no cryptographic package signature exists in S1. It is distinct from per-evidence `PayloadSignatureStatus` and the completion-notification projection `WebhookSignatureStatus`.
 
 ## Entity: vault_objects
 
@@ -297,7 +396,7 @@ Raw data policy: No raw sensitive data allowed.
 
 Purpose: Tracks webhook delivery attempts and retry state.
 
-Key fields: `id`, `subscriptionId`, `verificationSessionId`, `eventType`, `deliveryId`, `payloadHash`, `webhookSignature`, `signatureTimestamp`, `deliveryStatus`, `attemptCount`, `lastAttemptAt`, `nextRetryAt`, `responseStatusCode`, `responseBodyHash`, `createdAt`.
+Key fields (deferred/conceptual; not as-built S1): `id`, `subscriptionId`, `verificationSessionId`, `eventType`, `deliveryId`, `payloadHash`, `webhookSignature`, `signatureTimestamp`, `deliveryStatus`, `attemptCount`, `lastAttemptAt`, `nextRetryAt`, `responseStatusCode`, `responseBodyHash`, `createdAt`.
 
 Append-only requirement: Delivery attempts SHOULD be append-only or stored as immutable attempt records. Current status MAY be a projection.
 
@@ -306,3 +405,5 @@ Sensitive classification: Confidential.
 Raw data policy: Payload bodies SHOULD be referenced by hash/ref. Raw response bodies SHOULD NOT be stored.
 
 Signature notes: Future production `webhookSignature` SHOULD include delivery id, timestamp, and replay protection. S1 MAY use placeholders.
+
+> note: `webhook_deliveries` and `webhookSignature` are deferred/conceptual in S1 and are not promoted to as-built fields by TIP-64. The only as-built webhook signature status is `WebhookSignatureStatus = PlaceholderUnverified` on the `VerificationCompletedEventDto` completion-notification projection.
