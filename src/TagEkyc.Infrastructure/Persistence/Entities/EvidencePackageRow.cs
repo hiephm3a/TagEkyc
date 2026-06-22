@@ -5,6 +5,8 @@ public sealed class EvidencePackageRow
     public Guid Id { get; set; }
     public Guid VerificationSessionId { get; set; }
     public string PackageVersion { get; set; } = string.Empty;
+    public string CanonicalizationScheme { get; set; } = string.Empty;
+    public string HashAlgorithm { get; set; } = string.Empty;
     public string ManifestHash { get; set; } = string.Empty;
     public string EvidenceRefsJson { get; set; } = "[]";
     public string AuditEventRefsJson { get; set; } = "[]";

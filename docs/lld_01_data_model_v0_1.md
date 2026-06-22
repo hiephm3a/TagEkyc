@@ -1,7 +1,7 @@
 # Logical Data Model
 
 **File:** `docs/lld_01_data_model_v0_1.md`
-**Version:** 0.2
+**Version:** 0.3
 **Status:** Active - S1 data-model and evidence-integrity consolidation
 **Date:** 2026-06-21
 **Baseline:** `dc9d0ee`
@@ -14,6 +14,13 @@
 - Added the as-built Evidence-Integrity contract for `HashCanonical`, deterministic ids, manifest/package hash chaining, completion audit hashing, and placeholder signature statuses.
 - Reconciled stale signature-field names on `evidence_results` and `evidence_packages` to as-built `...SignatureStatus` fields.
 - Recorded Tier-2 open items for non-JCS canonicalization and placeholder-only signatures.
+
+### v0.3 - TIP-65 RFC 8785 JCS canonicalization
+
+- Replaced implementation-deterministic Web JSON hashing with RFC 8785 JCS canonicalization for evidence hash/id inputs.
+- Pinned timestamp/guid value formatting and recorded durable hash metadata (`packageVersion`, `canonicalizationScheme`, `hashAlgorithm`) in the package/manifest integrity surface.
+- Added post-spot-check enforcement notes: hash metadata fail-closed is enforced on package/manifest read, hashed evidence graphs forbid raw JSON numbers, and S1 retains no legacy canonicalizer/corpus.
+- Marked T2-1 resolved by TIP-65 and kept T2-2 placeholder signatures open.
 
 ### v0.1 - Initial logical data model
 
@@ -70,46 +77,60 @@ Existing sequence, API, and adapter LLD wording that mentions vault, storage, pa
 
 ## Evidence-Integrity
 
-This section describes the as-built S1 evidence-integrity behavior in `VerificationCompletionApplicationService`, the domain records, and the manifest/BusinessConsumer contracts. Code wins over older TIP wording. This section is persistence-agnostic: it does not define database constraints, migrations, append-only triggers, durability behavior, or provider-specific storage behavior.
+This section describes the as-built S1 evidence-integrity behavior in `VerificationCompletionApplicationService`, the domain records, and the internal manifest/BusinessConsumer contracts. Code wins over older TIP wording. This section is persistence-agnostic except for naming the integrity metadata that TIP-65 persists on package/manifest rows; it does not define append-only triggers, durability behavior, provider-specific storage behavior, or raw artifact lifecycle behavior.
 
 ### Canonicalization
 
-`HashCanonical(label, value)` serializes `value` with `System.Text.Json` using `JsonSerializerDefaults.Web`, then computes SHA-256 over the UTF-8 bytes of:
+`HashCanonical(label, value)` serializes `value` through the application evidence canonicalizer, pins non-JSON-native values, canonicalizes the resulting JSON with RFC 8785 JCS, then computes SHA-256 over the UTF-8 bytes of:
 
 ```text
 {label}
-{compactJson}
+{jcsCanonicalJson}
 ```
 
 The returned hash format is `sha256:<lowercase-hex>`, enforced by `HashRef`.
 
-The JSON property order is implementation-dependent. It is the current anonymous-object declaration order in the .NET implementation, not a portable canonical ordering. Timestamps are captured from `DateTimeOffset.UtcNow` once as `operationNow`, reused as `completedAt`/`createdAt`, and serialized by System.Text.Json Web defaults. There is no whole-second truncation and no canonical timestamp formatter; sub-second precision and offset rendering are part of the hash input as emitted by the serializer.
+JCS canonicalization sorts object member names by ordinal UTF-16 code unit order, emits minimal JSON whitespace, and uses RFC 8785 string/number rules. Property declaration order is no longer part of the canonical hash contract; tests assert field names and canonical output.
 
-> note: TIP-06 section 14 described whole-second UTC canonical timestamp formatting. The as-built code does not implement that rule; code wins.
+Timestamps are converted to UTC before canonicalization and formatted as `yyyy-MM-ddTHH:mm:ss.fffffffZ` using invariant culture and exactly seven fractional digits. Guids are formatted consistently with the `N` format where they enter hash/id inputs as strings.
+
+For `rfc8785-jcs-v1`, hashed evidence graphs do not use raw JSON numbers. Numeric values that enter any hash/id evidence seed MUST be encoded as strings before canonicalization: integer values use `ToString(CultureInfo.InvariantCulture)`, and fractional/score values use `decimal` formatted as `F6` with invariant culture. Scale 6 is part of `rfc8785-jcs-v1`. The as-built S1 hashed evidence objects are string/bool/null/object/array only; tests parse every actual hash/id seed and fail if a `JsonValueKind.Number` appears. The canonicalizer's number formatting remains defensive general-purpose code and rejects NaN/Infinity, but S1 evidence is not allowed to rely on it.
+
+The active TIP-65 metadata constants are:
+
+| Field | Value | Surface |
+| --- | --- | --- |
+| `packageVersion` | `evidence-package-v2` | Manifest body, package hash input, `EvidencePackage`, internal `EvidenceManifestDto`, package/manifest persistence rows |
+| `canonicalizationScheme` | `rfc8785-jcs-v1` | Manifest body, package hash input, `EvidencePackage`, internal `EvidenceManifestDto`, package/manifest persistence rows |
+| `hashAlgorithm` | `sha256` | Manifest body, package hash input, `EvidencePackage`, internal `EvidenceManifestDto`, package/manifest persistence rows |
+
+The public BusinessConsumer `EvidencePackageSummaryDto` remains unchanged by TIP-65: it still exposes `PackageVersion`, but it does not expose `canonicalizationScheme` or `hashAlgorithm`. The internal manifest DTO is the S1 verifier metadata surface.
 
 ### Deterministic Ids
 
-`DeterministicGuid(label, value)` uses the same `"{label}\n{compactJson}"` input style as `HashCanonical`, SHA-256 hashes it, copies the first 16 bytes, sets the GUID version nibble to 5, sets the RFC 4122 variant bits, and returns a `Guid`.
+`DeterministicGuid(label, value)` uses the same `"{label}\n{jcsCanonicalJson}"` input style as `HashCanonical`, SHA-256 hashes it, copies the first 16 bytes, sets the GUID version nibble to 5, sets the RFC 4122 variant bits, and returns a `Guid`.
 
 The as-built labels and input fields are:
 
-| Derived id | Label | Input fields, in declaration order |
+| Derived id | Label | Input field set |
 | --- | --- | --- |
 | `decisionId` | `tip-06-decision` | `SessionId`, `EvidenceIds`, `Result`, `AssuranceLevel`, `ForceReview`, `RequestId`, `CorrelationId`, `CompletedAt` |
 | `evidencePackageId` | `tip-06-evidence-package` | `SessionId`, `DecisionId` |
 | completion `auditEventId` | `tip-06-completion-audit` | `SessionId`, `PackageId` |
 
+TIP-65 changes deterministic-id canonicalization to `rfc8785-jcs-v1`; legacy ids produced under `web-json-deterministic-v1` remain historical/localdev values and are not re-derived or mutated.
+
 ### Hash Chain
 
 The S1 completion path builds a three-step hash chain:
 
-| Hash | Label | Input fields, in declaration order |
+| Hash | Label | Input field set |
 | --- | --- | --- |
-| `manifestBodyHash` | `tip-06-manifest-body` | `EvidencePackageId`, `VerificationSessionId`, `PackageVersion`, `EvidenceRefs`, `AuditEventRefs`, `ResultRef`, `Result`, `AssuranceLevel`, `RequestId`, `CorrelationId`, `CreatedAt` |
-| `packageHash` | `tip-06-evidence-package` | `EvidencePackageId`, `VerificationSessionId`, `PackageVersion`, `ManifestBodyHash`, `ResultRef`, `EvidenceRefs`, `Result`, `AssuranceLevel`, `CreatedAt` |
+| `manifestBodyHash` | `tip-06-manifest-body` | `EvidencePackageId`, `VerificationSessionId`, `PackageVersion`, `CanonicalizationScheme`, `HashAlgorithm`, `EvidenceRefs`, `AuditEventRefs`, `ResultRef`, `Result`, `AssuranceLevel`, `RequestId`, `CorrelationId`, `CreatedAt` |
+| `packageHash` | `tip-06-evidence-package` | `EvidencePackageId`, `VerificationSessionId`, `PackageVersion`, `CanonicalizationScheme`, `HashAlgorithm`, `ManifestBodyHash`, `ResultRef`, `EvidenceRefs`, `Result`, `AssuranceLevel`, `CreatedAt` |
 | `manifestHash` | `tip-06-evidence-manifest` | `BodyHash`, `PackageHash` |
 
-`PackageVersion` is `tip-06-localdev-v1`. `ResultRef` is the deterministic final decision id. In `manifestBodyHash`, `EvidenceRefs` are `ManifestEvidenceRefDto` values ordered by `ResultType` then evidence result id, with fields `Type`, `Id`, `VaultRef`, `ArtifactHash`, and `PayloadHash`. `VaultRef` is `null` in the as-built completion service. `AuditEventRefs` are `ManifestAuditRefDto` values with `EventId`, `EventType`, and `EventPayloadHash`.
+`PackageVersion` is `evidence-package-v2`; `CanonicalizationScheme` is `rfc8785-jcs-v1`; `HashAlgorithm` is `sha256`. `ResultRef` is the deterministic final decision id. In `manifestBodyHash`, `EvidenceRefs` are `ManifestEvidenceRefDto` values ordered by `ResultType` then evidence result id, with fields `Type`, `Id`, `VaultRef`, `ArtifactHash`, and `PayloadHash`. `VaultRef` is `null` in the as-built completion service. `AuditEventRefs` are `ManifestAuditRefDto` values with `EventId`, `EventType`, and `EventPayloadHash`.
 
 `packageHash` uses only the selected evidence result ids for `EvidenceRefs`, in the selected evidence order used by the completion service, not the full manifest evidence-ref objects.
 
@@ -122,7 +143,7 @@ The as-built completion path creates exactly one completion audit event:
 | `EventType` | `VERIFICATION_COMPLETED` |
 | Event id label | `tip-06-completion-audit` |
 | Payload-hash label | `tip-06-completion-audit-payload` |
-| Payload-hash fields, in declaration order | `SessionId`, `DecisionId`, `EvidencePackageId`, `Result`, `RequestId`, `CorrelationId`, `CompletedAt` |
+| Payload-hash fields | `SessionId`, `DecisionId`, `EvidencePackageId`, `Result`, `RequestId`, `CorrelationId`, `CompletedAt` |
 
 The manifest `AuditEventRefs` are all existing audit events for the verification session plus the new completion audit event, converted to `ManifestAuditRefDto(EventId, EventType, EventPayloadHash)`, then sorted by `EventId` using ordinal string ordering. The `EvidencePackage.AuditEventRefs` list stores the sorted audit event ids.
 
@@ -142,9 +163,21 @@ As-built signature-status locations:
 
 `webhook_deliveries` is a deferred/conceptual entity in S1. The as-built runtime has a completion-notification projection DTO, not webhook dispatch or persisted webhook-delivery signing.
 
+### Verifier And Legacy Rule
+
+A verifier MUST select canonicalization and hashing by the package's own `packageVersion`, `canonicalizationScheme`, and `hashAlgorithm`, never by the latest runtime default. Unknown or inconsistent combinations fail closed. In the as-built EF read path, package and manifest rows are classified while mapping to the domain/internal manifest DTO; an unknown tuple throws a typed hash-metadata error and the package/manifest is not returned.
+
+Legacy packages produced before TIP-65 are `packageVersion = tip-06-localdev-v1`, `canonicalizationScheme = web-json-deterministic-v1`, `hashAlgorithm = sha256`. They are historical/localdev compatibility evidence only, are not JCS-compliant, and are not production/legal-reliance evidence. If re-issued under JCS, a legacy package receives a new package/version/hash; old hashes are not mutated.
+
+Future package field additions require a new package version/scheme mapping and must not change verification of older packages under their recorded metadata.
+
+S1 retains no legacy canonicalizer and has no legacy hash corpus. The current legacy coverage asserts tuple classification and migration/backfill defaults only; it is not legacy hash re-verification.
+
+Minor TIP-65 debt: `FormatNumber` is not proven against the full official RFC 8785 number-vector set. This is accepted for S1 because hashed evidence forbids raw JSON numbers and the tripwire test fails any evidence seed that would invoke number canonicalization.
+
 ### Tier-2 Open Items
 
-T2-1 canonicalization is implementation-deterministic, not a portable standard. The hash input depends on the .NET `System.Text.Json` Web serializer and current anonymous-object declaration order. It is not RFC 8785 JCS. A future serializer change, field reorder, or timestamp-format change can break historical hash reproducibility, and a non-.NET verifier cannot independently reproduce the hashes from a portable canonicalization standard. This requires legal/crypto sign-off before any production or legal reliance; candidate follow-ups include RFC 8785 JCS, COSE, or JWS. Link: EBS-01.
+T2-1 RFC 8785 JCS canonicalization is resolved by TIP-65 for the S1 evidence package hash chain. The remaining reliance limits are those explicitly not claimed by this document: placeholder signatures, production signing, non-repudiation, replay protection, and legal sufficiency.
 
 T2-2 signatures are placeholders only. All signature statuses are `PlaceholderUnverified`; S1 has no key, signing operation, signature verification, HSM/KMS integration, replay protection, or non-repudiation. The evidence is not cryptographically signed, is not legally sufficient by itself, is not production-grade signing, and does not provide legal-audit reliance. This requires legal/crypto sign-off and a production signing decision. Link: EBS-07.
 
@@ -346,7 +379,7 @@ Suggested assurance levels: `NONE`, `LOW`, `MEDIUM`, `HIGH`, `UNKNOWN`.
 
 Purpose: Stores the manifest and integrity metadata for evidence delivered to consumers.
 
-Key fields: `id`, `verificationSessionId`, `packageVersion`, `manifestHash`, `evidenceRefs`, `auditEventRefs`, `resultRef`, `packageHash`, `EvidencePackageSignatureStatus`, `createdAt`.
+Key fields: `id`, `verificationSessionId`, `packageVersion`, `canonicalizationScheme`, `hashAlgorithm`, `manifestHash`, `evidenceRefs`, `auditEventRefs`, `resultRef`, `packageHash`, `EvidencePackageSignatureStatus`, `createdAt`.
 
 Append-only requirement: MUST be append-only.
 

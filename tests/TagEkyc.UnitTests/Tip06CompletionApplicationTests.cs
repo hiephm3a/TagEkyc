@@ -83,7 +83,8 @@ public sealed class Tip06CompletionApplicationTests
             CancellationToken.None);
         var completedJson = JsonSerializer.Serialize(completed.Value, JsonOptions);
         var packageJson = JsonSerializer.Serialize(package.Value, JsonOptions);
-        var manifestJson = JsonSerializer.Serialize(fixture.Manifests.Manifests.Single(), JsonOptions);
+        var manifest = fixture.Manifests.Manifests.Single();
+        var manifestJson = JsonSerializer.Serialize(manifest, JsonOptions);
 
         Assert.True(package.IsSuccess);
         Assert.Equal(VerificationResultDto.Passed, package.Value?.Result);
@@ -92,16 +93,27 @@ public sealed class Tip06CompletionApplicationTests
         Assert.Single(package.Value!.EvidenceRefs);
         Assert.Equal(package.Value.EvidenceRefs[0].EvidenceResultId, package.Value.EvidenceRefs[0].Id);
         Assert.Equal(package.Value.EvidenceRefs[0].ResultType, package.Value.EvidenceRefs[0].Type);
+        Assert.Equal(EvidenceCanonicalization.PackageVersion, package.Value.PackageVersion);
+        Assert.Equal(EvidenceCanonicalization.PackageVersion, fixture.Packages.Packages.Single().PackageVersion);
+        Assert.Equal(EvidenceCanonicalization.CanonicalizationScheme, fixture.Packages.Packages.Single().CanonicalizationScheme);
+        Assert.Equal(EvidenceCanonicalization.HashAlgorithm, fixture.Packages.Packages.Single().HashAlgorithm);
+        Assert.Equal(EvidenceCanonicalization.PackageVersion, manifest.PackageVersion);
+        Assert.Equal(EvidenceCanonicalization.CanonicalizationScheme, manifest.CanonicalizationScheme);
+        Assert.Equal(EvidenceCanonicalization.HashAlgorithm, manifest.HashAlgorithm);
         Assert.DoesNotContain("payloadHash", packageJson, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("PayloadHash", packageJson, StringComparison.Ordinal);
         Assert.DoesNotContain("vaultRef", packageJson, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("canonicalizationScheme", packageJson, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("hashAlgorithm", packageJson, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("canonicalizationScheme", manifestJson, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("hashAlgorithm", manifestJson, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("clientApplicationId", packageJson, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("InternalAudit", packageJson, StringComparison.Ordinal);
         AssertTip11MetadataNotExposed(completedJson);
         AssertTip11MetadataNotExposed(packageJson);
         AssertTip11MetadataNotExposed(manifestJson);
         Assert.DoesNotContain(PolicySnapshotId.LocalDevS1Value, manifestJson, StringComparison.Ordinal);
-        Assert.Contains(fixture.Manifests.Manifests.Single().EvidenceRefs, evidenceRef => evidenceRef.PayloadHash == "sha256:payload");
+        Assert.Contains(manifest.EvidenceRefs, evidenceRef => evidenceRef.PayloadHash == "sha256:payload");
     }
 
     [Fact]

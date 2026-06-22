@@ -150,4 +150,17 @@ public sealed class ProjectionBoundaryTests
 
         Assert.Equal(SignaturePlaceholderStatusDto.PlaceholderUnverified, package.EvidencePackageSignatureStatus);
     }
+
+    [Fact]
+    public void Evidence_package_summary_does_not_expose_tip65_internal_hash_metadata()
+    {
+        var propertyNames = typeof(EvidencePackageSummaryDto)
+            .GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            .Select(property => property.Name)
+            .ToArray();
+
+        Assert.Contains("PackageVersion", propertyNames);
+        Assert.DoesNotContain("CanonicalizationScheme", propertyNames);
+        Assert.DoesNotContain("HashAlgorithm", propertyNames);
+    }
 }

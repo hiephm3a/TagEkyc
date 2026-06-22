@@ -20,6 +20,8 @@ public sealed record EvidenceManifestDto(
     string EvidencePackageId,
     string VerificationSessionId,
     string PackageVersion,
+    string CanonicalizationScheme,
+    string HashAlgorithm,
     string ManifestHash,
     string PackageHash,
     IReadOnlyList<ManifestEvidenceRefDto> EvidenceRefs,

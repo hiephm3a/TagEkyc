@@ -1,4 +1,5 @@
 using System.Reflection;
+using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Contracts.Common;
 using TagEkyc.Contracts.InternalAudit.Manifest;
 using TagEkyc.Domain;
@@ -205,6 +206,8 @@ internal static class DomainRowMapper
             Id = package.Id,
             VerificationSessionId = package.VerificationSessionId,
             PackageVersion = package.PackageVersion,
+            CanonicalizationScheme = package.CanonicalizationScheme,
+            HashAlgorithm = package.HashAlgorithm,
             ManifestHash = package.ManifestHash.ToString(),
             EvidenceRefsJson = PersistenceJson.Serialize(package.EvidenceRefs),
             AuditEventRefsJson = PersistenceJson.Serialize(package.AuditEventRefs),
@@ -214,11 +217,19 @@ internal static class DomainRowMapper
             CreatedAt = package.CreatedAt,
         };
 
-    public static EvidencePackage ToDomain(EvidencePackageRow row) =>
-        new(
+    public static EvidencePackage ToDomain(EvidencePackageRow row)
+    {
+        EvidenceCanonicalization.EnsureKnownHashMetadataCombination(
+            row.PackageVersion,
+            row.CanonicalizationScheme,
+            row.HashAlgorithm);
+
+        return new(
             row.Id,
             row.VerificationSessionId,
             row.PackageVersion,
+            row.CanonicalizationScheme,
+            row.HashAlgorithm,
             new HashRef(row.ManifestHash),
             PersistenceJson.Deserialize<string[]>(row.EvidenceRefsJson),
             PersistenceJson.Deserialize<string[]>(row.AuditEventRefsJson),
@@ -226,6 +237,7 @@ internal static class DomainRowMapper
             new HashRef(row.PackageHash),
             Parse<SignaturePlaceholderStatus>(row.EvidencePackageSignatureStatus),
             row.CreatedAt);
+    }
 
     public static EvidenceManifestRow ToRow(EvidenceManifestDto manifest) =>
         new()
@@ -234,6 +246,8 @@ internal static class DomainRowMapper
             SessionGuid = Guid.Parse(manifest.VerificationSessionId),
             VerificationSessionId = manifest.VerificationSessionId,
             PackageVersion = manifest.PackageVersion,
+            CanonicalizationScheme = manifest.CanonicalizationScheme,
+            HashAlgorithm = manifest.HashAlgorithm,
             ManifestHash = manifest.ManifestHash,
             PackageHash = manifest.PackageHash,
             EvidenceRefsJson = PersistenceJson.Serialize(manifest.EvidenceRefs),
@@ -243,11 +257,19 @@ internal static class DomainRowMapper
             CreatedAt = manifest.CreatedAt,
         };
 
-    public static EvidenceManifestDto ToDomain(EvidenceManifestRow row) =>
-        new(
+    public static EvidenceManifestDto ToDomain(EvidenceManifestRow row)
+    {
+        EvidenceCanonicalization.EnsureKnownHashMetadataCombination(
+            row.PackageVersion,
+            row.CanonicalizationScheme,
+            row.HashAlgorithm);
+
+        return new(
             row.EvidencePackageId.ToString("N"),
             row.VerificationSessionId,
             row.PackageVersion,
+            row.CanonicalizationScheme,
+            row.HashAlgorithm,
             row.ManifestHash,
             row.PackageHash,
             PersistenceJson.Deserialize<ManifestEvidenceRefDto[]>(row.EvidenceRefsJson),
@@ -255,6 +277,7 @@ internal static class DomainRowMapper
             row.ResultRef.ToString("N"),
             Parse<SignaturePlaceholderStatusDto>(row.EvidencePackageSignatureStatus),
             row.CreatedAt);
+    }
 
     public static AuditEventRow ToRow(AuditEvent auditEvent) =>
         new()

@@ -123,6 +123,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.ToTable("evidence_packages");
             entity.HasKey(row => row.Id);
             entity.Property(row => row.PackageVersion).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.CanonicalizationScheme).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.HashAlgorithm).HasMaxLength(64).IsRequired();
             entity.Property(row => row.ManifestHash).HasMaxLength(128).IsRequired();
             entity.Property(row => row.EvidenceRefsJson).HasColumnType("jsonb").IsRequired();
             entity.Property(row => row.AuditEventRefsJson).HasColumnType("jsonb").IsRequired();
@@ -141,6 +143,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.HasKey(row => row.EvidencePackageId);
             entity.Property(row => row.VerificationSessionId).HasMaxLength(32).IsRequired();
             entity.Property(row => row.PackageVersion).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.CanonicalizationScheme).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.HashAlgorithm).HasMaxLength(64).IsRequired();
             entity.Property(row => row.ManifestHash).HasMaxLength(128).IsRequired();
             entity.Property(row => row.PackageHash).HasMaxLength(128).IsRequired();
             entity.Property(row => row.EvidenceRefsJson).HasColumnType("jsonb").IsRequired();

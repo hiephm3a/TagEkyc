@@ -52,6 +52,67 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
         Assert.Equal(VerificationSessionStateDto.Completed, summary.Value?.State);
         Assert.Equal(completed.EvidencePackageId, package.Value?.EvidencePackageId);
         Assert.Equal(completed.EvidencePackageHash, package.Value?.PackageHash);
+
+        await using var db = postgres.CreateDbContext();
+        var packageRow = await db.EvidencePackages.AsNoTracking().SingleAsync();
+        var manifestRow = await db.EvidenceManifests.AsNoTracking().SingleAsync();
+        Assert.Equal(EvidenceCanonicalization.PackageVersion, packageRow.PackageVersion);
+        Assert.Equal(EvidenceCanonicalization.CanonicalizationScheme, packageRow.CanonicalizationScheme);
+        Assert.Equal(EvidenceCanonicalization.HashAlgorithm, packageRow.HashAlgorithm);
+        Assert.Equal(EvidenceCanonicalization.PackageVersion, manifestRow.PackageVersion);
+        Assert.Equal(EvidenceCanonicalization.CanonicalizationScheme, manifestRow.CanonicalizationScheme);
+        Assert.Equal(EvidenceCanonicalization.HashAlgorithm, manifestRow.HashAlgorithm);
+    }
+
+    [Fact]
+    public async Task Evidence_package_and_manifest_reads_fail_closed_for_unknown_hash_metadata()
+    {
+        await using var provider = BuildProvider();
+        var session = await CreateCaptureQualitySessionAsync(provider, "external-pg-hash-metadata");
+        var sessionId = Guid.Parse(session.VerificationSessionId);
+        var now = DateTimeOffset.UtcNow;
+        var currentPackageId = await InsertPackageAndManifestRowsAsync(
+            sessionId,
+            EvidenceCanonicalization.PackageVersion,
+            EvidenceCanonicalization.CanonicalizationScheme,
+            EvidenceCanonicalization.HashAlgorithm,
+            now);
+        var legacyPackageId = await InsertPackageAndManifestRowsAsync(
+            sessionId,
+            EvidenceCanonicalization.LegacyPackageVersion,
+            EvidenceCanonicalization.LegacyCanonicalizationScheme,
+            EvidenceCanonicalization.HashAlgorithm,
+            now.AddSeconds(1));
+        var unknownPackageId = await InsertPackageAndManifestRowsAsync(
+            sessionId,
+            EvidenceCanonicalization.PackageVersion,
+            "bogus-scheme",
+            EvidenceCanonicalization.HashAlgorithm,
+            now.AddSeconds(2));
+
+        await using var scope = provider.CreateAsyncScope();
+        var packageRepository = scope.ServiceProvider.GetRequiredService<IEvidencePackageRepository>();
+        var manifestRepository = scope.ServiceProvider.GetRequiredService<IInternalEvidenceManifestRepository>();
+
+        var currentPackage = await packageRepository.GetAsync(currentPackageId, CancellationToken.None);
+        var currentManifest = await manifestRepository.GetByPackageAsync(currentPackageId, CancellationToken.None);
+        var legacyPackage = await packageRepository.GetAsync(legacyPackageId, CancellationToken.None);
+        var legacyManifest = await manifestRepository.GetByPackageAsync(legacyPackageId, CancellationToken.None);
+
+        Assert.NotNull(currentPackage);
+        Assert.NotNull(currentManifest);
+        Assert.Equal(EvidenceCanonicalization.PackageVersion, currentPackage.PackageVersion);
+        Assert.Equal(EvidenceCanonicalization.CanonicalizationScheme, currentManifest.CanonicalizationScheme);
+        Assert.NotNull(legacyPackage);
+        Assert.NotNull(legacyManifest);
+        Assert.Equal(EvidenceCanonicalization.LegacyPackageVersion, legacyPackage.PackageVersion);
+        Assert.Equal(EvidenceCanonicalization.LegacyCanonicalizationScheme, legacyManifest.CanonicalizationScheme);
+        await Assert.ThrowsAsync<EvidenceHashMetadataException>(() =>
+            packageRepository.GetAsync(unknownPackageId, CancellationToken.None));
+        await Assert.ThrowsAsync<EvidenceHashMetadataException>(() =>
+            packageRepository.GetBySessionAsync(sessionId, CancellationToken.None));
+        await Assert.ThrowsAsync<EvidenceHashMetadataException>(() =>
+            manifestRepository.GetByPackageAsync(unknownPackageId, CancellationToken.None));
     }
 
     [Fact]
@@ -145,6 +206,8 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
             Id = Guid.Parse("10000000-0000-5000-8000-000000000004"),
             VerificationSessionId = missingSessionId,
             PackageVersion = "test",
+            CanonicalizationScheme = EvidenceCanonicalization.CanonicalizationScheme,
+            HashAlgorithm = EvidenceCanonicalization.HashAlgorithm,
             ManifestHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             EvidenceRefsJson = "[]",
             AuditEventRefsJson = "[]",
@@ -182,6 +245,8 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
             SessionGuid = Guid.Parse("99999999-9999-5999-8999-999999999999"),
             VerificationSessionId = "99999999999959998999999999999999",
             PackageVersion = "test",
+            CanonicalizationScheme = EvidenceCanonicalization.CanonicalizationScheme,
+            HashAlgorithm = EvidenceCanonicalization.HashAlgorithm,
             ManifestHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             PackageHash = "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
             EvidenceRefsJson = "[]",
@@ -309,9 +374,11 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
                     Guid.Parse("bbbbbbbb-bbbb-5bbb-8bbb-bbbbbbbbbbbb"),
                     expected.Id,
                     "test",
+                    EvidenceCanonicalization.CanonicalizationScheme,
+                    EvidenceCanonicalization.HashAlgorithm,
                     new HashRef("sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"),
-                    EvidenceRefs: [],
-                    AuditEventRefs: [],
+                    [],
+                    [],
                     Guid.Parse("aaaaaaaa-aaaa-5aaa-8aaa-aaaaaaaaaaaa"),
                     new HashRef("sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"),
                     SignaturePlaceholderStatus.PlaceholderUnverified,
@@ -320,6 +387,8 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
                     "bbbbbbbbbbbb5bbb8bbbbbbbbbbbbbbb",
                     expected.Id.ToString("N"),
                     "test",
+                    EvidenceCanonicalization.CanonicalizationScheme,
+                    EvidenceCanonicalization.HashAlgorithm,
                     "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
                     "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
                     [],
@@ -472,6 +541,52 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
         Assert.Equal(completionAudits, await db.AuditEvents.CountAsync(audit => audit.EventType == "VERIFICATION_COMPLETED"));
     }
 
+    private async Task<Guid> InsertPackageAndManifestRowsAsync(
+        Guid sessionId,
+        string packageVersion,
+        string canonicalizationScheme,
+        string hashAlgorithm,
+        DateTimeOffset createdAt)
+    {
+        var packageId = Guid.NewGuid();
+        var resultRef = Guid.NewGuid();
+        await using var db = postgres.CreateDbContext();
+        db.EvidencePackages.Add(new EvidencePackageRow
+        {
+            Id = packageId,
+            VerificationSessionId = sessionId,
+            PackageVersion = packageVersion,
+            CanonicalizationScheme = canonicalizationScheme,
+            HashAlgorithm = hashAlgorithm,
+            ManifestHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            EvidenceRefsJson = "[]",
+            AuditEventRefsJson = "[]",
+            ResultRef = resultRef,
+            PackageHash = "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            EvidencePackageSignatureStatus = "PlaceholderUnverified",
+            CreatedAt = createdAt,
+        });
+        db.EvidenceManifests.Add(new EvidenceManifestRow
+        {
+            EvidencePackageId = packageId,
+            SessionGuid = sessionId,
+            VerificationSessionId = sessionId.ToString("N"),
+            PackageVersion = packageVersion,
+            CanonicalizationScheme = canonicalizationScheme,
+            HashAlgorithm = hashAlgorithm,
+            ManifestHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            PackageHash = "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            EvidenceRefsJson = "[]",
+            AuditEventRefsJson = "[]",
+            ResultRef = resultRef,
+            EvidencePackageSignatureStatus = "PlaceholderUnverified",
+            CreatedAt = createdAt,
+        });
+        await db.SaveChangesAsync();
+
+        return packageId;
+    }
+
     private static async Task AssertForeignKeyViolationAsync(Func<Task> action)
     {
         var exception = await Assert.ThrowsAsync<DbUpdateException>(action);
@@ -517,9 +632,11 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
                 packageId,
                 expected.Id,
                 "test",
+                EvidenceCanonicalization.CanonicalizationScheme,
+                EvidenceCanonicalization.HashAlgorithm,
                 manifestHash,
-                EvidenceRefs: [],
-                AuditEventRefs: [],
+                [],
+                [],
                 decisionId,
                 packageHash,
                 SignaturePlaceholderStatus.PlaceholderUnverified,
@@ -528,6 +645,8 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
                 packageId.ToString("N"),
                 expected.Id.ToString("N"),
                 "test",
+                EvidenceCanonicalization.CanonicalizationScheme,
+                EvidenceCanonicalization.HashAlgorithm,
                 manifestHash.ToString(),
                 packageHash.ToString(),
                 [],

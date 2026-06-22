@@ -1,6 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.Json;
 using TagEkyc.Application.Ports;
 using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.Common;
@@ -20,8 +17,9 @@ public sealed class VerificationCompletionApplicationService(
     IVerificationFinalizationBoundary finalizationBoundary)
     : IVerificationSessionCompletionCommands, IEvidencePackageQueries, ICompletionNotificationQueries
 {
-    private const string PackageVersion = "tip-06-localdev-v1";
-    private static readonly JsonSerializerOptions CanonicalJsonOptions = new(JsonSerializerDefaults.Web);
+    private const string PackageVersion = EvidenceCanonicalization.PackageVersion;
+    private const string CanonicalizationScheme = EvidenceCanonicalization.CanonicalizationScheme;
+    private const string HashAlgorithm = EvidenceCanonicalization.HashAlgorithm;
 
     public async Task<SessionOperationResult<CompleteVerificationSessionResponseDto>> CompleteAsync(
         AuthenticatedClientContext caller,
@@ -112,6 +110,7 @@ public sealed class VerificationCompletionApplicationService(
         var effectiveRequestId = FirstNonEmpty(request.RequestId, session.RequestId, $"req-{session.Id:N}");
         var effectiveCorrelationId = FirstNonEmpty(request.CorrelationId, session.CorrelationId, $"corr-{session.Id:N}");
         var completedAt = operationNow;
+        var completedAtCanonical = EvidenceCanonicalization.FormatTimestamp(completedAt);
         var finalResult = CalculateFinalResult(selectedEvidence, request.ForceReview);
         var assuranceLevel = CalculateAssuranceLevel(session, finalResult);
         var completedChecks = selectedEvidence
@@ -141,7 +140,7 @@ public sealed class VerificationCompletionApplicationService(
             ForceReview = request.ForceReview,
             RequestId = effectiveRequestId,
             CorrelationId = effectiveCorrelationId,
-            CompletedAt = completedAt,
+            CompletedAt = completedAtCanonical,
         };
         var decisionId = DeterministicGuid("tip-06-decision", decisionSeed);
         var packageId = DeterministicGuid("tip-06-evidence-package", new { SessionId = session.Id.ToString("N"), DecisionId = decisionId.ToString("N") });
@@ -159,7 +158,7 @@ public sealed class VerificationCompletionApplicationService(
             Result = finalResult.ToString(),
             RequestId = effectiveRequestId,
             CorrelationId = effectiveCorrelationId,
-            CompletedAt = completedAt,
+            CompletedAt = completedAtCanonical,
         }));
         var completionAuditEvent = new AuditEvent(
             auditEventId,
@@ -182,6 +181,8 @@ public sealed class VerificationCompletionApplicationService(
             EvidencePackageId = packageId.ToString("N"),
             VerificationSessionId = session.Id.ToString("N"),
             PackageVersion,
+            CanonicalizationScheme,
+            HashAlgorithm,
             EvidenceRefs = manifestEvidenceRefs,
             AuditEventRefs = auditRefs,
             ResultRef = decisionId.ToString("N"),
@@ -189,7 +190,7 @@ public sealed class VerificationCompletionApplicationService(
             AssuranceLevel = assuranceLevel.ToString(),
             RequestId = effectiveRequestId,
             CorrelationId = effectiveCorrelationId,
-            CreatedAt = completedAt,
+            CreatedAt = completedAtCanonical,
         };
         var manifestBodyHash = HashCanonical("tip-06-manifest-body", manifestBody);
         var packageHash = new HashRef(HashCanonical("tip-06-evidence-package", new
@@ -197,12 +198,14 @@ public sealed class VerificationCompletionApplicationService(
             EvidencePackageId = packageId.ToString("N"),
             VerificationSessionId = session.Id.ToString("N"),
             PackageVersion,
+            CanonicalizationScheme,
+            HashAlgorithm,
             ManifestBodyHash = manifestBodyHash,
             ResultRef = decisionId.ToString("N"),
             EvidenceRefs = selectedEvidence.Select(candidate => candidate.Id.ToString("N")).ToArray(),
             Result = finalResult.ToString(),
             AssuranceLevel = assuranceLevel.ToString(),
-            CreatedAt = completedAt,
+            CreatedAt = completedAtCanonical,
         }));
         var manifestHash = new HashRef(HashCanonical("tip-06-evidence-manifest", new
         {
@@ -224,6 +227,8 @@ public sealed class VerificationCompletionApplicationService(
             packageId,
             session.Id,
             PackageVersion,
+            CanonicalizationScheme,
+            HashAlgorithm,
             manifestHash,
             selectedEvidence.Select(candidate => candidate.Id.ToString("N")).ToArray(),
             auditRefs.Select(candidate => candidate.EventId).ToArray(),
@@ -235,6 +240,8 @@ public sealed class VerificationCompletionApplicationService(
             packageId.ToString("N"),
             session.Id.ToString("N"),
             PackageVersion,
+            CanonicalizationScheme,
+            HashAlgorithm,
             manifestHash.ToString(),
             packageHash.ToString(),
             manifestEvidenceRefs,
@@ -546,7 +553,7 @@ public sealed class VerificationCompletionApplicationService(
         {
             0 => null,
             1 => hashes[0],
-            _ => HashCanonical("tip-06-artifact-hash-set", hashes),
+            _ => EvidenceCanonicalization.HashCanonical("tip-06-artifact-hash-set", hashes),
         };
     }
 
@@ -728,21 +735,9 @@ public sealed class VerificationCompletionApplicationService(
     private static string FirstNonEmpty(params string?[] values) =>
         values.First(value => !string.IsNullOrWhiteSpace(value))!;
 
-    private static string HashCanonical(string label, object value)
-    {
-        var json = JsonSerializer.Serialize(value, CanonicalJsonOptions);
-        var input = Encoding.UTF8.GetBytes($"{label}\n{json}");
-        return $"sha256:{Convert.ToHexString(SHA256.HashData(input)).ToLowerInvariant()}";
-    }
+    private static string HashCanonical(string label, object value) =>
+        EvidenceCanonicalization.HashCanonical(label, value);
 
-    private static Guid DeterministicGuid(string label, object value)
-    {
-        var json = JsonSerializer.Serialize(value, CanonicalJsonOptions);
-        var input = Encoding.UTF8.GetBytes($"{label}\n{json}");
-        Span<byte> bytes = stackalloc byte[16];
-        SHA256.HashData(input).AsSpan(0, 16).CopyTo(bytes);
-        bytes[7] = (byte)((bytes[7] & 0x0F) | 0x50);
-        bytes[8] = (byte)((bytes[8] & 0x3F) | 0x80);
-        return new Guid(bytes);
-    }
+    private static Guid DeterministicGuid(string label, object value) =>
+        EvidenceCanonicalization.DeterministicGuid(label, value);
 }

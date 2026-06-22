@@ -4,6 +4,8 @@ public sealed record EvidencePackage(
     Guid Id,
     Guid VerificationSessionId,
     string PackageVersion,
+    string CanonicalizationScheme,
+    string HashAlgorithm,
     HashRef ManifestHash,
     IReadOnlyList<string> EvidenceRefs,
     IReadOnlyList<string> AuditEventRefs,
