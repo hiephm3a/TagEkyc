@@ -1,7 +1,7 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 1.17
+**Version:** 1.18
 **Status:** Active
 **Date:** 2026-06-22
 **Baseline:** Product Brief v0.1.1
@@ -9,9 +9,13 @@
 
 ## Changelog
 
-### v1.17 - TIP-65 built (spot-check patch in flight) + TIP-67 queued
+### v1.18 - TIP-65 committed + closeout finalized
 
-- TIP-65 v0.3 was built by Codex (161/161 tests, not committed). Contractor adversarial spot-check on CODE confirmed the core (minimal migration with legacy backfill, persist+readback, internal-only exposure with public summary unchanged, hash-chain topology unchanged, real golden vectors, lld_01 v0.3 / T2-1 resolved) but found a patch set now in flight: (1) the metadata fail-closed classifier was dead code (zero production callers) → wire into the read path; (2) the "independent" Node cross-verification + conformance subset do not exercise RFC 8785 number formatting, and evidence is string-only → adopt a numeric-encoding convention (integers as strings, decimals as `decimal` `F6` invariant strings, no raw JSON numbers) enforced by a tripwire test; (3) honesty relabel of the "legacy fixture" test. Golden hash vectors must stay byte-identical through the patch.
+- Committed `f494025` on master (parked-not-pushed; allowlist, known-dirty excluded); 163/163 post-patch. Closeout finalized to v0.2: post-commit disposition (`COMMITTED f494025`), corrected Exact-Files list (incl. `TagEkycDbContext.cs`, `Tip06CompletionApplicationTests.cs`, and the correct `TagEkyc.ContractTests/ProjectionBoundaryTests.cs`), softened the number-path wording to match the LLD debt. This entry supersedes the earlier pre-final wording.
+
+### v1.17 - TIP-65 built, spot-checked, patched + accepted
+
+- TIP-65 v0.3 was built by Codex (161/161 tests). Contractor adversarial spot-check on CODE confirmed the core (minimal migration with legacy backfill, persist+readback, internal-only exposure with public summary unchanged, hash-chain topology unchanged, real golden vectors, lld_01 v0.3 / T2-1 resolved) and found a patch set, since applied + re-verified ACCEPT: (1) the metadata fail-closed classifier was dead code (zero production callers) → wired into the EF read path; (2) the "independent" Node cross-verification + conformance subset do not exercise RFC 8785 number formatting, and evidence is string-only → adopted a numeric-encoding convention (integers as strings, decimals as `decimal` `F6` invariant strings, no raw JSON numbers) enforced by a tripwire test; (3) honesty relabel of the "legacy fixture" test. Golden hash vectors stayed byte-identical through the patch (no hash drift).
 - Registered a **P1 debt** (decision basis not bound to evidence hash) in `phase1_scope_and_debt_registry_v0_1.md` from the spot-check: per-evidence `Confidence`, `decisionReasonCodes`/`retryReasonCodes` (and `RiskScore` when live) are persisted + append-only-protected but NOT bound to the evidence hash chain — only `Result` + `AssuranceLevel` are. NOT yet a numbered TIP — it will get the next free number when activated (after signing **TIP-66**); no TIP-67 created (avoids a numbering hole).
 
 ### v1.16 - TIP-65 RFC 8785 JCS canonicalization opened

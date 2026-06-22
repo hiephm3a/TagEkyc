@@ -1,13 +1,16 @@
-# TIP-65 RFC 8785 JCS Canonicalization — Closeout v0.1
+# TIP-65 RFC 8785 JCS Canonicalization — Closeout v0.2
 
 **File:** `docs/tips/tip_65_rfc8785_jcs_canonicalization/tip_65_closeout_v0_1.md`
-**Version:** 0.1
-**Status:** Closed — Tier-2 / EBS-01 code change accepted (Contractor adversarial spot-check ACCEPT after one patch round)
+**Version:** 0.2
+**Status:** Closed — Tier-2 / EBS-01 code change accepted + committed `f494025` (Contractor adversarial spot-check ACCEPT after one patch round)
 **Date:** 2026-06-22
 **Baseline:** `951694a docs: close TIP-64 S1 evidence-integrity consolidation (lld_01 v0.2)` (master).
 **Purpose:** Close TIP-65 after replacing the implementation-deterministic Web-JSON canonicalization with RFC 8785 JCS, recording durable hash metadata, and resolving Tier-2 open item T2-1.
 
 ## Changelog
+
+### v0.2 — Post-commit finalize
+- Updated disposition + next-step to post-commit (TIP-65 committed `f494025`, parked-not-pushed); corrected the Exact Files list (`ProjectionBoundaryTests` is in `TagEkyc.ContractTests`; added `TagEkycDbContext.cs` and `Tip06CompletionApplicationTests.cs`); softened the JCS number-path wording to match the documented limit.
 
 ### v0.1 — Initial closeout
 - Closed TIP-65 as a Tier-2 code change. Recorded outcome vs intent, the build, the two-round adversarial spot-check (build then patch), the fixes, the spun-off debt, validation, the review ladder, lessons, and the next step (signing = TIP-66).
@@ -15,14 +18,14 @@
 ## Status / Disposition
 
 ```text
-READY_TO_COMMIT_TIP_65; T2-1 RESOLVED (S1 evidence hash chain); T2-2 (signing) STILL OPEN → TIP-66; decision-basis binding REGISTERED AS P1 DEBT (future TIP after TIP-66)
+COMMITTED f494025 (master, parked-not-pushed); T2-1 RESOLVED (S1 evidence hash chain); T2-2 (signing) STILL OPEN → TIP-66; decision-basis binding REGISTERED AS P1 DEBT (future TIP after TIP-66)
 ```
 
 ## Outcome vs Intent
 
 | Intended outcome | Actual result | Status |
 | --- | --- | --- |
-| Replace Web-JSON canonicalization with RFC 8785 JCS in `HashCanonical`/`DeterministicGuid` | `EvidenceCanonicalization.cs` canonicalizes via JCS (ordinal/UTF-16 key order, minimal string escaping, number normalization); wired through both | Accepted |
+| Replace Web-JSON canonicalization with RFC 8785 JCS in `HashCanonical`/`DeterministicGuid` | `EvidenceCanonicalization.cs` canonicalizes via JCS (ordinal/UTF-16 key order, minimal string escaping) for the S1 evidence graph; wired through both. The number path is defensive/not load-bearing — evidence forbids raw numbers (and `FormatNumber` is not proven vs the full official RFC number vectors) | Accepted |
 | Pin deterministic timestamp/guid formatting | Timestamp `yyyy-MM-ddTHH:mm:ss.fffffffZ` UTC invariant via converters; guids `N` | Accepted |
 | Record three durable + retrievable metadata fields | `packageVersion=evidence-package-v2`, `canonicalizationScheme=rfc8785-jcs-v1`, `hashAlgorithm=sha256` — hashed in manifest body + persisted (EF rows/mapper + minimal migration) + exposed via the INTERNAL manifest DTO | Accepted |
 | Public summary + lld_02/03 untouched (scope-bound) | Public `EvidencePackageSummaryDto` unchanged (contract test asserts `DoesNotContain`); lld_02/03 not touched | Accepted |
@@ -33,7 +36,7 @@ READY_TO_COMMIT_TIP_65; T2-1 RESOLVED (S1 evidence hash chain); T2-2 (signing) S
 
 ## Build
 
-Codex built TIP-65 v0.3 from baseline `951694a`. Self-report: `dotnet build` clean; `dotnet test` 161/161 (pre-patch). Not committed (awaiting Contractor spot-check).
+Codex built TIP-65 v0.3 from baseline `951694a`. Self-report: `dotnet build` clean; `dotnet test` 161/161 (pre-patch). Not committed at build time — the Contractor spot-check + patch followed (see below), then committed as `f494025` (163/163 post-patch).
 
 ## Contractor Adversarial Spot-Check (EBS-01 — highest stakes) — verified on CODE, not the report
 
@@ -66,8 +69,9 @@ Codex built TIP-65 v0.3 from baseline `951694a`. Self-report: `dotnet build` cle
 - `src/TagEkyc.Application/VerificationSessions/VerificationCompletionApplicationService.cs` (canonicalization wired; metadata in manifest body/package)
 - `src/TagEkyc.Domain/EvidencePackage.cs`, `EvidenceManifest*` / `src/TagEkyc.Contracts/InternalAudit/Manifest/ManifestContracts.cs` (metadata fields on domain + internal manifest DTO)
 - `src/TagEkyc.Infrastructure/Persistence/Entities/EvidencePackageRow.cs`, `EvidenceManifestRow.cs`; `DomainRowMapper.cs` (persist + readback + fail-closed guard); `Migrations/20260622033429_Tip65EvidenceHashMetadata.*` (+ ModelSnapshot)
-- `tests/TagEkyc.UnitTests/Tip65EvidenceCanonicalizationTests.cs` (new); `tests/TagEkyc.IntegrationTests/PostgresPersistenceSliceTests.cs`; `tests/TagEkyc.UnitTests/ProjectionBoundaryTests.cs`
-- `docs/lld_01_data_model_v0_1.md` (v0.3, T2-1 resolved); `docs/tips/tip_65_*` (brief/kickoff v0.3 + this closeout); `docs/tips/README.md` (v1.17); `docs/phase1_scope_and_debt_registry_v0_1.md` (decision-basis P1 debt)
+- `src/TagEkyc.Infrastructure/Persistence/TagEkycDbContext.cs` (entity config for the new metadata columns)
+- `tests/TagEkyc.UnitTests/Tip65EvidenceCanonicalizationTests.cs` (new); `tests/TagEkyc.IntegrationTests/PostgresPersistenceSliceTests.cs`; `tests/TagEkyc.ContractTests/ProjectionBoundaryTests.cs`; `tests/TagEkyc.UnitTests/Tip06CompletionApplicationTests.cs`
+- `docs/lld_01_data_model_v0_1.md` (v0.3, T2-1 resolved); `docs/tips/tip_65_*` (brief/kickoff v0.3 + this closeout); `docs/tips/README.md` (v1.18); `docs/phase1_scope_and_debt_registry_v0_1.md` (decision-basis P1 debt)
 
 Excluded from commit (known-dirty): `.gitignore`, `docs/00_AGENT_COORDINATION_BUS.md`, `docs/00_GDRIVE_FILE_INDEX.md`, all `bin/obj`.
 
@@ -91,4 +95,4 @@ No STOP/RRI during build. The numeric-encoding policy was a Homeowner design dec
 
 ## Recommended Next Step
 
-Commit TIP-65 by allowlist (exclude known-dirty), no push, pending Homeowner authorization. Then **TIP-66** (signing / T2-2) builds on this stable JCS hash. The decision-basis binding stays P1 debt for a later evidence-model TIP (needs the legal lens).
+TIP-65 is committed as `f494025` on master (allowlist; known-dirty excluded; parked-not-pushed — push only on Homeowner authorization). Next: **TIP-66** (signing / T2-2) builds on this stable JCS hash. The decision-basis binding stays P1 debt for a later evidence-model TIP (needs the legal lens).
