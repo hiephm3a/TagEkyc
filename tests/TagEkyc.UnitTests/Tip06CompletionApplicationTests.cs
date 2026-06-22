@@ -313,6 +313,7 @@ public sealed class Tip06CompletionApplicationTests
             packages,
             manifests,
             audit,
+            new TestEvidenceSigner(),
             finalization);
 
         return new TestFixture(

@@ -52,4 +52,5 @@ public enum AssuranceLevelDto
 public enum SignaturePlaceholderStatusDto
 {
     PlaceholderUnverified = 0,
+    Signed = 1,
 }

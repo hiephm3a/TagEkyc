@@ -297,6 +297,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
             packages,
             manifests,
             audit,
+            new TestEvidenceSigner(),
             finalization);
 
         return new TestFixture(

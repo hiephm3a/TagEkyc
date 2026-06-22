@@ -37,6 +37,7 @@ public sealed class Tip04ApiEndpointTests
         builder.Services.AddSingleton<IInternalEvidenceManifestRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceManifestRepository>());
         builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
         builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
+        builder.Services.AddSingleton<IEvidenceSigner, TestEvidenceSigner>();
         builder.Services.AddSingleton<VerificationSessionApplicationService>();
         builder.Services.AddSingleton<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
         builder.Services.AddSingleton<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());

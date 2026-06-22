@@ -53,7 +53,7 @@ public sealed class Tip07CompletionNotificationApplicationTests
         Assert.Equal("req-complete", notification.Value?.RequestId);
         Assert.Equal("corr-complete", notification.Value?.CorrelationId);
         Assert.Equal(SignaturePlaceholderStatusDto.PlaceholderUnverified, notification.Value?.WebhookSignatureStatus);
-        Assert.Equal(SignaturePlaceholderStatusDto.PlaceholderUnverified, notification.Value?.EvidencePackageSignatureStatus);
+        Assert.Equal(SignaturePlaceholderStatusDto.Signed, notification.Value?.EvidencePackageSignatureStatus);
 
         var notificationJson = JsonSerializer.Serialize(notification.Value, JsonOptions);
         Assert.Contains("clientApplicationId", notificationJson, StringComparison.Ordinal);
@@ -215,6 +215,7 @@ public sealed class Tip07CompletionNotificationApplicationTests
             packages,
             manifests,
             audit,
+            new TestEvidenceSigner(),
             finalization);
 
         return new TestFixture(

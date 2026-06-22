@@ -254,6 +254,12 @@ internal static class DomainRowMapper
             AuditEventRefsJson = PersistenceJson.Serialize(manifest.AuditEventRefs),
             ResultRef = Guid.Parse(manifest.ResultRef),
             EvidencePackageSignatureStatus = manifest.EvidencePackageSignatureStatus.ToString(),
+            SignatureFormat = manifest.SignatureFormat,
+            SignatureScheme = manifest.SignatureScheme,
+            SignatureAlgorithm = manifest.SignatureAlgorithm,
+            KeyId = manifest.KeyId,
+            SignedAt = manifest.SignedAt,
+            SignatureValue = manifest.SignatureValue,
             CreatedAt = manifest.CreatedAt,
         };
 
@@ -263,6 +269,9 @@ internal static class DomainRowMapper
             row.PackageVersion,
             row.CanonicalizationScheme,
             row.HashAlgorithm);
+
+        var signatureStatus = Parse<SignaturePlaceholderStatusDto>(row.EvidencePackageSignatureStatus);
+        EnsureKnownSignatureEnvelope(row, signatureStatus);
 
         return new(
             row.EvidencePackageId.ToString("N"),
@@ -275,8 +284,14 @@ internal static class DomainRowMapper
             PersistenceJson.Deserialize<ManifestEvidenceRefDto[]>(row.EvidenceRefsJson),
             PersistenceJson.Deserialize<ManifestAuditRefDto[]>(row.AuditEventRefsJson),
             row.ResultRef.ToString("N"),
-            Parse<SignaturePlaceholderStatusDto>(row.EvidencePackageSignatureStatus),
-            row.CreatedAt);
+            signatureStatus,
+            row.CreatedAt,
+            row.SignatureFormat,
+            row.SignatureScheme,
+            row.SignatureAlgorithm,
+            row.KeyId,
+            row.SignedAt,
+            row.SignatureValue);
     }
 
     public static AuditEventRow ToRow(AuditEvent auditEvent) =>
@@ -314,4 +329,54 @@ internal static class DomainRowMapper
     private static TEnum Parse<TEnum>(string value)
         where TEnum : struct, Enum =>
         Enum.Parse<TEnum>(value, ignoreCase: false);
+
+    private static void EnsureKnownSignatureEnvelope(
+        EvidenceManifestRow row,
+        SignaturePlaceholderStatusDto signatureStatus)
+    {
+        var hasAnyEnvelopeField =
+            row.SignatureFormat is not null ||
+            row.SignatureScheme is not null ||
+            row.SignatureAlgorithm is not null ||
+            row.KeyId is not null ||
+            row.SignedAt is not null ||
+            row.SignatureValue is not null;
+
+        if (signatureStatus == SignaturePlaceholderStatusDto.PlaceholderUnverified)
+        {
+            if (hasAnyEnvelopeField)
+            {
+                throw new EvidenceSignatureMetadataException(
+                    row.EvidencePackageId,
+                    "Placeholder evidence package signature must not carry signature envelope fields.");
+            }
+
+            return;
+        }
+
+        if (signatureStatus != SignaturePlaceholderStatusDto.Signed)
+        {
+            throw new EvidenceSignatureMetadataException(
+                row.EvidencePackageId,
+                $"Unknown evidence package signature status '{signatureStatus}'.");
+        }
+
+        if (string.IsNullOrWhiteSpace(row.SignatureFormat) ||
+            string.IsNullOrWhiteSpace(row.SignatureScheme) ||
+            string.IsNullOrWhiteSpace(row.SignatureAlgorithm) ||
+            string.IsNullOrWhiteSpace(row.KeyId) ||
+            row.SignedAt is null ||
+            string.IsNullOrWhiteSpace(row.SignatureValue))
+        {
+            throw new EvidenceSignatureMetadataException(
+                row.EvidencePackageId,
+                "Signed evidence package manifest is missing required signature envelope fields.");
+        }
+    }
+}
+
+public sealed class EvidenceSignatureMetadataException(Guid evidencePackageId, string message)
+    : InvalidOperationException($"Invalid evidence signature metadata for package '{evidencePackageId:N}': {message}")
+{
+    public Guid EvidencePackageId { get; } = evidencePackageId;
 }

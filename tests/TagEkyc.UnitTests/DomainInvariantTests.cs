@@ -71,9 +71,13 @@ public sealed class DomainInvariantTests
     }
 
     [Fact]
-    public void Signature_placeholder_status_has_only_non_authoritative_value()
+    public void Signature_status_keeps_legacy_placeholder_and_adds_package_signed_state()
     {
-        var value = Assert.Single(Enum.GetValues<SignaturePlaceholderStatus>());
-        Assert.Equal(SignaturePlaceholderStatus.PlaceholderUnverified, value);
+        var values = Enum.GetValues<SignaturePlaceholderStatus>();
+
+        Assert.Contains(SignaturePlaceholderStatus.PlaceholderUnverified, values);
+        Assert.Contains(SignaturePlaceholderStatus.Signed, values);
+        Assert.Equal(0, (int)SignaturePlaceholderStatus.PlaceholderUnverified);
+        Assert.Equal(1, (int)SignaturePlaceholderStatus.Signed);
     }
 }

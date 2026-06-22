@@ -14,5 +14,11 @@ public sealed class EvidenceManifestRow
     public string AuditEventRefsJson { get; set; } = "[]";
     public Guid ResultRef { get; set; }
     public string EvidencePackageSignatureStatus { get; set; } = string.Empty;
+    public string? SignatureFormat { get; set; }
+    public string? SignatureScheme { get; set; }
+    public string? SignatureAlgorithm { get; set; }
+    public string? KeyId { get; set; }
+    public DateTimeOffset? SignedAt { get; set; }
+    public string? SignatureValue { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

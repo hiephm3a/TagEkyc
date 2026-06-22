@@ -28,4 +28,10 @@ public sealed record EvidenceManifestDto(
     IReadOnlyList<ManifestAuditRefDto> AuditEventRefs,
     string ResultRef,
     SignaturePlaceholderStatusDto EvidencePackageSignatureStatus,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    string? SignatureFormat = null,
+    string? SignatureScheme = null,
+    string? SignatureAlgorithm = null,
+    string? KeyId = null,
+    DateTimeOffset? SignedAt = null,
+    string? SignatureValue = null);

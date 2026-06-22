@@ -15,6 +15,7 @@ using TagEkyc.Contracts.TrustedAdapter;
 using TagEkyc.Domain;
 using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.Persistence.Entities;
+using TagEkyc.Infrastructure.Signing;
 
 namespace TagEkyc.IntegrationTests;
 
@@ -62,6 +63,33 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
         Assert.Equal(EvidenceCanonicalization.PackageVersion, manifestRow.PackageVersion);
         Assert.Equal(EvidenceCanonicalization.CanonicalizationScheme, manifestRow.CanonicalizationScheme);
         Assert.Equal(EvidenceCanonicalization.HashAlgorithm, manifestRow.HashAlgorithm);
+        Assert.Equal("Signed", packageRow.EvidencePackageSignatureStatus);
+        Assert.Equal("Signed", manifestRow.EvidencePackageSignatureStatus);
+        Assert.Equal(EvidenceSignatureDefaults.FormatJws, manifestRow.SignatureFormat);
+        Assert.Equal(EvidenceSignatureDefaults.SchemeJwsEs256V1, manifestRow.SignatureScheme);
+        Assert.Equal(EvidenceSignatureDefaults.AlgorithmEs256, manifestRow.SignatureAlgorithm);
+        Assert.False(string.IsNullOrWhiteSpace(manifestRow.KeyId));
+        Assert.NotNull(manifestRow.SignedAt);
+        Assert.False(string.IsNullOrWhiteSpace(manifestRow.SignatureValue));
+        var signer = Assert.IsType<LocalDevEs256JwsEvidenceSigner>(provider.GetRequiredService<IEvidenceSigner>());
+        using var publicKey = signer.ExportPublicKey();
+        Assert.True(Tip66EvidenceSignatureTestVerifier.Verify(
+            new EvidenceSignatureEnvelope(
+                SignaturePlaceholderStatus.Signed,
+                manifestRow.SignatureFormat!,
+                manifestRow.SignatureScheme!,
+                manifestRow.SignatureAlgorithm!,
+                manifestRow.KeyId!,
+                manifestRow.SignedAt!.Value,
+                manifestRow.SignatureValue!),
+            new EvidenceSignatureRequest(
+                packageRow.Id.ToString("N"),
+                manifestRow.ManifestHash,
+                manifestRow.PackageVersion,
+                manifestRow.CanonicalizationScheme,
+                manifestRow.HashAlgorithm,
+                EvidenceSignatureDefaults.PurposeEvidencePackageManifest),
+            publicKey));
     }
 
     [Fact]
@@ -113,6 +141,39 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
             packageRepository.GetBySessionAsync(sessionId, CancellationToken.None));
         await Assert.ThrowsAsync<EvidenceHashMetadataException>(() =>
             manifestRepository.GetByPackageAsync(unknownPackageId, CancellationToken.None));
+    }
+
+    [Fact]
+    public async Task Legacy_placeholder_manifest_has_no_envelope_and_signed_without_envelope_fails_closed()
+    {
+        await using var provider = BuildProvider();
+        var session = await CreateCaptureQualitySessionAsync(provider, "external-pg-signature-legacy");
+        var sessionId = Guid.Parse(session.VerificationSessionId);
+        var legacyPackageId = await InsertPackageAndManifestRowsAsync(
+            sessionId,
+            EvidenceCanonicalization.LegacyPackageVersion,
+            EvidenceCanonicalization.LegacyCanonicalizationScheme,
+            EvidenceCanonicalization.HashAlgorithm,
+            DateTimeOffset.UtcNow);
+        var invalidSignedPackageId = await InsertPackageAndManifestRowsAsync(
+            sessionId,
+            EvidenceCanonicalization.PackageVersion,
+            EvidenceCanonicalization.CanonicalizationScheme,
+            EvidenceCanonicalization.HashAlgorithm,
+            DateTimeOffset.UtcNow.AddSeconds(1),
+            signatureStatus: "Signed");
+
+        await using var scope = provider.CreateAsyncScope();
+        var manifestRepository = scope.ServiceProvider.GetRequiredService<IInternalEvidenceManifestRepository>();
+
+        var legacyManifest = await manifestRepository.GetByPackageAsync(legacyPackageId, CancellationToken.None);
+
+        Assert.NotNull(legacyManifest);
+        Assert.Equal(SignaturePlaceholderStatusDto.PlaceholderUnverified, legacyManifest.EvidencePackageSignatureStatus);
+        Assert.Null(legacyManifest.SignatureFormat);
+        Assert.Null(legacyManifest.SignatureValue);
+        await Assert.ThrowsAsync<EvidenceSignatureMetadataException>(() =>
+            manifestRepository.GetByPackageAsync(invalidSignedPackageId, CancellationToken.None));
     }
 
     [Fact]
@@ -433,6 +494,7 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
         services.AddSingleton<LocalDevRuntimePolicySource>();
         services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
         services.AddTagEkycPostgresPersistence(postgres.ConnectionString);
+        services.AddSingleton<IEvidenceSigner, LocalDevEs256JwsEvidenceSigner>();
         services.AddScoped<EfPersistenceFaultInjector>();
         services.AddScoped<VerificationSessionApplicationService>();
         services.AddScoped<VerificationEvidenceApplicationService>();
@@ -546,7 +608,8 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
         string packageVersion,
         string canonicalizationScheme,
         string hashAlgorithm,
-        DateTimeOffset createdAt)
+        DateTimeOffset createdAt,
+        string signatureStatus = "PlaceholderUnverified")
     {
         var packageId = Guid.NewGuid();
         var resultRef = Guid.NewGuid();
@@ -563,7 +626,7 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
             AuditEventRefsJson = "[]",
             ResultRef = resultRef,
             PackageHash = "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-            EvidencePackageSignatureStatus = "PlaceholderUnverified",
+            EvidencePackageSignatureStatus = signatureStatus,
             CreatedAt = createdAt,
         });
         db.EvidenceManifests.Add(new EvidenceManifestRow
@@ -579,7 +642,7 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
             EvidenceRefsJson = "[]",
             AuditEventRefsJson = "[]",
             ResultRef = resultRef,
-            EvidencePackageSignatureStatus = "PlaceholderUnverified",
+            EvidencePackageSignatureStatus = signatureStatus,
             CreatedAt = createdAt,
         });
         await db.SaveChangesAsync();

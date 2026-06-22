@@ -150,6 +150,11 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.EvidenceRefsJson).HasColumnType("jsonb").IsRequired();
             entity.Property(row => row.AuditEventRefsJson).HasColumnType("jsonb").IsRequired();
             entity.Property(row => row.EvidencePackageSignatureStatus).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.SignatureFormat).HasMaxLength(32);
+            entity.Property(row => row.SignatureScheme).HasMaxLength(64);
+            entity.Property(row => row.SignatureAlgorithm).HasMaxLength(64);
+            entity.Property(row => row.KeyId).HasMaxLength(128);
+            entity.Property(row => row.SignatureValue);
             entity.HasIndex(row => row.SessionGuid);
             entity.HasOne<EvidencePackageRow>()
                 .WithOne()

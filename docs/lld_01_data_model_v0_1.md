@@ -1,13 +1,19 @@
 # Logical Data Model
 
 **File:** `docs/lld_01_data_model_v0_1.md`
-**Version:** 0.3
+**Version:** 0.4
 **Status:** Active - S1 data-model and evidence-integrity consolidation
-**Date:** 2026-06-21
-**Baseline:** `dc9d0ee`
+**Date:** 2026-06-22
+**Baseline:** `a98f278`
 **Purpose:** Authoritative S1 logical data model and as-built evidence-integrity contract for TagEkyc. This document is not a SQL migration and does not prescribe database technology.
 
 ## Changelog
+
+### v0.4 - TIP-66 evidence-package signing
+
+- Added S1 package-level real JWS signing over the stable TIP-65 `manifestHash` through the `IEvidenceSigner` abstraction and local non-production ES256 dev adapter with configured P12 support.
+- Recorded the internal signature envelope (`signatureFormat`, `signatureScheme`, `signatureAlgorithm`, `keyId`, `signedAt`, `signatureValue`) as manifest-row/internal-manifest metadata only; public BusinessConsumer DTOs expose only the existing signature status field.
+- Marked T2-2 resolved at dev-foundation level only; production HSM/KMS/CA signing, legal sufficiency, non-repudiation, replay protection, payload signing, webhook signing, and decision-basis binding remain unresolved debt.
 
 ### v0.2 - TIP-64 S1 evidence-integrity consolidation
 
@@ -149,17 +155,34 @@ The manifest `AuditEventRefs` are all existing audit events for the verification
 
 > note: TIP-06 section 16 described a three-event audit model (`FINAL_DECISION_CALCULATED`, `EVIDENCE_PACKAGE_CREATED`, `SESSION_COMPLETED`), a pre/post audit-ref split, and exclusion of prior events from the manifest/package refs. That model is not as-built in S1; code wins.
 
-### Signature-Status Model
+### Signature-Status And Package Signing Model
 
-`SignaturePlaceholderStatus` has one value: `PlaceholderUnverified`. S1 stores or returns signature-status markers only; it does not create, verify, or persist cryptographic signatures.
+`SignaturePlaceholderStatus` has two values after TIP-66: `PlaceholderUnverified` and `Signed`. New TIP-66 evidence packages receive `EvidencePackageSignatureStatus = Signed`; legacy/pre-TIP-66 packages remain `PlaceholderUnverified` and must not be synthesized as signed.
 
 As-built signature-status locations:
 
 | Location | Field | Meaning |
 | --- | --- | --- |
 | `EvidenceResult` | `PayloadSignatureStatus` | Per-evidence payload signature status marker only. |
-| `EvidencePackage` and package DTOs | `EvidencePackageSignatureStatus` | Evidence package signature status marker only. |
+| `EvidencePackage` and package DTOs | `EvidencePackageSignatureStatus` | Package-level status. `Signed` means the package has a TIP-66 internal JWS envelope over the package manifest hash. |
 | `VerificationCompletedEventDto` | `WebhookSignatureStatus` | Completion-notification projection marker only; not a persisted webhook delivery field. |
+
+TIP-66 signs a stable attached compact JWS claim object `{purpose, signedManifestHash, packageId, packageVersion, canonicalizationScheme, hashAlgorithm, signedAt}` after `manifestHash` is computed. The local dev ES256 adapter loads a configured P12 key from `TagEkyc:EvidenceSigning` when provided and otherwise uses an in-process non-production generated key for local/dev execution. The signer generates `signedAt` once and writes the same pinned UTC value into both the JWS payload and the manifest-row envelope. Signing is downstream/additive and does not feed back into `manifestBodyHash`, `packageHash`, or `manifestHash`; TIP-65 golden hash vectors remain byte-identical.
+
+The signature envelope is internal verifier metadata with:
+
+| Field | Meaning |
+| --- | --- |
+| `signatureFormat` | `JWS` format marker, not the algorithm. |
+| `signatureScheme` | `jws-es256-v1` profile/version id. |
+| `signatureAlgorithm` | `ES256` algorithm selector. |
+| `keyId` | Signing key id from the JWS protected header `kid`. |
+| `signedAt` | UTC signing timestamp. |
+| `signatureValue` | Attached compact JWS value. |
+
+The envelope is persisted on the authoritative internal manifest row and exposed through the internal `EvidenceManifestDto` only. It is not duplicated onto the package row and is not exposed through the public BusinessConsumer package summary. The package row and manifest row both retain the existing `EvidencePackageSignatureStatus` status field and must be written consistently in the same finalization transaction.
+
+Verifier rule: a verifier selects by the recorded `signatureFormat`/`signatureScheme`/`signatureAlgorithm` plus the JWS protected header `alg`/`kid`, verifies the JWS with the recorded public-key material for that key id, and cross-checks the signed claim against persisted package/manifest metadata. Unknown scheme/algorithm, header-vs-envelope mismatch, wrong key, tampered payload/JWS, missing envelope for `Signed`, envelope material on a placeholder row, or claim-vs-row mismatch fails closed. TIP-66 implements this as production signing plus test fixtures, not as a public/runtime verifier endpoint.
 
 `webhook_deliveries` is a deferred/conceptual entity in S1. The as-built runtime has a completion-notification projection DTO, not webhook dispatch or persisted webhook-delivery signing.
 
@@ -177,9 +200,9 @@ Minor TIP-65 debt: `FormatNumber` is not proven against the full official RFC 87
 
 ### Tier-2 Open Items
 
-T2-1 RFC 8785 JCS canonicalization is resolved by TIP-65 for the S1 evidence package hash chain. The remaining reliance limits are those explicitly not claimed by this document: placeholder signatures, production signing, non-repudiation, replay protection, and legal sufficiency.
+T2-1 RFC 8785 JCS canonicalization is resolved by TIP-65 for the S1 evidence package hash chain.
 
-T2-2 signatures are placeholders only. All signature statuses are `PlaceholderUnverified`; S1 has no key, signing operation, signature verification, HSM/KMS integration, replay protection, or non-repudiation. The evidence is not cryptographically signed, is not legally sufficient by itself, is not production-grade signing, and does not provide legal-audit reliance. This requires legal/crypto sign-off and a production signing decision. Link: EBS-07.
+T2-2 is resolved by TIP-66 only as an S1 package-level real JWS signing foundation over `manifestHash` using a local non-production ES256 dev/P12 adapter behind `IEvidenceSigner`. This does not resolve production HSM/KMS, CA-issued certificate signing, legal sufficiency, non-repudiation, replay protection, payload signing, webhook signing, runtime consumer verification, or decision-basis binding. Those remain outside S1/TIP-66 reliance. Link: EBS-07.
 
 ## Entity: client_applications
 
@@ -387,7 +410,7 @@ Sensitive classification: Confidential with Restricted references.
 
 Raw data policy: Package MUST contain VaultRefs/hashes, not raw CCCD, face, liveness, or fingerprint data.
 
-Signature notes: `evidencePackageSignature` was the stale v0.1 placeholder-material name. The as-built field is `EvidencePackageSignatureStatus = PlaceholderUnverified`; no cryptographic package signature exists in S1. It is distinct from per-evidence `PayloadSignatureStatus` and the completion-notification projection `WebhookSignatureStatus`.
+Signature notes: `evidencePackageSignature` was the stale v0.1 placeholder-material name. The package row keeps `EvidencePackageSignatureStatus`; TIP-66 signature material is stored on the internal manifest row only, not duplicated onto the package row. This package-level signature is distinct from per-evidence `PayloadSignatureStatus` and the completion-notification projection `WebhookSignatureStatus`.
 
 ## Entity: vault_objects
 

@@ -77,7 +77,7 @@ public sealed class Tip06ApiPipelineTests
 
         Assert.Equal(packageId, packageJson["evidencePackageId"]?.GetValue<string>());
         Assert.Equal("Passed", packageJson["result"]?.GetValue<string>());
-        Assert.Equal("PlaceholderUnverified", packageJson["evidencePackageSignatureStatus"]?.GetValue<string>());
+        Assert.Equal("Signed", packageJson["evidencePackageSignatureStatus"]?.GetValue<string>());
         Assert.Equal("req-api-complete", packageJson["requestId"]?.GetValue<string>());
         Assert.Equal("corr-api-complete", packageJson["correlationId"]?.GetValue<string>());
         Assert.NotNull(packageJson["evidenceRefs"]?.AsArray().Single());
@@ -415,6 +415,7 @@ public sealed class Tip06ApiPipelineTests
             builder.Services.AddSingleton<IInternalEvidenceManifestRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceManifestRepository>());
             builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
             builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
+            builder.Services.AddSingleton<IEvidenceSigner, TestEvidenceSigner>();
             builder.Services.AddSingleton<VerificationSessionApplicationService>();
             builder.Services.AddSingleton<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
             builder.Services.AddSingleton<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());

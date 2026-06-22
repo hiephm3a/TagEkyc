@@ -14,6 +14,7 @@ public sealed class VerificationCompletionApplicationService(
     IEvidencePackageRepository evidencePackages,
     IInternalEvidenceManifestRepository manifests,
     IAuditEventRepository auditEvents,
+    IEvidenceSigner evidenceSigner,
     IVerificationFinalizationBoundary finalizationBoundary)
     : IVerificationSessionCompletionCommands, IEvidencePackageQueries, ICompletionNotificationQueries
 {
@@ -212,6 +213,15 @@ public sealed class VerificationCompletionApplicationService(
             BodyHash = manifestBodyHash,
             PackageHash = packageHash.ToString(),
         }));
+        var signature = await evidenceSigner.SignAsync(
+            new EvidenceSignatureRequest(
+                packageId.ToString("N"),
+                manifestHash.ToString(),
+                PackageVersion,
+                CanonicalizationScheme,
+                HashAlgorithm,
+                EvidenceSignatureDefaults.PurposeEvidencePackageManifest),
+            cancellationToken);
         var decision = new VerificationDecision(
             decisionId,
             session.Id,
@@ -234,7 +244,7 @@ public sealed class VerificationCompletionApplicationService(
             auditRefs.Select(candidate => candidate.EventId).ToArray(),
             decision.Id,
             packageHash,
-            SignaturePlaceholderStatus.PlaceholderUnverified,
+            SignaturePlaceholderStatus.Signed,
             completedAt);
         var manifest = new EvidenceManifestDto(
             packageId.ToString("N"),
@@ -247,8 +257,14 @@ public sealed class VerificationCompletionApplicationService(
             manifestEvidenceRefs,
             auditRefs,
             decision.Id.ToString("N"),
-            SignaturePlaceholderStatusDto.PlaceholderUnverified,
-            completedAt);
+            SignaturePlaceholderStatusDto.Signed,
+            completedAt,
+            signature.SignatureFormat,
+            signature.SignatureScheme,
+            signature.SignatureAlgorithm,
+            signature.KeyId,
+            signature.SignedAt,
+            signature.SignatureValue);
         var completedSession = session.WithCompletion(
             finalResult,
             assuranceLevel,
@@ -272,7 +288,7 @@ public sealed class VerificationCompletionApplicationService(
         return writeResult.Status switch
         {
             VerificationFinalizationWriteStatus.Applied =>
-                SessionOperationResult<CompleteVerificationSessionResponseDto>.Success(ToCompleteResponse(completedSession)),
+                SessionOperationResult<CompleteVerificationSessionResponseDto>.Success(ToCompleteResponse(completedSession, evidencePackage)),
             VerificationFinalizationWriteStatus.AlreadyCompleted when writeResult.Session is not null =>
                 SessionOperationResult<CompleteVerificationSessionResponseDto>.Success(ToCompleteResponse(writeResult.Session)),
             VerificationFinalizationWriteStatus.NotFound =>
@@ -717,6 +733,7 @@ public sealed class VerificationCompletionApplicationService(
         status switch
         {
             SignaturePlaceholderStatus.PlaceholderUnverified => SignaturePlaceholderStatusDto.PlaceholderUnverified,
+            SignaturePlaceholderStatus.Signed => SignaturePlaceholderStatusDto.Signed,
             _ => throw new ArgumentOutOfRangeException(nameof(status), status, null),
         };
 

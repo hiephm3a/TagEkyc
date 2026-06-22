@@ -132,7 +132,7 @@ public sealed class ProjectionBoundaryTests
     }
 
     [Fact]
-    public void Signature_status_is_placeholder_unverified()
+    public void Signature_status_supports_placeholder_and_signed_without_exposing_signature_value()
     {
         var package = new EvidencePackageSummaryDto(
             "ep_01",
@@ -149,6 +149,7 @@ public sealed class ProjectionBoundaryTests
             DateTimeOffset.UtcNow);
 
         Assert.Equal(SignaturePlaceholderStatusDto.PlaceholderUnverified, package.EvidencePackageSignatureStatus);
+        Assert.True(Enum.IsDefined(SignaturePlaceholderStatusDto.Signed));
     }
 
     [Fact]

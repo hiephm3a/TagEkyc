@@ -6,6 +6,7 @@ using TagEkyc.Application.LocalDev;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.Signing;
 using ApplicationMarker = TagEkyc.Application.AssemblyMarker;
 using TagEkyc.Contracts;
 
@@ -22,6 +23,11 @@ builder.Services.AddSingleton<LocalDevApiKeyValidator>();
 builder.Services.AddSingleton<ILocalDevApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
 builder.Services.AddSingleton<LocalDevInMemoryMetadataReferenceRegistry>();
 builder.Services.AddSingleton<IMetadataReferenceRegistry>(sp => sp.GetRequiredService<LocalDevInMemoryMetadataReferenceRegistry>());
+builder.Services.AddSingleton<IEvidenceSigner>(_ =>
+    new LocalDevEs256JwsEvidenceSigner(
+        builder.Configuration
+            .GetSection(LocalDevEs256JwsEvidenceSignerOptions.SectionName)
+            .Get<LocalDevEs256JwsEvidenceSignerOptions>() ?? new LocalDevEs256JwsEvidenceSignerOptions()));
 ConfigurePersistence(builder);
 builder.Services.AddScoped<VerificationSessionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());

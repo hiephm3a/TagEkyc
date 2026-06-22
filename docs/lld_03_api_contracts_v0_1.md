@@ -1,13 +1,18 @@
 # REST API Contracts
 
 **File:** `docs/lld_03_api_contracts_v0_1.md`
-**Version:** 0.2
+**Version:** 0.3
 **Status:** Active - S1 runtime-contract consolidation
-**Date:** 2026-06-21
-**Baseline:** `19666fb`
+**Date:** 2026-06-22
+**Baseline:** `a98f278`
 **Purpose:** Authoritative S1 public API, DTO, authorization, error, and sanitization contract for the as-built TagEkyc runtime.
 
 ## Changelog
+
+### v0.3 - TIP-66 evidence-package signing enum note
+
+- Added the minimal public-contract note that `EvidencePackageSignatureStatus` may now be `Signed` for TIP-66 packages while legacy packages remain `PlaceholderUnverified`.
+- Preserved DTO shapes and public exposure boundaries: the public BusinessConsumer contracts do not expose the JWS value, signature envelope, key material, or internal manifest.
 
 ### v0.2 - TIP-63 S1 runtime-contract consolidation
 
@@ -64,7 +69,7 @@ Field names below are contract member names from `TagEkyc.Contracts/**`.
 | `VerificationResultDto` | `NotAvailable`, `Passed`, `RetryRequired`, `FailedCaptureQuality`, `FailedIdentity`, `ReviewRequired`, `TechnicalError`, `NotSupported` |
 | `RequiredCheckTypeDto` | `CaptureQuality`, `DocumentOcr`, `DocumentNfc`, `FaceMatch`, `Liveness`, `Fingerprint`, `RiskEvaluation` |
 | `AssuranceLevelDto` | `None`, `Low`, `Medium`, `High`, `Unknown` |
-| `SignaturePlaceholderStatusDto` | `PlaceholderUnverified` |
+| `SignaturePlaceholderStatusDto` | `PlaceholderUnverified`, `Signed` |
 
 ### 3.2 CreateVerificationSessionRequestDto
 
@@ -137,7 +142,7 @@ Fields: `ForceReview`, `RequestId`, `CorrelationId`.
 
 Fields: `VerificationSessionId`, `State`, `Result`, `AssuranceLevel`, `FinalDecisionId`, `EvidencePackageId`, `EvidencePackageHash`, `ManifestHash`, `RequestId`, `CorrelationId`, `CompletedAt`, `EvidencePackageSignatureStatus`.
 
-The signature status is `PlaceholderUnverified` in S1 and is not a production cryptographic claim.
+The signature status is `Signed` for TIP-66 evidence packages and `PlaceholderUnverified` for legacy/pre-TIP-66 packages. This field is a status only; the public completion response does not expose the JWS value or signature envelope.
 
 ### 3.11 EvidencePackageSummaryDto And EvidenceRefSummaryDto
 
@@ -151,7 +156,7 @@ The signature status is `PlaceholderUnverified` in S1 and is not a production cr
 
 Fields: `EventType`, `DeliveryId`, `SentAt`, `VerificationSessionId`, `ClientApplicationId`, `Profile`, `ExternalSessionId`, `Result`, `AssuranceLevel`, `EvidencePackageId`, `EvidencePackageHash`, `ManifestHash`, `RequestId`, `CorrelationId`, `CompletedAt`, `WebhookSignatureStatus`, `EvidencePackageSignatureStatus`.
 
-`EventType` is `VERIFICATION_COMPLETED`; `DeliveryId` is `localdev-not-dispatched`; `SentAt = CompletedAt`; placeholder signature statuses are `PlaceholderUnverified`.
+`EventType` is `VERIFICATION_COMPLETED`; `DeliveryId` is `localdev-not-dispatched`; `SentAt = CompletedAt`; `WebhookSignatureStatus` stays `PlaceholderUnverified`; `EvidencePackageSignatureStatus` follows the package status (`Signed` for TIP-66 packages, `PlaceholderUnverified` for legacy packages).
 
 > note: TIP-06 section 20 used the stale event literal `EKYC_VERIFICATION_COMPLETED`. The as-built event literal is `VERIFICATION_COMPLETED`.
 
@@ -227,7 +232,7 @@ Default BusinessConsumer create/session summary/completion/package responses mus
 
 Completion notification exception: `VerificationCompletedEventDto` does expose `ClientApplicationId` because it is the TIP-07 completion-notification projection contract. This exception applies only to the application-service projection and does not create a public HTTP route. Default BusinessConsumer session, completion, and package DTOs must continue to omit `ClientApplicationId`.
 
-Placeholder signature statuses (`WebhookSignatureStatus`, `EvidencePackageSignatureStatus`) are compatibility markers only. They do not claim authenticity, replay protection, non-repudiation, legal audit reliance, or production signing.
+`WebhookSignatureStatus` remains a placeholder compatibility marker only. `EvidencePackageSignatureStatus = Signed` means an internal TIP-66 package-level JWS envelope exists over the package manifest hash, but public BusinessConsumer DTOs still do not expose the JWS value, signature envelope, key material, or verifier endpoint. The status does not claim replay protection, non-repudiation, legal audit reliance, CA compliance, or production signing.
 
 ## 7. Contract Reconciliations And Deferred Surfaces
 

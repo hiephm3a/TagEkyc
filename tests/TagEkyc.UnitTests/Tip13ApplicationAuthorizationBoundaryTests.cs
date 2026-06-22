@@ -348,6 +348,7 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             packages,
             manifests,
             audit,
+            new TestEvidenceSigner(),
             finalization);
 
         return new TestFixture(sessionService, evidenceService, completionService);
