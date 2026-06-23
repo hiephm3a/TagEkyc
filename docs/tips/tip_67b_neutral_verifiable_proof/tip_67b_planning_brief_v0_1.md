@@ -1,14 +1,26 @@
-# TIP-67B Neutral Verifiable eKYC Proof + Verification View — Planning Brief v0.5
+# TIP-67B Neutral Verifiable eKYC Proof + Verification View — Planning Brief v0.9
 
 **File:** `docs/tips/tip_67b_neutral_verifiable_proof/tip_67b_planning_brief_v0_1.md`
-**Version:** 0.5
-**Status:** Draft — implementation planning (Tier-2 / evidence-bearing, EBS-01/07 + integration); GPT/Codex review round 4 patches applied; **BLOCKED on TIP-67A** (kickoff held until 67A freezes the opaque-challenge/profile contract)
+**Version:** 0.9
+**Status:** Draft — implementation planning (Tier-2 / evidence-bearing, EBS-01/07 + integration); **UNBLOCKED** — TIP-67A committed (`72a7b41`), contract frozen; kickoff `tip_67b_kickoff_v0_1.md` **v0.4** (review round 3 patches applied); pending convergence before dispatch
 **Date:** 2026-06-22
-**Baseline:** to be set to the committed TIP-67A SHA when 67A closes.
+**Baseline:** `72a7b41` (master; TIP-67A committed — opaque-challenge/profile contract frozen).
 **Decision basis:** `docs/adr/ekyc_neutrality_decision_v0_1.md`. Second of the 2-TIP split (67A neutralize → 67B proof/view).
-**Purpose:** Make the eKYC result an independently-verifiable, neutral PROOF that SignFlow (any client) can verify: sign a neutral proof claim (result/assurance/identity/method/timestamp + echoed opaque challenge), expose a verification view + public key, and publish the fail-closed verifier contract. The client verifies and does its OWN binding (`H(challenge ‖ document_hash ‖ result_hash)`).
+**Purpose:** Make the eKYC result an independently-verifiable, neutral PROOF that SignFlow (any client) can verify: sign a neutral proof claim (result/assurance/identity/checks/engines/signedAt + echoed opaque challenge + signed `resultHash`), expose a verification view + public key, and publish the fail-closed verifier contract. The client verifies and does its OWN binding (`H(challenge ‖ document_hash ‖ resultHash)`).
 
 ## Changelog
+### v0.9 — kickoff v0.4 review round 3 (2026-06-22)
+- Synced to kickoff v0.4: removed overclaim ("complete"/"all decision-relevant facts" → "MVP selected signed facts" + confidence/reasonCodes P1-debt note); `result_hash`→`resultHash`. Kickoff v0.4 adds the 2 new P1s (sign-time public-key binding; requiredChecks/completedChecks deterministic ordering) — claim is field-exact in the kickoff (source of truth).
+
+### v0.8 — kickoff v0.3 review round 2 (2026-06-22)
+- Synced to kickoff v0.3: `signedAt` (not `timestamp`) everywhere; resultHash recipe + exclusions aligned; §0/§6 stale "kickoff held" wording removed (67A committed/frozen); provider-neutral public-key + `EvidenceProofSignatureRequest` + identityRef-always-hash live in the kickoff.
+
+### v0.7 — kickoff v0.2 review round 1 (2026-06-22)
+- Synced the claim list to the kickoff SUPERSET (kept TIP-66 package metadata; dropped `achievedAssurance`/`timestamp`; added `resultHashAlgorithm`/`Scheme`). Field-exact pins (identityRef pseudonymization, resultHash recipe, dedicated verification-view route, unsigned-view-tamper fail-closed, JWK public-only) live in the kickoff.
+
+### v0.6 — Unblocked; kickoff written (2026-06-22)
+- TIP-67A committed (`72a7b41`) → the opaque-challenge/profile contract is frozen. Set baseline; authored the field-exact `tip_67b_kickoff_v0_1.md` v0.1 against 67A's frozen names (`ChallengeBoundEkycProfile`/`Challenge`/`ClientReference`). Pinned `proofVersion=neutral-proof-v1`. Pending review.
+
 ### v0.5 — GPT/Codex review round 4 (2026-06-22)
 - `resultHash` recipe pinned to EXCLUDE `resultHash` itself + `signatureValue` (no recursive self-hash). ADR casing reconciled — canonical proof field is `resultHash` (`result_hash` = formula notation only).
 
@@ -26,17 +38,17 @@
 ### v0.1 — Initial planning brief (blocked on 67A)
 - Opened as the proof/view half of the neutrality split. Carries forward the sound parts of the superseded TIP-67 v0.3 (ES256 JWS, fail-closed verifier contract, no-leak sanitization, reference consumer test, trace matrix), reframed NEUTRAL (sign+echo opaque challenge instead of binding SignFlow's transaction). The earlier "bind transaction into the hash" direction is dropped (binding is the client's job per the ADR).
 
-## 0. Dependency on 67A (why the kickoff is held)
-67B signs and exposes the **opaque challenge** + profile shape that 67A defines. The signed-claim fields, the verification-view DTO, the verifier contract, and the reference test all reference 67A's frozen challenge/profile names. 67A is a SHIPPED-CODE refactor → its field shape can shift under compat pressure. So: write this brief now (the conceptual contract is stable — opaque challenge, echo+sign, client-binds), but FREEZE the kickoff (field-exact DoD) only after 67A converges.
+## 0. Dependency on 67A (RESOLVED — 67A committed)
+TIP-67A is committed at `72a7b41`; the opaque-challenge/profile contract is FROZEN. The 67B signed-claim fields, verification-view DTO, verifier contract, and reference test reference 67A's frozen names (`ChallengeBoundEkycProfile`/`Challenge`/`ClientReference`). The kickoff `tip_67b_kickoff_v0_1.md` v0.3 is now field-exact and pending GPT/Codex review before dispatch.
 
 ## 1. Intent
 A client receiving an eKYC result can, using ONLY public data, verify: (a) the result is authentic (signature), (b) it carries the assurance/identity/method it claims (all in the signed proof), and (c) it is the answer to the client's own challenge (echoed challenge matches). The client then binds it to its context. eKYC stays neutral — it never binds the document/transaction.
 
 ## 2. Scope (this slice — to finalize after 67A)
 ### 2.1 Neutral signed proof
-- Enrich the signed JWS claim to a complete neutral proof: `{ purpose, sessionId, identityRef (pseudonymous), result, assuranceLevel, requiredChecks, completedChecks, evidenceEngines[], achievedAssurance, timestamp, challenge (opaque, echoed), signedManifestHash, resultHash }`. (E-Q02 — self-contained, not just hashes/metadata.)
-- **`method/checks` field-exact (PINNED before kickoff):** `requiredChecks`, `completedChecks`, `achievedAssurance`, and an **ordered `evidenceEngines[]`** — each item = `{ evidenceResultType, engineName, engineVersion, check/method identity }`, sorted deterministically by `evidenceResultType` then `evidenceResultId` (a package may mix OCR/NFC/face/liveness from different engines; singular engineName/Version is wrong). If 67B deliberately supports only one engine, state that explicitly and FAIL CLOSED on mixed-engine packages. `confidence`/`reasonCodes` are NOT included → explicit **P1 decision-basis debt**, marked unsigned/untrusted for legal rationale.
-- **Stable signed `resultHash` (PINNED):** the proof MUST carry a stable `resultHash` computed over the canonical neutral-proof facts (sessionId, identityRef, result, assuranceLevel, the checks/engine fields, timestamp, challenge, signedManifestHash) — **EXCLUDING `resultHash` itself and `signatureValue`** (no recursive/self-hash) — with the hash algorithm + canonicalization scheme recorded. **Clients bind to this signed `resultHash`** (`H(challenge ‖ document_hash ‖ resultHash)`); clients MUST NOT invent their own result-hash recipe.
+- Enrich the signed JWS claim to an MVP neutral proof (selected signed facts) — a **SUPERSET of the TIP-66 claim** (keeps `packageId`/`packageVersion`/`canonicalizationScheme`/`hashAlgorithm`) + the neutral facts: `{ proofVersion, purpose, sessionId, identityRef(pseudonymous, non-PII), packageId, packageVersion, canonicalizationScheme, hashAlgorithm, result, assuranceLevel, requiredChecks, completedChecks, evidenceEngines[], signedAt, challenge(opaque, echoed), signedManifestHash, resultHash + resultHashAlgorithm/Scheme }`. Field-exact + the identityRef/resultHash recipes are in the kickoff. (E-Q02 — self-contained.)
+- **`method/checks` field-exact (kickoff):** `requiredChecks`, `completedChecks`, single `assuranceLevel`, and an **ordered `evidenceEngines[]`** — each item = `{ evidenceResultType, evidenceResultId, engineName, engineVersion, checkType }`, sorted by `evidenceResultType` then `evidenceResultId` (a package may mix OCR/NFC/face/liveness from different engines). `confidence`/`reasonCodes` are NOT included → explicit **P1 decision-basis debt**, marked unsigned/untrusted for legal rationale.
+- **Stable signed `resultHash` (PINNED; field-exact recipe in kickoff §3.1b):** the proof MUST carry a stable `resultHash` over the canonical neutral-proof facts (proofVersion, sessionId, identityRef, package metadata, result, assuranceLevel, the checks/engine fields, `signedAt`, challenge, signedManifestHash) — **EXCLUDING `resultHash` itself, the resultHash algo/scheme fields, and `signatureValue`** (no recursive/self-hash) — with `resultHashAlgorithm`/`resultHashCanonicalizationScheme` recorded. **Clients bind to this signed `resultHash`** (`H(challenge ‖ document_hash ‖ resultHash)`); clients MUST NOT invent their own result-hash recipe.
 - Signed by `IEvidenceSigner` (ES256 dev, unchanged from TIP-66). Signing the proof does not change the existing evidence hash graph beyond the claim fields the signer covers; STANDARD golden vectors stay byte-identical where applicable.
 ### 2.2 Verification view + public key
 - A dedicated consumer **verification view** exposes the signed proof (compact JWS) + `publicKeyJwk` + `keyId` + `signatureFormat`/`signatureScheme`/`signatureAlgorithm` + the echoed challenge + the proof fields needed to verify. Reverses TIP-66's deferred public exposure (the consumer now exists).
@@ -52,8 +64,8 @@ The profile/challenge neutralization (TIP-67A); document/transaction binding (cl
 
 ## 4. Key design decisions (PINNED at the conceptual level; field-exact after 67A)
 - **Sign the neutral proof, echo the opaque challenge** — NOT bind the client's transaction.
-- **Enriched claim carries all decision-relevant facts** (result/assurance/identity/method) so the client trusts NO unsigned field.
-- **Client binds** (`H(challenge ‖ document_hash ‖ result_hash)`); eKYC neutral.
+- **Enriched claim carries the selected signed MVP facts** (result, assuranceLevel, identityRef, checks/engines, signedAt, challenge, signedManifestHash, resultHash) so the client trusts NO unsigned field. `confidence`/`reasonCodes` remain unsigned P1 decision-basis debt (NOT legally-complete rationale).
+- **Client binds** (`H(challenge ‖ document_hash ‖ resultHash)`); eKYC neutral. (`result_hash` in formula prose = `resultHash`.)
 - **Trust anchor (security):** verify against a pre-established trust anchor (pinned `kid` + key fingerprint out-of-band; JWKS = prod/P0), NEVER the embedded JWK alone. **`publicKeyFingerprint` defined exactly (single MANDATORY recipe):** `sha256` over the RFC 8785 JCS canonical JWK public params `{kty, crv, x, y}`. (DER SubjectPublicKeyInfo MAY be a future/alternate profile, but the 67B verifier contract + tests use the JWK recipe ONLY — no "or", to avoid consumer divergence.)
 - **Verification scope (honest):** the consumer verifies the **neutral proof CLAIM** (signed assertions: result/assurance/identity/challenge), NOT the full evidence-package preimage. The `manifestHash` commitment to the full body exists and the preimage is **exposable on demand** (Tier-2) for deeper independent audit — but as built the consumer trusts the signed assertions; it does not independently reproduce the full hash chain.
 - Verifier = contract + reference test (no runtime engine — TIP-66 lesson).
@@ -64,4 +76,4 @@ The profile/challenge neutralization (TIP-67A); document/transaction binding (cl
 - Production crypto / webhook / decision-basis work → STOP (out).
 
 ## 6. Recommended next action
-Hold the kickoff until TIP-67A commits and freezes the opaque-challenge/profile contract; set the baseline; finalize the field-exact kickoff against 67A's names; then the normal review → build → adversarial spot-check loop. Production signing (P0) + decision-basis binding (P1) remain the open evidence items afterward.
+TIP-67A is committed (`72a7b41`) and the contract is frozen; the kickoff v0.3 is field-exact. Next: GPT/Codex review → converge → Codex build → Contractor adversarial spot-check. Production signing (P0) + decision-basis binding (P1) remain the open evidence items afterward.

@@ -20,5 +20,7 @@ public sealed class EvidenceManifestRow
     public string? KeyId { get; set; }
     public DateTimeOffset? SignedAt { get; set; }
     public string? SignatureValue { get; set; }
+    public string? PublicKeyJwk { get; set; }
+    public string? PublicKeyFingerprint { get; set; }
     public DateTimeOffset CreatedAt { get; set; }
 }

@@ -20,6 +20,7 @@ public static class VerificationSessionEndpoints
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/evidence-results", AppendEvidenceResultAsync);
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/complete", CompleteAsync);
         endpoints.MapGet("/api/ekyc/evidence-packages/{id}", GetEvidencePackageAsync);
+        endpoints.MapGet("/api/ekyc/evidence-packages/{id}/verification-view", GetEvidencePackageVerificationViewAsync);
         return endpoints;
     }
 
@@ -155,6 +156,28 @@ public static class VerificationSessionEndpoints
         }
 
         var result = await queries.GetEvidencePackageAsync(authentication.Value!, id, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return ToError(result.Error!, httpContext.TraceIdentifier);
+        }
+
+        return Results.Ok(result.Value);
+    }
+
+    private static async Task<IResult> GetEvidencePackageVerificationViewAsync(
+        HttpContext httpContext,
+        string id,
+        ILocalDevApiKeyAuthenticator authenticator,
+        IEvidencePackageQueries queries,
+        CancellationToken cancellationToken)
+    {
+        var authentication = authenticator.Authenticate(httpContext);
+        if (!authentication.IsSuccess)
+        {
+            return ToError(authentication.Error!, httpContext.TraceIdentifier);
+        }
+
+        var result = await queries.GetEvidencePackageVerificationViewAsync(authentication.Value!, id, cancellationToken);
         if (!result.IsSuccess)
         {
             return ToError(result.Error!, httpContext.TraceIdentifier);

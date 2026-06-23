@@ -76,9 +76,158 @@ Required values for SignFlow binding:
 - `evidencePackageId`
 - `evidencePackageHash`
 - `manifestHash`
-- evidence/package authenticity when implemented
+- evidence/package authenticity through the verification view
 
 `challenge` and `clientReference` are echoed on `CreateVerificationSessionResponseDto`, `VerificationSessionSummaryDto`, and `CompleteVerificationSessionResponseDto`. They are response DTO fields only. They are not part of the S1 `manifestBodyHash`, `packageHash`, or `manifestHash` chain.
+
+## Verification View And Signed Proof
+
+After completion, SignFlow SHOULD read:
+
+```text
+GET /api/ekyc/evidence-packages/{evidencePackageId}/verification-view
+```
+
+The view exposes a neutral signed proof claim, the attached compact JWS, the sign-time public JWK, and `publicKeyFingerprint`. The test verifier `Tip67BReferenceVerifier` is the executable mirror of this contract, but SignFlow MUST be able to implement verification from this section alone.
+
+### JWS And Trust Anchor
+
+`signatureValue` is an attached compact JWS:
+
+```text
+base64url(protected-header).base64url(payload).base64url(signature)
+```
+
+The protected header is a JCS-canonical JSON object with:
+
+| Field | Required value |
+| --- | --- |
+| `alg` | `ES256` |
+| `kid` | The signing key id |
+
+The verification trust anchor is out-of-band configuration, not the embedded JWK alone:
+
+- expected `kid`
+- expected `publicKeyFingerprint`
+
+`publicKeyFingerprint` is:
+
+```text
+sha256:<lowercase-hex>
+```
+
+computed over the UTF-8 bytes of the RFC 8785 JCS canonical public JWK object:
+
+```json
+{ "kty": "EC", "crv": "P-256", "x": "...", "y": "..." }
+```
+
+The embedded `publicKeyJwk` MUST contain only `kty`, `crv`, `x`, and `y`. It MUST NOT contain private `d`, certificate material, P12 material, key operations, or any other field. SignFlow MUST reject the view unless the embedded public JWK canonicalizes to the pinned fingerprint.
+
+### Verification Algorithm
+
+SignFlow MUST verify in this order and fail closed on the first mismatch:
+
+1. Require known proof/signature metadata: `proofVersion = neutral-proof-v1`, `signatureFormat = JWS`, `signatureScheme = jws-es256-v1`, `signatureAlgorithm = ES256`.
+2. Split `signatureValue` into exactly three compact-JWS segments.
+3. Decode the protected header and require `alg == signatureAlgorithm == ES256`.
+4. Require `kid == keyId == pinned kid`.
+5. Canonicalize `publicKeyJwk` as `{kty,crv,x,y}` and require its `sha256` fingerprint to equal both the view `publicKeyFingerprint` and the pinned fingerprint.
+6. Reject `publicKeyJwk` if it contains private `d` or any field outside `{kty,crv,x,y}`.
+7. Import the public key as P-256 ECDSA and verify `signature` over the ASCII bytes of `base64url(header) + "." + base64url(payload)` using SHA-256 and ES256/P1363 signature format.
+8. Decode the JWS payload and read verification facts only from the decoded signed claim.
+9. Require every mirrored view field to equal the decoded claim field.
+10. Recompute `resultHash` from the decoded claim and require equality.
+11. Require the decoded signed `challenge` to equal the expected challenge for the SignFlow signing session.
+
+`clientReference` is an unsigned correlation echo. It is useful for lookup and audit, but it is not a signed proof fact.
+
+### Signed Claim Fields
+
+The signed payload is a JCS-canonical JSON claim containing:
+
+- `proofVersion`
+- `purpose`
+- `sessionId`
+- `identityRef`
+- `packageId`
+- `packageVersion`
+- `canonicalizationScheme`
+- `hashAlgorithm`
+- `result`
+- `assuranceLevel`
+- `requiredChecks`
+- `completedChecks`
+- `evidenceEngines`
+- `signedAt`
+- `challenge`
+- `signedManifestHash`
+- `resultHash`
+- `resultHashAlgorithm`
+- `resultHashCanonicalizationScheme`
+
+`identityRef` is always hashed by TagEkyc; raw `subjectRef` is not exposed in the view or JWS.
+
+`requiredChecks` and `completedChecks` are sorted deterministically by enum-name ordinal string order before signing and resultHash computation.
+
+`evidenceEngines[]` entries are ordered by `evidenceResultType` and then `evidenceResultId`. Each entry contains `evidenceResultType`, `evidenceResultId`, `engineName`, `engineVersion`, and `checkType`.
+
+### Result Hash
+
+`resultHash` protects the signed result sub-claim and is recomputed by SignFlow from the decoded claim. It is:
+
+```text
+sha256:<lowercase-hex>
+```
+
+over the UTF-8 bytes:
+
+```text
+tip-67b-neutral-proof-result
+{rfc8785-jcs-json-preimage}
+```
+
+The preimage field list is:
+
+```text
+proofVersion
+purpose
+sessionId
+identityRef
+packageId
+packageVersion
+canonicalizationScheme
+hashAlgorithm
+result
+assuranceLevel
+requiredChecks
+completedChecks
+evidenceEngines
+signedAt
+challenge
+signedManifestHash
+```
+
+The preimage explicitly excludes `resultHash`, `resultHashAlgorithm`, `resultHashCanonicalizationScheme`, and `signatureValue`.
+
+### Fail-Closed Matrix
+
+SignFlow MUST reject:
+
+- unknown `proofVersion`, `signatureFormat`, `signatureScheme`, or `signatureAlgorithm`
+- malformed compact JWS or invalid base64url segment
+- header `alg` mismatch
+- header `kid` mismatch
+- view `keyId` mismatch against the pinned `kid`
+- embedded `publicKeyJwk` fingerprint mismatch
+- embedded `publicKeyJwk` containing private `d` or any unsupported field
+- forged JWS signed by an attacker key even when the attacker JWK is embedded
+- corrupted JWS signature bytes under the correct pinned key
+- tampered payload, malformed payload, or ECDSA verification failure
+- mirrored view field mismatch against the decoded claim
+- recomputed `resultHash` mismatch
+- decoded `challenge` mismatch against the expected SignFlow challenge
+- any use of unsigned view fields as proof facts when they differ from the decoded claim
 
 ## Binding Validation Rule
 
@@ -89,9 +238,17 @@ SignFlow MUST reject the TagEkyc result if any of these values do not match its 
 - `clientReference` when supplied
 - final `result`
 - `evidencePackageHash`
-- package/result authenticity when implemented
+- JWS signature, pinned key id/fingerprint, mirrored view fields, and recomputed `resultHash`
 
 SignFlow MUST NOT bind `evidencePackageId` to a signing session until this client-side validation succeeds.
+
+After the TagEkyc proof verifies, document/signing-session binding remains SignFlow's job. A recommended binding input is:
+
+```text
+H(challenge || document_hash || resultHash)
+```
+
+TagEkyc does not bind documents, transactions, consents, or signing payloads.
 
 Validation flow:
 

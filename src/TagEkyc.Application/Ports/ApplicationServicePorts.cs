@@ -56,6 +56,11 @@ public interface IEvidencePackageQueries
         AuthenticatedClientContext caller,
         string evidencePackageId,
         CancellationToken cancellationToken = default);
+
+    Task<SessionOperationResult<EvidencePackageVerificationViewDto>> GetEvidencePackageVerificationViewAsync(
+        AuthenticatedClientContext caller,
+        string evidencePackageId,
+        CancellationToken cancellationToken = default);
 }
 
 public interface ICompletionNotificationQueries

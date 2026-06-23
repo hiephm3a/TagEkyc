@@ -1,13 +1,19 @@
 # REST API Contracts
 
 **File:** `docs/lld_03_api_contracts_v0_1.md`
-**Version:** 0.4
-**Status:** Active - S1 runtime-contract consolidation + TIP-67A neutral challenge profile
+**Version:** 0.5
+**Status:** Active - S1 runtime-contract consolidation + TIP-67B neutral proof view
 **Date:** 2026-06-23
 **Baseline:** `a98f278`
 **Purpose:** Authoritative S1 public API, DTO, authorization, error, and sanitization contract for the as-built TagEkyc runtime.
 
 ## Changelog
+
+### v0.5 - TIP-67B neutral verifiable proof view
+
+- Added `GET /api/ekyc/evidence-packages/{id}/verification-view` and `EvidencePackageVerificationViewDto`.
+- Published the consumer verification contract: pinned key id plus public-key fingerprint, JWS verification, mirrored-field checks, recomputed resultHash, and challenge match.
+- Preserved `EvidencePackageSummaryDto` unchanged; proof exposure is isolated to the dedicated verification-view route.
 
 ### v0.4 - TIP-67A eKYC neutrality opaque challenge
 
@@ -57,6 +63,7 @@ This document is persistence-agnostic. It does not specify database schema, FK c
 | `POST` | `/api/ekyc/verification-sessions/{id}/evidence-results` | `201 Created` | `TrustedAdapter` | `trusted.evidence.append` | `EvidenceResultSubmissionRequestDto` | `EvidenceResultSubmissionResponseDto` |
 | `POST` | `/api/ekyc/verification-sessions/{id}/complete` | `200 OK` | `BusinessConsumer` | `session.complete` | `CompleteVerificationSessionRequestDto` | `CompleteVerificationSessionResponseDto` |
 | `GET` | `/api/ekyc/evidence-packages/{id}` | `200 OK` | `BusinessConsumer` | `business.session.read` | route `id` | `EvidencePackageSummaryDto` |
+| `GET` | `/api/ekyc/evidence-packages/{id}/verification-view` | `200 OK` | `BusinessConsumer` | `business.session.read` | route `id` | `EvidencePackageVerificationViewDto` |
 
 No public completion notification route exists. `VerificationCompletedEventDto` is returned only by `ICompletionNotificationQueries.GetCompletionNotificationAsync` as an application-service projection.
 
@@ -170,12 +177,20 @@ Fields: `EventType`, `DeliveryId`, `SentAt`, `VerificationSessionId`, `ClientApp
 
 > note: TIP-06 section 20 used the stale event literal `EKYC_VERIFICATION_COMPLETED`. The as-built event literal is `VERIFICATION_COMPLETED`.
 
+### 3.13 EvidencePackageVerificationViewDto
+
+Fields: `ProofVersion`, `Purpose`, `SessionId`, `IdentityRef`, `PackageId`, `PackageVersion`, `CanonicalizationScheme`, `HashAlgorithm`, `Result`, `AssuranceLevel`, `RequiredChecks`, `CompletedChecks`, `EvidenceEngines`, `SignedAt`, `Challenge`, `ClientReference`, `SignedManifestHash`, `ResultHash`, `ResultHashAlgorithm`, `ResultHashCanonicalizationScheme`, `SignatureValue`, `SignatureFormat`, `SignatureScheme`, `SignatureAlgorithm`, `KeyId`, `PublicKeyJwk`, `PublicKeyFingerprint`.
+
+`EvidenceEngines` entries expose `EvidenceResultType`, `EvidenceResultId`, `EngineName`, `EngineVersion`, and `CheckType`. `IdentityRef` is always hashed; raw `SubjectRef` is not exposed. `Challenge` is signed; `ClientReference` is an unsigned correlation echo. `PublicKeyJwk` is public-only `{kty,crv,x,y}` and must not contain private `d`, certificates, P12, or key-operation metadata.
+
+Consumers MUST verify the JWS against an out-of-band pinned `KeyId` plus `PublicKeyFingerprint`, recompute `ResultHash` from the decoded signed claim, compare every mirrored view field to the decoded claim, and compare `Challenge` to the expected client challenge. Consumers MUST NOT trust the embedded JWK without the pinned fingerprint.
+
 ## 4. Scope And Caller Catalog
 
 | Scope | Caller category | Endpoint(s) |
 | --- | --- | --- |
 | `business.session.create` | `BusinessConsumer` | `POST /api/ekyc/verification-sessions` |
-| `business.session.read` | `BusinessConsumer` | `GET /api/ekyc/verification-sessions/{id}`, `GET /api/ekyc/evidence-packages/{id}`, application-service completion notification projection |
+| `business.session.read` | `BusinessConsumer` | `GET /api/ekyc/verification-sessions/{id}`, `GET /api/ekyc/evidence-packages/{id}`, `GET /api/ekyc/evidence-packages/{id}/verification-view`, application-service completion notification projection |
 | `capture.artifact.append` | `CaptureAgent` | `POST /api/ekyc/verification-sessions/{id}/capture-artifacts` |
 | `trusted.evidence.append` | `TrustedAdapter` | `POST /api/ekyc/verification-sessions/{id}/evidence-results` |
 | `session.complete` | `BusinessConsumer` | `POST /api/ekyc/verification-sessions/{id}/complete` |
@@ -225,6 +240,7 @@ Wrong caller category returns `CALLER_CATEGORY_NOT_ALLOWED` with HTTP 403 from a
 | `FINALIZATION_CONFLICT` | 409 | Complete session |
 | `COMPLETION_SNAPSHOT_INCOMPLETE` | 409 | Completed snapshot response path |
 | `EVIDENCE_PACKAGE_NOT_FOUND` | 404 or 409 | Package read uses 404 for missing package; completed snapshot path uses 409 when expected package missing |
+| `EVIDENCE_PACKAGE_VERIFICATION_VIEW_NOT_FOUND` | 404 | Verification view read when package id is malformed, missing, legacy, placeholder, or missing required proof material |
 | `FINAL_DECISION_NOT_FOUND` | 409 | Evidence package read |
 | `EVIDENCE_MANIFEST_NOT_FOUND` | 409 | Evidence package read |
 | `SESSION_NOT_COMPLETED` | 409 | Completion notification projection |
@@ -237,6 +253,8 @@ Wrong caller category returns `CALLER_CATEGORY_NOT_ALLOWED` with HTTP 403 from a
 Default BusinessConsumer create/session summary/completion/package responses must not expose raw capture artifacts, raw biometric/document/NFC/fingerprint payloads, plaintext identity values, `VaultRef`, internal manifest objects, adapter internals, API key material, per-evidence internal detail, `PayloadHash`, or `clientApplicationId`.
 
 `EvidencePackageSummaryDto.EvidenceRefs` exposes only public evidence refs: result type, evidence result id, compatibility aliases, and optional artifact hash. It does not expose `PayloadHash`, `SanitizedSummaryRef`, internal audit refs, internal manifest bodies, or raw inputs.
+
+`EvidencePackageVerificationViewDto` exposes proof material only for consumer verification. It must not expose raw `SubjectRef`, plaintext identity payloads, `VaultRef`, raw artifact refs, raw biometric/document/NFC/fingerprint data, private JWK fields, certificates, P12 material, API keys, or internal manifest rows. `Challenge` and `ClientReference` are caller-supplied echoes outside the PII guarantee.
 
 `CompleteVerificationSessionResponseDto` exposes final result and package/hash identifiers, not evidence internals.
 

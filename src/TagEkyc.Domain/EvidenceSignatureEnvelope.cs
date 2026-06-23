@@ -7,4 +7,6 @@ public sealed record EvidenceSignatureEnvelope(
     string SignatureAlgorithm,
     string KeyId,
     DateTimeOffset SignedAt,
-    string SignatureValue);
+    string SignatureValue,
+    string? PublicKeyJwk = null,
+    string? PublicKeyFingerprint = null);

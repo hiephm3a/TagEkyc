@@ -1,3 +1,6 @@
+using System.Security.Cryptography;
+using System.Text;
+using System.Text.Json;
 using TagEkyc.Application.Ports;
 using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.Common;
@@ -213,14 +216,22 @@ public sealed class VerificationCompletionApplicationService(
             BodyHash = manifestBodyHash,
             PackageHash = packageHash.ToString(),
         }));
-        var signature = await evidenceSigner.SignAsync(
-            new EvidenceSignatureRequest(
+        var signature = await evidenceSigner.SignProofAsync(
+            new EvidenceProofSignatureRequest(
                 packageId.ToString("N"),
-                manifestHash.ToString(),
                 PackageVersion,
                 CanonicalizationScheme,
                 HashAlgorithm,
-                EvidenceSignatureDefaults.PurposeEvidencePackageManifest),
+                EvidenceSignatureDefaults.PurposeNeutralEkycProof,
+                session.Id.ToString("N"),
+                BuildIdentityRef(session.ClientApplicationId, session.SubjectRef),
+                finalResult.ToString(),
+                assuranceLevel.ToString(),
+                session.RequiredChecks.Select(check => check.ToString()).Order(StringComparer.Ordinal).ToArray(),
+                completedChecks.Select(check => check.ToString()).Order(StringComparer.Ordinal).ToArray(),
+                BuildEvidenceEngines(selectedEvidence),
+                session.Challenge ?? string.Empty,
+                manifestHash.ToString()),
             cancellationToken);
         var decision = new VerificationDecision(
             decisionId,
@@ -264,7 +275,9 @@ public sealed class VerificationCompletionApplicationService(
             signature.SignatureAlgorithm,
             signature.KeyId,
             signature.SignedAt,
-            signature.SignatureValue);
+            signature.SignatureValue,
+            signature.PublicKeyJwk,
+            signature.PublicKeyFingerprint);
         var completedSession = session.WithCompletion(
             finalResult,
             assuranceLevel,
@@ -355,6 +368,58 @@ public sealed class VerificationCompletionApplicationService(
         }
 
         return SessionOperationResult<EvidencePackageSummaryDto>.Success(ToPackageSummary(package, session, decision, manifest));
+    }
+
+    public async Task<SessionOperationResult<EvidencePackageVerificationViewDto>> GetEvidencePackageVerificationViewAsync(
+        AuthenticatedClientContext caller,
+        string evidencePackageId,
+        CancellationToken cancellationToken = default)
+    {
+        var callerError = ApplicationAuthorization.RequireBusinessReadEndpoint<EvidencePackageVerificationViewDto>(caller);
+        if (callerError is not null)
+        {
+            return callerError;
+        }
+
+        if (!Guid.TryParse(evidencePackageId, out var packageId))
+        {
+            return NotFound<EvidencePackageVerificationViewDto>("EVIDENCE_PACKAGE_VERIFICATION_VIEW_NOT_FOUND", "Evidence package verification view was not found.");
+        }
+
+        var package = await evidencePackages.GetAsync(packageId, cancellationToken);
+        if (package is null)
+        {
+            return NotFound<EvidencePackageVerificationViewDto>("EVIDENCE_PACKAGE_VERIFICATION_VIEW_NOT_FOUND", "Evidence package verification view was not found.");
+        }
+
+        var session = await sessions.GetAsync(package.VerificationSessionId, cancellationToken);
+        if (session is null)
+        {
+            return NotFound<EvidencePackageVerificationViewDto>("SESSION_NOT_FOUND", "Verification session was not found.");
+        }
+
+        if (session.ClientApplicationId != caller.ClientApplicationId)
+        {
+            await auditEvents.AppendAsync(CreateAuditEvent(caller, session, "EVIDENCE_PACKAGE_VERIFICATION_VIEW_ACCESS_DENIED", session.RequestId, session.CorrelationId), cancellationToken);
+            return Forbidden<EvidencePackageVerificationViewDto>("FORBIDDEN_CLIENT_APPLICATION", "The evidence package belongs to another client application.");
+        }
+
+        var manifest = await manifests.GetByPackageAsync(package.Id, cancellationToken);
+        if (manifest is null ||
+            manifest.EvidencePackageSignatureStatus != SignaturePlaceholderStatusDto.Signed ||
+            string.IsNullOrWhiteSpace(manifest.SignatureValue) ||
+            string.IsNullOrWhiteSpace(manifest.SignatureFormat) ||
+            string.IsNullOrWhiteSpace(manifest.SignatureScheme) ||
+            string.IsNullOrWhiteSpace(manifest.SignatureAlgorithm) ||
+            string.IsNullOrWhiteSpace(manifest.KeyId) ||
+            string.IsNullOrWhiteSpace(manifest.PublicKeyJwk) ||
+            string.IsNullOrWhiteSpace(manifest.PublicKeyFingerprint))
+        {
+            return NotFound<EvidencePackageVerificationViewDto>("EVIDENCE_PACKAGE_VERIFICATION_VIEW_NOT_FOUND", "Evidence package verification view was not found.");
+        }
+
+        return SessionOperationResult<EvidencePackageVerificationViewDto>.Success(
+            ToVerificationView(manifest, session.ClientReference));
     }
 
     public async Task<SessionOperationResult<VerificationCompletedEventDto>> GetCompletionNotificationAsync(
@@ -552,6 +617,18 @@ public sealed class VerificationCompletionApplicationService(
             .ToArray();
     }
 
+    private static IReadOnlyList<EvidenceProofEngineRef> BuildEvidenceEngines(IReadOnlyList<EvidenceResult> selectedEvidence) =>
+        selectedEvidence
+            .OrderBy(candidate => candidate.ResultType.ToString(), StringComparer.Ordinal)
+            .ThenBy(candidate => candidate.Id)
+            .Select(candidate => new EvidenceProofEngineRef(
+                candidate.ResultType.ToString(),
+                candidate.Id.ToString("N"),
+                candidate.EngineName,
+                candidate.EngineVersion,
+                MapEvidenceToCheck(candidate.ResultType).ToString()))
+            .ToArray();
+
     private static string? AggregateArtifactHash(
         EvidenceResult evidence,
         IReadOnlyDictionary<Guid, CaptureArtifact> artifactsById)
@@ -591,6 +668,43 @@ public sealed class VerificationCompletionApplicationService(
             session.RequestId,
             session.CorrelationId,
             package.CreatedAt);
+
+    private static EvidencePackageVerificationViewDto ToVerificationView(
+        EvidenceManifestDto manifest,
+        string? clientReference)
+    {
+        using var document = JsonDocument.Parse(DecodeJwsPayload(manifest.SignatureValue!));
+        var root = document.RootElement;
+
+        return new EvidencePackageVerificationViewDto(
+            ReadString(root, "proofVersion"),
+            ReadString(root, "purpose"),
+            ReadString(root, "sessionId"),
+            ReadString(root, "identityRef"),
+            ReadString(root, "packageId"),
+            ReadString(root, "packageVersion"),
+            ReadString(root, "canonicalizationScheme"),
+            ReadString(root, "hashAlgorithm"),
+            ParseDto<VerificationResultDto>(ReadString(root, "result")),
+            ParseDto<AssuranceLevelDto>(ReadString(root, "assuranceLevel")),
+            ReadStringArray(root, "requiredChecks").Select(ParseDto<RequiredCheckTypeDto>).ToArray(),
+            ReadStringArray(root, "completedChecks").Select(ParseDto<RequiredCheckTypeDto>).ToArray(),
+            ReadEvidenceEngines(root),
+            DateTimeOffset.Parse(ReadString(root, "signedAt"), null, System.Globalization.DateTimeStyles.AssumeUniversal),
+            ReadString(root, "challenge"),
+            clientReference,
+            ReadString(root, "signedManifestHash"),
+            ReadString(root, "resultHash"),
+            ReadString(root, "resultHashAlgorithm"),
+            ReadString(root, "resultHashCanonicalizationScheme"),
+            manifest.SignatureValue!,
+            manifest.SignatureFormat!,
+            manifest.SignatureScheme!,
+            manifest.SignatureAlgorithm!,
+            manifest.KeyId!,
+            manifest.PublicKeyJwk!,
+            manifest.PublicKeyFingerprint!);
+    }
 
     private static EvidenceRefSummaryDto ToPublicEvidenceRef(ManifestEvidenceRefDto evidenceRef) =>
         new(
@@ -753,6 +867,61 @@ public sealed class VerificationCompletionApplicationService(
 
     private static string FirstNonEmpty(params string?[] values) =>
         values.First(value => !string.IsNullOrWhiteSpace(value))!;
+
+    private static string BuildIdentityRef(Guid clientApplicationId, string subjectRef)
+    {
+        var input = Encoding.UTF8.GetBytes($"tip-67b-identity-ref-v1\n{clientApplicationId:N}\n{subjectRef}");
+        return $"{HashAlgorithm}:{Convert.ToHexString(SHA256.HashData(input)).ToLowerInvariant()}";
+    }
+
+    private static string DecodeJwsPayload(string jws)
+    {
+        var parts = jws.Split('.');
+        if (parts.Length != 3)
+        {
+            throw new InvalidOperationException("Evidence proof signature is not an attached compact JWS.");
+        }
+
+        return Encoding.UTF8.GetString(Base64UrlDecode(parts[1]));
+    }
+
+    private static byte[] Base64UrlDecode(string value)
+    {
+        var padded = value.Replace('-', '+').Replace('_', '/');
+        padded = padded.PadRight(padded.Length + ((4 - padded.Length % 4) % 4), '=');
+        return Convert.FromBase64String(padded);
+    }
+
+    private static string ReadString(JsonElement root, string propertyName) =>
+        root.TryGetProperty(propertyName, out var property) && property.ValueKind == JsonValueKind.String
+            ? property.GetString() ?? string.Empty
+            : throw new InvalidOperationException($"Evidence proof claim is missing string field '{propertyName}'.");
+
+    private static IReadOnlyList<string> ReadStringArray(JsonElement root, string propertyName) =>
+        root.TryGetProperty(propertyName, out var property) && property.ValueKind == JsonValueKind.Array
+            ? property.EnumerateArray().Select(item => item.GetString() ?? string.Empty).ToArray()
+            : throw new InvalidOperationException($"Evidence proof claim is missing array field '{propertyName}'.");
+
+    private static IReadOnlyList<EvidenceProofEngineRefDto> ReadEvidenceEngines(JsonElement root)
+    {
+        if (!root.TryGetProperty("evidenceEngines", out var property) || property.ValueKind != JsonValueKind.Array)
+        {
+            throw new InvalidOperationException("Evidence proof claim is missing evidenceEngines.");
+        }
+
+        return property.EnumerateArray()
+            .Select(engine => new EvidenceProofEngineRefDto(
+                ReadString(engine, "evidenceResultType"),
+                ReadString(engine, "evidenceResultId"),
+                ReadString(engine, "engineName"),
+                ReadString(engine, "engineVersion"),
+                ReadString(engine, "checkType")))
+            .ToArray();
+    }
+
+    private static TEnum ParseDto<TEnum>(string value)
+        where TEnum : struct, Enum =>
+        Enum.Parse<TEnum>(value, ignoreCase: false);
 
     private static string HashCanonical(string label, object value) =>
         EvidenceCanonicalization.HashCanonical(label, value);

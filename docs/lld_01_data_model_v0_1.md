@@ -1,13 +1,19 @@
 # Logical Data Model
 
 **File:** `docs/lld_01_data_model_v0_1.md`
-**Version:** 0.5
-**Status:** Active - S1 data-model, evidence-integrity, and TIP-67A neutral challenge consolidation
+**Version:** 0.6
+**Status:** Active - S1 data-model, evidence-integrity, and TIP-67B neutral proof consolidation
 **Date:** 2026-06-23
 **Baseline:** `a98f278`
 **Purpose:** Authoritative S1 logical data model and as-built evidence-integrity contract for TagEkyc. This document is not a SQL migration and does not prescribe database technology.
 
 ## Changelog
+
+### v0.6 - TIP-67B neutral verifiable proof
+
+- Replaced the completion signing path with a neutral self-contained proof claim (`proofVersion = neutral-proof-v1`) that signs result, assurance, sorted checks, ordered evidence engines, challenge, hashed identity reference, and `signedManifestHash`.
+- Added sign-time public-key material (`publicKeyJwk`, `publicKeyFingerprint`) to the manifest-row signature envelope so verification uses the key that actually signed the package.
+- Confirmed the proof is downstream of `manifestHash`; `manifestBodyHash`, `packageHash`, and `manifestHash` golden vectors remain byte-identical.
 
 ### v0.5 - TIP-67A eKYC neutrality opaque challenge
 
@@ -173,7 +179,9 @@ As-built signature-status locations:
 | `EvidencePackage` and package DTOs | `EvidencePackageSignatureStatus` | Package-level status. `Signed` means the package has a TIP-66 internal JWS envelope over the package manifest hash. |
 | `VerificationCompletedEventDto` | `WebhookSignatureStatus` | Completion-notification projection marker only; not a persisted webhook delivery field. |
 
-TIP-66 signs a stable attached compact JWS claim object `{purpose, signedManifestHash, packageId, packageVersion, canonicalizationScheme, hashAlgorithm, signedAt}` after `manifestHash` is computed. The local dev ES256 adapter loads a configured P12 key from `TagEkyc:EvidenceSigning` when provided and otherwise uses an in-process non-production generated key for local/dev execution. The signer generates `signedAt` once and writes the same pinned UTC value into both the JWS payload and the manifest-row envelope. Signing is downstream/additive and does not feed back into `manifestBodyHash`, `packageHash`, or `manifestHash`; TIP-65 golden hash vectors remain byte-identical.
+TIP-67B signs a stable attached compact JWS neutral proof claim after `manifestHash` is computed. The claim is a TIP-66-compatible superset carrying `proofVersion`, `purpose`, `sessionId`, hashed `identityRef`, `packageId`, `packageVersion`, `canonicalizationScheme`, `hashAlgorithm`, `result`, single `assuranceLevel`, sorted `requiredChecks` and `completedChecks`, ordered `evidenceEngines`, `signedAt`, `challenge`, `signedManifestHash`, `resultHash`, `resultHashAlgorithm`, and `resultHashCanonicalizationScheme`. The local dev ES256 adapter loads a configured P12 key from `TagEkyc:EvidenceSigning` when provided and otherwise uses an in-process non-production generated key for local/dev execution. The signer generates `signedAt` once and writes the same pinned UTC value into both the JWS payload and the manifest-row envelope. Signing is downstream/additive and does not feed back into `manifestBodyHash`, `packageHash`, or `manifestHash`; TIP-65 golden hash vectors remain byte-identical.
+
+`identityRef` is always `sha256:<hex>` over `tip-67b-identity-ref-v1\n{clientApplicationId:N}\n{subjectRef}`. Raw `SubjectRef` is not exposed in the verification view or signed JWS. `resultHash` is `sha256:<hex>` over `{label}\n{JCS(preimage)}` with label `tip-67b-neutral-proof-result`; the preimage excludes `resultHash`, `resultHashAlgorithm`, `resultHashCanonicalizationScheme`, and `signatureValue`.
 
 The signature envelope is internal verifier metadata with:
 
@@ -185,12 +193,14 @@ The signature envelope is internal verifier metadata with:
 | `keyId` | Signing key id from the JWS protected header `kid`. |
 | `signedAt` | UTC signing timestamp, normalized to microsecond precision (see note below). |
 | `signatureValue` | Attached compact JWS value. |
+| `publicKeyJwk` | Sign-time public JWK with public params only: `{kty,crv,x,y}`. |
+| `publicKeyFingerprint` | `sha256` over RFC 8785 JCS of the public JWK. |
 
 > **TIP-66/TIP-67A note:** `signedAt` in the JWS claim and signature envelope is normalized to PostgreSQL-compatible microsecond precision before signing/persistence so persisted-readback verification is stable. This does not alter the evidence hash chain.
 
 The envelope is persisted on the authoritative internal manifest row and exposed through the internal `EvidenceManifestDto` only. It is not duplicated onto the package row and is not exposed through the public BusinessConsumer package summary. The package row and manifest row both retain the existing `EvidencePackageSignatureStatus` status field and must be written consistently in the same finalization transaction.
 
-Verifier rule: a verifier selects by the recorded `signatureFormat`/`signatureScheme`/`signatureAlgorithm` plus the JWS protected header `alg`/`kid`, verifies the JWS with the recorded public-key material for that key id, and cross-checks the signed claim against persisted package/manifest metadata. Unknown scheme/algorithm, header-vs-envelope mismatch, wrong key, tampered payload/JWS, missing envelope for `Signed`, envelope material on a placeholder row, or claim-vs-row mismatch fails closed. TIP-66 implements this as production signing plus test fixtures, not as a public/runtime verifier endpoint.
+Verifier rule: a verifier selects by the recorded `signatureFormat`/`signatureScheme`/`signatureAlgorithm` plus the JWS protected header `alg`/`kid`, verifies the JWS with the sign-time public JWK after matching an out-of-band pinned `kid` and `publicKeyFingerprint`, recomputes `resultHash`, and cross-checks the mirrored verification-view fields against the decoded signed claim. Unknown proof version, scheme, algorithm, header-vs-envelope mismatch, wrong key, forged JWS with attacker JWK, private JWK material, tampered view fields, resultHash mismatch, missing envelope for `Signed`, envelope material on a placeholder row, or claim-vs-row mismatch fails closed. TIP-67B implements this as production signing plus a public verification view and reference consumer tests, not as a runtime verifier endpoint.
 
 `webhook_deliveries` is a deferred/conceptual entity in S1. The as-built runtime has a completion-notification projection DTO, not webhook dispatch or persisted webhook-delivery signing.
 

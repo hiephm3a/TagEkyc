@@ -260,6 +260,8 @@ internal static class DomainRowMapper
             KeyId = manifest.KeyId,
             SignedAt = manifest.SignedAt,
             SignatureValue = manifest.SignatureValue,
+            PublicKeyJwk = manifest.PublicKeyJwk,
+            PublicKeyFingerprint = manifest.PublicKeyFingerprint,
             CreatedAt = manifest.CreatedAt,
         };
 
@@ -291,7 +293,9 @@ internal static class DomainRowMapper
             row.SignatureAlgorithm,
             row.KeyId,
             row.SignedAt,
-            row.SignatureValue);
+            row.SignatureValue,
+            row.PublicKeyJwk,
+            row.PublicKeyFingerprint);
     }
 
     public static AuditEventRow ToRow(AuditEvent auditEvent) =>
@@ -349,7 +353,9 @@ internal static class DomainRowMapper
             row.SignatureAlgorithm is not null ||
             row.KeyId is not null ||
             row.SignedAt is not null ||
-            row.SignatureValue is not null;
+            row.SignatureValue is not null ||
+            row.PublicKeyJwk is not null ||
+            row.PublicKeyFingerprint is not null;
 
         if (signatureStatus == SignaturePlaceholderStatusDto.PlaceholderUnverified)
         {
@@ -375,7 +381,9 @@ internal static class DomainRowMapper
             string.IsNullOrWhiteSpace(row.SignatureAlgorithm) ||
             string.IsNullOrWhiteSpace(row.KeyId) ||
             row.SignedAt is null ||
-            string.IsNullOrWhiteSpace(row.SignatureValue))
+            string.IsNullOrWhiteSpace(row.SignatureValue) ||
+            string.IsNullOrWhiteSpace(row.PublicKeyJwk) ||
+            string.IsNullOrWhiteSpace(row.PublicKeyFingerprint))
         {
             throw new EvidenceSignatureMetadataException(
                 row.EvidencePackageId,

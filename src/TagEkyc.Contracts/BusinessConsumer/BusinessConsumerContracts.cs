@@ -96,6 +96,42 @@ public sealed record EvidencePackageSummaryDto(
     string CorrelationId,
     DateTimeOffset CompletedAt);
 
+public sealed record EvidenceProofEngineRefDto(
+    string EvidenceResultType,
+    string EvidenceResultId,
+    string EngineName,
+    string EngineVersion,
+    string CheckType);
+
+public sealed record EvidencePackageVerificationViewDto(
+    string ProofVersion,
+    string Purpose,
+    string SessionId,
+    string IdentityRef,
+    string PackageId,
+    string PackageVersion,
+    string CanonicalizationScheme,
+    string HashAlgorithm,
+    VerificationResultDto Result,
+    AssuranceLevelDto AssuranceLevel,
+    IReadOnlyList<RequiredCheckTypeDto> RequiredChecks,
+    IReadOnlyList<RequiredCheckTypeDto> CompletedChecks,
+    IReadOnlyList<EvidenceProofEngineRefDto> EvidenceEngines,
+    DateTimeOffset SignedAt,
+    string Challenge,
+    string? ClientReference,
+    string SignedManifestHash,
+    string ResultHash,
+    string ResultHashAlgorithm,
+    string ResultHashCanonicalizationScheme,
+    string SignatureValue,
+    string SignatureFormat,
+    string SignatureScheme,
+    string SignatureAlgorithm,
+    string KeyId,
+    string PublicKeyJwk,
+    string PublicKeyFingerprint);
+
 public sealed record VerificationCompletedEventDto(
     string EventType,
     string DeliveryId,

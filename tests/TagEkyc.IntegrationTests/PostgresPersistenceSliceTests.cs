@@ -71,25 +71,18 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
         Assert.False(string.IsNullOrWhiteSpace(manifestRow.KeyId));
         Assert.NotNull(manifestRow.SignedAt);
         Assert.False(string.IsNullOrWhiteSpace(manifestRow.SignatureValue));
-        var signer = Assert.IsType<LocalDevEs256JwsEvidenceSigner>(provider.GetRequiredService<IEvidenceSigner>());
-        using var publicKey = signer.ExportPublicKey();
-        Assert.True(Tip66EvidenceSignatureTestVerifier.Verify(
-            new EvidenceSignatureEnvelope(
-                SignaturePlaceholderStatus.Signed,
-                manifestRow.SignatureFormat!,
-                manifestRow.SignatureScheme!,
-                manifestRow.SignatureAlgorithm!,
-                manifestRow.KeyId!,
-                manifestRow.SignedAt!.Value,
-                manifestRow.SignatureValue!),
-            new EvidenceSignatureRequest(
-                packageRow.Id.ToString("N"),
-                manifestRow.ManifestHash,
-                manifestRow.PackageVersion,
-                manifestRow.CanonicalizationScheme,
-                manifestRow.HashAlgorithm,
-                EvidenceSignatureDefaults.PurposeEvidencePackageManifest),
-            publicKey));
+        Assert.False(string.IsNullOrWhiteSpace(manifestRow.PublicKeyJwk));
+        Assert.False(string.IsNullOrWhiteSpace(manifestRow.PublicKeyFingerprint));
+
+        var verificationView = await scope.ServiceProvider.GetRequiredService<VerificationCompletionApplicationService>()
+            .GetEvidencePackageVerificationViewAsync(BusinessCaller(), packageRow.Id.ToString("N"), CancellationToken.None);
+
+        Assert.True(verificationView.IsSuccess, verificationView.Error?.Code);
+        Assert.True(Tip67BReferenceVerifier.Verify(
+            verificationView.Value!,
+            manifestRow.KeyId!,
+            manifestRow.PublicKeyFingerprint!,
+            string.Empty));
     }
 
     [Fact]

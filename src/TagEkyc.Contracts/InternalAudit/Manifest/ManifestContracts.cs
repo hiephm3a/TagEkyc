@@ -34,4 +34,6 @@ public sealed record EvidenceManifestDto(
     string? SignatureAlgorithm = null,
     string? KeyId = null,
     DateTimeOffset? SignedAt = null,
-    string? SignatureValue = null);
+    string? SignatureValue = null,
+    string? PublicKeyJwk = null,
+    string? PublicKeyFingerprint = null);

@@ -155,6 +155,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.SignatureAlgorithm).HasMaxLength(64);
             entity.Property(row => row.KeyId).HasMaxLength(128);
             entity.Property(row => row.SignatureValue);
+            entity.Property(row => row.PublicKeyJwk).HasMaxLength(1024);
+            entity.Property(row => row.PublicKeyFingerprint).HasMaxLength(128);
             entity.HasIndex(row => row.SessionGuid);
             entity.HasOne<EvidencePackageRow>()
                 .WithOne()
