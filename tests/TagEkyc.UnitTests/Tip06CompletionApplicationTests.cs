@@ -426,6 +426,7 @@ public sealed class Tip06CompletionApplicationTests
     private static JsonSerializerOptions CreateJsonOptions()
     {
         var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new VerificationProfileDtoJsonConverter());
         options.Converters.Add(new JsonStringEnumConverter());
         return options;
     }

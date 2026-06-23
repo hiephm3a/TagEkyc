@@ -1,4 +1,6 @@
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.Common;
 using TagEkyc.Contracts.InternalAudit.Manifest;
@@ -9,6 +11,8 @@ namespace TagEkyc.ContractTests;
 
 public sealed class ProjectionBoundaryTests
 {
+    private static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
+
     [Fact]
     public void Business_consumer_contracts_do_not_expose_internal_or_raw_fields()
     {
@@ -163,5 +167,77 @@ public sealed class ProjectionBoundaryTests
         Assert.Contains("PackageVersion", propertyNames);
         Assert.DoesNotContain("CanonicalizationScheme", propertyNames);
         Assert.DoesNotContain("HashAlgorithm", propertyNames);
+    }
+
+    [Fact]
+    public void Verification_profile_uses_profile_only_snake_upper_wire_converter()
+    {
+        var profileJson = JsonSerializer.Serialize(VerificationProfileDto.ChallengeBoundEkycProfile, JsonOptions);
+        var stateJson = JsonSerializer.Serialize(VerificationSessionStateDto.Created, JsonOptions);
+
+        Assert.Equal("\"CHALLENGE_BOUND_EKYC_PROFILE\"", profileJson);
+        Assert.Equal("\"Created\"", stateJson);
+    }
+
+    [Fact]
+    public void Create_session_request_accepts_legacy_profile_and_field_keys()
+    {
+        var json = """
+            {
+              "externalSessionId": "legacy-session",
+              "subjectRef": "subject-ref",
+              "purpose": "SIGNING_AUTH",
+              "profile": "TRANSACTION_BOUND_EKYC_PROFILE",
+              "requiredChecks": [
+                { "checkType": "CaptureQuality", "required": true, "minimumConfidence": null }
+              ],
+              "expiresAt": "2030-01-01T00:00:00Z",
+              "externalTransactionId": "legacy-client-ref",
+              "bindingNonceHash": "legacy opaque challenge"
+            }
+            """;
+
+        var request = JsonSerializer.Deserialize<CreateVerificationSessionRequestDto>(json, JsonOptions);
+
+        Assert.NotNull(request);
+        Assert.Equal(VerificationProfileDto.ChallengeBoundEkycProfile, request!.Profile);
+        Assert.Equal("legacy-client-ref", request.ClientReference);
+        Assert.Equal("legacy opaque challenge", request.Challenge);
+        Assert.False(request.HasConflictingChallengeFields);
+    }
+
+    [Fact]
+    public void Create_session_request_marks_conflicting_new_and_legacy_field_keys()
+    {
+        var json = """
+            {
+              "subjectRef": "subject-ref",
+              "purpose": "SIGNING_AUTH",
+              "profile": "ChallengeBoundEkycProfile",
+              "requiredChecks": [
+                { "checkType": "CaptureQuality", "required": true, "minimumConfidence": null }
+              ],
+              "expiresAt": "2030-01-01T00:00:00Z",
+              "clientReference": "new-client-ref",
+              "externalTransactionId": "old-client-ref",
+              "challenge": "new challenge",
+              "bindingNonceHash": "old challenge"
+            }
+            """;
+
+        var request = JsonSerializer.Deserialize<CreateVerificationSessionRequestDto>(json, JsonOptions);
+
+        Assert.NotNull(request);
+        Assert.True(request!.HasConflictingChallengeFields);
+        Assert.Equal("new-client-ref", request.ClientReference);
+        Assert.Equal("new challenge", request.Challenge);
+    }
+
+    private static JsonSerializerOptions CreateJsonOptions()
+    {
+        var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new VerificationProfileDtoJsonConverter());
+        options.Converters.Add(new JsonStringEnumConverter());
+        return options;
     }
 }

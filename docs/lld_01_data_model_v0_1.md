@@ -1,13 +1,19 @@
 # Logical Data Model
 
 **File:** `docs/lld_01_data_model_v0_1.md`
-**Version:** 0.4
-**Status:** Active - S1 data-model and evidence-integrity consolidation
-**Date:** 2026-06-22
+**Version:** 0.5
+**Status:** Active - S1 data-model, evidence-integrity, and TIP-67A neutral challenge consolidation
+**Date:** 2026-06-23
 **Baseline:** `a98f278`
 **Purpose:** Authoritative S1 logical data model and as-built evidence-integrity contract for TagEkyc. This document is not a SQL migration and does not prescribe database technology.
 
 ## Changelog
+
+### v0.5 - TIP-67A eKYC neutrality opaque challenge
+
+- Reframed the shipped transaction-bound session data as neutral challenge-bound eKYC: `CHALLENGE_BOUND_EKYC_PROFILE`, `Challenge`, and optional `ClientReference`.
+- Recorded that existing EF columns named `BindingNonceHash` and `ExternalTransactionId` are retained as compatibility storage columns only; logical/domain semantics are `Challenge` and `ClientReference`.
+- Confirmed `Challenge`/`ClientReference` are echoed in public session/completion DTOs but do not enter the evidence hash chain.
 
 ### v0.4 - TIP-66 evidence-package signing
 
@@ -177,8 +183,10 @@ The signature envelope is internal verifier metadata with:
 | `signatureScheme` | `jws-es256-v1` profile/version id. |
 | `signatureAlgorithm` | `ES256` algorithm selector. |
 | `keyId` | Signing key id from the JWS protected header `kid`. |
-| `signedAt` | UTC signing timestamp. |
+| `signedAt` | UTC signing timestamp, normalized to microsecond precision (see note below). |
 | `signatureValue` | Attached compact JWS value. |
+
+> **TIP-66/TIP-67A note:** `signedAt` in the JWS claim and signature envelope is normalized to PostgreSQL-compatible microsecond precision before signing/persistence so persisted-readback verification is stable. This does not alter the evidence hash chain.
 
 The envelope is persisted on the authoritative internal manifest row and exposed through the internal `EvidenceManifestDto` only. It is not duplicated onto the package row and is not exposed through the public BusinessConsumer package summary. The package row and manifest row both retain the existing `EvidencePackageSignatureStatus` status field and must be written consistently in the same finalization transaction.
 
@@ -244,17 +252,21 @@ Raw data policy: Raw CCCD, face, fingerprint, and liveness artifacts MUST NOT be
 
 ## Entity: verification_sessions
 
-Purpose: Tracks lifecycle and root business correlation for an eKYC verification transaction. `VerificationSession` correlates the client application, purpose, `subjectRef`, profile, required checks, capture artifacts, verification checks, evidence results, audit events, evidence package, callbacks/webhooks, and expiry.
+Purpose: Tracks lifecycle and root business correlation for an eKYC verification session. `VerificationSession` correlates the client application, purpose, `subjectRef`, profile, required checks, optional client correlation refs, capture artifacts, verification checks, evidence results, audit events, evidence package, callbacks/webhooks, and expiry.
 
-Key fields: `id`, `clientApplicationId`, `subjectId`, `profile`, `externalSystem`, `externalSessionId`, `externalTransactionId`, `purpose`, `bindingNonceHash`, `requestId`, `correlationId`, `state`, `result`, `assuranceLevel`, `expiresAt`, `createdAt`, `completedAt`.
+Logical key fields: `id`, `clientApplicationId`, `subjectId`, `profile`, `externalSessionId`, `clientReference`, `purpose`, `challenge`, `requestId`, `correlationId`, `state`, `result`, `assuranceLevel`, `expiresAt`, `createdAt`, `completedAt`.
+
+Persistence compatibility note: the current EF/PostgreSQL session row keeps existing column names `ExternalTransactionId` and `BindingNonceHash` to avoid a data migration in TIP-67A. They map to domain/API `ClientReference` and `Challenge`; old persisted profile string `TransactionBoundEkycProfile` is read as `ChallengeBoundEkycProfile`.
 
 Append-only requirement: State transitions SHOULD be represented by append-only audit events. The current row MAY store current state as a projection.
 
 Sensitive classification: Confidential.
 
-Raw data policy: Only correlation identifiers, policy references, and hashes are allowed.
+Raw data policy: Only correlation identifiers, opaque challenges, policy references, and hashes are allowed. `Challenge` is not required to be a hash and must not be treated as a document, transaction, consent, or evidence payload.
 
-Profile rules: `STANDARD_EKYC_PROFILE` is the generic default for ordinary identity assurance. `TRANSACTION_BOUND_EKYC_PROFILE` requires `bindingNonceHash` and transaction correlation fields by policy. `externalSystem` or `clientCode` MUST be derived from or validated against `clientApplicationId`, not trusted from the request body by itself.
+Profile rules: `STANDARD_EKYC_PROFILE` is the generic default for ordinary identity assurance. `CHALLENGE_BOUND_EKYC_PROFILE` requires `Challenge` by policy and allows optional caller-owned `ClientReference`. `Challenge` is an opaque string, 128 .NET characters or fewer, with no C0/C1 control characters and no trim/normalize/hash requirement. `externalSystem` or `clientCode`, if represented, MUST be derived from or validated against `clientApplicationId`, not trusted from the request body by itself.
+
+Evidence-integrity boundary: `Challenge` and `ClientReference` may be echoed in BusinessConsumer create/session/completion DTOs. They do not enter `manifestBodyHash`, `packageHash`, or `manifestHash` in S1/TIP-67A.
 
 Suggested states: `CREATED`, `IN_PROGRESS`, `READY_TO_COMPLETE`, `COMPLETED`, `FAILED`, `EXPIRED`, `CANCELLED`.
 

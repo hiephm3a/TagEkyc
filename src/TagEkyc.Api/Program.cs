@@ -9,11 +9,13 @@ using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.Signing;
 using ApplicationMarker = TagEkyc.Application.AssemblyMarker;
 using TagEkyc.Contracts;
+using TagEkyc.Contracts.Common;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
+    options.SerializerOptions.Converters.Insert(0, new VerificationProfileDtoJsonConverter());
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 

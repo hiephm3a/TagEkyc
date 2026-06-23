@@ -1,9 +1,53 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
+
 namespace TagEkyc.Contracts.Common;
 
+[JsonConverter(typeof(VerificationProfileDtoJsonConverter))]
 public enum VerificationProfileDto
 {
     StandardEkycProfile = 0,
-    TransactionBoundEkycProfile = 1,
+    ChallengeBoundEkycProfile = 1,
+}
+
+public sealed class VerificationProfileDtoJsonConverter : JsonConverter<VerificationProfileDto>
+{
+    public override VerificationProfileDto Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options)
+    {
+        if (reader.TokenType != JsonTokenType.String)
+        {
+            throw new JsonException("Verification profile must be a string.");
+        }
+
+        return ParseWireValue(reader.GetString());
+    }
+
+    public static VerificationProfileDto ParseWireValue(string? value) =>
+        value switch
+        {
+            "STANDARD_EKYC_PROFILE" or "StandardEkycProfile" => VerificationProfileDto.StandardEkycProfile,
+            "CHALLENGE_BOUND_EKYC_PROFILE" or "ChallengeBoundEkycProfile" => VerificationProfileDto.ChallengeBoundEkycProfile,
+            "TRANSACTION_BOUND_EKYC_PROFILE" or "TransactionBoundEkycProfile" => VerificationProfileDto.ChallengeBoundEkycProfile,
+            _ => throw new JsonException($"Unknown verification profile '{value}'."),
+        };
+
+    public override void Write(
+        Utf8JsonWriter writer,
+        VerificationProfileDto value,
+        JsonSerializerOptions options)
+    {
+        var wireValue = value switch
+        {
+            VerificationProfileDto.StandardEkycProfile => "STANDARD_EKYC_PROFILE",
+            VerificationProfileDto.ChallengeBoundEkycProfile => "CHALLENGE_BOUND_EKYC_PROFILE",
+            _ => throw new JsonException($"Unknown verification profile '{value}'."),
+        };
+
+        writer.WriteStringValue(wireValue);
+    }
 }
 
 public enum VerificationSessionStateDto

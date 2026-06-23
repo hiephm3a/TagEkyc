@@ -128,31 +128,47 @@ public sealed class Tip04SessionApplicationTests
     }
 
     [Fact]
-    public async Task Transaction_bound_profile_requires_transaction_id_and_sha256_binding_hash()
+    public async Task Challenge_bound_profile_requires_opaque_challenge_and_echoes_values()
     {
         var fixture = CreateFixture();
         var caller = BusinessCaller();
 
-        var missingBinding = await fixture.Service.CreateAsync(
+        var missingChallenge = await fixture.Service.CreateAsync(
             caller,
-            TransactionBoundRequest() with { BindingNonceHash = null },
+            ChallengeBoundRequest() with { Challenge = null },
             cancellationToken: CancellationToken.None);
 
-        var invalidHash = await fixture.Service.CreateAsync(
+        var invalidControl = await fixture.Service.CreateAsync(
             caller,
-            TransactionBoundRequest() with { BindingNonceHash = "plain" },
+            ChallengeBoundRequest() with { Challenge = "opaque\u007Fchallenge" },
+            cancellationToken: CancellationToken.None);
+
+        var tooLong = await fixture.Service.CreateAsync(
+            caller,
+            ChallengeBoundRequest() with { Challenge = new string('a', 129) },
+            cancellationToken: CancellationToken.None);
+
+        var conflictingFields = await fixture.Service.CreateAsync(
+            caller,
+            ChallengeBoundRequest() with { HasConflictingChallengeFields = true },
             cancellationToken: CancellationToken.None);
 
         var valid = await fixture.Service.CreateAsync(
             caller,
-            TransactionBoundRequest(),
+            ChallengeBoundRequest() with { Challenge = "opaque challenge, not a hash", ClientReference = "client-ref-1" },
             cancellationToken: CancellationToken.None);
 
-        Assert.Equal("MISSING_TRANSACTION_BINDING", missingBinding.Error?.Code);
-        Assert.Equal(StatusCodes.Status400BadRequest, missingBinding.Error?.StatusCode);
-        Assert.Equal("INVALID_BINDING_NONCE_HASH", invalidHash.Error?.Code);
-        Assert.Equal(StatusCodes.Status400BadRequest, invalidHash.Error?.StatusCode);
+        Assert.Equal("MISSING_CHALLENGE", missingChallenge.Error?.Code);
+        Assert.Equal(StatusCodes.Status400BadRequest, missingChallenge.Error?.StatusCode);
+        Assert.Equal("INVALID_CHALLENGE", invalidControl.Error?.Code);
+        Assert.Equal(StatusCodes.Status400BadRequest, invalidControl.Error?.StatusCode);
+        Assert.Equal("CHALLENGE_TOO_LONG", tooLong.Error?.Code);
+        Assert.Equal(StatusCodes.Status400BadRequest, tooLong.Error?.StatusCode);
+        Assert.Equal("CONFLICTING_CHALLENGE_FIELDS", conflictingFields.Error?.Code);
+        Assert.Equal(StatusCodes.Status400BadRequest, conflictingFields.Error?.StatusCode);
         Assert.True(valid.IsSuccess);
+        Assert.Equal("opaque challenge, not a hash", valid.Value?.Challenge);
+        Assert.Equal("client-ref-1", valid.Value?.ClientReference);
     }
 
     [Fact]
@@ -253,12 +269,12 @@ public sealed class Tip04SessionApplicationTests
             RequestId: "req-test",
             CorrelationId: "corr-test");
 
-    private static CreateVerificationSessionRequestDto TransactionBoundRequest() =>
+    private static CreateVerificationSessionRequestDto ChallengeBoundRequest() =>
         new(
             "transaction-session",
             "subject-ref",
             "SIGNING_AUTH",
-            VerificationProfileDto.TransactionBoundEkycProfile,
+            VerificationProfileDto.ChallengeBoundEkycProfile,
             [
                 RequiredCheck(RequiredCheckTypeDto.CaptureQuality),
                 RequiredCheck(RequiredCheckTypeDto.DocumentNfc),
@@ -266,8 +282,8 @@ public sealed class Tip04SessionApplicationTests
                 RequiredCheck(RequiredCheckTypeDto.Liveness),
             ],
             DateTimeOffset.UtcNow.AddMinutes(30),
-            ExternalTransactionId: "sf-tx-1",
-            BindingNonceHash: "sha256:binding",
+            ClientReference: "sf-ref-1",
+            Challenge: "opaque-challenge",
             RequestId: "req-test",
             CorrelationId: "corr-test");
 

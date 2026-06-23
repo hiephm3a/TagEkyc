@@ -4,8 +4,8 @@ namespace TagEkyc.SignFlow;
 
 public sealed record SigningAuthorizationBindingPlaceholder(
     string ExternalSessionId,
-    string ExternalTransactionId,
-    string BindingNonceHash,
+    string ClientReference,
+    string Challenge,
     string EvidencePackageId,
     string EvidencePackageHash)
 {
@@ -13,7 +13,7 @@ public sealed record SigningAuthorizationBindingPlaceholder(
     {
         return new SessionStatusPlaceholder(
             ExternalSessionId,
-            "TRANSACTION_BOUND_EKYC_PROFILE",
+            "CHALLENGE_BOUND_EKYC_PROFILE",
             "COMPLETED",
             "NOT_AVAILABLE");
     }

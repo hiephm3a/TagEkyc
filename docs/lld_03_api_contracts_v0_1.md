@@ -1,13 +1,19 @@
 # REST API Contracts
 
 **File:** `docs/lld_03_api_contracts_v0_1.md`
-**Version:** 0.3
-**Status:** Active - S1 runtime-contract consolidation
-**Date:** 2026-06-22
+**Version:** 0.4
+**Status:** Active - S1 runtime-contract consolidation + TIP-67A neutral challenge profile
+**Date:** 2026-06-23
 **Baseline:** `a98f278`
 **Purpose:** Authoritative S1 public API, DTO, authorization, error, and sanitization contract for the as-built TagEkyc runtime.
 
 ## Changelog
+
+### v0.4 - TIP-67A eKYC neutrality opaque challenge
+
+- Renamed the shipped transaction-bound profile to the neutral `ChallengeBoundEkycProfile` domain/DTO value with profile-only snake-upper wire output (`CHALLENGE_BOUND_EKYC_PROFILE`).
+- Replaced public request/response semantics from `ExternalTransactionId`/`BindingNonceHash` to optional `ClientReference` plus opaque `Challenge`; old profile and old field keys are input-only compatibility aliases.
+- Added challenge-bound error codes and pinned echo surfaces. `Challenge`/`ClientReference` are not included in the evidence hash graph.
 
 ### v0.3 - TIP-66 evidence-package signing enum note
 
@@ -64,7 +70,7 @@ Field names below are contract member names from `TagEkyc.Contracts/**`.
 
 | Enum | Values |
 | --- | --- |
-| `VerificationProfileDto` | `StandardEkycProfile`, `TransactionBoundEkycProfile` |
+| `VerificationProfileDto` | `StandardEkycProfile`, `ChallengeBoundEkycProfile` |
 | `VerificationSessionStateDto` | `Created`, `InProgress`, `ReadyToComplete`, `Completed`, `Expired`, `Cancelled`, `TechnicalTerminal` |
 | `VerificationResultDto` | `NotAvailable`, `Passed`, `RetryRequired`, `FailedCaptureQuality`, `FailedIdentity`, `ReviewRequired`, `TechnicalError`, `NotSupported` |
 | `RequiredCheckTypeDto` | `CaptureQuality`, `DocumentOcr`, `DocumentNfc`, `FaceMatch`, `Liveness`, `Fingerprint`, `RiskEvaluation` |
@@ -81,22 +87,24 @@ Field names below are contract member names from `TagEkyc.Contracts/**`.
 | `Profile` | `VerificationProfileDto` | Must be allowed by policy. |
 | `RequiredChecks` | `IReadOnlyList<RequiredCheckRequestDto>` | Must be non-empty, all `Required = true`, no duplicate `CheckType`, and policy-allowed. |
 | `ExpiresAt` | `DateTimeOffset` | Must be in the future and within policy TTL. |
-| `ExternalTransactionId` | `string?` | Required for `TransactionBoundEkycProfile`. |
-| `BindingNonceHash` | `string?` | Required for `TransactionBoundEkycProfile`; must use `sha256:`. |
+| `ClientReference` | `string?` | Optional caller-owned correlation value. Legacy input key `externalTransactionId` is accepted input-only. |
+| `Challenge` | `string?` | Required for `ChallengeBoundEkycProfile`; opaque string, 128 .NET characters or fewer, no C0/C1 controls, no trim/normalize/hash requirement. Legacy input key `bindingNonceHash` is accepted input-only. |
 | `RequestId` | `string?` | Optional request id. |
 | `CorrelationId` | `string?` | Optional correlation id. |
 
 `RequiredCheckRequestDto` fields: `CheckType`, `Required`, `MinimumConfidence`. `MinimumConfidence` is present in the contract but is not used as a final-decision threshold in current S1 completion.
 
+Profile wire output is profile-scoped snake-upper: `STANDARD_EKYC_PROFILE` and `CHALLENGE_BOUND_EKYC_PROFILE`. Input also accepts legacy `TRANSACTION_BOUND_EKYC_PROFILE`, `TransactionBoundEkycProfile`, and persisted-row alias `TransactionBoundEkycProfile`, mapping them to `ChallengeBoundEkycProfile`. If both new and legacy request field keys are present and differ, create-session fails with `CONFLICTING_CHALLENGE_FIELDS`.
+
 ### 3.3 CreateVerificationSessionResponseDto
 
-Fields: `VerificationSessionId`, `Profile`, `State`, `Result`, `RequestId`, `CorrelationId`, `ExpiresAt`.
+Fields: `VerificationSessionId`, `Profile`, `State`, `Result`, `Challenge`, `ClientReference`, `RequestId`, `CorrelationId`, `ExpiresAt`.
 
 Create responses start with `State = Created`, `Result = NotAvailable`, and later package/final-decision fields absent from this DTO.
 
 ### 3.4 VerificationSessionSummaryDto
 
-Fields: `VerificationSessionId`, `Profile`, `ExternalSessionId`, `Purpose`, `State`, `Result`, `AssuranceLevel`, `EvidencePackageId`, `EvidencePackageHash`, `ManifestHash`, `RequestId`, `CorrelationId`, `CompletedAt`.
+Fields: `VerificationSessionId`, `Profile`, `ExternalSessionId`, `Challenge`, `ClientReference`, `Purpose`, `State`, `Result`, `AssuranceLevel`, `EvidencePackageId`, `EvidencePackageHash`, `ManifestHash`, `RequestId`, `CorrelationId`, `CompletedAt`.
 
 For not-yet-completed sessions, package/hash/completed fields are null or absent by value, while state/result remain explicit. Completed summaries expose the final package/hash/manifest values and the effective completion request/correlation ids.
 
@@ -140,9 +148,11 @@ Fields: `ForceReview`, `RequestId`, `CorrelationId`.
 
 ### 3.10 CompleteVerificationSessionResponseDto
 
-Fields: `VerificationSessionId`, `State`, `Result`, `AssuranceLevel`, `FinalDecisionId`, `EvidencePackageId`, `EvidencePackageHash`, `ManifestHash`, `RequestId`, `CorrelationId`, `CompletedAt`, `EvidencePackageSignatureStatus`.
+Fields: `VerificationSessionId`, `State`, `Result`, `AssuranceLevel`, `FinalDecisionId`, `EvidencePackageId`, `EvidencePackageHash`, `ManifestHash`, `Challenge`, `ClientReference`, `RequestId`, `CorrelationId`, `CompletedAt`, `EvidencePackageSignatureStatus`.
 
 The signature status is `Signed` for TIP-66 evidence packages and `PlaceholderUnverified` for legacy/pre-TIP-66 packages. This field is a status only; the public completion response does not expose the JWS value or signature envelope.
+
+`Challenge` and `ClientReference` are echoed verbatim in create, summary, and completion responses. They are response contract fields only and do not enter `manifestBodyHash`, `packageHash`, or `manifestHash`.
 
 ### 3.11 EvidencePackageSummaryDto And EvidenceRefSummaryDto
 
@@ -186,11 +196,13 @@ Wrong caller category returns `CALLER_CATEGORY_NOT_ALLOWED` with HTTP 403 from a
 | `FORBIDDEN_CLIENT_APPLICATION` | 403 | Cross-client BusinessConsumer read/complete/package/notification |
 | `UNAUTHORIZED_PROFILE` | 403 | Create session |
 | `UNAUTHORIZED_PURPOSE` | 403 | Create session |
-| `TRANSACTION_BOUND_NOT_ALLOWED` | 403 | Create session |
+| `CHALLENGE_BOUND_NOT_ALLOWED` | 403 | Create session |
 | `INVALID_REQUIRED_CHECKS` | 400 or 403 | Create session; 400 for malformed/duplicate/non-required, 403 for policy-denied checks |
 | `VALIDATION_ERROR` | 400 | Create session shape/expiry validation |
-| `MISSING_TRANSACTION_BINDING` | 400 | Create transaction-bound session |
-| `INVALID_BINDING_NONCE_HASH` | 400 | Create transaction-bound session |
+| `MISSING_CHALLENGE` | 400 | Create challenge-bound session |
+| `INVALID_CHALLENGE` | 400 | Create challenge-bound session |
+| `CHALLENGE_TOO_LONG` | 400 | Create challenge-bound session |
+| `CONFLICTING_CHALLENGE_FIELDS` | 400 | Create challenge-bound session with differing new/legacy field values |
 | `DUPLICATE_EXTERNAL_SESSION` | 409 | Create session |
 | `SESSION_NOT_FOUND` | 404 | Session read/write/complete/package/notification when id is malformed, unknown, or owning session missing |
 | `CAPTURE_AGENT_MISMATCH` | 403 | Capture artifact append |

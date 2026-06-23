@@ -177,6 +177,58 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
     }
 
     [Fact]
+    public async Task Legacy_transaction_bound_session_row_reads_as_challenge_bound_profile()
+    {
+        var sessionId = Guid.NewGuid();
+        var now = DateTimeOffset.UtcNow;
+        await using (var db = postgres.CreateDbContext())
+        {
+            db.Sessions.Add(new VerificationSessionRow
+            {
+                Id = sessionId,
+                ClientApplicationId = LocalDevRuntimePolicySource.BusinessClientId,
+                SubjectRef = "legacy-subject-ref",
+                Profile = "TransactionBoundEkycProfile",
+                Purpose = "SIGNING_AUTH",
+                RequiredChecksJson = """["CaptureQuality"]""",
+                ExternalSessionId = "legacy-external-session",
+                ExternalTransactionId = "legacy-client-reference",
+                BindingNonceHash = "legacy opaque challenge",
+                RequestId = "req-legacy-row",
+                CorrelationId = "corr-legacy-row",
+                State = "Created",
+                Result = "NotAvailable",
+                AssuranceLevel = "None",
+                PolicySnapshotId = PolicySnapshotId.LocalDevS1.Value,
+                RetentionClass = "LocalDevEphemeral",
+                DeletionEligibility = "NotEvaluated",
+                LegalHoldStatus = "None",
+                PurgeBlockReason = "None",
+                AccessAuditRequired = true,
+                ExpiresAt = now.AddHours(1),
+                CreatedAt = now,
+            });
+            await db.SaveChangesAsync();
+        }
+
+        await using var provider = BuildProvider();
+        await using var scope = provider.CreateAsyncScope();
+        var repository = scope.ServiceProvider.GetRequiredService<IVerificationSessionRepository>();
+        var session = await repository.GetAsync(sessionId, CancellationToken.None);
+        var summary = await scope.ServiceProvider.GetRequiredService<VerificationSessionApplicationService>()
+            .GetSummaryAsync(BusinessCaller(), sessionId.ToString("N"), CancellationToken.None);
+
+        Assert.NotNull(session);
+        Assert.Equal(VerificationProfile.ChallengeBoundEkycProfile, session!.Profile);
+        Assert.Equal("legacy-client-reference", session.ClientReference);
+        Assert.Equal("legacy opaque challenge", session.Challenge);
+        Assert.True(summary.IsSuccess, summary.Error?.Code);
+        Assert.Equal(VerificationProfileDto.ChallengeBoundEkycProfile, summary.Value?.Profile);
+        Assert.Equal("legacy-client-reference", summary.Value?.ClientReference);
+        Assert.Equal("legacy opaque challenge", summary.Value?.Challenge);
+    }
+
+    [Fact]
     public void Production_postgres_composition_does_not_register_fault_injector()
     {
         var services = new ServiceCollection();

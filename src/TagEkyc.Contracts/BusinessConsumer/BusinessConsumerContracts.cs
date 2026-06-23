@@ -1,3 +1,5 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using TagEkyc.Contracts.Common;
 
 namespace TagEkyc.Contracts.BusinessConsumer;
@@ -7,6 +9,7 @@ public sealed record RequiredCheckRequestDto(
     bool Required,
     decimal? MinimumConfidence);
 
+[JsonConverter(typeof(CreateVerificationSessionRequestDtoJsonConverter))]
 public sealed record CreateVerificationSessionRequestDto(
     string? ExternalSessionId,
     string SubjectRef,
@@ -14,16 +17,22 @@ public sealed record CreateVerificationSessionRequestDto(
     VerificationProfileDto Profile,
     IReadOnlyList<RequiredCheckRequestDto> RequiredChecks,
     DateTimeOffset ExpiresAt,
-    string? ExternalTransactionId = null,
-    string? BindingNonceHash = null,
+    string? ClientReference = null,
+    string? Challenge = null,
     string? RequestId = null,
-    string? CorrelationId = null);
+    string? CorrelationId = null)
+{
+    [JsonIgnore]
+    public bool HasConflictingChallengeFields { get; init; }
+}
 
 public sealed record CreateVerificationSessionResponseDto(
     string VerificationSessionId,
     VerificationProfileDto Profile,
     VerificationSessionStateDto State,
     VerificationResultDto Result,
+    string? Challenge,
+    string? ClientReference,
     string RequestId,
     string CorrelationId,
     DateTimeOffset ExpiresAt);
@@ -32,6 +41,8 @@ public sealed record VerificationSessionSummaryDto(
     string VerificationSessionId,
     VerificationProfileDto Profile,
     string? ExternalSessionId,
+    string? Challenge,
+    string? ClientReference,
     string Purpose,
     VerificationSessionStateDto State,
     VerificationResultDto Result,
@@ -64,6 +75,8 @@ public sealed record CompleteVerificationSessionResponseDto(
     string EvidencePackageId,
     string EvidencePackageHash,
     string ManifestHash,
+    string? Challenge,
+    string? ClientReference,
     string RequestId,
     string CorrelationId,
     DateTimeOffset CompletedAt,
@@ -101,3 +114,103 @@ public sealed record VerificationCompletedEventDto(
     DateTimeOffset CompletedAt,
     SignaturePlaceholderStatusDto WebhookSignatureStatus,
     SignaturePlaceholderStatusDto EvidencePackageSignatureStatus);
+
+public sealed class CreateVerificationSessionRequestDtoJsonConverter : JsonConverter<CreateVerificationSessionRequestDto>
+{
+    public override CreateVerificationSessionRequestDto Read(
+        ref Utf8JsonReader reader,
+        Type typeToConvert,
+        JsonSerializerOptions options)
+    {
+        using var document = JsonDocument.ParseValue(ref reader);
+        var root = document.RootElement;
+
+        var hasChallenge = TryGetProperty(root, "challenge", out var challengeElement);
+        var hasLegacyChallenge = TryGetProperty(root, "bindingNonceHash", out var legacyChallengeElement);
+        var challenge = hasChallenge ? ReadNullableString(challengeElement) : null;
+        var legacyChallenge = hasLegacyChallenge ? ReadNullableString(legacyChallengeElement) : null;
+        var challengeConflict = hasChallenge &&
+            hasLegacyChallenge &&
+            !string.Equals(challenge, legacyChallenge, StringComparison.Ordinal);
+
+        var hasClientReference = TryGetProperty(root, "clientReference", out var clientReferenceElement);
+        var hasLegacyClientReference = TryGetProperty(root, "externalTransactionId", out var legacyClientReferenceElement);
+        var clientReference = hasClientReference ? ReadNullableString(clientReferenceElement) : null;
+        var legacyClientReference = hasLegacyClientReference ? ReadNullableString(legacyClientReferenceElement) : null;
+        var clientReferenceConflict = hasClientReference &&
+            hasLegacyClientReference &&
+            !string.Equals(clientReference, legacyClientReference, StringComparison.Ordinal);
+
+        return new CreateVerificationSessionRequestDto(
+            TryGetProperty(root, "externalSessionId", out var externalSessionIdElement) ? ReadNullableString(externalSessionIdElement) : null,
+            ReadRequiredString(GetRequired(root, "subjectRef")),
+            ReadRequiredString(GetRequired(root, "purpose")),
+            VerificationProfileDtoJsonConverter.ParseWireValue(ReadRequiredString(GetRequired(root, "profile"))),
+            JsonSerializer.Deserialize<IReadOnlyList<RequiredCheckRequestDto>>(GetRequired(root, "requiredChecks").GetRawText(), options)
+                ?? [],
+            JsonSerializer.Deserialize<DateTimeOffset>(GetRequired(root, "expiresAt").GetRawText(), options),
+            hasClientReference ? clientReference : legacyClientReference,
+            hasChallenge ? challenge : legacyChallenge,
+            TryGetProperty(root, "requestId", out var requestIdElement) ? ReadNullableString(requestIdElement) : null,
+            TryGetProperty(root, "correlationId", out var correlationIdElement) ? ReadNullableString(correlationIdElement) : null)
+        {
+            HasConflictingChallengeFields = challengeConflict || clientReferenceConflict,
+        };
+    }
+
+    public override void Write(
+        Utf8JsonWriter writer,
+        CreateVerificationSessionRequestDto value,
+        JsonSerializerOptions options)
+    {
+        JsonSerializer.Serialize(
+            writer,
+            new
+            {
+                value.ExternalSessionId,
+                value.SubjectRef,
+                value.Purpose,
+                value.Profile,
+                value.RequiredChecks,
+                value.ExpiresAt,
+                value.ClientReference,
+                value.Challenge,
+                value.RequestId,
+                value.CorrelationId,
+            },
+            options);
+    }
+
+    private static JsonElement GetRequired(JsonElement root, string propertyName) =>
+        TryGetProperty(root, propertyName, out var value)
+            ? value
+            : throw new JsonException($"Missing required property '{propertyName}'.");
+
+    private static bool TryGetProperty(JsonElement root, string propertyName, out JsonElement value)
+    {
+        foreach (var property in root.EnumerateObject())
+        {
+            if (string.Equals(property.Name, propertyName, StringComparison.OrdinalIgnoreCase))
+            {
+                value = property.Value;
+                return true;
+            }
+        }
+
+        value = default;
+        return false;
+    }
+
+    private static string ReadRequiredString(JsonElement value) =>
+        value.ValueKind == JsonValueKind.String
+            ? value.GetString() ?? string.Empty
+            : throw new JsonException("Expected a string value.");
+
+    private static string? ReadNullableString(JsonElement value) =>
+        value.ValueKind switch
+        {
+            JsonValueKind.Null or JsonValueKind.Undefined => null,
+            JsonValueKind.String => value.GetString(),
+            _ => throw new JsonException("Expected a string value."),
+        };
+}

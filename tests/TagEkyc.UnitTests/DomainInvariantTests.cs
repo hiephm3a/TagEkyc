@@ -5,39 +5,39 @@ namespace TagEkyc.UnitTests;
 public sealed class DomainInvariantTests
 {
     [Fact]
-    public void Transaction_bound_session_requires_binding_nonce_hash()
+    public void Challenge_bound_session_requires_challenge()
     {
         var exception = Assert.Throws<ArgumentException>(() =>
             VerificationSession.Create(
                 Guid.NewGuid(),
                 "patient_789",
-                VerificationProfile.TransactionBoundEkycProfile,
+                VerificationProfile.ChallengeBoundEkycProfile,
                 "SIGNING_AUTH",
                 RequiredCheckPolicy.SignFlowS1RequiredChecks,
                 DateTimeOffset.UtcNow.AddMinutes(15),
                 DateTimeOffset.UtcNow,
                 externalSessionId: "sf_session_123",
-                externalTransactionId: "sf_tx_456"));
+                clientReference: "sf_ref_456"));
 
-        Assert.Contains("binding nonce hash", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("challenge", exception.Message, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
-    public void Transaction_bound_session_requires_external_transaction_id()
+    public void Challenge_bound_session_allows_optional_client_reference()
     {
-        var exception = Assert.Throws<ArgumentException>(() =>
-            VerificationSession.Create(
-                Guid.NewGuid(),
-                "patient_789",
-                VerificationProfile.TransactionBoundEkycProfile,
-                "SIGNING_AUTH",
-                RequiredCheckPolicy.SignFlowS1RequiredChecks,
-                DateTimeOffset.UtcNow.AddMinutes(15),
-                DateTimeOffset.UtcNow,
-                externalSessionId: "sf_session_123",
-                bindingNonceHash: new HashRef("sha256:binding")));
+        var session = VerificationSession.Create(
+            Guid.NewGuid(),
+            "patient_789",
+            VerificationProfile.ChallengeBoundEkycProfile,
+            "SIGNING_AUTH",
+            RequiredCheckPolicy.SignFlowS1RequiredChecks,
+            DateTimeOffset.UtcNow.AddMinutes(15),
+            DateTimeOffset.UtcNow,
+            externalSessionId: "sf_session_123",
+            challenge: "opaque challenge value");
 
-        Assert.Contains("external transaction id", exception.Message, StringComparison.OrdinalIgnoreCase);
+        Assert.Null(session.ClientReference);
+        Assert.Equal("opaque challenge value", session.Challenge);
     }
 
     [Fact]

@@ -99,8 +99,8 @@ public sealed class EfVerificationFinalizationBoundary(
         current.Purpose == expected.Purpose &&
         current.RequiredChecks.SetEquals(expected.RequiredChecks) &&
         current.ExternalSessionId == expected.ExternalSessionId &&
-        current.ExternalTransactionId == expected.ExternalTransactionId &&
-        current.BindingNonceHash == expected.BindingNonceHash &&
+        current.ClientReference == expected.ClientReference &&
+        current.Challenge == expected.Challenge &&
         current.RequestId == expected.RequestId &&
         current.CorrelationId == expected.CorrelationId &&
         current.State == expected.State &&

@@ -19,12 +19,12 @@ public sealed class ContractPlaceholderTests
     {
         var contract = new SigningAuthorizationBindingPlaceholder(
             "external-session",
-            "external-transaction",
-            "sha256:binding",
+            "client-reference",
+            "opaque-challenge",
             "ep_placeholder",
             "sha256:evidence");
 
-        Assert.Equal("sha256:binding", contract.BindingNonceHash);
+        Assert.Equal("opaque-challenge", contract.Challenge);
         Assert.Equal("ep_placeholder", contract.EvidencePackageId);
     }
 }

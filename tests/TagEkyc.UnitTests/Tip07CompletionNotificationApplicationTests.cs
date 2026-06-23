@@ -274,6 +274,7 @@ public sealed class Tip07CompletionNotificationApplicationTests
     private static JsonSerializerOptions CreateJsonOptions()
     {
         var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new VerificationProfileDtoJsonConverter());
         options.Converters.Add(new JsonStringEnumConverter());
         return options;
     }

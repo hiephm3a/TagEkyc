@@ -610,6 +610,8 @@ public sealed class VerificationCompletionApplicationService(
             session.EvidencePackageId!.Value.ToString("N"),
             session.EvidencePackageHash!.Value.ToString(),
             session.ManifestHash!.Value.ToString(),
+            session.Challenge,
+            session.ClientReference,
             session.RequestId,
             session.CorrelationId,
             session.CompletedAt!.Value,
@@ -700,7 +702,7 @@ public sealed class VerificationCompletionApplicationService(
         profile switch
         {
             VerificationProfile.StandardEkycProfile => VerificationProfileDto.StandardEkycProfile,
-            VerificationProfile.TransactionBoundEkycProfile => VerificationProfileDto.TransactionBoundEkycProfile,
+            VerificationProfile.ChallengeBoundEkycProfile => VerificationProfileDto.ChallengeBoundEkycProfile,
             _ => throw new ArgumentOutOfRangeException(nameof(profile), profile, null),
         };
 

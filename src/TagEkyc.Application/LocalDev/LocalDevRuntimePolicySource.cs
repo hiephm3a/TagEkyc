@@ -149,7 +149,7 @@ public sealed class LocalDevRuntimePolicySource : ILocalDevClientPolicyProvider
             new HashSet<VerificationProfile>
             {
                 VerificationProfile.StandardEkycProfile,
-                VerificationProfile.TransactionBoundEkycProfile,
+                VerificationProfile.ChallengeBoundEkycProfile,
             },
             new HashSet<string>
             {
@@ -168,7 +168,7 @@ public sealed class LocalDevRuntimePolicySource : ILocalDevClientPolicyProvider
                 BusinessScopes
                     .Concat(CaptureAgentScopes)
                     .Concat(TrustedAdapterScopes)),
-            AllowsTransactionBoundProfile: true,
+            AllowsChallengeBoundProfile: true,
             MaxSessionTtl: TimeSpan.FromHours(24),
             AllowedOptionalEvidenceChecks: new HashSet<RequiredCheckType>(),
             AllowedSupportingArtifactTypes: new HashSet<CaptureArtifactType>

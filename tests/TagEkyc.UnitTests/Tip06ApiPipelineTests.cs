@@ -372,6 +372,7 @@ public sealed class Tip06ApiPipelineTests
     private static JsonSerializerOptions CreateJsonOptions()
     {
         var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new VerificationProfileDtoJsonConverter());
         options.Converters.Add(new JsonStringEnumConverter());
         return options;
     }
@@ -393,6 +394,7 @@ public sealed class Tip06ApiPipelineTests
             builder.WebHost.UseTestServer();
             builder.Services.ConfigureHttpJsonOptions(options =>
             {
+                options.SerializerOptions.Converters.Insert(0, new VerificationProfileDtoJsonConverter());
                 options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
             });
             builder.Services.AddSingleton<LocalDevRuntimePolicySource>();

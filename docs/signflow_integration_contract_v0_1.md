@@ -2,131 +2,96 @@
 
 ## Purpose
 
-This contract defines how SignFlow consumes TagEkyc as an independent identity assurance provider. TagEkyc MUST remain independent from SignFlow code and database. SignFlow integration is one consumer contract, not a product dependency.
+This contract defines how SignFlow consumes TagEkyc as an independent identity assurance provider. TagEkyc MUST remain independent from SignFlow code, signing documents, and database. SignFlow integration is one consumer contract, not a product dependency.
 
-SignFlow uses `TRANSACTION_BOUND_EKYC_PROFILE`. It is the first named transaction-bound consumer profile, not the generic TagEkyc platform model.
+SignFlow uses the neutral `CHALLENGE_BOUND_EKYC_PROFILE`. The challenge is an opaque client-provided string that TagEkyc echoes for the client to bind to its own signing session. TagEkyc does not interpret the challenge as a transaction, document, consent, or nonce hash.
 
 ## Responsibility Split
 
-- TagEkyc MUST prove who the person is.
-- SignFlow MUST prove what the person saw and agreed to sign.
-- `bindingNonce` MUST bind identity verification and signing consent to the same transaction context.
+- TagEkyc proves who the person is.
+- SignFlow proves what the person saw and agreed to sign.
+- SignFlow creates and validates its own binding material.
+- TagEkyc stores and echoes `challenge` and optional `clientReference` verbatim, subject only to string-safety limits.
 
 ## Create eKYC Verification Session
 
 SignFlow creates a verification session before or during a signing authentication flow.
 
-Required request fields:
+Required request fields for the challenge-bound profile:
 
 - `externalSessionId`
-- `externalTransactionId`
+- `clientReference` (optional but recommended for SignFlow correlation)
 - `subjectRef`
 - `purpose = SIGNING_AUTH`
-- `profile = TRANSACTION_BOUND_EKYC_PROFILE`
-- `bindingNonceHash`
+- `profile = CHALLENGE_BOUND_EKYC_PROFILE`
+- `challenge`
 - `requiredChecks`
 
-`externalSystem = SignFlow`, if represented in an API or payload, MUST be derived from or validated against the authenticated `clientApplicationId`.
+The `challenge` value is opaque and MUST be 128 .NET characters or fewer, MUST NOT contain C0/C1 control characters, and MUST NOT be trimmed, normalized, hashed, or interpreted by TagEkyc. Legacy input field keys `externalTransactionId` and `bindingNonceHash`, plus legacy profile value `TRANSACTION_BOUND_EKYC_PROFILE`, are accepted only for compatibility and are emitted back using the neutral names/profile.
 
 Request sample:
 
 ```json
 {
   "externalSessionId": "sf_session_123",
-  "externalTransactionId": "sf_tx_456",
+  "clientReference": "sf_ref_456",
   "subjectRef": "patient_789",
   "purpose": "SIGNING_AUTH",
-  "profile": "TRANSACTION_BOUND_EKYC_PROFILE",
-  "bindingNonceHash": "sha256:abc123",
+  "profile": "CHALLENGE_BOUND_EKYC_PROFILE",
+  "challenge": "opaque-signflow-challenge-01",
   "requiredChecks": [
-    { "checkType": "CAPTURE_QUALITY", "required": true },
-    { "checkType": "DOCUMENT_NFC", "required": true },
-    { "checkType": "FACE_MATCH", "required": true },
-    { "checkType": "LIVENESS", "required": true },
-    { "checkType": "FINGERPRINT", "required": false }
+    { "checkType": "CaptureQuality", "required": true },
+    { "checkType": "DocumentNfc", "required": true },
+    { "checkType": "FaceMatch", "required": true },
+    { "checkType": "Liveness", "required": true }
   ]
 }
 ```
 
-Response sample:
+Create response sample:
 
 ```json
 {
   "verificationSessionId": "vs_01HY",
-  "profile": "TRANSACTION_BOUND_EKYC_PROFILE",
-  "state": "CREATED",
-  "result": "NOT_AVAILABLE"
+  "profile": "CHALLENGE_BOUND_EKYC_PROFILE",
+  "state": "Created",
+  "result": "NotAvailable",
+  "challenge": "opaque-signflow-challenge-01",
+  "clientReference": "sf_ref_456"
 }
 ```
 
 ## Completion Result Fields
 
-TagEkyc sends or returns a sanitized result payload.
+TagEkyc returns sanitized result data. The default completion-notification projection is notification-only; SignFlow should verify package data by reading the package/session surfaces available to it.
 
-Required result fields:
+Required values for SignFlow binding:
 
 - `verificationSessionId`
-- `externalSystem`
 - `externalSessionId`
-- `externalTransactionId`
-- `bindingNonceHash`
-- `result`
+- `clientReference`
+- `challenge`
+- final `result`
 - `assuranceLevel`
 - `evidencePackageId`
 - `evidencePackageHash`
-- `documentResult`
-- `biometricResult`
-- `completedAt`
-- `webhookSignature` placeholder when delivered by webhook
-- `payloadSignature` placeholder when using signed direct payloads
+- `manifestHash`
+- evidence/package authenticity when implemented
 
-The related evidence package MAY include `evidencePackageSignature` as a separate long-term audit signature placeholder.
-
-Webhook payload sample:
-
-```json
-{
-  "eventType": "EKYC_VERIFICATION_COMPLETED",
-  "deliveryId": "whd_01HY",
-  "sentAt": "2026-05-24T09:20:01Z",
-  "verificationSessionId": "vs_01HY",
-  "externalSystem": "SignFlow",
-  "externalSessionId": "sf_session_123",
-  "externalTransactionId": "sf_tx_456",
-  "bindingNonceHash": "sha256:abc123",
-  "result": "PASSED",
-  "assuranceLevel": "MEDIUM",
-  "evidencePackageId": "ep_01HY",
-  "evidencePackageHash": "sha256:package",
-  "documentResult": {
-    "result": "PASSED",
-    "documentType": "CCCD",
-    "nfcResult": "PASSED",
-    "documentEvidenceRef": "doc_ev_01HY",
-    "nfcEvidenceRef": "nfc_ev_01HY"
-  },
-  "biometricResult": {
-    "faceMatchResult": "PASSED",
-    "livenessResult": "PASSED",
-    "fingerprintResult": "NOT_REQUIRED"
-  },
-  "completedAt": "2026-05-24T09:20:00Z",
-  "webhookSignature": "placeholder"
-}
-```
+`challenge` and `clientReference` are echoed on `CreateVerificationSessionResponseDto`, `VerificationSessionSummaryDto`, and `CompleteVerificationSessionResponseDto`. They are response DTO fields only. They are not part of the S1 `manifestBodyHash`, `packageHash`, or `manifestHash` chain.
 
 ## Binding Validation Rule
 
-SignFlow MUST reject the TagEkyc result if any of these values do not match the expected signing transaction:
+SignFlow MUST reject the TagEkyc result if any of these values do not match its expected signing session:
 
-- `bindingNonceHash`
+- `challenge`
 - `externalSessionId`
-- `externalTransactionId`
+- `clientReference` when supplied
 - final `result`
 - `evidencePackageHash`
-- webhook/result authenticity when implemented
+- package/result authenticity when implemented
 
-SignFlow MUST NOT bind `evidencePackageId` to a signing session until the binding validation succeeds.
+SignFlow MUST NOT bind `evidencePackageId` to a signing session until this client-side validation succeeds.
 
 Validation flow:
 
@@ -136,10 +101,10 @@ sequenceDiagram
     participant TE as TagEkyc
     participant SS as Signing Session
 
-    SF->>TE: Create session with transaction binding fields
-    TE-->>SF: verificationSessionId
-    TE-->>SF: Verification completed payload
-    SF->>SS: Load expected bindingNonceHash, externalSessionId, externalTransactionId
+    SF->>TE: Create session with challenge-bound profile
+    TE-->>SF: verificationSessionId + echoed challenge/clientReference
+    TE-->>SF: Completion/session/package result surfaces
+    SF->>SS: Load expected challenge, externalSessionId, clientReference
     SF->>SF: Compare expected values, final result, evidencePackageHash, authenticity
     alt All values match
         SF->>SS: Bind evidencePackageId and evidencePackageHash
@@ -164,54 +129,24 @@ SignFlow payloads MUST use:
 
 - `evidencePackageId`
 - `evidencePackageHash`
+- `manifestHash`
 - Evidence refs
 - Artifact hashes
 - Sanitized result summaries
+- Client-owned correlation fields
 
 SignFlow default payloads MUST NOT include internal VaultRefs. Any future VaultRef exposure requires explicit evidence-access policy, scoped authorization, and audit. VaultRef exposure is outside the S1 default SignFlow flow.
 
 ## Failure Handling
 
-If TagEkyc returns `FAILED`, `REVIEW_REQUIRED`, `EXPIRED`, or `ERROR`, SignFlow SHOULD treat the identity assurance step as not passed for signing authorization unless a separate business policy explicitly allows manual review.
+If TagEkyc returns `FailedIdentity`, `ReviewRequired`, `Expired`, or `TechnicalError`, SignFlow SHOULD treat the identity assurance step as not passed for signing authorization unless a separate business policy explicitly allows manual review.
 
-Failure payload sample:
-
-```json
-{
-  "eventType": "EKYC_VERIFICATION_COMPLETED",
-  "deliveryId": "whd_01HZ",
-  "sentAt": "2026-05-24T09:20:01Z",
-  "verificationSessionId": "vs_01HY",
-  "externalSystem": "SignFlow",
-  "externalSessionId": "sf_session_123",
-  "externalTransactionId": "sf_tx_456",
-  "bindingNonceHash": "sha256:abc123",
-  "result": "FAILED",
-  "assuranceLevel": "NONE",
-  "evidencePackageId": "ep_01HZ",
-  "evidencePackageHash": "sha256:failedpackage",
-  "documentResult": {
-    "result": "PASSED",
-    "documentType": "CCCD",
-    "nfcResult": "PASSED"
-  },
-  "biometricResult": {
-    "faceMatchResult": "FAILED",
-    "livenessResult": "PASSED",
-    "fingerprintResult": "NOT_REQUIRED"
-  },
-  "reasonCodes": ["FAILED_IDENTITY"],
-  "completedAt": "2026-05-24T09:20:00Z",
-  "webhookSignature": "placeholder"
-}
-```
-
-Capture quality payloads SHOULD distinguish `RETRY_REQUIRED` and `FAILED_CAPTURE_QUALITY` from `FAILED_IDENTITY`. A blurry image, poor selfie, weak NFC read, or low-quality fingerprint capture is not the same as identity mismatch.
+Capture quality payloads SHOULD distinguish `RetryRequired` and `FailedCaptureQuality` from identity mismatch.
 
 ## Security Notes
 
-- SignFlow SHOULD verify webhook signatures when implemented.
+- SignFlow SHOULD verify webhook/package signatures when implemented.
 - Future webhook signatures SHOULD include delivery id, timestamp, and replay protection.
-- SignFlow SHOULD store the `evidencePackageId`, `evidencePackageHash`, and completion timestamp with the signing session audit trail.
-- SignFlow MUST NOT use TagEkyc results from another `externalSessionId` or `externalTransactionId`.
+- SignFlow SHOULD store the `evidencePackageId`, `evidencePackageHash`, `manifestHash`, completion timestamp, challenge, and client reference with the signing session audit trail.
+- SignFlow MUST NOT use TagEkyc results from another `externalSessionId`, `clientReference`, or `challenge`.
 - TagEkyc MUST NOT require access to SignFlow signing document content.

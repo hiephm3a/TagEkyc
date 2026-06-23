@@ -6,7 +6,7 @@
 - Client Application and API Key authentication model
 - RequiredChecks policy model
 - `VerificationSession` as root business correlation object
-- `STANDARD_EKYC_PROFILE` and `TRANSACTION_BOUND_EKYC_PROFILE` policy naming
+- `STANDARD_EKYC_PROFILE` and `CHALLENGE_BOUND_EKYC_PROFILE` policy naming
 - CaptureArtifact and EvidenceResult logical model
 - Generic `CAPTURE_QUALITY` result category
 - CCCD/NFC result shape
@@ -55,8 +55,9 @@
 | P1 | Payload signature model | Define when `payloadSignature` is needed, canonical payload format, algorithm, key management, and verification rules. | Before signed API payload reliance |
 | P1 | Webhook signature/replay protection | Define `webhookSignature`, delivery id, timestamp tolerance, replay cache, rotation, and retry behavior. | Before production webhook reliance |
 | P1 | Request/correlation id conventions | Define `requestId`, `correlationId`, idempotency, log propagation, and support lookup conventions. | Before multi-client pilot |
-| P1 | Profile naming and policy mapping | Finalize `STANDARD_EKYC_PROFILE`, `TRANSACTION_BOUND_EKYC_PROFILE`, purpose mapping, and per-client allowed checks. | Before additional consumer profiles |
+| P1 | Profile naming and policy mapping | **Resolved by TIP-67A:** `TRANSACTION_BOUND_EKYC_PROFILE` was neutralized to `CHALLENGE_BOUND_EKYC_PROFILE` with opaque `Challenge` and optional `ClientReference`. Old profile/field names remain input-only compatibility aliases. | Resolved |
 | P1 | Decision basis not bound to evidence hash (EBS) | Per-evidence `Confidence`, `decisionReasonCodes`/`retryReasonCodes` (and `RiskScore` when it becomes live) are persisted and append-only-protected but are NOT covered by the manifest/package hash chain — only the final `Result` and `AssuranceLevel` are bound (see `VerificationCompletionApplicationService` decisionSeed/manifestBody). The quantitative/qualitative basis most likely to be litigated is therefore not tamper-evident within TagEkyc's own chain (`PayloadHash` is adapter-asserted and the raw payload is not retained, so `Confidence` is not transitively verifiable). Surfaced by the TIP-65 adversarial spot-check (2026-06-22). Proposed approach: encode `Confidence` as a decimal-string (`F6` invariant, per the TIP-65 numeric convention) + `reasonCodes` as ordered string arrays into the manifest body (= a new package version under the TIP-65 versioning rule); needs the legal lens first (does NĐ 130 / the assurance framework require attesting the quantitative basis, or only `AssuranceLevel` + `Result`?). | Bind via a future evidence-model TIP (number assigned when activated, after signing **TIP-66**) before external/legal reliance on the decision rationale |
+| P1 | eKYC neutrality drift (SignFlow coupling) | **Resolved by TIP-67A for shipped S1 behavior:** the eKYC core no longer interprets SignFlow transaction concepts; it echoes opaque challenge/client correlation only. Neutral verifiable proof remains separate in TIP-67B. | Resolved for 67A; 67B remains future proof surface |
 | P2 | Operator review | Add review queue for ambiguous or failed checks. | Before manual review operations |
 | P2 | Webhook observability | Add replay, dead-letter, dashboards, and alerting. | Before high-volume integrations |
 
@@ -70,7 +71,7 @@
 - Evidence package can be built using VaultRefs/hashes and a deterministic manifest hash.
 - Audit events are written for key lifecycle actions.
 - Completion notification result can be prepared through the LocalDev application projection. Actual webhook delivery, retry, and outbox behavior are deferred after TIP-07 Option A and must not be claimed as implemented in S1 closeout.
-- SignFlow contract is documented as a transaction-bound profile with binding validation rules.
+- SignFlow contract is documented as a challenge-bound profile with client-side binding validation rules.
 - Documentation clearly states S1 is not production-certified eKYC.
 
 TIP-09 reconciliation note: current implemented S1 uses generic TrustedAdapter `/evidence-results` for evidence recording, not specialized evidence result routes. Fingerprint remains optional/demo/deferred and is not part of the default SignFlow S1 required checks unless explicitly enabled by policy in a later accepted slice.

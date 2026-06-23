@@ -10,7 +10,7 @@ public sealed record LocalDevClientPolicy(
     IReadOnlySet<string> AllowedPurposes,
     IReadOnlySet<RequiredCheckType> AllowedRequiredChecks,
     IReadOnlySet<string> AllowedCallerScopes,
-    bool AllowsTransactionBoundProfile,
+    bool AllowsChallengeBoundProfile,
     TimeSpan? MaxSessionTtl,
     IReadOnlySet<RequiredCheckType>? AllowedOptionalEvidenceChecks = null,
     IReadOnlySet<CaptureArtifactType>? AllowedSupportingArtifactTypes = null);

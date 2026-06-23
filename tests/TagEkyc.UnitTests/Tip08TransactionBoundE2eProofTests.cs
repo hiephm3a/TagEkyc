@@ -1,5 +1,3 @@
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TagEkyc.Application;
@@ -16,8 +14,8 @@ namespace TagEkyc.UnitTests;
 public sealed class Tip08TransactionBoundE2eProofTests
 {
     private const string ExternalSessionId = "tip08-external-session";
-    private const string ExternalTransactionId = "sf-tip08-transaction";
-    private const string RawBindingNonceSentinel = "raw-tip08-binding-nonce-never-submit";
+    private const string ClientReference = "sf-tip08-client-reference";
+    private const string Challenge = "opaque tip08 challenge / not sha256";
     private const string RawArtifactSentinel = "raw-tip08-artifact-never-expose";
     private const string PlaintextIdentitySentinel = "plaintext-tip08-identity-never-expose";
     private const string AdapterInternalSentinel = "trusted-adapter-internal-tip08-never-expose";
@@ -25,16 +23,13 @@ public sealed class Tip08TransactionBoundE2eProofTests
     private static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
 
     [Fact]
-    public async Task Tip08_transaction_bound_profile_completes_s1_flow_and_composes_signflow_binding_summary()
+    public async Task Tip08_challenge_bound_profile_completes_s1_flow_and_composes_signflow_binding_summary()
     {
         var fixture = CreateFixture();
-        var bindingNonceHash = Sha256HashRef(RawBindingNonceSentinel);
-        Assert.Matches("^sha256:[0-9a-f]{64}$", bindingNonceHash);
-        Assert.DoesNotContain(RawBindingNonceSentinel, bindingNonceHash, StringComparison.Ordinal);
 
         var session = await fixture.SessionService.CreateAsync(
             BusinessCaller(),
-            TransactionBoundRequest(bindingNonceHash),
+            ChallengeBoundRequest(Challenge),
             cancellationToken: CancellationToken.None);
         Assert.True(session.IsSuccess);
 
@@ -43,8 +38,8 @@ public sealed class Tip08TransactionBoundE2eProofTests
             CancellationToken.None);
         Assert.NotNull(storedBeforeCompletion);
         Assert.Equal(ExternalSessionId, storedBeforeCompletion!.ExternalSessionId);
-        Assert.Equal(ExternalTransactionId, storedBeforeCompletion.ExternalTransactionId);
-        Assert.Equal(bindingNonceHash, storedBeforeCompletion.BindingNonceHash?.ToString());
+        Assert.Equal(ClientReference, storedBeforeCompletion.ClientReference);
+        Assert.Equal(Challenge, storedBeforeCompletion.Challenge);
 
         var artifactIds = await AppendS1CaptureArtifactsAsync(fixture, session.Value.VerificationSessionId);
         await AppendTrustedAdapterS1EvidenceAsync(fixture, session.Value.VerificationSessionId, artifactIds);
@@ -81,41 +76,46 @@ public sealed class Tip08TransactionBoundE2eProofTests
         Assert.True(summary.IsSuccess);
         Assert.True(package.IsSuccess);
         Assert.True(notification.IsSuccess);
+        var completedValue = completed.Value!;
 
-        var storedBindingNonceHash = storedCompleted!.BindingNonceHash?.ToString()
-            ?? throw new InvalidOperationException("Completed transaction-bound session must preserve the binding nonce hash.");
+        var storedChallenge = storedCompleted!.Challenge
+            ?? throw new InvalidOperationException("Completed challenge-bound session must preserve the challenge.");
         var binding = new SigningAuthorizationBindingDto(
             storedCompleted.ExternalSessionId!,
-            storedCompleted.ExternalTransactionId!,
-            storedBindingNonceHash,
+            storedCompleted.ClientReference!,
+            storedChallenge,
             package.Value!.EvidencePackageId,
             package.Value.PackageHash);
         var signFlowResult = new SignFlowVerificationResultDto(summary.Value!, binding);
 
-        Assert.Equal(VerificationProfileDto.TransactionBoundEkycProfile, summary.Value?.Profile);
+        Assert.Equal(VerificationProfileDto.ChallengeBoundEkycProfile, summary.Value?.Profile);
         Assert.Equal(ExternalSessionId, summary.Value?.ExternalSessionId);
+        Assert.Equal(Challenge, summary.Value?.Challenge);
+        Assert.Equal(ClientReference, summary.Value?.ClientReference);
+        Assert.Equal(Challenge, completedValue.Challenge);
+        Assert.Equal(ClientReference, completedValue.ClientReference);
         Assert.Equal(ExternalSessionId, binding.ExternalSessionId);
-        Assert.Equal(ExternalTransactionId, binding.ExternalTransactionId);
-        Assert.Equal(bindingNonceHash, binding.BindingNonceHash);
-        Assert.Equal(completed.Value.EvidencePackageId, binding.EvidencePackageId);
-        Assert.Equal(completed.Value.EvidencePackageHash, binding.EvidencePackageHash);
+        Assert.Equal(ClientReference, binding.ClientReference);
+        Assert.Equal(Challenge, binding.Challenge);
+        Assert.Equal(completedValue.EvidencePackageId, binding.EvidencePackageId);
+        Assert.Equal(completedValue.EvidencePackageHash, binding.EvidencePackageHash);
         Assert.Equal(summary.Value, signFlowResult.Session);
         Assert.Equal(binding, signFlowResult.Binding);
 
-        Assert.Equal(completed.Value.EvidencePackageId, summary.Value?.EvidencePackageId);
-        Assert.Equal(completed.Value.EvidencePackageHash, summary.Value?.EvidencePackageHash);
-        Assert.Equal(completed.Value.ManifestHash, summary.Value?.ManifestHash);
-        Assert.Equal(completed.Value.EvidencePackageId, package.Value?.EvidencePackageId);
-        Assert.Equal(completed.Value.EvidencePackageHash, package.Value?.PackageHash);
-        Assert.Equal(completed.Value.ManifestHash, package.Value?.ManifestHash);
-        Assert.Equal(completed.Value.EvidencePackageId, notification.Value?.EvidencePackageId);
-        Assert.Equal(completed.Value.EvidencePackageHash, notification.Value?.EvidencePackageHash);
-        Assert.Equal(completed.Value.ManifestHash, notification.Value?.ManifestHash);
+        Assert.Equal(completedValue.EvidencePackageId, summary.Value?.EvidencePackageId);
+        Assert.Equal(completedValue.EvidencePackageHash, summary.Value?.EvidencePackageHash);
+        Assert.Equal(completedValue.ManifestHash, summary.Value?.ManifestHash);
+        Assert.Equal(completedValue.EvidencePackageId, package.Value?.EvidencePackageId);
+        Assert.Equal(completedValue.EvidencePackageHash, package.Value?.PackageHash);
+        Assert.Equal(completedValue.ManifestHash, package.Value?.ManifestHash);
+        Assert.Equal(completedValue.EvidencePackageId, notification.Value?.EvidencePackageId);
+        Assert.Equal(completedValue.EvidencePackageHash, notification.Value?.EvidencePackageHash);
+        Assert.Equal(completedValue.ManifestHash, notification.Value?.ManifestHash);
         Assert.Equal("VERIFICATION_COMPLETED", notification.Value?.EventType);
         Assert.Equal("localdev-not-dispatched", notification.Value?.DeliveryId);
-        Assert.Equal(completed.Value.CompletedAt, notification.Value?.CompletedAt);
+        Assert.Equal(completedValue.CompletedAt, notification.Value?.CompletedAt);
 
-        var requestedChecks = TransactionBoundRequest(bindingNonceHash)
+        var requestedChecks = ChallengeBoundRequest(Challenge)
             .RequiredChecks
             .Select(check => check.CheckType)
             .ToArray();
@@ -134,8 +134,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
         var notificationJson = JsonSerializer.Serialize(notification.Value, JsonOptions);
         var serializedOutputs = string.Join('\n', packageJson, summaryJson, notificationJson);
 
-        Assert.Contains(bindingNonceHash, summaryJson, StringComparison.Ordinal);
-        Assert.DoesNotContain(RawBindingNonceSentinel, serializedOutputs, StringComparison.Ordinal);
+        Assert.Contains(Challenge, summaryJson, StringComparison.Ordinal);
         Assert.DoesNotContain(RawArtifactSentinel, serializedOutputs, StringComparison.Ordinal);
         Assert.DoesNotContain(PlaintextIdentitySentinel, serializedOutputs, StringComparison.Ordinal);
         Assert.DoesNotContain(AdapterInternalSentinel, serializedOutputs, StringComparison.Ordinal);
@@ -150,18 +149,18 @@ public sealed class Tip08TransactionBoundE2eProofTests
         Assert.Contains(evidenceRefs, evidence => evidence.ResultType == nameof(EvidenceResultTypeDto.NfcValidation));
     }
 
-    private static CreateVerificationSessionRequestDto TransactionBoundRequest(string bindingNonceHash) =>
+    private static CreateVerificationSessionRequestDto ChallengeBoundRequest(string challenge) =>
         new(
             ExternalSessionId,
             PlaintextIdentitySentinel,
             "SIGNING_AUTH",
-            VerificationProfileDto.TransactionBoundEkycProfile,
+            VerificationProfileDto.ChallengeBoundEkycProfile,
             SignFlowS1RequiredChecks.Values
                 .Select(check => new RequiredCheckRequestDto(check, Required: true, MinimumConfidence: null))
                 .ToArray(),
             DateTimeOffset.UtcNow.AddMinutes(30),
-            ExternalTransactionId,
-            bindingNonceHash,
+            ClientReference,
+            challenge,
             RequestId: "req-tip08-create",
             CorrelationId: "corr-tip08-create");
 
@@ -265,12 +264,6 @@ public sealed class Tip08TransactionBoundE2eProofTests
             RequestId: "req-tip08-evidence",
             CorrelationId: "corr-tip08-evidence");
 
-    private static string Sha256HashRef(string value)
-    {
-        var digest = SHA256.HashData(Encoding.UTF8.GetBytes(value));
-        return $"sha256:{Convert.ToHexString(digest).ToLowerInvariant()}";
-    }
-
     private static TestFixture CreateFixture()
     {
         var sessions = new LocalDevInMemoryVerificationSessionRepository();
@@ -337,6 +330,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
     private static JsonSerializerOptions CreateJsonOptions()
     {
         var options = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+        options.Converters.Add(new VerificationProfileDtoJsonConverter());
         options.Converters.Add(new JsonStringEnumConverter());
         return options;
     }

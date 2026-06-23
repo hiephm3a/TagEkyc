@@ -70,7 +70,7 @@ public sealed class LocalDevEs256JwsEvidenceSigner : IEvidenceSigner, IDisposabl
             alg = EvidenceSignatureDefaults.AlgorithmEs256,
             kid = keyId,
         });
-        var signedAt = DateTimeOffset.UtcNow;
+        var signedAt = TruncateToMicroseconds(DateTimeOffset.UtcNow);
         var payloadJson = BuildSignedClaimJson(request, signedAt);
         var signingInput = $"{Base64Url(Encoding.UTF8.GetBytes(headerJson))}.{Base64Url(Encoding.UTF8.GetBytes(payloadJson))}";
         var signature = key.SignData(
@@ -120,6 +120,15 @@ public sealed class LocalDevEs256JwsEvidenceSigner : IEvidenceSigner, IDisposabl
             hashAlgorithm = request.HashAlgorithm,
             signedAt = EvidenceCanonicalization.FormatTimestamp(signedAt),
         });
+
+    private static DateTimeOffset TruncateToMicroseconds(DateTimeOffset value)
+    {
+        const long ticksPerMicrosecond = TimeSpan.TicksPerMillisecond / 1000;
+        var utc = value.ToUniversalTime();
+        return new DateTimeOffset(
+            utc.Ticks - (utc.Ticks % ticksPerMicrosecond),
+            TimeSpan.Zero);
+    }
 
     private static ECDsa CreateDefaultDevKey() => ECDsa.Create(ECCurve.NamedCurves.nistP256);
 

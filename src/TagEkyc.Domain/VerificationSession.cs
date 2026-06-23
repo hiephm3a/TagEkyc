@@ -10,8 +10,8 @@ public sealed record VerificationSession
         string purpose,
         IReadOnlySet<RequiredCheckType> requiredChecks,
         string? externalSessionId,
-        string? externalTransactionId,
-        HashRef? bindingNonceHash,
+        string? clientReference,
+        string? challenge,
         string requestId,
         string correlationId,
         VerificationSessionState state,
@@ -33,8 +33,8 @@ public sealed record VerificationSession
         Purpose = purpose;
         RequiredChecks = requiredChecks;
         ExternalSessionId = externalSessionId;
-        ExternalTransactionId = externalTransactionId;
-        BindingNonceHash = bindingNonceHash;
+        ClientReference = clientReference;
+        Challenge = challenge;
         RequestId = requestId;
         CorrelationId = correlationId;
         State = state;
@@ -57,8 +57,8 @@ public sealed record VerificationSession
     public string Purpose { get; }
     public IReadOnlySet<RequiredCheckType> RequiredChecks { get; }
     public string? ExternalSessionId { get; }
-    public string? ExternalTransactionId { get; }
-    public HashRef? BindingNonceHash { get; }
+    public string? ClientReference { get; }
+    public string? Challenge { get; }
     public string RequestId { get; }
     public string CorrelationId { get; }
     public VerificationSessionState State { get; }
@@ -82,8 +82,8 @@ public sealed record VerificationSession
         DateTimeOffset expiresAt,
         DateTimeOffset createdAt,
         string? externalSessionId = null,
-        string? externalTransactionId = null,
-        HashRef? bindingNonceHash = null,
+        string? clientReference = null,
+        string? challenge = null,
         string? requestId = null,
         string? correlationId = null,
         DataBoundaryMetadata? metadata = null)
@@ -109,16 +109,11 @@ public sealed record VerificationSession
             throw new ArgumentException("At least one required check is required.", nameof(requiredChecks));
         }
 
-        if (profile == VerificationProfile.TransactionBoundEkycProfile)
+        if (profile == VerificationProfile.ChallengeBoundEkycProfile)
         {
-            if (string.IsNullOrWhiteSpace(externalTransactionId))
+            if (string.IsNullOrEmpty(challenge))
             {
-                throw new ArgumentException("Transaction-bound sessions require an external transaction id.", nameof(externalTransactionId));
-            }
-
-            if (bindingNonceHash is null)
-            {
-                throw new ArgumentException("Transaction-bound sessions require a binding nonce hash.", nameof(bindingNonceHash));
+                throw new ArgumentException("Challenge-bound sessions require a challenge.", nameof(challenge));
             }
         }
 
@@ -130,8 +125,8 @@ public sealed record VerificationSession
             purpose,
             checkSet,
             externalSessionId,
-            externalTransactionId,
-            bindingNonceHash,
+            clientReference,
+            challenge,
             requestId ?? string.Empty,
             correlationId ?? string.Empty,
             VerificationSessionState.Created,
@@ -156,8 +151,8 @@ public sealed record VerificationSession
             Purpose,
             RequiredChecks,
             ExternalSessionId,
-            ExternalTransactionId,
-            BindingNonceHash,
+            ClientReference,
+            Challenge,
             RequestId,
             CorrelationId,
             state,
@@ -190,8 +185,8 @@ public sealed record VerificationSession
             Purpose,
             RequiredChecks,
             ExternalSessionId,
-            ExternalTransactionId,
-            BindingNonceHash,
+            ClientReference,
+            Challenge,
             requestId,
             correlationId,
             VerificationSessionState.Completed,

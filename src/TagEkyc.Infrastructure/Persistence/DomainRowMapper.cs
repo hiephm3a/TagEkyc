@@ -23,8 +23,8 @@ internal static class DomainRowMapper
             Purpose = session.Purpose,
             RequiredChecksJson = PersistenceJson.Serialize(session.RequiredChecks.Select(check => check.ToString()).ToArray()),
             ExternalSessionId = session.ExternalSessionId,
-            ExternalTransactionId = session.ExternalTransactionId,
-            BindingNonceHash = session.BindingNonceHash?.ToString(),
+            ExternalTransactionId = session.ClientReference,
+            BindingNonceHash = session.Challenge,
             RequestId = session.RequestId,
             CorrelationId = session.CorrelationId,
             State = session.State.ToString(),
@@ -70,12 +70,12 @@ internal static class DomainRowMapper
             row.Id,
             row.ClientApplicationId,
             row.SubjectRef,
-            Parse<VerificationProfile>(row.Profile),
+            ParseProfile(row.Profile),
             row.Purpose,
             requiredChecks,
             row.ExternalSessionId,
             row.ExternalTransactionId,
-            ToHash(row.BindingNonceHash),
+            row.BindingNonceHash,
             row.RequestId,
             row.CorrelationId,
             Parse<VerificationSessionState>(row.State),
@@ -329,6 +329,15 @@ internal static class DomainRowMapper
     private static TEnum Parse<TEnum>(string value)
         where TEnum : struct, Enum =>
         Enum.Parse<TEnum>(value, ignoreCase: false);
+
+    private static VerificationProfile ParseProfile(string value) =>
+        value switch
+        {
+            nameof(VerificationProfile.StandardEkycProfile) => VerificationProfile.StandardEkycProfile,
+            nameof(VerificationProfile.ChallengeBoundEkycProfile) => VerificationProfile.ChallengeBoundEkycProfile,
+            "TransactionBoundEkycProfile" => VerificationProfile.ChallengeBoundEkycProfile,
+            _ => throw new ArgumentOutOfRangeException(nameof(value), value, "Unknown verification profile."),
+        };
 
     private static void EnsureKnownSignatureEnvelope(
         EvidenceManifestRow row,

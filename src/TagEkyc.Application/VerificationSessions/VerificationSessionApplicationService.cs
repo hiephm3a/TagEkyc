@@ -61,31 +61,44 @@ public sealed class VerificationSessionApplicationService(
         }
 
         var profile = ToDomain(request.Profile);
-        if (profile == VerificationProfile.TransactionBoundEkycProfile && !policy.AllowsTransactionBoundProfile)
+        if (profile == VerificationProfile.ChallengeBoundEkycProfile && !policy.AllowsChallengeBoundProfile)
         {
-            return Forbidden<CreateVerificationSessionResponseDto>("TRANSACTION_BOUND_NOT_ALLOWED", "Transaction-bound sessions are not allowed for this client application.");
+            return Forbidden<CreateVerificationSessionResponseDto>("CHALLENGE_BOUND_NOT_ALLOWED", "Challenge-bound sessions are not allowed for this client application.");
         }
 
-        HashRef? bindingNonceHash = null;
-        if (profile == VerificationProfile.TransactionBoundEkycProfile)
+        if (profile == VerificationProfile.ChallengeBoundEkycProfile)
         {
-            if (string.IsNullOrWhiteSpace(request.ExternalTransactionId) || string.IsNullOrWhiteSpace(request.BindingNonceHash))
+            if (request.HasConflictingChallengeFields)
             {
                 return SessionOperationResult<CreateVerificationSessionResponseDto>.Failure(
-                    "MISSING_TRANSACTION_BINDING",
-                    "Transaction-bound sessions require externalTransactionId and bindingNonceHash.",
+                    "CONFLICTING_CHALLENGE_FIELDS",
+                    "New and legacy challenge binding fields must not differ.",
                     400);
             }
 
-            if (!TryCreateHashRef(request.BindingNonceHash, out var parsedBindingNonceHash))
+            if (string.IsNullOrEmpty(request.Challenge))
             {
                 return SessionOperationResult<CreateVerificationSessionResponseDto>.Failure(
-                    "INVALID_BINDING_NONCE_HASH",
-                    "bindingNonceHash must use the sha256: prefix.",
+                    "MISSING_CHALLENGE",
+                    "Challenge-bound sessions require challenge.",
                     400);
             }
 
-            bindingNonceHash = parsedBindingNonceHash;
+            if (request.Challenge.Length > 128)
+            {
+                return SessionOperationResult<CreateVerificationSessionResponseDto>.Failure(
+                    "CHALLENGE_TOO_LONG",
+                    "challenge must be 128 characters or fewer.",
+                    400);
+            }
+
+            if (ContainsC0OrC1Control(request.Challenge))
+            {
+                return SessionOperationResult<CreateVerificationSessionResponseDto>.Failure(
+                    "INVALID_CHALLENGE",
+                    "challenge must not contain C0 or C1 control characters.",
+                    400);
+            }
         }
 
         if (!string.IsNullOrWhiteSpace(request.ExternalSessionId))
@@ -130,8 +143,8 @@ public sealed class VerificationSessionApplicationService(
             request.ExpiresAt,
             now,
             request.ExternalSessionId,
-            request.ExternalTransactionId,
-            bindingNonceHash,
+            request.ClientReference,
+            request.Challenge,
             request.RequestId,
             request.CorrelationId,
             DataBoundaryMetadata.CreateDefault(policy!.PolicySnapshotId, requiredChecks));
@@ -144,6 +157,8 @@ public sealed class VerificationSessionApplicationService(
             ToDto(session.Profile),
             ToDto(session.State),
             ToDto(session.Result),
+            session.Challenge,
+            session.ClientReference,
             session.RequestId,
             session.CorrelationId,
             session.ExpiresAt));
@@ -187,6 +202,8 @@ public sealed class VerificationSessionApplicationService(
             FormatId(session.Id),
             ToDto(session.Profile),
             session.ExternalSessionId,
+            session.Challenge,
+            session.ClientReference,
             session.Purpose,
             ToDto(session.State),
             ToDto(session.Result),
@@ -259,19 +276,8 @@ public sealed class VerificationSessionApplicationService(
     private static SessionOperationResult<T> Forbidden<T>(string code, string message) =>
         SessionOperationResult<T>.Failure(code, message, 403);
 
-    private static bool TryCreateHashRef(string value, out HashRef hashRef)
-    {
-        try
-        {
-            hashRef = new HashRef(value);
-            return true;
-        }
-        catch (ArgumentException)
-        {
-            hashRef = default;
-            return false;
-        }
-    }
+    private static bool ContainsC0OrC1Control(string value) =>
+        value.Any(character => character <= '\u001F' || (character >= '\u007F' && character <= '\u009F'));
 
     private static AuditEvent CreateAuditEvent(
         AuthenticatedClientContext caller,
@@ -294,7 +300,7 @@ public sealed class VerificationSessionApplicationService(
         profile switch
         {
             VerificationProfileDto.StandardEkycProfile => VerificationProfile.StandardEkycProfile,
-            VerificationProfileDto.TransactionBoundEkycProfile => VerificationProfile.TransactionBoundEkycProfile,
+            VerificationProfileDto.ChallengeBoundEkycProfile => VerificationProfile.ChallengeBoundEkycProfile,
             _ => throw new ArgumentOutOfRangeException(nameof(profile), profile, null),
         };
 
@@ -302,7 +308,7 @@ public sealed class VerificationSessionApplicationService(
         profile switch
         {
             VerificationProfile.StandardEkycProfile => VerificationProfileDto.StandardEkycProfile,
-            VerificationProfile.TransactionBoundEkycProfile => VerificationProfileDto.TransactionBoundEkycProfile,
+            VerificationProfile.ChallengeBoundEkycProfile => VerificationProfileDto.ChallengeBoundEkycProfile,
             _ => throw new ArgumentOutOfRangeException(nameof(profile), profile, null),
         };
 

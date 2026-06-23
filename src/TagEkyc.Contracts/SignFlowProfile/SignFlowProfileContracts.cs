@@ -16,8 +16,8 @@ public static class SignFlowS1RequiredChecks
 
 public sealed record SigningAuthorizationBindingDto(
     string ExternalSessionId,
-    string ExternalTransactionId,
-    string BindingNonceHash,
+    string ClientReference,
+    string Challenge,
     string EvidencePackageId,
     string EvidencePackageHash);
 
