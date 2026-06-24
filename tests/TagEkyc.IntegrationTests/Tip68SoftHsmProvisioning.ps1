@@ -1,3 +1,10 @@
+<#
+TIP-68 SoftHSM provisioning helper.
+
+SOFTHSM2_MODULE is the canonical CI/other-machine entry point for selecting the
+PKCS#11 module. Built-in paths are local developer fallbacks only.
+#>
+
 param(
     [string]$TokenDirectory = (Join-Path $env:TEMP "tagekyc-tip68-softhsm"),
     [string]$TokenLabel = "tagekyc-tip68",

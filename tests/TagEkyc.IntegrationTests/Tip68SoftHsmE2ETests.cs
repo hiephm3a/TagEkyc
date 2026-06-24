@@ -178,6 +178,7 @@ public sealed class Tip68SoftHsmFixture : IAsyncLifetime
 
     private readonly Pkcs11InteropFactories factories = new();
     private string? previousSoftHsmConf;
+    private string? previousPath;
 
     public string TokenLabel { get; } = $"tagekyc-tip68-{Guid.NewGuid():N}"[..24];
 
@@ -207,6 +208,7 @@ public sealed class Tip68SoftHsmFixture : IAsyncLifetime
     {
         ModulePath = ResolveSoftHsmModulePath();
         SoftHsmUtilPath = ResolveSoftHsmUtilPath();
+        previousPath = Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process);
         AddSoftHsmToProcessPath(ModulePath, SoftHsmUtilPath);
         SoftHsmVersion = await RunProcessAsync(SoftHsmUtilPath, ["--version"], new Dictionary<string, string>());
         await RunProvisioningScriptAsync();
@@ -221,6 +223,7 @@ public sealed class Tip68SoftHsmFixture : IAsyncLifetime
     public Task DisposeAsync()
     {
         Environment.SetEnvironmentVariable("SOFTHSM2_CONF", previousSoftHsmConf, EnvironmentVariableTarget.Process);
+        Environment.SetEnvironmentVariable("PATH", previousPath, EnvironmentVariableTarget.Process);
         try
         {
             if (Directory.Exists(TokenDirectory))
@@ -412,6 +415,8 @@ public sealed class Tip68SoftHsmFixture : IAsyncLifetime
 
     private static string ResolveSoftHsmModulePath()
     {
+        // CI and non-local machines should set SOFTHSM2_MODULE explicitly; the
+        // portable %TEMP% path is only a local developer fallback.
         var env = Environment.GetEnvironmentVariable("SOFTHSM2_MODULE");
         if (!string.IsNullOrWhiteSpace(env) && File.Exists(env))
         {
