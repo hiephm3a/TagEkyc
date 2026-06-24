@@ -222,6 +222,8 @@ T2-1 RFC 8785 JCS canonicalization is resolved by TIP-65 for the S1 evidence pac
 
 T2-2 is resolved by TIP-66 only as an S1 package-level real JWS signing foundation over `manifestHash` using a local non-production ES256 dev/P12 adapter behind `IEvidenceSigner`. This does not resolve production HSM/KMS, CA-issued certificate signing, legal sufficiency, non-repudiation, replay protection, payload signing, webhook signing, runtime consumer verification, or decision-basis binding. Those remain outside S1/TIP-66 reliance. Link: EBS-07.
 
+TIP-68 adds the production-custody signing backend as a swap behind the same `IEvidenceSigner`: `Pkcs11Es256JwsEvidenceSigner` signs the same TIP-66/TIP-67B JWS envelope and neutral-proof claim with an HSM-held ES256 key via PKCS#11. It changes key custody and rotation only; it does not add a second signature, does not change the neutral-proof claim shape, and does not feed back into `manifestBodyHash`, `packageHash`, or `manifestHash`. Production legal sufficiency, CA/TSA/qualified signatures, payload/webhook signing, and runtime verifier services remain separate deferred surfaces.
+
 ## Entity: client_applications
 
 Purpose: Represents an external system allowed to create verification sessions.

@@ -109,6 +109,7 @@ The verification trust anchor is out-of-band configuration, not the embedded JWK
 
 - expected `kid`
 - expected `publicKeyFingerprint`
+- the retained historical set of previously trusted (`kid`, `publicKeyFingerprint`) pairs until the retention period for packages signed by those keys expires
 
 `publicKeyFingerprint` is:
 
@@ -123,6 +124,20 @@ computed over the UTF-8 bytes of the RFC 8785 JCS canonical public JWK object:
 ```
 
 The embedded `publicKeyJwk` MUST contain only `kty`, `crv`, `x`, and `y`. It MUST NOT contain private `d`, certificate material, P12 material, key operations, or any other field. SignFlow MUST reject the view unless the embedded public JWK canonicalizes to the pinned fingerprint.
+
+### Key Rotation And Trust-Anchor History
+
+TIP-68 keeps JWKS/public discovery deferred. Historical verification therefore relies on the sign-time key material embedded in each package envelope, but that embedded key is not a trust anchor by itself.
+
+When TagEkyc rotates the current signing key:
+
+- TagEkyc issues a rotation notice containing the new `kid` and `publicKeyFingerprint`.
+- SignFlow adds the new (`kid`, `publicKeyFingerprint`) pair to its out-of-band pinned anchor set before accepting packages signed by the new key.
+- SignFlow retains old (`kid`, `publicKeyFingerprint`) pairs in that pinned anchor set until the retention period for packages signed by those keys expires.
+- A historical package verifies only if its embedded `publicKeyJwk` canonicalizes to a fingerprint that matches a retained pinned pair for its `kid`.
+- SignFlow MUST NOT replace this retained anchor-set check with "trust whatever public key is embedded in the package."
+
+This preserves the TIP-67B invariant that old packages verify via their persisted sign-time key while preserving the trust invariant that the persisted key must still match a pinned historical trust anchor.
 
 ### Verification Algorithm
 

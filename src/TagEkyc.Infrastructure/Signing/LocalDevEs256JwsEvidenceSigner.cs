@@ -2,7 +2,6 @@ using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using TagEkyc.Application.Ports;
-using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Domain;
 
 namespace TagEkyc.Infrastructure.Signing;
@@ -65,7 +64,7 @@ public sealed class LocalDevEs256JwsEvidenceSigner : IEvidenceSigner, IDisposabl
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var signedAt = TruncateToMicroseconds(DateTimeOffset.UtcNow);
+        var signedAt = Es256JwsEvidenceSignatureBuilder.TruncateToMicroseconds(DateTimeOffset.UtcNow);
         var payloadJson = BuildSignedClaimJson(request, signedAt);
         var jws = SignPayload(payloadJson);
 
@@ -85,7 +84,7 @@ public sealed class LocalDevEs256JwsEvidenceSigner : IEvidenceSigner, IDisposabl
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        var signedAt = TruncateToMicroseconds(DateTimeOffset.UtcNow);
+        var signedAt = Es256JwsEvidenceSignatureBuilder.TruncateToMicroseconds(DateTimeOffset.UtcNow);
         var payloadJson = BuildProofClaimJson(request, signedAt);
         var jws = SignPayload(payloadJson);
         var publicKeyJwk = ExportPublicKeyJwk();
@@ -99,7 +98,7 @@ public sealed class LocalDevEs256JwsEvidenceSigner : IEvidenceSigner, IDisposabl
             signedAt,
             jws,
             publicKeyJwk,
-            ComputePublicKeyFingerprint(publicKeyJwk)));
+            Es256JwsEvidenceSignatureBuilder.ComputePublicKeyFingerprint(publicKeyJwk)));
     }
 
     public ECDsa ExportPublicKey()
@@ -123,117 +122,33 @@ public sealed class LocalDevEs256JwsEvidenceSigner : IEvidenceSigner, IDisposabl
     }
 
     private static string BuildSignedClaimJson(EvidenceSignatureRequest request, DateTimeOffset signedAt) =>
-        EvidenceCanonicalization.Canonicalize(new
-        {
-            purpose = request.Purpose,
-            signedManifestHash = request.ManifestHash,
-            packageId = request.PackageId,
-            packageVersion = request.PackageVersion,
-            canonicalizationScheme = request.CanonicalizationScheme,
-            hashAlgorithm = request.HashAlgorithm,
-            signedAt = EvidenceCanonicalization.FormatTimestamp(signedAt),
-        });
+        Es256JwsEvidenceSignatureBuilder.BuildSignedClaimJson(request, signedAt);
 
     private static string BuildProofClaimJson(EvidenceProofSignatureRequest request, DateTimeOffset signedAt)
     {
-        var signedAtText = EvidenceCanonicalization.FormatTimestamp(signedAt);
-        var orderedRequiredChecks = request.RequiredChecks.Order(StringComparer.Ordinal).ToArray();
-        var orderedCompletedChecks = request.CompletedChecks.Order(StringComparer.Ordinal).ToArray();
-        var orderedEngines = request.EvidenceEngines
-            .OrderBy(engine => engine.EvidenceResultType, StringComparer.Ordinal)
-            .ThenBy(engine => engine.EvidenceResultId, StringComparer.Ordinal)
-            .ToArray();
-        var resultHashPreimage = new
-        {
-            proofVersion = EvidenceSignatureDefaults.ProofVersionNeutralV1,
-            purpose = request.Purpose,
-            sessionId = request.SessionId,
-            identityRef = request.IdentityRef,
-            packageId = request.PackageId,
-            packageVersion = request.PackageVersion,
-            canonicalizationScheme = request.CanonicalizationScheme,
-            hashAlgorithm = request.HashAlgorithm,
-            result = request.Result,
-            assuranceLevel = request.AssuranceLevel,
-            requiredChecks = orderedRequiredChecks,
-            completedChecks = orderedCompletedChecks,
-            evidenceEngines = orderedEngines,
-            signedAt = signedAtText,
-            challenge = request.Challenge,
-            signedManifestHash = request.SignedManifestHash,
-        };
-        var resultHash = EvidenceCanonicalization.HashCanonical(
-            EvidenceSignatureDefaults.ResultHashLabel,
-            resultHashPreimage);
-
-        return EvidenceCanonicalization.Canonicalize(new
-        {
-            proofVersion = EvidenceSignatureDefaults.ProofVersionNeutralV1,
-            purpose = request.Purpose,
-            sessionId = request.SessionId,
-            identityRef = request.IdentityRef,
-            packageId = request.PackageId,
-            packageVersion = request.PackageVersion,
-            canonicalizationScheme = request.CanonicalizationScheme,
-            hashAlgorithm = request.HashAlgorithm,
-            result = request.Result,
-            assuranceLevel = request.AssuranceLevel,
-            requiredChecks = orderedRequiredChecks,
-            completedChecks = orderedCompletedChecks,
-            evidenceEngines = orderedEngines,
-            signedAt = signedAtText,
-            challenge = request.Challenge,
-            signedManifestHash = request.SignedManifestHash,
-            resultHash,
-            resultHashAlgorithm = EvidenceSignatureDefaults.ResultHashAlgorithmSha256,
-            resultHashCanonicalizationScheme = EvidenceSignatureDefaults.ResultHashCanonicalizationSchemeJcsV1,
-        });
+        return Es256JwsEvidenceSignatureBuilder.BuildProofClaimJson(request, signedAt);
     }
 
     private string SignPayload(string payloadJson)
     {
-        var headerJson = EvidenceCanonicalization.Canonicalize(new
-        {
-            alg = EvidenceSignatureDefaults.AlgorithmEs256,
-            kid = keyId,
-        });
-        var signingInput = $"{Base64Url(Encoding.UTF8.GetBytes(headerJson))}.{Base64Url(Encoding.UTF8.GetBytes(payloadJson))}";
+        var headerJson = Es256JwsEvidenceSignatureBuilder.BuildProtectedHeaderJson(keyId);
+        var signingInput = Es256JwsEvidenceSignatureBuilder.BuildSigningInput(headerJson, payloadJson);
         var signature = key.SignData(
             Encoding.ASCII.GetBytes(signingInput),
             HashAlgorithmName.SHA256,
             DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
-        return $"{signingInput}.{Base64Url(signature)}";
+        return Es256JwsEvidenceSignatureBuilder.BuildCompactJws(signingInput, signature);
     }
 
     private string ExportPublicKeyJwk()
     {
         var parameters = key.ExportParameters(includePrivateParameters: false);
-        return EvidenceCanonicalization.Canonicalize(new
-        {
-            kty = "EC",
-            crv = "P-256",
-            x = Base64Url(parameters.Q.X ?? throw new InvalidOperationException("ECDSA public key is missing x.")),
-            y = Base64Url(parameters.Q.Y ?? throw new InvalidOperationException("ECDSA public key is missing y.")),
-        });
-    }
-
-    private static string ComputePublicKeyFingerprint(string publicKeyJwk) =>
-        $"{EvidenceSignatureDefaults.ResultHashAlgorithmSha256}:{Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(publicKeyJwk))).ToLowerInvariant()}";
-
-    private static DateTimeOffset TruncateToMicroseconds(DateTimeOffset value)
-    {
-        const long ticksPerMicrosecond = TimeSpan.TicksPerMillisecond / 1000;
-        var utc = value.ToUniversalTime();
-        return new DateTimeOffset(
-            utc.Ticks - (utc.Ticks % ticksPerMicrosecond),
-            TimeSpan.Zero);
+        return Es256JwsEvidenceSignatureBuilder.BuildPublicJwk(
+            parameters.Q.X ?? throw new InvalidOperationException("ECDSA public key is missing x."),
+            parameters.Q.Y ?? throw new InvalidOperationException("ECDSA public key is missing y."));
     }
 
     private static ECDsa CreateDefaultDevKey() => ECDsa.Create(ECCurve.NamedCurves.nistP256);
 
-    private static string Base64Url(byte[] bytes) =>
-        Convert.ToBase64String(bytes)
-            .TrimEnd('=')
-            .Replace('+', '-')
-            .Replace('/', '_');
+    private static string Base64Url(byte[] bytes) => Es256JwsEvidenceSignatureBuilder.Base64Url(bytes);
 }

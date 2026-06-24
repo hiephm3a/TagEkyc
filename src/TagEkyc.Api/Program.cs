@@ -25,11 +25,7 @@ builder.Services.AddSingleton<LocalDevApiKeyValidator>();
 builder.Services.AddSingleton<ILocalDevApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
 builder.Services.AddSingleton<LocalDevInMemoryMetadataReferenceRegistry>();
 builder.Services.AddSingleton<IMetadataReferenceRegistry>(sp => sp.GetRequiredService<LocalDevInMemoryMetadataReferenceRegistry>());
-builder.Services.AddSingleton<IEvidenceSigner>(_ =>
-    new LocalDevEs256JwsEvidenceSigner(
-        builder.Configuration
-            .GetSection(LocalDevEs256JwsEvidenceSignerOptions.SectionName)
-            .Get<LocalDevEs256JwsEvidenceSignerOptions>() ?? new LocalDevEs256JwsEvidenceSignerOptions()));
+ConfigureEvidenceSigning(builder);
 ConfigurePersistence(builder);
 builder.Services.AddScoped<VerificationSessionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
@@ -108,6 +104,58 @@ static void ConfigurePersistence(WebApplicationBuilder builder)
     builder.Services.AddSingleton<IInternalEvidenceManifestRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceManifestRepository>());
     builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
     builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
+}
+
+static void ConfigureEvidenceSigning(WebApplicationBuilder builder)
+{
+    builder.Services
+        .AddOptions<EvidenceSigningOptions>()
+        .Bind(builder.Configuration.GetSection(EvidenceSigningOptions.SectionName))
+        .Validate(options => ValidateEvidenceSigningBackend(options, builder.Environment.IsProduction()), "Invalid evidence signing backend configuration.")
+        .ValidateOnStart();
+
+    builder.Services
+        .AddOptions<LocalDevEs256JwsEvidenceSignerOptions>()
+        .Bind(builder.Configuration.GetSection(LocalDevEs256JwsEvidenceSignerOptions.SectionName));
+
+    builder.Services
+        .AddOptions<Pkcs11Es256JwsEvidenceSignerOptions>()
+        .Bind(builder.Configuration.GetSection(Pkcs11Es256JwsEvidenceSignerOptions.SectionName));
+
+    builder.Services.AddSingleton<IEvidenceSigner>(sp =>
+    {
+        var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<EvidenceSigningOptions>>().Value;
+        var backend = string.IsNullOrWhiteSpace(options.Backend)
+            ? EvidenceSigningBackends.LocalDev
+            : options.Backend;
+
+        return backend switch
+        {
+            EvidenceSigningBackends.LocalDev => new LocalDevEs256JwsEvidenceSigner(
+                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<LocalDevEs256JwsEvidenceSignerOptions>>().Value),
+            EvidenceSigningBackends.Pkcs11 => new Pkcs11Es256JwsEvidenceSigner(
+                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<Pkcs11Es256JwsEvidenceSignerOptions>>().Value),
+            _ => throw new InvalidOperationException("Unsupported evidence signing backend."),
+        };
+    });
+    builder.Services.AddHostedService<EvidenceSignerStartupValidationHostedService>();
+}
+
+static bool ValidateEvidenceSigningBackend(EvidenceSigningOptions options, bool isProduction)
+{
+    if (!string.IsNullOrWhiteSpace(options.Backend) &&
+        options.Backend is not EvidenceSigningBackends.LocalDev and not EvidenceSigningBackends.Pkcs11)
+    {
+        return false;
+    }
+
+    if ((isProduction || options.RequireHardwareSigner) &&
+        !string.Equals(options.Backend, EvidenceSigningBackends.Pkcs11, StringComparison.Ordinal))
+    {
+        return false;
+    }
+
+    return true;
 }
 
 public partial class Program;
