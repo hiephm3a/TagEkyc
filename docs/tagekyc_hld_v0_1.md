@@ -8,7 +8,7 @@ TagEkyc MUST answer who the person is. It MUST NOT answer what document the pers
 
 ## Non-Goals
 
-- TagEkyc MUST NOT perform digital signing.
+- TagEkyc MUST NOT perform document signing, transaction-consent signing, qualified digital signing, or non-repudiation signing for SignFlow. TagEkyc MAY sign its own eKYC proof/evidence envelope for integrity, origin identification, and audit verification.
 - TagEkyc MUST NOT render signing documents for consent.
 - TagEkyc MUST NOT depend on SignFlow internals.
 - TagEkyc MUST NOT expose raw sensitive evidence to consumers by default.
@@ -59,7 +59,7 @@ Manages external client applications, API keys, permissions, webhook subscriptio
 
 Owns lifecycle, state transitions, RequiredChecks policy, profile, external correlation fields, captured artifacts, verification checks, evidence results, evidence package, callbacks/webhooks, expiry, and final decision assembly. `VerificationSession` is the root business correlation object, not merely a technical session id. It MUST use explicit state and result enums.
 
-`STANDARD_EKYC_PROFILE` is the generic platform profile for ordinary identity assurance. `TRANSACTION_BOUND_EKYC_PROFILE` is used when the result must be tied to an external transaction and requires `bindingNonceHash`.
+`STANDARD_EKYC_PROFILE` is the generic platform profile for ordinary identity assurance. `CHALLENGE_BOUND_EKYC_PROFILE` is used when the result must carry an opaque caller-owned challenge for the consuming client's own binding workflow. TagEkyc stores and echoes the challenge but MUST NOT interpret it as a transaction id, document id, consent proof, or nonce hash. Legacy `TRANSACTION_BOUND_EKYC_PROFILE` and `bindingNonceHash` inputs are compatibility aliases only.
 
 ### Capture Artifacts
 
@@ -108,7 +108,7 @@ S1 MUST include:
 - Verification Session API
 - Client Application/API Key authentication model
 - RequiredChecks policy
-- `STANDARD_EKYC_PROFILE` and `TRANSACTION_BOUND_EKYC_PROFILE` policy naming
+- `STANDARD_EKYC_PROFILE` and `CHALLENGE_BOUND_EKYC_PROFILE` policy naming, with legacy transaction-bound aliases accepted only for compatibility
 - CaptureArtifact and EvidenceResult logical model
 - Generic `CAPTURE_QUALITY` result category
 - CCCD/NFC result shape
@@ -182,8 +182,8 @@ STOP/RRI is required before runtime implementation, provider-specific evidence c
 
 ## SignFlow Integration Overview
 
-SignFlow is the first named `TRANSACTION_BOUND_EKYC_PROFILE` consumer, not the generic TagEkyc platform model. Generic sessions do not default to `externalSystem = SignFlow` or `purpose = SIGNING_AUTH`.
+SignFlow is the first named `CHALLENGE_BOUND_EKYC_PROFILE` consumer, not the generic TagEkyc platform model. Generic sessions do not default to `externalSystem = SignFlow` or `purpose = SIGNING_AUTH`.
 
-For signing authorization, SignFlow creates a TagEkyc verification session with `externalSessionId`, `externalTransactionId`, `subjectRef`, `purpose = SIGNING_AUTH`, `bindingNonceHash`, and `requiredChecks`. Any `externalSystem` or `clientCode` value MUST be derived from or validated against the authenticated `clientApplicationId`.
+For signing authorization, SignFlow creates a TagEkyc verification session with `externalSessionId`, optional `clientReference`, `subjectRef`, `purpose = SIGNING_AUTH`, opaque `challenge`, and `requiredChecks`. Any `externalSystem` or `clientCode` value MUST be derived from or validated against the authenticated `clientApplicationId`. Legacy `externalTransactionId` and `bindingNonceHash` request keys may be accepted only as input aliases for `ClientReference` and `Challenge`.
 
-TagEkyc returns a verification result and evidence package. SignFlow MUST validate that `externalSessionId`, `externalTransactionId`, and `bindingNonceHash` match the signing transaction before binding the evidence to a signing session.
+TagEkyc returns a verification result, evidence package identifiers/hashes, and the verification view when enabled. SignFlow MUST validate that `externalSessionId`, `clientReference`, `challenge`, final result, evidence hashes, and proof authenticity match its own signing transaction before binding the evidence to a signing session.

@@ -1,21 +1,28 @@
-# TagEkyc Product Brief v0.1.1
+# TagEkyc Product Brief v0.1.2
 
 **File:** `00_product_brief_v0_1.md`
-**Version:** 0.1.1 - Vendor reference enrichment + document history
-**Date:** 05/06/2026
-**Status:** Draft - product brief baseline for review
+**Version:** 0.1.2 - TIP-67/TIP-68 neutrality and proof-signing alignment
+**Date:** 24/06/2026
+**Status:** Draft - product brief baseline with TIP-67/TIP-68 supersession notes
 **Purpose:** Product brief for TagEkyc as an independent eKYC / identity assurance platform.
 
 ---
 
 ## Changelog
 
+### v0.1.2 - TIP-67/TIP-68 neutrality and proof-signing alignment (24/06/2026)
+
+- Clarified that TagEkyc still must not perform document signing, transaction-consent signing, qualified digital signing, or non-repudiation signing for SignFlow, while it may sign its own eKYC proof/evidence envelope for integrity, origin identification, and audit verification.
+- Superseded transaction-bound product language with the neutral `CHALLENGE_BOUND_EKYC_PROFILE`: TagEkyc stores and echoes an opaque `Challenge` and optional `ClientReference`, without interpreting them as transaction, document, consent, or nonce-hash semantics.
+- Marked legacy `TRANSACTION_BOUND_EKYC_PROFILE`, `externalTransactionId`, and `bindingNonceHash` as compatibility aliases only; they are not the authoritative product model.
+- Updated signature-layer status: evidence/proof signing exists at dev level through TIP-66/TIP-67B, production HSM custody is TIP-68 Slice A, and payload/webhook/CA/TSA/qualified non-repudiation remain deferred.
+
 ### v0.1.1 - Vendor reference enrichment + document history (05/06/2026)
 
 - Added `VerificationSession` as the root business correlation object.
 - Added `CaptureArtifact` vs `EvidenceResult` distinction.
 - Added `CAPTURE_QUALITY` and retry/failure semantics.
-- Added explicit `STANDARD_EKYC_PROFILE` vs `TRANSACTION_BOUND_EKYC_PROFILE` language.
+- Added explicit `STANDARD_EKYC_PROFILE` vs `TRANSACTION_BOUND_EKYC_PROFILE` language; superseded by v0.1.2 neutral `CHALLENGE_BOUND_EKYC_PROFILE` terminology.
 - Added signature layer distinction: `payloadSignature`, `webhookSignature`, and `evidencePackageSignature`.
 - Added vendor eKYC reference note for Zalo/Fiza patterns without adopting vendor API semantics.
 - Added missing open decisions for capture quality, artifact retention, signatures, correlation ids, and profile policy mapping.
@@ -23,7 +30,7 @@
 
 ### v0.1 - Initial product brief baseline (24/05/2026)
 
-- Defined TagEkyc product purpose, non-goals, client types, generic session model, transaction-bound profile, SignFlow profile, S1 happy path, data return boundary, and initial open product decisions.
+- Defined TagEkyc product purpose, non-goals, client types, generic session model, transaction-bound profile, SignFlow profile, S1 happy path, data return boundary, and initial open product decisions; transaction-bound terminology was later superseded by v0.1.2.
 
 ---
 
@@ -39,7 +46,7 @@ TagEkyc MUST NOT answer: "what did this person agree to sign?"
 
 ## 2. Non-Goals
 
-TagEkyc MUST NOT perform digital signing.
+TagEkyc MUST NOT perform document signing, transaction-consent signing, qualified digital signing, or non-repudiation signing for SignFlow. TagEkyc MAY sign its own eKYC proof/evidence envelope for integrity, origin identification, and audit verification.
 
 TagEkyc MUST NOT perform WYSIWYS or signing document rendering.
 
@@ -83,10 +90,12 @@ Generic session creation SHOULD include:
 - `expiresAt`
 - optional `externalSessionId`
 
-Transaction-bound fields are optional at the generic platform level:
+Challenge/correlation fields are optional at the generic platform level and profile-gated when required by policy:
 
-- `externalTransactionId`
-- `bindingNonceHash`
+- `clientReference`
+- `challenge`
+
+Legacy request keys `externalTransactionId` and `bindingNonceHash` MAY be accepted for compatibility, but TagEkyc MUST map them into the neutral `ClientReference` and `Challenge` model and MUST NOT treat them as authoritative transaction semantics.
 
 If `clientCode`, `externalSystem`, or similar fields exist, they MUST be derived from or validated against the authenticated `clientApplicationId`. Client-supplied `externalSystem` MUST NOT be treated as authoritative by itself.
 
@@ -150,13 +159,13 @@ A blurry image, poor selfie, weak NFC read, or low-quality fingerprint capture M
 
 Client UX SHOULD distinguish "try again" from "identity failed".
 
-## 7. Transaction-Bound Verification Profile
+## 7. Challenge-Bound Verification Profile
 
 `STANDARD_EKYC_PROFILE` applies to ordinary onboarding, patient registration, account verification, or identity update flows.
 
-`TRANSACTION_BOUND_EKYC_PROFILE` applies when the eKYC result must be tied to a specific external business transaction.
+`CHALLENGE_BOUND_EKYC_PROFILE` applies when a consuming client needs the eKYC result to carry an opaque caller-owned challenge for the client's own downstream binding workflow.
 
-Transaction-bound purposes MAY include:
+Challenge-bound purposes MAY include:
 
 - signing authorization
 - high-risk approval
@@ -164,29 +173,29 @@ Transaction-bound purposes MAY include:
 - account recovery
 - sensitive identity assertion
 
-For transaction-bound purposes, `externalTransactionId` SHOULD be present and `bindingNonceHash` MUST be present.
+For challenge-bound purposes, `challenge` MUST be present. `clientReference` SHOULD be present when the caller needs a separate correlation value.
 
-`bindingNonceHash` is required for `TRANSACTION_BOUND_EKYC_PROFILE`, not every generic verification session.
+The challenge is an opaque caller-supplied string. TagEkyc MUST NOT interpret it as a transaction id, document id, consent proof, nonce hash, or signing authorization.
 
-`bindingNonceHash` MUST be a hash of a client-controlled binding nonce. TagEkyc MUST NOT receive, store, validate, or understand the raw `bindingNonce`.
+TagEkyc MUST store, echo, and, where proof signing is enabled, sign the challenge exactly as the neutral eKYC proof requires. TagEkyc MUST NOT validate whether the challenge binds to any external transaction.
 
-TagEkyc MUST store and echo only `bindingNonceHash`.
+`TRANSACTION_BOUND_EKYC_PROFILE`, `externalTransactionId`, and `bindingNonceHash` are legacy compatibility aliases only. They MUST map to `CHALLENGE_BOUND_EKYC_PROFILE`, `ClientReference`, and `Challenge` and MUST NOT reintroduce transaction-aware behavior into TagEkyc.
 
-The consuming client MUST validate `bindingNonceHash` and external transaction correlation fields before accepting the TagEkyc result for the external transaction.
+The consuming client MUST validate its own session, transaction, consent, document, challenge, and reference binding outside TagEkyc before accepting the result for that external workflow.
 
-If binding validation fails, the consuming client MUST reject the eKYC result for that transaction and MUST NOT bind the evidence package to the transaction.
+If binding validation fails, the consuming client MUST reject the eKYC result for that external workflow and MUST NOT bind the evidence package to its transaction/session.
 
 ## 8. SignFlow Profile
 
-SignFlow is the first transaction-bound consumer profile for TagEkyc. SignFlow is a consuming client application, not the base TagEkyc platform model.
+SignFlow is the first named challenge-bound consumer profile for TagEkyc. SignFlow is a consuming client application, not the base TagEkyc platform model.
 
 For signing authorization, SignFlow sends:
 
 - `externalSessionId`
-- `externalTransactionId`
+- `clientReference`
 - `subjectRef`
 - `purpose = SIGNING_AUTH`
-- `bindingNonceHash`
+- `challenge`
 - `requiredChecks`
 
 TagEkyc returns:
@@ -197,34 +206,38 @@ TagEkyc returns:
 - `evidencePackageHash`
 - sanitized document summaries
 - sanitized biometric summaries
-- binding fields needed for SignFlow validation
+- `manifestHash`
+- verification view / neutral eKYC proof when enabled
+- echoed `challenge` and `clientReference`
 
 SignFlow MUST validate:
 
 - `externalSessionId`
-- `externalTransactionId`
-- `bindingNonceHash`
+- `clientReference`
+- `challenge`
 - final `result`
 - `evidencePackageHash`
-- webhook or result authenticity when implemented
+- `manifestHash`
+- evidence package / proof authenticity using the verification view when enabled
+- webhook or result authenticity when that surface is implemented
 
 SignFlow MUST reject the eKYC result if binding validation fails.
 
-SignFlow MUST NOT use a TagEkyc result from another signing session or transaction.
+SignFlow MUST NOT use a TagEkyc result from another signing session or transaction, and TagEkyc MUST NOT decide that binding on SignFlow's behalf.
 
 ## 9. S1 Happy Path
 
 The recommended S1 happy path is:
 
-1. SignFlow creates a transaction-bound verification session.
+1. SignFlow creates a challenge-bound verification session.
 2. Required checks are CCCD/NFC, face match, and liveness.
 3. Fingerprint is optional/demo-only unless explicitly enabled by policy.
 4. Capture agents or adapter flows record required evidence.
 5. TagEkyc validates required evidence and completes the session.
 6. TagEkyc creates an evidence package.
 7. TagEkyc sends a completion webhook/result to SignFlow.
-8. SignFlow validates `externalSessionId`, `externalTransactionId`, and `bindingNonceHash` before using the result.
-9. SignFlow binds `evidencePackageId` and `evidencePackageHash` to the signing transaction only after validation succeeds.
+8. SignFlow validates `externalSessionId`, `clientReference`, `challenge`, result status, evidence hashes, and proof authenticity before using the result.
+9. SignFlow binds `evidencePackageId` and `evidencePackageHash` to the signing transaction only after its own validation succeeds.
 
 ## 10. Data Return Boundary
 
@@ -240,15 +253,15 @@ Raw evidence access is out of scope for the S1 default consumer flow.
 
 ## 11. Signature Layers
 
-S1 does not require full cryptographic implementation of all signature layers.
+S1 includes dev-level evidence package / neutral proof signing through TIP-66 and TIP-67B behind the `IEvidenceSigner` contract. TIP-68 dispatches production HSM custody for that existing signing surface.
 
-Future production design SHOULD distinguish:
+The product model distinguishes:
 
 - `payloadSignature`: protects a specific API response or payload when applicable.
 - `webhookSignature`: protects callback events and SHOULD include delivery id, timestamp, and replay protection in future production design.
-- `evidencePackageSignature`: protects the evidence package/manifest for long-term audit and verification.
+- `evidencePackageSignature` / neutral proof signature: protects the evidence package/proof claim for integrity, origin identification, and audit verification.
 
-S1 MAY use placeholders, but the Product Brief MUST preserve the conceptual distinction between payload, webhook, and evidence package signatures.
+Payload signing, webhook signing, CA certificates, RFC-3161 timestamping, qualified signatures, and non-repudiation claims remain deferred surfaces unless a later reviewed TIP explicitly promotes them.
 
 ## 12. Vendor eKYC Reference Note
 
@@ -274,9 +287,9 @@ The following product decisions remain open before technical hardening:
 - assurance level mapping
 - webhook signature and replay protection model
 - payload signature model
-- evidence package signature model
+- production evidence/proof signing operations and rotation evidence after TIP-68 build
 - requestId/correlationId conventions
-- profile naming and policy mapping
+- profile policy mapping
 - evidence access policy
 - retention and deletion policy
 - plaintext identity data policy

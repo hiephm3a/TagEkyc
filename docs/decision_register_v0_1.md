@@ -90,7 +90,7 @@ Core finding: 62 TIPs compress to **a small set of state-models + packet-schemas
 
 ## 5. Evidence-Bearing Surface cross-reference
 
-Tier-1/2 review (adversarial + legal) concentrates on the evidence-bearing surfaces, not on Tier-0 plumbing. The EBS registry (to be filed separately) anchors: manifest + manifest hash chain, hash canonicalization (currently `JsonSerializerDefaults.Web`, not RFC 8785 JCS — flagged), append-only audit (placeholder hash for denied-access events — flagged), bindingNonceHash semantics, assurance-level mapping, final-result precedence, signature layers (all placeholder — flagged), data-return/sanitization boundary, finalization atomicity. D-01 + the persistence slice directly touch the audit-durability and finalization-atomicity surfaces, so that slice is Tier-1.
+Tier-1/2 review (adversarial + legal) concentrates on the evidence-bearing surfaces, not on Tier-0 plumbing. The EBS registry (to be filed separately) anchors: manifest + manifest hash chain, hash canonicalization (**RFC 8785 JCS `rfc8785-jcs-v1`, resolved by TIP-65** — was `JsonSerializerDefaults.Web`), append-only audit (placeholder hash for denied-access events — flagged), **opaque-challenge semantics (TIP-67A `CHALLENGE_BOUND_EKYC_PROFILE`, replaced the old `bindingNonceHash`/transaction-binding)**, assurance-level mapping, final-result precedence, **signature layers (real ES256 JWS at DEV-level via TIP-66/67B; production HSM custody = TIP-68 pending — was all-placeholder)**, data-return/sanitization boundary, finalization atomicity. D-01 + the persistence slice directly touch the audit-durability and finalization-atomicity surfaces, so that slice is Tier-1.
 
 ## 6. Provenance (which TIPs fed each row)
 

@@ -26,7 +26,7 @@ Code wins over earlier kickoff wording. The primary code anchors are `Verificati
 
 ## 2. Public Route Surface
 
-Only these six HTTP routes are public S1 routes:
+Only these seven HTTP routes are public S1 routes:
 
 | Route | Caller category | Primary service path |
 | --- | --- | --- |
@@ -36,6 +36,7 @@ Only these six HTTP routes are public S1 routes:
 | `POST /api/ekyc/verification-sessions/{id}/evidence-results` | `TrustedAdapter` | `VerificationEvidenceApplicationService.AppendEvidenceResultAsync` |
 | `POST /api/ekyc/verification-sessions/{id}/complete` | `BusinessConsumer` | `VerificationCompletionApplicationService.CompleteAsync` |
 | `GET /api/ekyc/evidence-packages/{id}` | `BusinessConsumer` | `VerificationCompletionApplicationService.GetEvidencePackageAsync` |
+| `GET /api/ekyc/evidence-packages/{id}/verification-view` | `BusinessConsumer` | `VerificationCompletionApplicationService.GetEvidencePackageVerificationViewAsync` (TIP-67B — neutral verifiable proof + `EvidencePackageVerificationViewDto`; summary route unchanged) |
 
 Specialized evidence routes such as `/document-result`, `/nfc-result`, `/face-result`, `/fingerprint-result`, and `/capture-quality-result` are not mapped in S1. TIP-09 reconciles them as deferred. The implemented TrustedAdapter route is the generic `/evidence-results` route.
 
@@ -54,7 +55,7 @@ sequenceDiagram
     Api->>Auth: X-TagEkyc-Api-Key + business.session.create
     Auth-->>Api: AuthenticatedClientContext
     Api->>Sessions: CreateAsync(caller, request, Idempotency-Key)
-    Sessions->>Sessions: Validate policy, request shape, RequiredChecks, transaction binding, duplicate externalSessionId, expiresAt
+    Sessions->>Sessions: Validate policy, request shape, RequiredChecks, opaque challenge (if challenge-bound profile), duplicate externalSessionId, expiresAt
     Sessions->>Repo: Add session
     Sessions->>Audit: Append SESSION_CREATED
     Sessions-->>Api: CreateVerificationSessionResponseDto
@@ -63,7 +64,7 @@ sequenceDiagram
 
 As-built create derives `ClientApplicationId`, caller category, scopes, and key prefix from authentication; the request body never supplies client identity. A new session starts in `Created`, with `Result = NotAvailable` and `AssuranceLevel = None`.
 
-For `TransactionBoundEkycProfile`, the request must include `ExternalTransactionId` and a `BindingNonceHash` with the `sha256:` prefix. `StandardEkycProfile` does not require those fields and does not default to SignFlow semantics.
+For `ChallengeBoundEkycProfile` (renamed from the old transaction-bound model per TIP-67A — eKYC is neutral and does NOT bind documents/transactions), the request must include an opaque `Challenge` (string, ≤128 chars, no `sha256:` prefix, not hashed/normalized — echoed verbatim, not interpreted) and may include an optional `ClientReference`. The legacy wire keys `externalTransactionId`/`bindingNonceHash` are accepted ONLY as input-compatibility aliases. `StandardEkycProfile` does not require those fields and does not default to SignFlow semantics.
 
 ## 4. Capture Artifact Submission
 
@@ -154,7 +155,7 @@ sequenceDiagram
     else active session
         Completion->>Results: Load latest required evidence
         Completion->>Completion: Calculate final result and assurance level
-        Completion->>Package: Build decision, evidence package, manifest refs, hashes, placeholder signature statuses
+        Completion->>Package: Build decision, evidence package, manifest refs, hashes; sign neutral proof (TIP-66/67B real ES256 JWS → status Signed; legacy = PlaceholderUnverified)
         Completion->>Audit: Prepare VERIFICATION_COMPLETED audit event
         Completion->>Boundary: TryFinalizeAsync(expected, completed, decision, package, manifest, audit)
         Boundary-->>Completion: Applied / AlreadyCompleted / NotFound / conflict
@@ -176,7 +177,7 @@ Final result precedence is:
 
 Assurance level is `Unknown` for `TechnicalError`, `Low` for other non-passed outcomes, `High` when a passed session includes DocumentNfc + FaceMatch + Liveness, and `Medium` for other passed sessions.
 
-The completion audit event type is `VERIFICATION_COMPLETED`. The completion response exposes final decision id, evidence package id, evidence package hash, manifest hash, effective request/correlation ids, completedAt, and placeholder evidence package signature status.
+The completion audit event type is `VERIFICATION_COMPLETED`. The completion response exposes final decision id, evidence package id, evidence package hash, manifest hash, effective request/correlation ids, completedAt, and the evidence package signature status (`Signed` for TIP-66/TIP-67B packages, `PlaceholderUnverified` for legacy/pre-signing packages). The completion response does NOT expose the JWS value, signature envelope, or key material (those are on the dedicated `/verification-view` route).
 
 ## 7. Evidence Package Read
 

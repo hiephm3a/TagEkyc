@@ -4,7 +4,7 @@
 **Version:** 0.4-draft
 **Status:** Draft for review
 **Date:** 2026-06-12
-**Baseline:** Product Brief v0.1.1
+**Baseline:** Product Brief v0.1.2
 **Purpose:** Captures reusable review, planning, and dispatch practices for TagEkyc TIP work.
 
 ## Changelog
@@ -41,7 +41,7 @@ This playbook captures reusable process lessons for TagEkyc documentation, plann
 
 Lessons from prior SignFlow work may be reused only as generalized engineering and governance practices. They MUST NOT import SignFlow business semantics into TagEkyc.
 
-TagEkyc remains an independent eKYC / identity assurance platform. SignFlow remains a transaction-bound consumer profile, not the base TagEkyc platform model.
+TagEkyc remains an independent eKYC / identity assurance platform. SignFlow remains a named `CHALLENGE_BOUND_EKYC_PROFILE` consumer of TagEkyc, not the base platform model. TagEkyc echoes opaque `challenge`/`clientReference` values and does NOT interpret or bind document/transaction semantics (neutral eKYC, per TIP-67A).
 
 ## 2. Non-Import Rule
 
@@ -420,8 +420,8 @@ Consumer integrations must not become the base platform model.
 
 For SignFlow:
 
-- SignFlow is a `TRANSACTION_BOUND_EKYC_PROFILE` consumer.
-- `bindingNonceHash` is required for transaction-bound profile, not generic sessions.
+- SignFlow is a `CHALLENGE_BOUND_EKYC_PROFILE` consumer (renamed from the old transaction-bound model per TIP-67A; eKYC is NEUTRAL — it does NOT bind documents/transactions, only echoes an opaque challenge).
+- An opaque `challenge` (echoed, never interpreted) is the challenge-bound field; `clientReference` is optional. Legacy `bindingNonceHash`/`externalTransactionId` are INPUT-compatibility aliases only — do NOT review against a transaction-binding requirement.
 - `purpose = SIGNING_AUTH` is SignFlow-specific, not generic default.
 - TagEkyc.SignFlow placeholders must be TagEkyc-owned contracts only.
 - No SignFlow source code, database, runtime packages, or internal models may be referenced.
@@ -638,7 +638,7 @@ For TIP-01, this playbook implies:
 - Include UnitTests, ContractTests, and ArchTests placeholders.
 - Keep Infrastructure empty/placeholder only.
 - Keep Adapters empty/shell only.
-- Keep SignFlow as TagEkyc-owned transaction-bound profile placeholders only.
+- Keep SignFlow as TagEkyc-owned `CHALLENGE_BOUND_EKYC_PROFILE` (neutral challenge-bound) placeholders only — legacy transaction-bound naming is an input-compat alias, not the model.
 - Allow only optional health/build smoke endpoint in Api.
 - Do not implement LLD03 business APIs.
 - Do not implement persistence, migrations, Docker runtime services, cryptography, or eKYC business logic.

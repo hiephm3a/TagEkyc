@@ -273,7 +273,7 @@ Completion notification exception: `VerificationCompletedEventDto` does expose `
 | Specialized evidence endpoints | Deferred. Use `POST /api/ekyc/verification-sessions/{id}/evidence-results` for current TrustedAdapter evidence recording. |
 | Fingerprint | DTO/runtime type exists, but default SignFlow S1 does not require it; unauthorized fingerprint capture returns `FINGERPRINT_NOT_ENABLED`. |
 | Fraud risk | DTO/runtime type exists, but current evidence recording rejects it with `FRAUD_RISK_DEFERRED`. |
-| Transaction-bound SignFlow profile | Implemented as TagEkyc-owned profile semantics and test/proof composition only; no SignFlow runtime/source/database/network dependency. |
+| Challenge-bound SignFlow profile | Implemented as TagEkyc-owned `CHALLENGE_BOUND_EKYC_PROFILE` semantics with opaque `Challenge`, optional `ClientReference`, and test/proof composition only; legacy transaction-bound request keys are input-only compatibility aliases; no SignFlow runtime/source/database/network dependency. |
 
 ## 8. OPEN Rules Not Promoted To Authoritative Runtime
 

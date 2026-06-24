@@ -4,7 +4,7 @@
 **Version:** 0.2
 **Status:** Active
 **Date:** 2026-06-08
-**Baseline:** Product Brief v0.1.1
+**Baseline:** Product Brief v0.1.2
 **Purpose:** Defines documentation versioning, changelog, and reading-order rules for TagEkyc docs.
 
 ## Changelog
@@ -24,7 +24,7 @@
 
 ## 1. Source of Truth
 
-`docs/00_product_brief_v0_1.md` is the product source-of-truth for the v0.1.1 baseline.
+`docs/00_product_brief_v0_1.md` is the product source-of-truth for the v0.1.2 baseline.
 
 Other baseline documents must align to the Product Brief unless a later accepted baseline explicitly supersedes it.
 
@@ -50,7 +50,7 @@ Every new planning, baseline, or closeout document SHOULD include metadata near 
 **Version:** 0.1
 **Status:** Draft / Planning / Accepted / Active / Closed
 **Date:** YYYY-MM-DD
-**Baseline:** Product Brief v0.1.1
+**Baseline:** Product Brief v0.1.2
 **Purpose:** Short purpose statement.
 ```
 
