@@ -1,8 +1,8 @@
 # Verification Method, Engine & Liveness-Tier Strategy — Decision Brief v0.1
 
 **File:** `docs/verification_engine_liveness_strategy_decision_brief_v0_1.md`
-**Version:** 0.9
-**Status:** VE-01 LOCKED (build portable own engine + integrate readers as adapters; two-layer, 2026-06-24). BHYT/BHXH dropped. GPT/Codex review (round-1 + 2 re-confirms) patches applied — proof-honesty, stale-QĐ2345, OSS-sufficiency, OCR-out-of-core, passive-vs-active liveness, capture-binding, HN212 consume-after-verify, assurance-mapping note, slice relabel. READY_TO_COMMIT.
+**Version:** 1.0
+**Status:** VE-01 LOCKED (build portable own engine + integrate readers; two-layer, 2026-06-24). BHYT/BHXH dropped. Multiple GPT/Codex review rounds applied + **HN212 + real-CCCD live-probe runtime confirmation (sanitized, §1b)**. **HN212 chip-read / PACE / SOD-internal / chip-auth / face-match callability CONFIRMED; CSCA source (VE-06) and liveness/anti-spoof live-probe remain separate follow-ups.** READY_TO_COMMIT after sanitized runtime patch.
 **Date:** 2026-06-24
 **Baseline:** Product Brief v0.1.2; ADR `ekyc_neutrality_decision_v0_1.md`; legal research notes (CC, 2026-06-24)
 **Purpose:** Codify the medical-first verification model (how a person is verified) + map each method to engines, assurance levels, and a cost-aware liveness tier — so the engine roadmap is decided once, not re-derived per slice. This is the "verification brain" keystone (analogous to D-01 for persistence).
@@ -55,7 +55,24 @@ LAYER 2 — VERIFICATION ENGINE (OURS — build + own, portable)
   - **License = online-service-gated** (`LicenseId`/`Token`/`ClientId` for CSCA-verify + the Verify API); local read/capture/compare may be offline.
   - **Local SDK outputs are UNSIGNED + UNBOUND** — `CompareFace→int`, `FaceVerifyResult`, `CardFullData.VerifySOD:CardStepStatus` are plain values; session-challenge/timestamp/signature exist ONLY in Hanel's online Verify API (`VerifyRequest{RequestId,Timestamp,Salt,Token}`). → **CONFIRMS the LOCKED rule above: TagEkyc MUST do its own capture-binding + provenance signing around the SDK outputs (the SDK does not).**
   - Windows-desktop (PC/SC + DirectShow + USB) = a client-side CaptureAgent/local-agent submitting evidence to `/evidence-results`.
-  - **Live-probe (Step 2, confirmatory, when convenient):** real `VerifySignedData()` pass on a CCCD; whether the normal flow invokes the online VerifyCsca; real `CompareFace` score; anti-spoof off-HN212 with a generic webcam (feed a Mat to `Hn212FaceProcessing.AddFrame`).
+  - **Live-probe (Step 2) — chip path DONE (see §1b);** anti-spoof/liveness camera path still pending.
+
+## 1b. Runtime live-probe confirmation — HN212 + real CCCD (sanitized, 2026-06-25)
+
+A reflection live-probe drove a real HN212 (serial redacted: `HANEL-READER-REDACTED`) against a real CCCD. **Sanitized observations only** (no PII; see the privacy redline below):
+
+- **Manual access-code read bypasses OCR/camera/message-pump** — supplying the access code (last 6 digits of the citizen-ID number) made the SDK read the chip directly, skipping the OCR-scan-to-derive-key. Confirms the **headless / server-side / chip-only-reader path is viable** (observed in one live probe).
+- The chip pipeline **succeeded once** end-to-end: `CONNECT_CARD → PACE → READ_DGS → VERIFY_SOD → AACA_AUTHEN → FINISH`, all on the **local SDK** (no online call).
+- **`VerifySOD` SUCCESS = SOD-INTERNAL validity only** (signature valid under the embedded DS cert + DG hashes match). It does **NOT** prove the DS cert chains to the VN CSCA — that is **VE-06**, still open. Do NOT record `CSCA_CHAIN_VERIFIED` for this probe.
+- **AA/CA (chip-authentication) SUCCESS** → model **chip-genuine / chip-possession as a DISTINCT evidence check**, separate from SOD-internal verify and separate from CSCA validation. ⚠️ The probe's AA/CA used the SDK's internal challenge → it confirms **chip capability, NOT session-bound anti-replay** (`CHIP_AUTH_WEAK_CONTEXT`). The API `StartAA(byte[] challenge)` lets us feed a **server/session-generated challenge** → the chip signs OUR challenge → THAT is genuine session-bound anti-replay. (Exact AA/CA evidence fields — server challenge / sessionId / nonce / chip response / DG15 / algorithm / result — pinned in the engine-slice TIP, not here.)
+- **Face-match callable standalone**: HN212 `CompareFace(chipDG2, selfie)` returned a score in one sample (`score=79`, threshold `60`) = ViewFaceCore standalone path viable. This **confirms callability only — it does NOT benchmark model quality and does NOT certify PAD/liveness.**
+- **DSCert material was available** → **VE-06 is now actionable** (we have a real DS cert to validate against a CSCA list / provider API).
+- **Local SDK outputs are unsigned + unbound** (plain values, no session/timestamp/signature) → reconfirms the LOCKED rule: TagEkyc must perform its own **session-challenge binding + capture-provenance recording + proof signing**.
+
+**Legal-value wording (do NOT overclaim):** these are **cryptographic evidence candidates**, posterior-verification-ready *if* a DS/CSCA trust path or a provider API is available. Legal value requires policy/legal review + provider confirmation — NOT asserted here.
+
+### Privacy redline (LOCKED)
+Raw HN212/CCCD live logs contain **PII + biometric data** — name, date of birth, address, MRZ, citizen-ID number, face image/base64, raw DS-cert/certificate material. They **MUST NOT** be committed, attached to review packets, or synced to Drive/GitHub **without redaction**. Only **sanitized summaries, hashes, VaultRefs, and non-sensitive status fields** may enter docs or evidence packets. (The live-probe log from 2026-06-25 is treated as sensitive: not committed; secure/delete.)
 
 ## 2. Core principle — the chip is the TRUST ANCHOR (this reframes the threat model)
 
@@ -117,8 +134,9 @@ Verified (research): no medical mandate for certified liveness; NĐ 69/2024 tier
 | VE-02 | First engine slice | **First SUBSTANTIAL vertical slice (NOT a 1-class minimal):** define the two ports + ONE Layer-2 ONNX path (face-match + liveness, deterministic fixture images) + the HN212 priority Layer-1 adapter + capture-binding for non-HN212 paths. Ingest BOTH verdicts into the proof AFTER the EvidenceResult method/grade encoding is settled (§3). Real e2e (real images, not stub) |
 | VE-03 | Capture surface first | Hosted-web (lowest friction) — per `integration_channel_strategy_v0_1.md` IC-01 |
 | VE-04 | VNeID integration scope + assurance mapping | Pending C06 grant terms |
-| VE-05 | Verify residuals: §1a Hanel items (API-dump RESOLVED most; live-probe confirmatory) + telemedicine (Luật KCB 2023/NĐ 96) + controlled-drugs identity bar | Before the relevant slice; BHXH/BHYT DROPPED |
-| VE-06 | **CSCA trust-anchor sourcing** (NEW, from API-dump): use Hanel online `VerifyCsca` as an adapter vs build our own CSCA-master-list validation | Lean: support both (online adapter now; own-list later for offline/independence). SOD-internal verification is not root-trusted without DS→CSCA validation |
+| VE-05 | Verify residuals: §1a Hanel items (API-dump RESOLVED; chip live-probe DONE §1b) + telemedicine (Luật KCB 2023/NĐ 96) + controlled-drugs identity bar + **liveness/anti-spoof live-probe (pending)** | Before the relevant slice; BHXH/BHYT DROPPED |
+| VE-06 | **CSCA trust-anchor sourcing**: live SOD-internal verify SUCCEEDED but that is NOT DS→CSCA chain. DSCert material now available (§1b) → concrete options: (a) Hanel online `VerifyCsca` adapter, (b) build own CSCA-master-list validation, (c) hybrid | Lean: support both (online adapter now; own-list later for offline/independence). Do NOT mark CSCA verified from SOD-internal success |
+| VE-07 | **Chip-evidence-log sufficiency contract** — `PROPOSED` (lock before accepting real-chip evidence): TagEkyc must NOT treat "NFC passed" as sufficient. The proof/evidence must DECOMPOSE chip evidence into distinct sub-states (NFC read / PACE / SOD-internal valid / DG-hashes-match-SOD / CSCA verified-or-not / chip-auth valid / chip-auth-weak-context-if-challenge-not-session-bound / face-match / liveness-performed / liveness-certified-or-not / HN212-software-verdict-ingested / capture-bound-to-session). The capture-bound/authorized-agent/direct-upload-untrusted states are already governed by the LOCKED §1a server-not-a-trust-boundary rule. **The exact flag set is INDICATIVE — finalized in the engine-slice TIP / proof schema, not locked here** (avoid premature schema-locking). | Principle LOCKED; flag set indicative |
 
 ## 8. Non-goals (this brief does not)
 
@@ -140,6 +158,15 @@ VE-01 is LOCKED (build portable engine + integrate readers; two-layer). Remainin
 This deploys HN212 immediately while staying reader/OS-agnostic (chip-only-reader, Mobile/Tablet/Ubuntu later need no re-architecture).
 
 ## Changelog
+
+### v1.0 — HN212 + real-CCCD live-probe runtime confirmation, sanitized (2026-06-25)
+- Added **§1b** "Runtime live-probe confirmation (sanitized)" — chip pipeline CONNECT_CARD→PACE→READ_DGS→SOD-internal→AA/CA→FINISH succeeded once on the LOCAL SDK; manual access-code read bypasses OCR/camera (headless path viable); CompareFace standalone callable (`score=79`/thr 60, callability only — NOT a quality/PAD claim); DSCert available; local outputs unsigned/unbound. Careful wording (observed-once / callability / not-certified / not-CSCA / not-legal-grade).
+- Added a **Privacy redline (LOCKED)**: raw HN212/CCCD logs hold PII+biometrics → never commit/sync without redaction; sanitized summaries/hashes/VaultRefs/status only. The 2026-06-25 probe log is sensitive (not committed).
+- **VE-06** strengthened: SOD-internal SUCCESS ≠ CSCA chain; DSCert now available → concrete options (online VerifyCsca / build-own CSCA list / hybrid); do NOT mark CSCA verified.
+- Added **VE-07** (`PROPOSED`) — chip-evidence-log sufficiency contract: never "NFC passed" alone; decompose into distinct sub-states; flag set INDICATIVE (final set in the engine-slice TIP/proof schema, not locked here); capture-binding states already covered by the §1a LOCKED rule.
+- Noted the `StartAA(challenge)` capability → feed a server/session challenge for genuine session-bound chip-auth anti-replay (probe's AA/CA used the SDK's internal challenge = chip-capability only, `CHIP_AUTH_WEAK_CONTEXT`).
+- Reverse-review pushback vs the patch spec: version corrected to **v1.0** (brief was already v0.9, not v0.8); VE-07 kept PROPOSED + flags indicative (no premature schema-lock); chip-auth field list deferred to the TIP; reader serial redacted.
+- Status: chip-read/PACE/SOD-internal/chip-auth/face-match callability CONFIRMED; CSCA (VE-06) + liveness/anti-spoof live-probe remain separate follow-ups.
 
 ### v0.9 — review: scope the API-dump overclaims (2026-06-25)
 - §1a line 49: HN212 face/anti-spoof is "OSS-grade passive RGB software, comparable tier but DIFFERENT implementation" (not "the same OSS our engine uses" — ours is Silent-Face/ArcFace, HN212 is ViewFaceCore).
