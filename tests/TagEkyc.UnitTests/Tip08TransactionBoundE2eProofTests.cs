@@ -123,6 +123,13 @@ public sealed class Tip08TransactionBoundE2eProofTests
         Assert.Equal(SignFlowS1RequiredChecks.Values, requestedChecks);
         Assert.Contains(RequiredCheckTypeDto.DocumentNfc, requestedChecks);
         AssertDocumentNfcIsEvidencedByNfcValidation(package.Value!.EvidenceRefs);
+        Assert.Equal(
+            ExpectedNfcPayloadHash(session.Value.VerificationSessionId, artifactIds.Nfc),
+            fixture.Manifests.Manifests
+                .Single()
+                .EvidenceRefs
+                .Single(evidenceRef => evidenceRef.Type == nameof(EvidenceResultTypeDto.NfcValidation))
+                .PayloadHash);
 
         Assert.Contains(package.Value.EvidenceRefs, evidence => evidence.ResultType == nameof(EvidenceResultTypeDto.CaptureQuality));
         Assert.Contains(package.Value.EvidenceRefs, evidence => evidence.ResultType == nameof(EvidenceResultTypeDto.FaceMatch));
@@ -212,7 +219,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
         var documentNfc = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             verificationSessionId,
-            Evidence(EvidenceResultTypeDto.NfcValidation, [artifactIds.Nfc], "summary:tip08-document-nfc"),
+            NfcEvidence(verificationSessionId, artifactIds.Nfc),
             CancellationToken.None);
         var faceMatch = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
@@ -264,6 +271,97 @@ public sealed class Tip08TransactionBoundE2eProofTests
             RequestId: "req-tip08-evidence",
             CorrelationId: "corr-tip08-evidence");
 
+    private static EvidenceResultSubmissionRequestDto NfcEvidence(
+        string verificationSessionId,
+        string artifactId) =>
+        Evidence(EvidenceResultTypeDto.NfcValidation, [artifactId], "summary:tip08-document-nfc") with
+        {
+            PayloadHash = null,
+            NfcEvidenceDecisionBasis = new NfcEvidenceDecisionBasisDto(
+                [
+                    "NFC_READ_OK",
+                    "PACE_SUCCESS",
+                    "SOD_INTERNAL_VALID",
+                    "DG_HASHES_MATCH_SOD",
+                    "CSCA_NOT_VERIFIED",
+                    "CHIP_AUTH_RESPONSE_VALID",
+                ],
+                new NfcCaptureBindingDto(
+                    EvidenceCanonicalization.HashCanonical("tip-69-capture-session-challenge", new
+                    {
+                        sessionId = verificationSessionId,
+                        challenge = Challenge,
+                    }),
+                    verificationSessionId,
+                    "ldev_capture",
+                    RawArtifactSentinel,
+                    CapturedAt: new DateTimeOffset(2026, 6, 26, 2, 3, 4, TimeSpan.Zero),
+                    "sha256:tip08-nfc-artifact"),
+                ServerDecisionResult: null,
+                AdapterRequestedResult: VerificationResultDto.Passed,
+                AdapterInternalSentinel,
+                SignFlowInternalSentinel,
+                [new NfcInputArtifactRefDto(artifactId, "sha256:tip08-nfc-artifact")],
+                SanitizedSummaryLabel: "summary:tip08-document-nfc",
+                new VerificationExtensionDescriptorDto(
+                    "nfc-validation",
+                    nameof(RequiredCheckTypeDto.DocumentNfc),
+                    VerificationExtensionCategoryDto.IdentityEvidence,
+                    nameof(EvidenceResultTypeDto.NfcValidation))),
+        };
+
+    private static string ExpectedNfcPayloadHash(
+        string verificationSessionId,
+        string artifactId) =>
+        EvidenceCanonicalization.HashCanonical(
+            "tip-69-nfc-evidence-decision-basis",
+            new
+            {
+                extension = new
+                {
+                    id = "nfc-validation",
+                    requiredCheckType = "DocumentNfc",
+                    category = "IdentityEvidence",
+                    emitsEvidenceType = "NfcValidation",
+                },
+                flags = new[]
+                {
+                    "CAPTURE_BOUND_TO_SESSION",
+                    "CHIP_AUTH_RESPONSE_VALID",
+                    "CSCA_NOT_VERIFIED",
+                    "DG_HASHES_MATCH_SOD",
+                    "NFC_READ_OK",
+                    "PACE_SUCCESS",
+                    "SOD_INTERNAL_VALID",
+                },
+                captureBinding = new
+                {
+                    challengeHash = EvidenceCanonicalization.HashCanonical("tip-69-capture-session-challenge", new
+                    {
+                        sessionId = verificationSessionId,
+                        challenge = Challenge,
+                    }),
+                    sessionId = verificationSessionId,
+                    captureAgentId = "ldev_capture",
+                    deviceId = RawArtifactSentinel,
+                    capturedAt = new DateTimeOffset(2026, 6, 26, 2, 3, 4, TimeSpan.Zero),
+                    artifactHash = "sha256:tip08-nfc-artifact",
+                },
+                serverDecisionResult = "Passed",
+                adapterRequestedResult = "Passed",
+                engineName = AdapterInternalSentinel,
+                engineVersion = SignFlowInternalSentinel,
+                inputArtifacts = new[]
+                {
+                    new
+                    {
+                        artifactId,
+                        artifactHash = "sha256:tip08-nfc-artifact",
+                    },
+                },
+                sanitizedSummaryLabel = "summary:tip08-document-nfc",
+            });
+
     private static TestFixture CreateFixture()
     {
         var sessions = new LocalDevInMemoryVerificationSessionRepository();
@@ -297,7 +395,8 @@ public sealed class Tip08TransactionBoundE2eProofTests
             sessionService,
             evidenceService,
             completionService,
-            sessions);
+            sessions,
+            manifests);
     }
 
     private static AuthenticatedClientContext BusinessCaller() =>
@@ -345,5 +444,6 @@ public sealed class Tip08TransactionBoundE2eProofTests
         VerificationSessionApplicationService SessionService,
         VerificationEvidenceApplicationService EvidenceService,
         VerificationCompletionApplicationService CompletionService,
-        LocalDevInMemoryVerificationSessionRepository Sessions);
+        LocalDevInMemoryVerificationSessionRepository Sessions,
+        LocalDevInMemoryEvidenceManifestRepository Manifests);
 }

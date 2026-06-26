@@ -15,6 +15,34 @@ public sealed class VerificationEvidenceApplicationService(
     IMetadataReferenceRegistry? metadataReferences = null)
     : ICaptureArtifactCommands, ITrustedEvidenceResultCommands
 {
+    private static readonly IReadOnlySet<string> RequiredNfcChipFlags = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "NFC_READ_OK",
+        "PACE_SUCCESS",
+        "SOD_INTERNAL_VALID",
+        "DG_HASHES_MATCH_SOD",
+    };
+
+    private static readonly IReadOnlySet<string> CscaStateFlags = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "CSCA_VERIFIED",
+        "CSCA_NOT_VERIFIED",
+    };
+
+    private static readonly IReadOnlySet<string> ChipAuthStateFlags = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "CHIP_AUTH_RESPONSE_VALID",
+        "CHIP_AUTH_WEAK_CONTEXT",
+        "CHIP_AUTH_NOT_PERFORMED",
+    };
+
+    private static readonly IReadOnlySet<string> NegativeCaptureBindingStates = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "DIRECT_CLIENT_UPLOAD_UNTRUSTED",
+        "CAPTURE_BINDING_MISSING",
+        "CAPTURE_BINDING_UNVERIFIED",
+    };
+
     public async Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> AppendCaptureArtifactAsync(
         AuthenticatedClientContext caller,
         string verificationSessionId,
@@ -218,19 +246,40 @@ public sealed class VerificationEvidenceApplicationService(
                 400);
         }
 
-        if (!TryCreateHashRef(request.PayloadHash, out var payloadHash))
-        {
-            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
-                "INVALID_HASH_REF",
-                "PayloadHash is required and must use the sha256: prefix.",
-                400);
-        }
-
         if (!IsSanitizedSummaryRefAllowed(request.SanitizedSummaryRef))
         {
             return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
                 "INVALID_EVIDENCE_RESULT",
                 "SanitizedSummaryRef must not contain vault refs, raw paths, sensitive URLs, raw refs, or plaintext identity payloads.",
+                400);
+        }
+
+        var effectiveResult = request.Result;
+        var effectiveReasonCodes = request.ReasonCodes ?? [];
+        HashRef payloadHash;
+        if (resultType == EvidenceResultType.NfcValidation)
+        {
+            var nfcPreparation = PrepareNfcEvidenceResult(
+                session,
+                request,
+                inputArtifacts);
+            if (!nfcPreparation.IsSuccess)
+            {
+                return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+                    nfcPreparation.Error!.Code,
+                    nfcPreparation.Error.Message,
+                    nfcPreparation.Error.StatusCode);
+            }
+
+            effectiveResult = nfcPreparation.Value!.Result;
+            effectiveReasonCodes = nfcPreparation.Value.ReasonCodes;
+            payloadHash = nfcPreparation.Value.PayloadHash;
+        }
+        else if (!TryCreateHashRef(request.PayloadHash, out payloadHash))
+        {
+            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+                "INVALID_HASH_REF",
+                "PayloadHash is required and must use the sha256: prefix.",
                 400);
         }
 
@@ -241,9 +290,9 @@ public sealed class VerificationEvidenceApplicationService(
             VerificationCheckId: null,
             resultType,
             inputArtifacts.Select(artifact => artifact.Id).ToArray(),
-            ToDomain(request.Result),
+            ToDomain(effectiveResult),
             request.Confidence,
-            request.ReasonCodes ?? [],
+            effectiveReasonCodes,
             request.RetryReasonCode,
             request.SanitizedSummaryRef,
             payloadHash,
@@ -285,7 +334,190 @@ public sealed class VerificationEvidenceApplicationService(
             FormatId(evidence.Id),
             Accepted: true,
             finalState.ToString(),
-            NextAction: request.Result == VerificationResultDto.RetryRequired ? "RETRY_CAPTURE" : null));
+            NextAction: effectiveResult == VerificationResultDto.RetryRequired ? "RETRY_CAPTURE" : null));
+    }
+
+    private static SessionOperationResult<NfcEvidencePreparation> PrepareNfcEvidenceResult(
+        VerificationSession session,
+        EvidenceResultSubmissionRequestDto request,
+        IReadOnlyList<CaptureArtifact> inputArtifacts)
+    {
+        var basis = request.NfcEvidenceDecisionBasis;
+        if (basis is null)
+        {
+            return request.Result == VerificationResultDto.Passed
+                ? SessionOperationResult<NfcEvidencePreparation>.Failure(
+                    "NFC_EVIDENCE_DECOMPOSITION_REQUIRED",
+                    "NfcValidation=Passed requires decomposed chip-evidence decision-basis flags.",
+                    400)
+                : SessionOperationResult<NfcEvidencePreparation>.Failure(
+                    "NFC_EVIDENCE_DECISION_BASIS_REQUIRED",
+                    "NfcValidation evidence requires NfcEvidenceDecisionBasis.",
+                    400);
+        }
+
+        var submittedFlags = NormalizeFlags(basis.Flags);
+        var missingChipDecomposition = MissingRequiredNfcChipFlags(submittedFlags);
+        if (request.Result == VerificationResultDto.Passed && missingChipDecomposition.Count > 0)
+        {
+            return SessionOperationResult<NfcEvidencePreparation>.Failure(
+                "NFC_EVIDENCE_DECOMPOSITION_REQUIRED",
+                "NfcValidation=Passed requires NFC_READ_OK, PACE_SUCCESS, SOD_INTERNAL_VALID, DG_HASHES_MATCH_SOD, one CSCA state, and one chip-auth state.",
+                400);
+        }
+
+        var captureBindingTrusted = IsCaptureBindingTrusted(session, inputArtifacts, basis.CaptureBinding);
+        var hasNegativeBindingState = submittedFlags.Overlaps(NegativeCaptureBindingStates);
+        var effectiveResult = request.Result;
+        var finalFlags = new SortedSet<string>(submittedFlags, StringComparer.Ordinal);
+        var reasonCodes = new SortedSet<string>(request.ReasonCodes ?? [], StringComparer.Ordinal);
+
+        if (!captureBindingTrusted || hasNegativeBindingState)
+        {
+            finalFlags.Remove("CAPTURE_BOUND_TO_SESSION");
+            finalFlags.Add("DIRECT_CLIENT_UPLOAD_UNTRUSTED");
+            reasonCodes.Add("DIRECT_CLIENT_UPLOAD_UNTRUSTED");
+
+            if (request.Result == VerificationResultDto.Passed)
+            {
+                effectiveResult = VerificationResultDto.ReviewRequired;
+            }
+        }
+        else
+        {
+            finalFlags.Add("CAPTURE_BOUND_TO_SESSION");
+        }
+
+        var normalizedBasis = BuildNormalizedNfcDecisionBasis(
+            session,
+            request,
+            inputArtifacts,
+            basis,
+            finalFlags,
+            effectiveResult);
+        var computedPayloadHashValue = EvidenceCanonicalization.HashCanonical(
+            "tip-69-nfc-evidence-decision-basis",
+            normalizedBasis);
+
+        if (!string.IsNullOrWhiteSpace(request.PayloadHash) &&
+            !string.Equals(request.PayloadHash, computedPayloadHashValue, StringComparison.Ordinal))
+        {
+            return SessionOperationResult<NfcEvidencePreparation>.Failure(
+                "NFC_PAYLOAD_HASH_MISMATCH",
+                "Adapter-supplied PayloadHash does not match the server-computed NFC decision-basis hash.",
+                400);
+        }
+
+        return SessionOperationResult<NfcEvidencePreparation>.Success(new NfcEvidencePreparation(
+            effectiveResult,
+            reasonCodes.ToArray(),
+            new HashRef(computedPayloadHashValue)));
+    }
+
+    private static SortedSet<string> NormalizeFlags(IReadOnlyList<string>? flags) =>
+        new((flags ?? [])
+            .Where(flag => !string.IsNullOrWhiteSpace(flag))
+            .Select(flag => flag.Trim())
+            .Distinct(StringComparer.Ordinal),
+            StringComparer.Ordinal);
+
+    private static IReadOnlyList<string> MissingRequiredNfcChipFlags(IReadOnlySet<string> flags)
+    {
+        var missing = RequiredNfcChipFlags
+            .Where(required => !flags.Contains(required))
+            .ToList();
+        if (!CscaStateFlags.Any(flags.Contains))
+        {
+            missing.Add("CSCA_STATE");
+        }
+
+        if (!ChipAuthStateFlags.Any(flags.Contains))
+        {
+            missing.Add("CHIP_AUTH_STATE");
+        }
+
+        return missing;
+    }
+
+    private static bool IsCaptureBindingTrusted(
+        VerificationSession session,
+        IReadOnlyList<CaptureArtifact> inputArtifacts,
+        NfcCaptureBindingDto? captureBinding)
+    {
+        if (captureBinding is null ||
+            inputArtifacts.Count == 0 ||
+            inputArtifacts.Any(artifact => artifact.CaptureSource == CaptureSource.ExternalPreStaged))
+        {
+            return false;
+        }
+
+        var expectedChallengeHash = BuildSessionChallengeHash(session);
+        if (expectedChallengeHash is null ||
+            !string.Equals(captureBinding.ChallengeHash, expectedChallengeHash, StringComparison.Ordinal) ||
+            !string.Equals(captureBinding.SessionId, session.Id.ToString("N"), StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return inputArtifacts.Any(artifact =>
+            string.Equals(captureBinding.ArtifactHash, artifact.ArtifactHash?.ToString(), StringComparison.Ordinal) &&
+            string.Equals(captureBinding.CaptureAgentId, artifact.CaptureAgentId, StringComparison.Ordinal) &&
+            string.Equals(captureBinding.DeviceId, artifact.DeviceId, StringComparison.Ordinal));
+    }
+
+    private static string? BuildSessionChallengeHash(VerificationSession session) =>
+        string.IsNullOrEmpty(session.Challenge)
+            ? null
+            : EvidenceCanonicalization.HashCanonical("tip-69-capture-session-challenge", new
+            {
+                sessionId = session.Id.ToString("N"),
+                challenge = session.Challenge,
+            });
+
+    private static object BuildNormalizedNfcDecisionBasis(
+        VerificationSession session,
+        EvidenceResultSubmissionRequestDto request,
+        IReadOnlyList<CaptureArtifact> inputArtifacts,
+        NfcEvidenceDecisionBasisDto submittedBasis,
+        IReadOnlySet<string> finalFlags,
+        VerificationResultDto effectiveResult)
+    {
+        var primaryArtifact = inputArtifacts.OrderBy(artifact => artifact.Id).First();
+        var submittedBinding = submittedBasis.CaptureBinding;
+
+        return new
+        {
+            extension = new
+            {
+                id = "nfc-validation",
+                requiredCheckType = "DocumentNfc",
+                category = "IdentityEvidence",
+                emitsEvidenceType = "NfcValidation",
+            },
+            flags = finalFlags.Order(StringComparer.Ordinal).ToArray(),
+            captureBinding = new
+            {
+                challengeHash = submittedBinding?.ChallengeHash,
+                sessionId = session.Id.ToString("N"),
+                captureAgentId = primaryArtifact.CaptureAgentId,
+                deviceId = primaryArtifact.DeviceId,
+                capturedAt = submittedBinding?.CapturedAt ?? primaryArtifact.CreatedAt,
+                artifactHash = primaryArtifact.ArtifactHash?.ToString(),
+            },
+            serverDecisionResult = effectiveResult.ToString(),
+            adapterRequestedResult = request.Result.ToString(),
+            engineName = request.EngineName,
+            engineVersion = request.EngineVersion,
+            inputArtifacts = inputArtifacts
+                .OrderBy(artifact => artifact.Id)
+                .Select(artifact => new
+                {
+                    artifactId = artifact.Id.ToString("N"),
+                    artifactHash = artifact.ArtifactHash?.ToString(),
+                })
+                .ToArray(),
+            sanitizedSummaryLabel = submittedBasis.SanitizedSummaryLabel ?? request.SanitizedSummaryRef,
+        };
     }
 
     private async Task<SessionOperationResult<WritableSessionContext<T>>> LoadWritableSessionAsync<T>(
@@ -656,6 +888,11 @@ public sealed class VerificationEvidenceApplicationService(
             DateTimeOffset.UtcNow);
 
     private static string FormatId(Guid id) => id.ToString("N");
+
+    private sealed record NfcEvidencePreparation(
+        VerificationResultDto Result,
+        IReadOnlyList<string> ReasonCodes,
+        HashRef PayloadHash);
 
     private sealed record WritableSessionContext<T>(VerificationSession Session, LocalDevClientPolicy Policy);
 }

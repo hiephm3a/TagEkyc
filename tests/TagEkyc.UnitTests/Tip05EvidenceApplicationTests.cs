@@ -139,6 +139,114 @@ public sealed class Tip05EvidenceApplicationTests
     }
 
     [Fact]
+    public async Task Tip69_bare_nfc_passed_is_rejected_fail_closed()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
+        var nfcArtifact = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            NfcArtifact(),
+            CancellationToken.None);
+
+        var barePassed = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            CaptureQualityEvidence([nfcArtifact.Value!.CaptureArtifactId]) with
+            {
+                ResultType = EvidenceResultTypeDto.NfcValidation,
+                PayloadHash = null,
+                NfcEvidenceDecisionBasis = null,
+            },
+            CancellationToken.None);
+
+        Assert.False(barePassed.IsSuccess);
+        Assert.Equal("NFC_EVIDENCE_DECOMPOSITION_REQUIRED", barePassed.Error?.Code);
+        Assert.Empty(fixture.Evidence.EvidenceResults);
+    }
+
+    [Fact]
+    public async Task Tip69_nfc_payload_hash_is_server_owned_and_rejects_adapter_mismatch()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
+        var nfcArtifact = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            NfcArtifact(),
+            CancellationToken.None);
+
+        var spoofed = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            ValidNfcEvidence(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId) with
+            {
+                PayloadHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            },
+            CancellationToken.None);
+
+        Assert.False(spoofed.IsSuccess);
+        Assert.Equal("NFC_PAYLOAD_HASH_MISMATCH", spoofed.Error?.Code);
+        Assert.Empty(fixture.Evidence.EvidenceResults);
+    }
+
+    [Fact]
+    public async Task Tip69_trusted_nfc_capture_gets_server_stamped_positive_binding_flag()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
+        var nfcArtifact = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            NfcArtifact(),
+            CancellationToken.None);
+
+        var accepted = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            ValidNfcEvidence(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId) with
+            {
+                NfcEvidenceDecisionBasis = ValidNfcBasis(
+                    session.Value.VerificationSessionId,
+                    nfcArtifact.Value.CaptureArtifactId,
+                    includePositiveBindingFlag: false),
+            },
+            CancellationToken.None);
+        var evidence = fixture.Evidence.EvidenceResults.Single();
+
+        Assert.True(accepted.IsSuccess);
+        Assert.Equal("ReadyToComplete", accepted.Value?.SessionState);
+        Assert.Equal(VerificationResult.Passed, evidence.Result);
+        Assert.Equal(ExpectedTrustedPayloadHash(session.Value.VerificationSessionId, nfcArtifact.Value.CaptureArtifactId), evidence.PayloadHash?.ToString());
+    }
+
+    [Fact]
+    public async Task Tip69_external_prestaged_nfc_passed_is_coerced_to_review_required()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
+        var nfcArtifact = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            NfcArtifact(CaptureSourceDto.ExternalPreStaged),
+            CancellationToken.None);
+
+        var accepted = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            ValidNfcEvidence(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId),
+            CancellationToken.None);
+        var evidence = fixture.Evidence.EvidenceResults.Single();
+
+        Assert.True(accepted.IsSuccess);
+        Assert.Equal("InProgress", accepted.Value?.SessionState);
+        Assert.Equal(VerificationResult.ReviewRequired, evidence.Result);
+        Assert.Contains("DIRECT_CLIENT_UPLOAD_UNTRUSTED", evidence.ReasonCodes);
+        Assert.Equal(ExpectedExternalPrestagedPayloadHash(session.Value.VerificationSessionId, nfcArtifact.Value.CaptureArtifactId), evidence.PayloadHash?.ToString());
+        Assert.NotEqual(ExpectedTrustedPayloadHash(session.Value.VerificationSessionId, nfcArtifact.Value.CaptureArtifactId), evidence.PayloadHash?.ToString());
+    }
+
+    [Fact]
     public async Task Latest_evidence_result_controls_readiness_and_ready_rejects_more_writes()
     {
         var fixture = CreateFixture();
@@ -227,6 +335,25 @@ public sealed class Tip05EvidenceApplicationTests
         return await fixture.SessionService.CreateAsync(BusinessCaller(), request, cancellationToken: CancellationToken.None);
     }
 
+    private static async Task<SessionOperationResult<CreateVerificationSessionResponseDto>> CreateChallengeBoundSessionAsync(
+        TestFixture fixture,
+        IReadOnlyList<RequiredCheckTypeDto> checks)
+    {
+        var request = new CreateVerificationSessionRequestDto(
+            $"external-{Guid.NewGuid():N}",
+            "subject-ref",
+            "SIGNING_AUTH",
+            VerificationProfileDto.ChallengeBoundEkycProfile,
+            checks.Select(check => new RequiredCheckRequestDto(check, Required: true, MinimumConfidence: null)).ToArray(),
+            DateTimeOffset.UtcNow.AddMinutes(30),
+            ClientReference: "client-ref-tip69",
+            Challenge: "opaque-tip69-challenge",
+            RequestId: "req-tip69",
+            CorrelationId: "corr-tip69");
+
+        return await fixture.SessionService.CreateAsync(BusinessCaller(), request, cancellationToken: CancellationToken.None);
+    }
+
     private static TestFixture CreateFixture()
     {
         var sessions = new LocalDevInMemoryVerificationSessionRepository();
@@ -269,6 +396,17 @@ public sealed class Tip05EvidenceApplicationTests
             RequestId: "req-artifact",
             CorrelationId: "corr-tip05");
 
+    private static CaptureArtifactSubmissionRequestDto NfcArtifact(CaptureSourceDto source = CaptureSourceDto.MobileSdk) =>
+        new(
+            CaptureArtifactTypeDto.NfcReadArtifact,
+            source,
+            "ldev_capture",
+            "device-1",
+            "sha256:nfc-artifact",
+            MetadataHash: null,
+            RequestId: "req-nfc-artifact",
+            CorrelationId: "corr-tip69");
+
     private static EvidenceResultSubmissionRequestDto CaptureQualityEvidence(IReadOnlyList<string> artifactIds) =>
         new(
             EvidenceResultTypeDto.CaptureQuality,
@@ -284,6 +422,155 @@ public sealed class Tip05EvidenceApplicationTests
             "s1",
             RequestId: "req-evidence",
             CorrelationId: "corr-tip05");
+
+    private static EvidenceResultSubmissionRequestDto ValidNfcEvidence(
+        string sessionId,
+        string artifactId) =>
+        new(
+            EvidenceResultTypeDto.NfcValidation,
+            [artifactId],
+            VerificationResultDto.Passed,
+            Confidence: 0.99m,
+            ReasonCodes: [],
+            RetryReasonCode: null,
+            SanitizedSummaryRef: "summary:nfc-validation",
+            PayloadHash: null,
+            SignaturePlaceholderStatusDto.PlaceholderUnverified,
+            "fixture-nfc",
+            "tip69",
+            RequestId: "req-nfc-evidence",
+            CorrelationId: "corr-tip69",
+            NfcEvidenceDecisionBasis: ValidNfcBasis(sessionId, artifactId));
+
+    private static NfcEvidenceDecisionBasisDto ValidNfcBasis(
+        string sessionId,
+        string artifactId,
+        bool includePositiveBindingFlag = true) =>
+        new(
+            NfcFlags(includePositiveBindingFlag),
+            new NfcCaptureBindingDto(
+                ChallengeHash(sessionId),
+                sessionId,
+                "ldev_capture",
+                "device-1",
+                CapturedAt: Tip69CapturedAt,
+                "sha256:nfc-artifact"),
+            ServerDecisionResult: null,
+            AdapterRequestedResult: VerificationResultDto.Passed,
+            "fixture-nfc",
+            "tip69",
+            [new NfcInputArtifactRefDto(artifactId, "sha256:nfc-artifact")],
+            SanitizedSummaryLabel: "summary:nfc-validation",
+            new VerificationExtensionDescriptorDto(
+                "nfc-validation",
+                nameof(RequiredCheckTypeDto.DocumentNfc),
+                VerificationExtensionCategoryDto.IdentityEvidence,
+                nameof(EvidenceResultTypeDto.NfcValidation)));
+
+    private static IReadOnlyList<string> NfcFlags(bool includePositiveBindingFlag)
+    {
+        var flags = new List<string>
+        {
+            "NFC_READ_OK",
+            "PACE_SUCCESS",
+            "SOD_INTERNAL_VALID",
+            "DG_HASHES_MATCH_SOD",
+            "CSCA_NOT_VERIFIED",
+            "CHIP_AUTH_RESPONSE_VALID",
+        };
+        if (includePositiveBindingFlag)
+        {
+            flags.Add("CAPTURE_BOUND_TO_SESSION");
+        }
+
+        return flags;
+    }
+
+    private static string ExpectedTrustedPayloadHash(string sessionId, string artifactId)
+    {
+        var basis = Tip69NormalizedBasis(
+            sessionId,
+            artifactId,
+            [
+                "CAPTURE_BOUND_TO_SESSION",
+                "CHIP_AUTH_RESPONSE_VALID",
+                "CSCA_NOT_VERIFIED",
+                "DG_HASHES_MATCH_SOD",
+                "NFC_READ_OK",
+                "PACE_SUCCESS",
+                "SOD_INTERNAL_VALID",
+            ],
+            "Passed");
+
+        return EvidenceCanonicalization.HashCanonical("tip-69-nfc-evidence-decision-basis", basis);
+    }
+
+    private static string ExpectedExternalPrestagedPayloadHash(string sessionId, string artifactId)
+    {
+        var basis = Tip69NormalizedBasis(
+            sessionId,
+            artifactId,
+            [
+                "CHIP_AUTH_RESPONSE_VALID",
+                "CSCA_NOT_VERIFIED",
+                "DG_HASHES_MATCH_SOD",
+                "DIRECT_CLIENT_UPLOAD_UNTRUSTED",
+                "NFC_READ_OK",
+                "PACE_SUCCESS",
+                "SOD_INTERNAL_VALID",
+            ],
+            "ReviewRequired");
+
+        return EvidenceCanonicalization.HashCanonical("tip-69-nfc-evidence-decision-basis", basis);
+    }
+
+    private static object Tip69NormalizedBasis(
+        string sessionId,
+        string artifactId,
+        IReadOnlyList<string> flags,
+        string serverDecisionResult) =>
+        new
+        {
+            extension = new
+            {
+                id = "nfc-validation",
+                requiredCheckType = "DocumentNfc",
+                category = "IdentityEvidence",
+                emitsEvidenceType = "NfcValidation",
+            },
+            flags = flags.ToArray(),
+            captureBinding = new
+            {
+                challengeHash = ChallengeHash(sessionId),
+                sessionId,
+                captureAgentId = "ldev_capture",
+                deviceId = "device-1",
+                capturedAt = Tip69CapturedAt,
+                artifactHash = "sha256:nfc-artifact",
+            },
+            serverDecisionResult,
+            adapterRequestedResult = "Passed",
+            engineName = "fixture-nfc",
+            engineVersion = "tip69",
+            inputArtifacts = new[]
+            {
+                new
+                {
+                    artifactId,
+                    artifactHash = "sha256:nfc-artifact",
+                },
+            },
+            sanitizedSummaryLabel = "summary:nfc-validation",
+        };
+
+    private static string ChallengeHash(string sessionId) =>
+        EvidenceCanonicalization.HashCanonical("tip-69-capture-session-challenge", new
+        {
+            sessionId,
+            challenge = "opaque-tip69-challenge",
+        });
+
+    private static readonly DateTimeOffset Tip69CapturedAt = new(2026, 6, 26, 1, 2, 3, TimeSpan.Zero);
 
     private static AuthenticatedClientContext BusinessCaller() =>
         new(

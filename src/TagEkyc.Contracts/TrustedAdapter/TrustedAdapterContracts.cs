@@ -26,7 +26,44 @@ public sealed record EvidenceResultSubmissionRequestDto(
     string EngineName,
     string EngineVersion,
     string? RequestId,
-    string? CorrelationId);
+    string? CorrelationId,
+    NfcEvidenceDecisionBasisDto? NfcEvidenceDecisionBasis = null);
+
+public enum VerificationExtensionCategoryDto
+{
+    IdentityEvidence = 0,
+    PossessionFactor = 1,
+    QualityGate = 2,
+}
+
+public sealed record VerificationExtensionDescriptorDto(
+    string Id,
+    string RequiredCheckType,
+    VerificationExtensionCategoryDto Category,
+    string EmitsEvidenceType);
+
+public sealed record NfcCaptureBindingDto(
+    string? ChallengeHash,
+    string? SessionId,
+    string? CaptureAgentId,
+    string? DeviceId,
+    DateTimeOffset? CapturedAt,
+    string? ArtifactHash);
+
+public sealed record NfcInputArtifactRefDto(
+    string ArtifactId,
+    string? ArtifactHash);
+
+public sealed record NfcEvidenceDecisionBasisDto(
+    IReadOnlyList<string> Flags,
+    NfcCaptureBindingDto? CaptureBinding,
+    VerificationResultDto? ServerDecisionResult,
+    VerificationResultDto? AdapterRequestedResult,
+    string? EngineName,
+    string? EngineVersion,
+    IReadOnlyList<NfcInputArtifactRefDto> InputArtifacts,
+    string? SanitizedSummaryLabel,
+    VerificationExtensionDescriptorDto? Extension = null);
 
 public sealed record EvidenceResultSubmissionResponseDto(
     string EvidenceResultId,

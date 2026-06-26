@@ -133,13 +133,17 @@ The response can show `SessionState = InProgress` after a capture-only write fro
 
 ### 3.7 EvidenceResultSubmissionRequestDto
 
-Fields: `ResultType`, `InputCaptureArtifactIds`, `Result`, `Confidence`, `ReasonCodes`, `RetryReasonCode`, `SanitizedSummaryRef`, `PayloadHash`, `PayloadSignatureStatus`, `EngineName`, `EngineVersion`, `RequestId`, `CorrelationId`.
+Fields: `ResultType`, `InputCaptureArtifactIds`, `Result`, `Confidence`, `ReasonCodes`, `RetryReasonCode`, `SanitizedSummaryRef`, `PayloadHash`, `PayloadSignatureStatus`, `EngineName`, `EngineVersion`, `RequestId`, `CorrelationId`, `NfcEvidenceDecisionBasis`.
 
 `EvidenceResultTypeDto` values: `CaptureQuality`, `DocumentOcr`, `NfcValidation`, `FaceMatch`, `Liveness`, `FingerprintMatch`, `FraudRisk`.
 
-S1 requires non-empty same-session `InputCaptureArtifactIds`, compatible input artifact types, valid confidence when present, non-empty `EngineName` and `EngineVersion`, and a `PayloadHash` with `sha256:`. `FraudRisk` is deferred and rejected by current runtime.
+S1 requires non-empty same-session `InputCaptureArtifactIds`, compatible input artifact types, valid confidence when present, non-empty `EngineName` and `EngineVersion`, and a `PayloadHash` with `sha256:` for non-NFC evidence. `FraudRisk` is deferred and rejected by current runtime.
 
 `SanitizedSummaryRef` must not contain vault refs, raw paths, sensitive URLs, raw refs, or plaintext identity payloads. This route is for `TrustedAdapter`, not for BusinessConsumer evidence submission.
+
+For `ResultType=NfcValidation`, TIP-69 adds the optional-on-the-wire but required-for-NFC `NfcEvidenceDecisionBasis` field. The object contains VE-07 flags, a capture-binding object (`challengeHash`, `sessionId`, `captureAgentId`, `deviceId`, `capturedAt`, `artifactHash`), `serverDecisionResult`, optional `adapterRequestedResult`, `engineName`, `engineVersion`, input artifact ids + hashes, a sanitized summary label, and an extension descriptor with category (`IdentityEvidence`, `PossessionFactor`, or `QualityGate`). It must contain no raw subject PII/biometrics/plain CCCD/MRZ/DG fields, face data, or certificate material; artifact/content hashes and operational ids are internal-confidential and not returned to BusinessConsumer.
+
+For `NfcValidation`, the server owns `PayloadHash`: it canonicalizes the final server-normalized decision-basis with `EvidenceCanonicalization.HashCanonical("tip-69-nfc-evidence-decision-basis", basis)` and persists that hash. Adapter-supplied `PayloadHash` is optional for NFC, but if present it must match the server-computed value or the request fails with `NFC_PAYLOAD_HASH_MISMATCH`. Bare `NfcValidation=Passed` without the required decomposed flags fails with `NFC_EVIDENCE_DECOMPOSITION_REQUIRED`. `Passed` requires `NFC_READ_OK`, `PACE_SUCCESS`, `SOD_INTERNAL_VALID`, `DG_HASHES_MATCH_SOD`, one CSCA state, one chip-auth state, and positive `CAPTURE_BOUND_TO_SESSION`; `ExternalPreStaged` or unbound capture is downgraded to `ReviewRequired` with `DIRECT_CLIENT_UPLOAD_UNTRUSTED` and cannot satisfy production-grade NFC.
 
 ### 3.8 EvidenceResultSubmissionResponseDto
 
@@ -235,6 +239,9 @@ Wrong caller category returns `CALLER_CATEGORY_NOT_ALLOWED` with HTTP 403 from a
 | `INVALID_EVIDENCE_RESULT` | 400 or 409 | Evidence result append uses 400; complete uses 409 for accepted evidence invariant failures |
 | `INVALID_RESULT_STATUS` | 400 | Evidence result append |
 | `INVALID_CONFIDENCE` | 400 | Evidence result append |
+| `NFC_EVIDENCE_DECISION_BASIS_REQUIRED` | 400 | NFC evidence result append without decision basis |
+| `NFC_EVIDENCE_DECOMPOSITION_REQUIRED` | 400 | NFC `Passed` result without required VE-07 decomposition |
+| `NFC_PAYLOAD_HASH_MISMATCH` | 400 | NFC adapter-supplied payload hash differs from server-computed decision-basis hash |
 | `REQUIRED_EVIDENCE_MISSING` | 409 | Complete session |
 | `UNSUPPORTED_EVIDENCE_RESULT` | 409 | Complete session |
 | `FINALIZATION_CONFLICT` | 409 | Complete session |
