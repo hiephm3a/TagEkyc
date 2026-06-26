@@ -378,6 +378,14 @@ public sealed class VerificationEvidenceApplicationService(
                     400);
         }
 
+        if (!IsSanitizedSummaryRefAllowed(basis.SanitizedSummaryLabel))
+        {
+            return SessionOperationResult<NfcEvidencePreparation>.Failure(
+                "INVALID_EVIDENCE_RESULT",
+                "NfcEvidenceDecisionBasis.SanitizedSummaryLabel must be sanitized.",
+                400);
+        }
+
         var submittedFlags = NormalizeFlags(basis.Flags);
         var missingChipDecomposition = MissingRequiredNfcChipFlags(submittedFlags);
         if (request.Result == VerificationResultDto.Passed && missingChipDecomposition.Count > 0)
@@ -555,6 +563,14 @@ public sealed class VerificationEvidenceApplicationService(
             return SessionOperationResult<FaceMatchEvidencePreparation>.Failure(
                 "FACE_MATCH_DECISION_BASIS_REQUIRED",
                 "FaceMatch evidence requires a decision-basis with a match score.",
+                400);
+        }
+
+        if (!IsSanitizedSummaryRefAllowed(basis.SanitizedSummaryLabel))
+        {
+            return SessionOperationResult<FaceMatchEvidencePreparation>.Failure(
+                "INVALID_EVIDENCE_RESULT",
+                "FaceMatchEvidenceDecisionBasis.SanitizedSummaryLabel must be sanitized.",
                 400);
         }
 

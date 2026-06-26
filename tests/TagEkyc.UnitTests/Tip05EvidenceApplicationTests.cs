@@ -191,6 +191,37 @@ public sealed class Tip05EvidenceApplicationTests
     }
 
     [Fact]
+    public async Task Tip69_nfc_basis_sanitized_summary_label_rejects_raw_or_plaintext_markers()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
+        var nfcArtifact = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            NfcArtifact(),
+            CancellationToken.None);
+
+        var rejected = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            ValidNfcEvidence(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId) with
+            {
+                NfcEvidenceDecisionBasis = ValidNfcBasis(
+                    session.Value.VerificationSessionId,
+                    nfcArtifact.Value.CaptureArtifactId) with
+                {
+                    SanitizedSummaryLabel = "plaintext-cccd-123",
+                },
+            },
+            CancellationToken.None);
+
+        Assert.False(rejected.IsSuccess);
+        Assert.Equal("INVALID_EVIDENCE_RESULT", rejected.Error?.Code);
+        Assert.Equal("NfcEvidenceDecisionBasis.SanitizedSummaryLabel must be sanitized.", rejected.Error?.Message);
+        Assert.Empty(fixture.Evidence.EvidenceResults);
+    }
+
+    [Fact]
     public async Task Tip69_trusted_nfc_capture_gets_server_stamped_positive_binding_flag()
     {
         var fixture = CreateFixture();
@@ -261,6 +292,31 @@ public sealed class Tip05EvidenceApplicationTests
         Assert.False(barePassed.IsSuccess);
         Assert.Equal("FACE_MATCH_DECISION_BASIS_REQUIRED", barePassed.Error?.Code);
         Assert.Single(fixture.Evidence.EvidenceResults);
+    }
+
+    [Fact]
+    public async Task Tip70_face_match_basis_sanitized_summary_label_rejects_raw_or_plaintext_markers()
+    {
+        var fixture = CreateFixture();
+        var scenario = await CreateTrustedFaceMatchScenarioAsync(fixture);
+
+        var rejected = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            scenario.SessionId,
+            FaceMatchEvidence(scenario) with
+            {
+                FaceMatchEvidenceDecisionBasis = FaceMatchBasis(scenario) with
+                {
+                    SanitizedSummaryLabel = "biometric:raw-face",
+                },
+            },
+            CancellationToken.None);
+
+        Assert.False(rejected.IsSuccess);
+        Assert.Equal("INVALID_EVIDENCE_RESULT", rejected.Error?.Code);
+        Assert.Equal("FaceMatchEvidenceDecisionBasis.SanitizedSummaryLabel must be sanitized.", rejected.Error?.Message);
+        Assert.Single(fixture.Evidence.EvidenceResults);
+        Assert.DoesNotContain(fixture.Evidence.EvidenceResults, evidence => evidence.ResultType == EvidenceResultType.FaceMatch);
     }
 
     [Fact]
