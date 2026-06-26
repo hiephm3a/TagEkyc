@@ -15,6 +15,8 @@ public sealed class VerificationEvidenceApplicationService(
     IMetadataReferenceRegistry? metadataReferences = null)
     : ICaptureArtifactCommands, ITrustedEvidenceResultCommands
 {
+    private const decimal FaceMatchThreshold = 0.80m;
+
     private static readonly IReadOnlySet<string> RequiredNfcChipFlags = new HashSet<string>(StringComparer.Ordinal)
     {
         "NFC_READ_OK",
@@ -254,6 +256,7 @@ public sealed class VerificationEvidenceApplicationService(
                 400);
         }
 
+        var priorEvidence = await evidenceResults.ListBySessionAsync(session.Id, cancellationToken);
         var effectiveResult = request.Result;
         var effectiveReasonCodes = request.ReasonCodes ?? [];
         HashRef payloadHash;
@@ -274,6 +277,26 @@ public sealed class VerificationEvidenceApplicationService(
             effectiveResult = nfcPreparation.Value!.Result;
             effectiveReasonCodes = nfcPreparation.Value.ReasonCodes;
             payloadHash = nfcPreparation.Value.PayloadHash;
+        }
+        else if (resultType == EvidenceResultType.FaceMatch)
+        {
+            var faceMatchPreparation = PrepareFaceMatchEvidenceResult(
+                session,
+                request,
+                inputArtifacts,
+                sessionArtifacts,
+                priorEvidence);
+            if (!faceMatchPreparation.IsSuccess)
+            {
+                return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+                    faceMatchPreparation.Error!.Code,
+                    faceMatchPreparation.Error.Message,
+                    faceMatchPreparation.Error.StatusCode);
+            }
+
+            effectiveResult = faceMatchPreparation.Value!.Result;
+            effectiveReasonCodes = faceMatchPreparation.Value.ReasonCodes;
+            payloadHash = faceMatchPreparation.Value.PayloadHash;
         }
         else if (!TryCreateHashRef(request.PayloadHash, out payloadHash))
         {
@@ -303,7 +326,6 @@ public sealed class VerificationEvidenceApplicationService(
             request.CorrelationId ?? session.CorrelationId,
             now);
 
-        var priorEvidence = await evidenceResults.ListBySessionAsync(session.Id, cancellationToken);
         var finalState = session.State;
         var stateEvents = new List<string>();
         await evidenceResults.AppendAsync(evidence, cancellationToken);
@@ -516,6 +538,258 @@ public sealed class VerificationEvidenceApplicationService(
                     artifactHash = artifact.ArtifactHash?.ToString(),
                 })
                 .ToArray(),
+            sanitizedSummaryLabel = submittedBasis.SanitizedSummaryLabel ?? request.SanitizedSummaryRef,
+        };
+    }
+
+    private static SessionOperationResult<FaceMatchEvidencePreparation> PrepareFaceMatchEvidenceResult(
+        VerificationSession session,
+        EvidenceResultSubmissionRequestDto request,
+        IReadOnlyList<CaptureArtifact> inputArtifacts,
+        IReadOnlyList<CaptureArtifact> sessionArtifacts,
+        IReadOnlyList<EvidenceResult> priorEvidence)
+    {
+        var basis = request.FaceMatchEvidenceDecisionBasis;
+        if (basis is null || basis.MatchScore is null)
+        {
+            return SessionOperationResult<FaceMatchEvidencePreparation>.Failure(
+                "FACE_MATCH_DECISION_BASIS_REQUIRED",
+                "FaceMatch evidence requires a decision-basis with a match score.",
+                400);
+        }
+
+        if (basis.MatchScore is < 0 or > 1)
+        {
+            return SessionOperationResult<FaceMatchEvidencePreparation>.Failure(
+                "FACE_MATCH_DECISION_BASIS_MISMATCH",
+                "FaceMatch matchScore must be between 0.0 and 1.0.",
+                400);
+        }
+
+        if (!Guid.TryParse(basis.LiveFaceArtifactId, out var liveArtifactId))
+        {
+            return SessionOperationResult<FaceMatchEvidencePreparation>.Failure(
+                "FACE_MATCH_DECISION_BASIS_REQUIRED",
+                "FaceMatch decision-basis must identify the live face artifact.",
+                400);
+        }
+
+        var liveArtifact = inputArtifacts.SingleOrDefault(artifact => artifact.Id == liveArtifactId);
+        if (liveArtifact is null ||
+            liveArtifact.ArtifactType != CaptureArtifactType.SelfieImage ||
+            !string.Equals(basis.LiveFaceArtifactHash, liveArtifact.ArtifactHash?.ToString(), StringComparison.Ordinal))
+        {
+            return SessionOperationResult<FaceMatchEvidencePreparation>.Failure(
+                "FACE_MATCH_DECISION_BASIS_MISMATCH",
+                "FaceMatch live face artifact id/hash must match a submitted SelfieImage input artifact.",
+                400);
+        }
+
+        var serverIsMatch = basis.MatchScore.Value >= FaceMatchThreshold;
+        if (basis.IsMatch.HasValue && basis.IsMatch.Value != serverIsMatch)
+        {
+            return SessionOperationResult<FaceMatchEvidencePreparation>.Failure(
+                "FACE_MATCH_DECISION_BASIS_MISMATCH",
+                "Adapter-supplied FaceMatch isMatch conflicts with the server threshold calculation.",
+                400);
+        }
+
+        var effectiveResult = request.Result;
+        var reasonCodes = new SortedSet<string>(request.ReasonCodes ?? [], StringComparer.Ordinal);
+        var finalFlags = new SortedSet<string>(StringComparer.Ordinal);
+
+        var captureBindingTrusted = IsFaceCaptureBindingTrusted(session, liveArtifact, basis.LiveCaptureBinding);
+        if (captureBindingTrusted)
+        {
+            finalFlags.Add("CAPTURE_BOUND_TO_SESSION");
+        }
+        else
+        {
+            finalFlags.Add("DIRECT_CLIENT_UPLOAD_UNTRUSTED");
+            reasonCodes.Add("DIRECT_CLIENT_UPLOAD_UNTRUSTED");
+            if (request.Result == VerificationResultDto.Passed)
+            {
+                effectiveResult = VerificationResultDto.ReviewRequired;
+            }
+        }
+
+        var referenceValidation = ValidateFaceMatchReference(session, basis, sessionArtifacts, priorEvidence);
+        if (!referenceValidation.IsProductionGrade)
+        {
+            reasonCodes.Add(referenceValidation.ReasonCode);
+            if (request.Result == VerificationResultDto.Passed)
+            {
+                effectiveResult = VerificationResultDto.ReviewRequired;
+            }
+        }
+
+        if (!serverIsMatch && request.Result == VerificationResultDto.Passed)
+        {
+            reasonCodes.Add("FACE_MATCH_BELOW_THRESHOLD");
+            effectiveResult = VerificationResultDto.ReviewRequired;
+        }
+
+        var normalizedBasis = BuildNormalizedFaceMatchDecisionBasis(
+            session,
+            request,
+            liveArtifact,
+            basis,
+            finalFlags,
+            referenceValidation,
+            serverIsMatch,
+            effectiveResult);
+        var computedPayloadHashValue = EvidenceCanonicalization.HashCanonical(
+            "tip-70-face-match-decision-basis",
+            normalizedBasis);
+
+        if (!string.IsNullOrWhiteSpace(request.PayloadHash) &&
+            !string.Equals(request.PayloadHash, computedPayloadHashValue, StringComparison.Ordinal))
+        {
+            return SessionOperationResult<FaceMatchEvidencePreparation>.Failure(
+                "FACE_MATCH_PAYLOAD_HASH_MISMATCH",
+                "Adapter-supplied PayloadHash does not match the server-computed FaceMatch decision-basis hash.",
+                400);
+        }
+
+        return SessionOperationResult<FaceMatchEvidencePreparation>.Success(new FaceMatchEvidencePreparation(
+            effectiveResult,
+            reasonCodes.ToArray(),
+            new HashRef(computedPayloadHashValue)));
+    }
+
+    private static bool IsFaceCaptureBindingTrusted(
+        VerificationSession session,
+        CaptureArtifact liveArtifact,
+        FaceMatchCaptureBindingDto? captureBinding)
+    {
+        if (captureBinding is null ||
+            liveArtifact.CaptureSource == CaptureSource.ExternalPreStaged)
+        {
+            return false;
+        }
+
+        var expectedChallengeHash = BuildSessionChallengeHash(session);
+        if (expectedChallengeHash is null ||
+            !string.Equals(captureBinding.ChallengeHash, expectedChallengeHash, StringComparison.Ordinal) ||
+            !string.Equals(captureBinding.SessionId, session.Id.ToString("N"), StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return string.Equals(captureBinding.ArtifactHash, liveArtifact.ArtifactHash?.ToString(), StringComparison.Ordinal) &&
+               string.Equals(captureBinding.CaptureAgentId, liveArtifact.CaptureAgentId, StringComparison.Ordinal) &&
+               string.Equals(captureBinding.DeviceId, liveArtifact.DeviceId, StringComparison.Ordinal);
+    }
+
+    private static FaceMatchReferenceValidation ValidateFaceMatchReference(
+        VerificationSession session,
+        FaceMatchEvidenceDecisionBasisDto basis,
+        IReadOnlyList<CaptureArtifact> sessionArtifacts,
+        IReadOnlyList<EvidenceResult> priorEvidence)
+    {
+        if (basis.ReferenceFaceSource != FaceMatchReferenceFaceSourceDto.ChipDg2FromTrustedNfc)
+        {
+            return FaceMatchReferenceValidation.NotProductionGrade("FACE_MATCH_REFERENCE_NOT_PRODUCTION_GRADE");
+        }
+
+        if (!string.Equals(basis.ReferenceEvidenceType, nameof(EvidenceResultTypeDto.NfcValidation), StringComparison.Ordinal) ||
+            !Guid.TryParse(basis.ReferenceEvidenceResultId, out var referenceEvidenceId))
+        {
+            return FaceMatchReferenceValidation.NotProductionGrade("FACE_MATCH_REFERENCE_NFC_NOT_TRUSTED");
+        }
+
+        var referenceEvidence = priorEvidence.SingleOrDefault(evidence => evidence.Id == referenceEvidenceId);
+        if (referenceEvidence is null ||
+            referenceEvidence.VerificationSessionId != session.Id ||
+            referenceEvidence.ResultType != EvidenceResultType.NfcValidation ||
+            referenceEvidence.Result != VerificationResult.Passed ||
+            referenceEvidence.PayloadHash is null)
+        {
+            return FaceMatchReferenceValidation.NotProductionGrade("FACE_MATCH_REFERENCE_NFC_NOT_TRUSTED");
+        }
+
+        if (!string.IsNullOrWhiteSpace(basis.ReferencePayloadHash) &&
+            !string.Equals(basis.ReferencePayloadHash, referenceEvidence.PayloadHash.ToString(), StringComparison.Ordinal))
+        {
+            return FaceMatchReferenceValidation.NotProductionGrade("FACE_MATCH_REFERENCE_NFC_NOT_TRUSTED");
+        }
+
+        if (!Guid.TryParse(basis.ReferenceArtifactId, out var referenceArtifactId) ||
+            !referenceEvidence.InputCaptureArtifactIds.Contains(referenceArtifactId))
+        {
+            return FaceMatchReferenceValidation.NotProductionGrade("FACE_MATCH_REFERENCE_NFC_NOT_TRUSTED");
+        }
+
+        var referenceArtifact = sessionArtifacts.SingleOrDefault(artifact => artifact.Id == referenceArtifactId);
+        if (referenceArtifact is null ||
+            referenceArtifact.ArtifactType != CaptureArtifactType.NfcReadArtifact ||
+            !string.Equals(basis.ReferenceArtifactHash, referenceArtifact.ArtifactHash?.ToString(), StringComparison.Ordinal))
+        {
+            return FaceMatchReferenceValidation.NotProductionGrade("FACE_MATCH_REFERENCE_NFC_NOT_TRUSTED");
+        }
+
+        return new FaceMatchReferenceValidation(
+            true,
+            ReasonCode: string.Empty,
+            referenceEvidence.Id.ToString("N"),
+            referenceEvidence.ResultType.ToString(),
+            referenceEvidence.PayloadHash.ToString(),
+            referenceArtifact.Id.ToString("N"),
+            referenceArtifact.ArtifactHash?.ToString());
+    }
+
+    private static object BuildNormalizedFaceMatchDecisionBasis(
+        VerificationSession session,
+        EvidenceResultSubmissionRequestDto request,
+        CaptureArtifact liveArtifact,
+        FaceMatchEvidenceDecisionBasisDto submittedBasis,
+        IReadOnlySet<string> finalFlags,
+        FaceMatchReferenceValidation referenceValidation,
+        bool serverIsMatch,
+        VerificationResultDto effectiveResult)
+    {
+        var submittedBinding = submittedBasis.LiveCaptureBinding;
+
+        return new
+        {
+            extension = new
+            {
+                id = "face-match",
+                requiredCheckType = "FaceMatch",
+                category = "IdentityEvidence",
+                emitsEvidenceType = "FaceMatch",
+            },
+            flags = finalFlags.Order(StringComparer.Ordinal).ToArray(),
+            liveFaceArtifact = new
+            {
+                artifactId = liveArtifact.Id.ToString("N"),
+                artifactHash = liveArtifact.ArtifactHash?.ToString(),
+            },
+            matchScore = submittedBasis.MatchScore,
+            thresholdApplied = FaceMatchThreshold,
+            isMatch = serverIsMatch,
+            reference = new
+            {
+                referenceFaceSource = submittedBasis.ReferenceFaceSource?.ToString(),
+                referenceEvidenceResultId = referenceValidation.ReferenceEvidenceResultId ?? submittedBasis.ReferenceEvidenceResultId,
+                referenceEvidenceType = referenceValidation.ReferenceEvidenceType ?? submittedBasis.ReferenceEvidenceType,
+                referenceArtifactId = referenceValidation.ReferenceArtifactId ?? submittedBasis.ReferenceArtifactId,
+                referenceArtifactHash = referenceValidation.ReferenceArtifactHash ?? submittedBasis.ReferenceArtifactHash,
+                referencePayloadHash = referenceValidation.ReferencePayloadHash ?? submittedBasis.ReferencePayloadHash,
+            },
+            liveCaptureBinding = new
+            {
+                challengeHash = submittedBinding?.ChallengeHash,
+                sessionId = session.Id.ToString("N"),
+                captureAgentId = liveArtifact.CaptureAgentId,
+                deviceId = liveArtifact.DeviceId,
+                capturedAt = submittedBinding?.CapturedAt ?? liveArtifact.CreatedAt,
+                artifactHash = liveArtifact.ArtifactHash?.ToString(),
+            },
+            serverDecisionResult = effectiveResult.ToString(),
+            adapterRequestedResult = request.Result.ToString(),
+            engineName = request.EngineName,
+            engineVersion = request.EngineVersion,
             sanitizedSummaryLabel = submittedBasis.SanitizedSummaryLabel ?? request.SanitizedSummaryRef,
         };
     }
@@ -893,6 +1167,24 @@ public sealed class VerificationEvidenceApplicationService(
         VerificationResultDto Result,
         IReadOnlyList<string> ReasonCodes,
         HashRef PayloadHash);
+
+    private sealed record FaceMatchEvidencePreparation(
+        VerificationResultDto Result,
+        IReadOnlyList<string> ReasonCodes,
+        HashRef PayloadHash);
+
+    private sealed record FaceMatchReferenceValidation(
+        bool IsProductionGrade,
+        string ReasonCode,
+        string? ReferenceEvidenceResultId,
+        string? ReferenceEvidenceType,
+        string? ReferencePayloadHash,
+        string? ReferenceArtifactId,
+        string? ReferenceArtifactHash)
+    {
+        public static FaceMatchReferenceValidation NotProductionGrade(string reasonCode) =>
+            new(false, reasonCode, null, null, null, null, null);
+    }
 
     private sealed record WritableSessionContext<T>(VerificationSession Session, LocalDevClientPolicy Policy);
 }

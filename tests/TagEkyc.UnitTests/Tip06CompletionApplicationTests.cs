@@ -171,6 +171,71 @@ public sealed class Tip06CompletionApplicationTests
     }
 
     [Fact]
+    public async Task Tip70_face_match_decision_basis_payload_hash_is_proof_bound_without_reason_codes()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(
+            fixture,
+            [RequiredCheckTypeDto.DocumentNfc, RequiredCheckTypeDto.FaceMatch]);
+        var nfcArtifact = await fixture.EvidenceService.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            NfcArtifact(),
+            CancellationToken.None);
+        var selfieArtifact = await fixture.EvidenceService.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value.VerificationSessionId,
+            SelfieArtifact(),
+            CancellationToken.None);
+        await fixture.EvidenceService.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            NfcEvidence(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId),
+            CancellationToken.None);
+        var nfcEvidence = fixture.Evidence.EvidenceResults.Single(evidence => evidence.ResultType == EvidenceResultType.NfcValidation);
+        var scenario = new FaceMatchScenario(
+            session.Value.VerificationSessionId,
+            nfcArtifact.Value.CaptureArtifactId,
+            nfcEvidence.Id.ToString("N"),
+            nfcEvidence.PayloadHash!.ToString()!,
+            selfieArtifact.Value!.CaptureArtifactId);
+        var expectedPayloadHash = ExpectedFaceMatchPayloadHash(scenario);
+        var mutatedPayloadHash = ExpectedFaceMatchPayloadHash(
+            scenario,
+            score: 0.93m);
+
+        var evidenceAccepted = await fixture.EvidenceService.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            FaceMatchEvidence(scenario) with
+            {
+                ReasonCodes = ["OPERATIONAL_REASON_ONLY"],
+            },
+            CancellationToken.None);
+        var completed = await fixture.CompletionService.CompleteAsync(
+            BusinessCaller(),
+            session.Value.VerificationSessionId,
+            new CompleteVerificationSessionRequestDto(),
+            CancellationToken.None);
+        var manifest = fixture.Manifests.Manifests.Single();
+        var faceMatchRef = manifest.EvidenceRefs.Single(evidenceRef => evidenceRef.Type == "FaceMatch");
+        var mutatedManifestHash = RecomputeEvidenceManifestHash(
+            manifest,
+            completed.Value!,
+            "FaceMatch",
+            mutatedPayloadHash);
+
+        Assert.True(evidenceAccepted.IsSuccess);
+        Assert.True(completed.IsSuccess);
+        Assert.Equal(VerificationResultDto.Passed, completed.Value?.Result);
+        Assert.Contains("OPERATIONAL_REASON_ONLY", fixture.Decisions.Decisions.Single().DecisionReasonCodes);
+        Assert.Equal(expectedPayloadHash, faceMatchRef.PayloadHash);
+        Assert.NotEqual(expectedPayloadHash, mutatedPayloadHash);
+        Assert.NotEqual(manifest.ManifestHash, mutatedManifestHash);
+        Assert.DoesNotContain("OPERATIONAL_REASON_ONLY", JsonSerializer.Serialize(manifest.EvidenceRefs, JsonOptions), StringComparison.Ordinal);
+    }
+
+    [Fact]
     public async Task Tip69_external_prestaged_nfc_cannot_complete_as_passed_or_high()
     {
         var fixture = CreateFixture();
@@ -473,6 +538,17 @@ public sealed class Tip06CompletionApplicationTests
             RequestId: "req-nfc-artifact",
             CorrelationId: "corr-tip69");
 
+    private static CaptureArtifactSubmissionRequestDto SelfieArtifact(CaptureSourceDto captureSource = CaptureSourceDto.MobileSdk) =>
+        new(
+            CaptureArtifactTypeDto.SelfieImage,
+            captureSource,
+            "ldev_capture",
+            "device-1",
+            "sha256:selfie-artifact",
+            MetadataHash: null,
+            RequestId: "req-selfie-artifact",
+            CorrelationId: "corr-tip70");
+
     private static EvidenceResultSubmissionRequestDto CaptureQualityEvidence(IReadOnlyList<string> artifactIds) =>
         new(
             EvidenceResultTypeDto.CaptureQuality,
@@ -534,6 +610,54 @@ public sealed class Tip06CompletionApplicationTests
                     VerificationExtensionCategoryDto.IdentityEvidence,
                     nameof(EvidenceResultTypeDto.NfcValidation))));
 
+    private static EvidenceResultSubmissionRequestDto FaceMatchEvidence(
+        FaceMatchScenario scenario,
+        decimal score = 0.92m,
+        bool? isMatch = true) =>
+        new(
+            EvidenceResultTypeDto.FaceMatch,
+            [scenario.LiveArtifactId],
+            VerificationResultDto.Passed,
+            Confidence: score,
+            ReasonCodes: [],
+            RetryReasonCode: null,
+            SanitizedSummaryRef: "summary:face-match",
+            PayloadHash: null,
+            SignaturePlaceholderStatusDto.PlaceholderUnverified,
+            "fixture-face-match",
+            "tip70",
+            RequestId: "req-face-match",
+            CorrelationId: "corr-tip70",
+            FaceMatchEvidenceDecisionBasis: new FaceMatchEvidenceDecisionBasisDto(
+                scenario.LiveArtifactId,
+                "sha256:selfie-artifact",
+                score,
+                ThresholdApplied: null,
+                isMatch,
+                FaceMatchReferenceFaceSourceDto.ChipDg2FromTrustedNfc,
+                scenario.NfcEvidenceResultId,
+                nameof(EvidenceResultTypeDto.NfcValidation),
+                scenario.NfcArtifactId,
+                "sha256:nfc-artifact",
+                scenario.NfcPayloadHash,
+                new FaceMatchCaptureBindingDto(
+                    ChallengeHash(scenario.SessionId),
+                    scenario.SessionId,
+                    "ldev_capture",
+                    "device-1",
+                    CapturedAt: Tip70CapturedAt,
+                    "sha256:selfie-artifact"),
+                ServerDecisionResult: null,
+                AdapterRequestedResult: VerificationResultDto.Passed,
+                "fixture-face-match",
+                "tip70",
+                SanitizedSummaryLabel: "summary:face-match",
+                new VerificationExtensionDescriptorDto(
+                    "face-match",
+                    nameof(RequiredCheckTypeDto.FaceMatch),
+                    VerificationExtensionCategoryDto.IdentityEvidence,
+                    nameof(EvidenceResultTypeDto.FaceMatch))));
+
     private static string ExpectedNfcPayloadHash(
         string sessionId,
         string artifactId,
@@ -554,6 +678,54 @@ public sealed class Tip06CompletionApplicationTests
                     "SOD_INTERNAL_VALID",
                 ],
                 "Passed"));
+
+    private static string ExpectedFaceMatchPayloadHash(
+        FaceMatchScenario scenario,
+        decimal score = 0.92m) =>
+        EvidenceCanonicalization.HashCanonical(
+            "tip-70-face-match-decision-basis",
+            new
+            {
+                extension = new
+                {
+                    id = "face-match",
+                    requiredCheckType = "FaceMatch",
+                    category = "IdentityEvidence",
+                    emitsEvidenceType = "FaceMatch",
+                },
+                flags = new[] { "CAPTURE_BOUND_TO_SESSION" },
+                liveFaceArtifact = new
+                {
+                    artifactId = scenario.LiveArtifactId,
+                    artifactHash = "sha256:selfie-artifact",
+                },
+                matchScore = (decimal?)score,
+                thresholdApplied = 0.80m,
+                isMatch = true,
+                reference = new
+                {
+                    referenceFaceSource = "ChipDg2FromTrustedNfc",
+                    referenceEvidenceResultId = scenario.NfcEvidenceResultId,
+                    referenceEvidenceType = nameof(EvidenceResultTypeDto.NfcValidation),
+                    referenceArtifactId = scenario.NfcArtifactId,
+                    referenceArtifactHash = "sha256:nfc-artifact",
+                    referencePayloadHash = scenario.NfcPayloadHash,
+                },
+                liveCaptureBinding = new
+                {
+                    challengeHash = ChallengeHash(scenario.SessionId),
+                    sessionId = scenario.SessionId,
+                    captureAgentId = "ldev_capture",
+                    deviceId = "device-1",
+                    capturedAt = Tip70CapturedAt,
+                    artifactHash = "sha256:selfie-artifact",
+                },
+                serverDecisionResult = "Passed",
+                adapterRequestedResult = "Passed",
+                engineName = "fixture-face-match",
+                engineVersion = "tip70",
+                sanitizedSummaryLabel = "summary:face-match",
+            });
 
     private static object Tip69NormalizedBasis(
         string sessionId,
@@ -606,8 +778,23 @@ public sealed class Tip06CompletionApplicationTests
         CompleteVerificationSessionResponseDto completed,
         string payloadHash)
     {
+        return RecomputeEvidenceManifestHash(
+            manifest,
+            completed,
+            manifest.EvidenceRefs.Single().Type,
+            payloadHash);
+    }
+
+    private static string RecomputeEvidenceManifestHash(
+        TagEkyc.Contracts.InternalAudit.Manifest.EvidenceManifestDto manifest,
+        CompleteVerificationSessionResponseDto completed,
+        string evidenceType,
+        string payloadHash)
+    {
         var mutatedRefs = manifest.EvidenceRefs
-            .Select(evidenceRef => evidenceRef with { PayloadHash = payloadHash })
+            .Select(evidenceRef => evidenceRef.Type == evidenceType
+                ? evidenceRef with { PayloadHash = payloadHash }
+                : evidenceRef)
             .ToArray();
         var createdAt = EvidenceCanonicalization.FormatTimestamp(manifest.CreatedAt);
         var manifestBodyHash = EvidenceCanonicalization.HashCanonical("tip-06-manifest-body", new
@@ -650,6 +837,7 @@ public sealed class Tip06CompletionApplicationTests
 
     private const string Tip69Challenge = "opaque-tip69-challenge";
     private static readonly DateTimeOffset Tip69CapturedAt = new(2026, 6, 26, 1, 2, 3, TimeSpan.Zero);
+    private static readonly DateTimeOffset Tip70CapturedAt = new(2026, 6, 26, 4, 5, 6, TimeSpan.Zero);
 
     private static EvidenceResultSubmissionRequestDto DocumentOcrEvidence(IReadOnlyList<string> artifactIds) =>
         CaptureQualityEvidence(artifactIds) with
@@ -738,4 +926,11 @@ public sealed class Tip06CompletionApplicationTests
         LocalDevInMemoryEvidencePackageRepository Packages,
         LocalDevInMemoryEvidenceManifestRepository Manifests,
         LocalDevInMemoryAuditEventRepository Audit);
+
+    private sealed record FaceMatchScenario(
+        string SessionId,
+        string NfcArtifactId,
+        string NfcEvidenceResultId,
+        string NfcPayloadHash,
+        string LiveArtifactId);
 }

@@ -27,7 +27,8 @@ public sealed record EvidenceResultSubmissionRequestDto(
     string EngineVersion,
     string? RequestId,
     string? CorrelationId,
-    NfcEvidenceDecisionBasisDto? NfcEvidenceDecisionBasis = null);
+    NfcEvidenceDecisionBasisDto? NfcEvidenceDecisionBasis = null,
+    FaceMatchEvidenceDecisionBasisDto? FaceMatchEvidenceDecisionBasis = null);
 
 public enum VerificationExtensionCategoryDto
 {
@@ -62,6 +63,41 @@ public sealed record NfcEvidenceDecisionBasisDto(
     string? EngineName,
     string? EngineVersion,
     IReadOnlyList<NfcInputArtifactRefDto> InputArtifacts,
+    string? SanitizedSummaryLabel,
+    VerificationExtensionDescriptorDto? Extension = null);
+
+public enum FaceMatchReferenceFaceSourceDto
+{
+    ChipDg2FromTrustedNfc = 0,
+    DocumentImage = 1,
+    SelfieImage = 2,
+}
+
+public sealed record FaceMatchCaptureBindingDto(
+    string? ChallengeHash,
+    string? SessionId,
+    string? CaptureAgentId,
+    string? DeviceId,
+    DateTimeOffset? CapturedAt,
+    string? ArtifactHash);
+
+public sealed record FaceMatchEvidenceDecisionBasisDto(
+    string? LiveFaceArtifactId,
+    string? LiveFaceArtifactHash,
+    decimal? MatchScore,
+    decimal? ThresholdApplied,
+    bool? IsMatch,
+    FaceMatchReferenceFaceSourceDto? ReferenceFaceSource,
+    string? ReferenceEvidenceResultId,
+    string? ReferenceEvidenceType,
+    string? ReferenceArtifactId,
+    string? ReferenceArtifactHash,
+    string? ReferencePayloadHash,
+    FaceMatchCaptureBindingDto? LiveCaptureBinding,
+    VerificationResultDto? ServerDecisionResult,
+    VerificationResultDto? AdapterRequestedResult,
+    string? EngineName,
+    string? EngineVersion,
     string? SanitizedSummaryLabel,
     VerificationExtensionDescriptorDto? Extension = null);
 
