@@ -171,6 +171,45 @@ public sealed class Tip06CompletionApplicationTests
     }
 
     [Fact]
+    public async Task Tip69_external_prestaged_nfc_cannot_complete_as_passed_or_high()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
+        var nfcArtifact = await fixture.EvidenceService.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            NfcArtifact(CaptureSourceDto.ExternalPreStaged),
+            CancellationToken.None);
+
+        var evidenceAccepted = await fixture.EvidenceService.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            NfcEvidence(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId),
+            CancellationToken.None);
+        var persistedEvidence = fixture.Evidence.EvidenceResults.Single();
+        var storedBeforeCompletion = await fixture.Sessions.GetAsync(
+            Guid.Parse(session.Value.VerificationSessionId),
+            CancellationToken.None);
+        var completed = await fixture.CompletionService.CompleteAsync(
+            BusinessCaller(),
+            session.Value.VerificationSessionId,
+            new CompleteVerificationSessionRequestDto(),
+            CancellationToken.None);
+
+        Assert.True(evidenceAccepted.IsSuccess);
+        Assert.Equal(VerificationResult.ReviewRequired, persistedEvidence.Result);
+        Assert.NotEqual(VerificationResult.Passed, persistedEvidence.Result);
+        Assert.Contains("DIRECT_CLIENT_UPLOAD_UNTRUSTED", persistedEvidence.ReasonCodes);
+        Assert.DoesNotContain("CAPTURE_BOUND_TO_SESSION", persistedEvidence.ReasonCodes);
+        Assert.NotEqual(VerificationSessionState.ReadyToComplete, storedBeforeCompletion?.State);
+        Assert.True(completed.IsSuccess);
+        Assert.NotEqual(VerificationResultDto.Passed, completed.Value?.Result);
+        Assert.Equal(VerificationResultDto.ReviewRequired, completed.Value?.Result);
+        Assert.NotEqual(AssuranceLevelDto.High, completed.Value?.AssuranceLevel);
+        Assert.Equal(AssuranceLevelDto.Low, completed.Value?.AssuranceLevel);
+    }
+
+    [Fact]
     public async Task Complete_calculates_failed_identity_from_latest_required_evidence()
     {
         var fixture = CreateFixture();
@@ -394,6 +433,7 @@ public sealed class Tip06CompletionApplicationTests
             evidenceService,
             completionService,
             sessions,
+            evidence,
             decisions,
             packages,
             manifests,
@@ -422,10 +462,10 @@ public sealed class Tip06CompletionApplicationTests
             RequestId: "req-artifact",
             CorrelationId: "corr-artifact");
 
-    private static CaptureArtifactSubmissionRequestDto NfcArtifact() =>
+    private static CaptureArtifactSubmissionRequestDto NfcArtifact(CaptureSourceDto captureSource = CaptureSourceDto.MobileSdk) =>
         new(
             CaptureArtifactTypeDto.NfcReadArtifact,
-            CaptureSourceDto.MobileSdk,
+            captureSource,
             "ldev_capture",
             "device-1",
             "sha256:nfc-artifact",
@@ -693,6 +733,7 @@ public sealed class Tip06CompletionApplicationTests
         VerificationEvidenceApplicationService EvidenceService,
         VerificationCompletionApplicationService CompletionService,
         LocalDevInMemoryVerificationSessionRepository Sessions,
+        LocalDevInMemoryEvidenceResultRepository Evidence,
         LocalDevInMemoryVerificationDecisionRepository Decisions,
         LocalDevInMemoryEvidencePackageRepository Packages,
         LocalDevInMemoryEvidenceManifestRepository Manifests,
