@@ -14,6 +14,18 @@ namespace TagEkyc.UnitTests;
 public sealed class Tip05EvidenceApplicationTests
 {
     [Fact]
+    public void Tip71_challenge_hash_golden_vector_matches_server_canonicalizer()
+    {
+        var challengeHash = EvidenceCanonicalization.HashCanonical("tip-69-capture-session-challenge", new
+        {
+            challenge = "tip-71-fixed-challenge",
+            sessionId = "0123456789abcdef0123456789abcdef",
+        });
+
+        Assert.Equal("sha256:c26dfddcec7dd5579c2b0787fb33a0eca6dc9906dce1e849ae7bc54cb0c3a43b", challengeHash);
+    }
+
+    [Fact]
     public async Task Business_consumer_is_wrong_category_before_missing_tip05_scope()
     {
         var fixture = CreateFixture();
@@ -356,6 +368,36 @@ public sealed class Tip05EvidenceApplicationTests
         Assert.Equal("ReadyToComplete", accepted.Value?.SessionState);
         Assert.Equal(VerificationResult.Passed, evidence.Result);
         Assert.Equal(ExpectedFaceMatchPayloadHash(scenario), evidence.PayloadHash?.ToString());
+    }
+
+    [Fact]
+    public async Task Tip71_pc_agent_happy_path_reaches_capture_bound_to_session_payload()
+    {
+        var fixture = CreateFixture();
+        var scenario = await CreateTrustedFaceMatchScenarioAsync(
+            fixture,
+            nfcSource: CaptureSourceDto.PcAgent,
+            liveSource: CaptureSourceDto.PcAgent);
+
+        var accepted = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            scenario.SessionId,
+            FaceMatchEvidence(scenario) with
+            {
+                EngineName = "viewfacecore-seetaface6",
+                EngineVersion = "0.3.8+face-models/6.0.7+runtime-win-x64/6.0.7",
+            },
+            CancellationToken.None);
+        var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.FaceMatch);
+
+        Assert.True(accepted.IsSuccess);
+        Assert.Equal(VerificationResult.Passed, evidence.Result);
+        Assert.Equal(
+            ExpectedFaceMatchPayloadHash(
+                scenario,
+                engineName: "viewfacecore-seetaface6",
+                engineVersion: "0.3.8+face-models/6.0.7+runtime-win-x64/6.0.7"),
+            evidence.PayloadHash?.ToString());
     }
 
     [Fact]
@@ -847,7 +889,9 @@ public sealed class Tip05EvidenceApplicationTests
         bool isMatch = true,
         string serverDecisionResult = "Passed",
         IReadOnlyList<string>? flags = null,
-        FaceMatchReferenceFaceSourceDto referenceSource = FaceMatchReferenceFaceSourceDto.ChipDg2FromTrustedNfc) =>
+        FaceMatchReferenceFaceSourceDto referenceSource = FaceMatchReferenceFaceSourceDto.ChipDg2FromTrustedNfc,
+        string engineName = "fixture-face-match",
+        string engineVersion = "tip70") =>
         EvidenceCanonicalization.HashCanonical(
             "tip-70-face-match-decision-basis",
             Tip70NormalizedBasis(
@@ -856,7 +900,9 @@ public sealed class Tip05EvidenceApplicationTests
                 isMatch,
                 serverDecisionResult,
                 flags ?? ["CAPTURE_BOUND_TO_SESSION"],
-                referenceSource));
+                referenceSource,
+                engineName,
+                engineVersion));
 
     private static object Tip70NormalizedBasis(
         FaceMatchScenario scenario,
@@ -864,7 +910,9 @@ public sealed class Tip05EvidenceApplicationTests
         bool isMatch,
         string serverDecisionResult,
         IReadOnlyList<string> flags,
-        FaceMatchReferenceFaceSourceDto referenceSource) =>
+        FaceMatchReferenceFaceSourceDto referenceSource,
+        string engineName,
+        string engineVersion) =>
         new
         {
             extension = new
@@ -903,14 +951,15 @@ public sealed class Tip05EvidenceApplicationTests
             },
             serverDecisionResult,
             adapterRequestedResult = "Passed",
-            engineName = "fixture-face-match",
-            engineVersion = "tip70",
+            engineName,
+            engineVersion,
             sanitizedSummaryLabel = "summary:face-match",
         };
 
     private static async Task<FaceMatchScenario> CreateTrustedFaceMatchScenarioAsync(
         TestFixture fixture,
         VerificationResultDto nfcResult = VerificationResultDto.Passed,
+        CaptureSourceDto nfcSource = CaptureSourceDto.MobileSdk,
         CaptureSourceDto liveSource = CaptureSourceDto.MobileSdk)
     {
         var session = await CreateChallengeBoundSessionAsync(
@@ -919,7 +968,7 @@ public sealed class Tip05EvidenceApplicationTests
         var nfcArtifact = await fixture.Service.AppendCaptureArtifactAsync(
             CaptureCaller(),
             session.Value!.VerificationSessionId,
-            NfcArtifact(),
+            NfcArtifact(nfcSource),
             CancellationToken.None);
         var selfieArtifact = await fixture.Service.AppendCaptureArtifactAsync(
             CaptureCaller(),
