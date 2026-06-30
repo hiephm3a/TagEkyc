@@ -28,7 +28,8 @@ public sealed record EvidenceResultSubmissionRequestDto(
     string? RequestId,
     string? CorrelationId,
     NfcEvidenceDecisionBasisDto? NfcEvidenceDecisionBasis = null,
-    FaceMatchEvidenceDecisionBasisDto? FaceMatchEvidenceDecisionBasis = null);
+    FaceMatchEvidenceDecisionBasisDto? FaceMatchEvidenceDecisionBasis = null,
+    LivenessEvidenceDecisionBasisDto? LivenessEvidenceDecisionBasis = null);
 
 public enum VerificationExtensionCategoryDto
 {
@@ -98,6 +99,29 @@ public sealed record FaceMatchEvidenceDecisionBasisDto(
     VerificationResultDto? AdapterRequestedResult,
     string? EngineName,
     string? EngineVersion,
+    string? SanitizedSummaryLabel,
+    VerificationExtensionDescriptorDto? Extension = null);
+
+public sealed record LivenessCaptureBindingDto(
+    string? ChallengeHash,
+    string? SessionId,
+    string? CaptureAgentId,
+    string? DeviceId,
+    DateTimeOffset? CapturedAt,
+    string? ArtifactHash);
+
+public sealed record LivenessEvidenceDecisionBasisDto(
+    string? LiveMediaArtifactId,
+    string? LiveMediaArtifactHash,
+    decimal? LivenessScore,
+    string? AdapterRequestedVerdict,
+    string? Method,
+    string? LivenessGrade,
+    decimal? ThresholdApplied,
+    LivenessCaptureBindingDto? LiveCaptureBinding,
+    bool? ServerDerivedIsLive,
+    VerificationResultDto? ServerDecisionResult,
+    VerificationResultDto? AdapterRequestedResult,
     string? SanitizedSummaryLabel,
     VerificationExtensionDescriptorDto? Extension = null);
 

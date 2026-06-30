@@ -119,6 +119,8 @@ Verified (research): no medical mandate for certified liveness; NĐ 69/2024 tier
 
 ## 6. Engine roadmap priority (two-layer, §1a)
 
+**TIP-72/TIP-73 reconciliation:** the older "server-side ONNX default" wording below is strategy framing; the built split is TIP-72 = server-side Liveness evidence path only and TIP-73 = agent-side liveness engine, with server-side transient inference deferred.
+
 1. **Define the two ports** (LOCKED): Layer-1 capture-adapter port (yields passive-auth'd chip data + ref-face + live-face) ⟂ Layer-2 verify-engine port (ref-face + live-face → match score + liveness verdict). Both feed the existing `/evidence-results` → neutral-proof pipeline.
 2. **Build OUR portable ONNX engine (Layer 2)** — core = face-match (ArcFace/InsightFace) + liveness (Silent-Face/MiniFASNet), server-side default; the universal coverage for any reader/OS. (OCR/PaddleOCR = OPTIONAL capture-assist module, not core — chip-less/damaged-card fallback or MRZ/CAN, per §1a.)
 3. **HN212 capture adapter (Layer 1, PRIORITY deploy)** — Windows agent reads chip + captures face; ingests HN212's built-in match/liveness/SOD as evidence; falls back to our engine where absent.

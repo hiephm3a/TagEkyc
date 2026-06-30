@@ -117,7 +117,7 @@ TIP-71 produces **production-grade FaceMatch evidence ONLY** (live face is simil
 | **ART-001 / "Capture artifact retention policy" (P0)** | Remains DEFERRED/optional at the server; active only if the optional Vault mode is later authorized. |
 | **Optional encrypted short-TTL EvidenceVault / raw-evidence-packet** | P2 follow-on (dispute/legal escalation), gated by authorization packet + legal review. NOT pilot-blocking. |
 | **Server-side transient inference + byte-ingestion / `IEvidenceVault`** | Deferred to a future hosted-web/mobile slice (no trusted local agent). |
-| **Liveness / anti-spoof (Silent-Face ONNX)** | TIP-72 — also agent-side. |
+| **Liveness / anti-spoof (Silent-Face ONNX)** | Reconciled by TIP-72/TIP-73 split: TIP-72 = server-side Liveness evidence path; TIP-73 = agent-side Silent-Face engine. |
 | **Threshold calibration + governance** (FAR/FRR, per-profile) | Follow-on (this slice ships the server const 0.80 from TIP-70 + the agent declares the engine). |
 | **P1-EBS "decision basis not bound to evidence hash"** | NARROWED — NFC (TIP-69) + FaceMatch (TIP-70) decision-bases incl. score are now server-`PayloadHash`-bound; residual = liveness (TIP-72) + the by-design raw-re-run gap. |
 | **dlib fallback** (if ViewFaceCore accuracy insufficient) | Documented alternative (public-domain weights, native interop). |

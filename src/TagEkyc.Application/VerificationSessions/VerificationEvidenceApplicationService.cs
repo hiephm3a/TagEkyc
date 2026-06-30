@@ -16,6 +16,7 @@ public sealed class VerificationEvidenceApplicationService(
     : ICaptureArtifactCommands, ITrustedEvidenceResultCommands
 {
     private const decimal FaceMatchThreshold = 0.80m;
+    private const decimal LivenessThreshold = 0.80m;
 
     private static readonly IReadOnlySet<string> RequiredNfcChipFlags = new HashSet<string>(StringComparer.Ordinal)
     {
@@ -297,6 +298,24 @@ public sealed class VerificationEvidenceApplicationService(
             effectiveResult = faceMatchPreparation.Value!.Result;
             effectiveReasonCodes = faceMatchPreparation.Value.ReasonCodes;
             payloadHash = faceMatchPreparation.Value.PayloadHash;
+        }
+        else if (resultType == EvidenceResultType.Liveness)
+        {
+            var livenessPreparation = PrepareLivenessEvidenceResult(
+                session,
+                request,
+                inputArtifacts);
+            if (!livenessPreparation.IsSuccess)
+            {
+                return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+                    livenessPreparation.Error!.Code,
+                    livenessPreparation.Error.Message,
+                    livenessPreparation.Error.StatusCode);
+            }
+
+            effectiveResult = livenessPreparation.Value!.Result;
+            effectiveReasonCodes = livenessPreparation.Value.ReasonCodes;
+            payloadHash = livenessPreparation.Value.PayloadHash;
         }
         else if (!TryCreateHashRef(request.PayloadHash, out payloadHash))
         {
@@ -810,6 +829,268 @@ public sealed class VerificationEvidenceApplicationService(
         };
     }
 
+    private static SessionOperationResult<LivenessEvidencePreparation> PrepareLivenessEvidenceResult(
+        VerificationSession session,
+        EvidenceResultSubmissionRequestDto request,
+        IReadOnlyList<CaptureArtifact> inputArtifacts)
+    {
+        var basis = request.LivenessEvidenceDecisionBasis;
+        if (basis is null || basis.LivenessScore is null)
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_REQUIRED",
+                "Liveness evidence requires a decision-basis with a liveness score.",
+                400);
+        }
+
+        if (!IsSanitizedSummaryRefAllowed(basis.SanitizedSummaryLabel))
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "INVALID_EVIDENCE_RESULT",
+                "LivenessEvidenceDecisionBasis.SanitizedSummaryLabel must be sanitized.",
+                400);
+        }
+
+        if (basis.LivenessScore is < 0 or > 1)
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_MISMATCH",
+                "Liveness livenessScore must be between 0.0 and 1.0.",
+                400);
+        }
+
+        if (basis.ThresholdApplied.HasValue && basis.ThresholdApplied.Value != LivenessThreshold)
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_MISMATCH",
+                "Liveness thresholdApplied conflicts with the server configured threshold.",
+                400);
+        }
+
+        if (basis.AdapterRequestedResult.HasValue && basis.AdapterRequestedResult.Value != request.Result)
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_MISMATCH",
+                "Liveness adapterRequestedResult must match the submitted evidence result.",
+                400);
+        }
+
+        if (string.IsNullOrWhiteSpace(basis.Method) ||
+            string.IsNullOrWhiteSpace(basis.LivenessGrade))
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_REQUIRED",
+                "Liveness decision-basis requires method and livenessGrade.",
+                400);
+        }
+
+        if (IsReservedRealLivenessMethod(basis.Method))
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_METHOD_UNEARNED",
+                "Liveness method is reserved for a real server-side engine and cannot be asserted by this server build.",
+                400);
+        }
+
+        if (!string.Equals(basis.Method, "fixture-liveness", StringComparison.Ordinal) ||
+            !string.Equals(basis.LivenessGrade, "passive-2d-only", StringComparison.Ordinal))
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_MISMATCH",
+                "Liveness method and livenessGrade must describe the server-supported fixture path honestly.",
+                400);
+        }
+
+        if (!Guid.TryParse(basis.LiveMediaArtifactId, out var liveMediaArtifactId))
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_REQUIRED",
+                "Liveness decision-basis must identify the live media artifact.",
+                400);
+        }
+
+        var liveArtifact = inputArtifacts.SingleOrDefault(artifact => artifact.Id == liveMediaArtifactId);
+        if (liveArtifact is null ||
+            liveArtifact.ArtifactType is not (CaptureArtifactType.LivenessMedia or CaptureArtifactType.SelfieImage) ||
+            !string.Equals(basis.LiveMediaArtifactHash, liveArtifact.ArtifactHash?.ToString(), StringComparison.Ordinal))
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_MISMATCH",
+                "Liveness live media artifact id/hash must match a submitted LivenessMedia or eligible SelfieImage input artifact.",
+                400);
+        }
+
+        var serverDerivedIsLive = basis.LivenessScore.Value >= LivenessThreshold;
+        if (basis.ServerDerivedIsLive.HasValue && basis.ServerDerivedIsLive.Value != serverDerivedIsLive)
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_MISMATCH",
+                "Adapter-supplied serverDerivedIsLive conflicts with the server threshold calculation.",
+                400);
+        }
+
+        var adapterVerdict = NormalizeAdapterRequestedVerdict(basis.AdapterRequestedVerdict);
+        if (basis.AdapterRequestedVerdict is not null && adapterVerdict is null)
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_MISMATCH",
+                "Liveness adapterRequestedVerdict must be live, spoof, or uncertain.",
+                400);
+        }
+
+        var effectiveResult = request.Result;
+        var reasonCodes = new SortedSet<string>(request.ReasonCodes ?? [], StringComparer.Ordinal);
+        var finalFlags = new SortedSet<string>(StringComparer.Ordinal);
+        var captureBindingTrusted = IsLivenessCaptureBindingTrusted(session, liveArtifact, basis.LiveCaptureBinding);
+
+        if (captureBindingTrusted)
+        {
+            finalFlags.Add("CAPTURE_BOUND_TO_SESSION");
+        }
+        else
+        {
+            finalFlags.Add("DIRECT_CLIENT_UPLOAD_UNTRUSTED");
+            reasonCodes.Add("DIRECT_CLIENT_UPLOAD_UNTRUSTED");
+            if (request.Result == VerificationResultDto.Passed)
+            {
+                effectiveResult = VerificationResultDto.ReviewRequired;
+            }
+        }
+
+        if (!serverDerivedIsLive && request.Result == VerificationResultDto.Passed)
+        {
+            reasonCodes.Add("LIVENESS_BELOW_THRESHOLD");
+            effectiveResult = VerificationResultDto.ReviewRequired;
+        }
+
+        if (AdapterVerdictConflictsWithServerDerived(adapterVerdict, serverDerivedIsLive))
+        {
+            reasonCodes.Add("LIVENESS_VERDICT_MISMATCH");
+            effectiveResult = VerificationResultDto.ReviewRequired;
+        }
+
+        var normalizedBasis = BuildNormalizedLivenessDecisionBasis(
+            session,
+            request,
+            liveArtifact,
+            basis,
+            finalFlags,
+            adapterVerdict,
+            serverDerivedIsLive,
+            effectiveResult);
+        var computedPayloadHashValue = EvidenceCanonicalization.HashCanonical(
+            "tip-72-liveness-decision-basis",
+            normalizedBasis);
+
+        if (!string.IsNullOrWhiteSpace(request.PayloadHash) &&
+            !string.Equals(request.PayloadHash, computedPayloadHashValue, StringComparison.Ordinal))
+        {
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_PAYLOAD_HASH_MISMATCH",
+                "Adapter-supplied PayloadHash does not match the server-computed Liveness decision-basis hash.",
+                400);
+        }
+
+        return SessionOperationResult<LivenessEvidencePreparation>.Success(new LivenessEvidencePreparation(
+            effectiveResult,
+            reasonCodes.ToArray(),
+            new HashRef(computedPayloadHashValue)));
+    }
+
+    private static bool IsLivenessCaptureBindingTrusted(
+        VerificationSession session,
+        CaptureArtifact liveArtifact,
+        LivenessCaptureBindingDto? captureBinding)
+    {
+        if (captureBinding is null ||
+            liveArtifact.CaptureSource == CaptureSource.ExternalPreStaged)
+        {
+            return false;
+        }
+
+        var expectedChallengeHash = BuildSessionChallengeHash(session);
+        if (expectedChallengeHash is null ||
+            !string.Equals(captureBinding.ChallengeHash, expectedChallengeHash, StringComparison.Ordinal) ||
+            !string.Equals(captureBinding.SessionId, session.Id.ToString("N"), StringComparison.Ordinal))
+        {
+            return false;
+        }
+
+        return string.Equals(captureBinding.ArtifactHash, liveArtifact.ArtifactHash?.ToString(), StringComparison.Ordinal) &&
+               string.Equals(captureBinding.CaptureAgentId, liveArtifact.CaptureAgentId, StringComparison.Ordinal) &&
+               string.Equals(captureBinding.DeviceId, liveArtifact.DeviceId, StringComparison.Ordinal);
+    }
+
+    private static object BuildNormalizedLivenessDecisionBasis(
+        VerificationSession session,
+        EvidenceResultSubmissionRequestDto request,
+        CaptureArtifact liveArtifact,
+        LivenessEvidenceDecisionBasisDto submittedBasis,
+        IReadOnlySet<string> finalFlags,
+        string? adapterRequestedVerdict,
+        bool serverDerivedIsLive,
+        VerificationResultDto effectiveResult)
+    {
+        var submittedBinding = submittedBasis.LiveCaptureBinding;
+
+        return new
+        {
+            extension = new
+            {
+                id = "liveness",
+                requiredCheckType = "Liveness",
+                category = "IdentityEvidence",
+                emitsEvidenceType = "Liveness",
+            },
+            flags = finalFlags.Order(StringComparer.Ordinal).ToArray(),
+            liveMediaArtifact = new
+            {
+                artifactId = liveArtifact.Id.ToString("N"),
+                artifactHash = liveArtifact.ArtifactHash?.ToString(),
+            },
+            livenessScore = submittedBasis.LivenessScore,
+            adapterRequestedVerdict,
+            method = submittedBasis.Method,
+            livenessGrade = submittedBasis.LivenessGrade,
+            thresholdApplied = LivenessThreshold,
+            liveCaptureBinding = new
+            {
+                challengeHash = submittedBinding?.ChallengeHash,
+                sessionId = session.Id.ToString("N"),
+                captureAgentId = liveArtifact.CaptureAgentId,
+                deviceId = liveArtifact.DeviceId,
+                capturedAt = submittedBinding?.CapturedAt ?? liveArtifact.CreatedAt,
+                artifactHash = liveArtifact.ArtifactHash?.ToString(),
+            },
+            serverDerivedIsLive,
+            serverDecisionResult = effectiveResult.ToString(),
+            adapterRequestedResult = request.Result.ToString(),
+            sanitizedSummaryLabel = submittedBasis.SanitizedSummaryLabel ?? request.SanitizedSummaryRef,
+        };
+    }
+
+    private static string? NormalizeAdapterRequestedVerdict(string? verdict)
+    {
+        if (string.IsNullOrWhiteSpace(verdict))
+        {
+            return null;
+        }
+
+        var normalized = verdict.Trim().ToLowerInvariant();
+        return normalized is "live" or "spoof" or "uncertain" ? normalized : null;
+    }
+
+    private static bool AdapterVerdictConflictsWithServerDerived(string? adapterVerdict, bool serverDerivedIsLive) =>
+        adapterVerdict switch
+        {
+            "live" => !serverDerivedIsLive,
+            "spoof" or "uncertain" => serverDerivedIsLive,
+            _ => false,
+        };
+
+    private static bool IsReservedRealLivenessMethod(string method) =>
+        string.Equals(method.Trim(), "silent-face", StringComparison.OrdinalIgnoreCase);
+
     private async Task<SessionOperationResult<WritableSessionContext<T>>> LoadWritableSessionAsync<T>(
         AuthenticatedClientContext caller,
         string verificationSessionId,
@@ -1185,6 +1466,11 @@ public sealed class VerificationEvidenceApplicationService(
         HashRef PayloadHash);
 
     private sealed record FaceMatchEvidencePreparation(
+        VerificationResultDto Result,
+        IReadOnlyList<string> ReasonCodes,
+        HashRef PayloadHash);
+
+    private sealed record LivenessEvidencePreparation(
         VerificationResultDto Result,
         IReadOnlyList<string> ReasonCodes,
         HashRef PayloadHash);

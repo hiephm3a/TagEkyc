@@ -139,6 +139,13 @@ public sealed class Tip08TransactionBoundE2eProofTests
             manifest.EvidenceRefs
                 .Single(evidenceRef => evidenceRef.Type == nameof(EvidenceResultTypeDto.FaceMatch))
                 .PayloadHash);
+        Assert.Equal(
+            ExpectedLivenessPayloadHash(
+                session.Value.VerificationSessionId,
+                artifactIds.Liveness),
+            manifest.EvidenceRefs
+                .Single(evidenceRef => evidenceRef.Type == nameof(EvidenceResultTypeDto.Liveness))
+                .PayloadHash);
 
         Assert.Contains(package.Value.EvidenceRefs, evidence => evidence.ResultType == nameof(EvidenceResultTypeDto.CaptureQuality));
         Assert.Contains(package.Value.EvidenceRefs, evidence => evidence.ResultType == nameof(EvidenceResultTypeDto.FaceMatch));
@@ -243,7 +250,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
         var liveness = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             verificationSessionId,
-            Evidence(EvidenceResultTypeDto.Liveness, [artifactIds.Liveness], "summary:tip08-liveness"),
+            LivenessEvidence(verificationSessionId, artifactIds.Liveness),
             CancellationToken.None);
 
         Assert.True(captureQuality.IsSuccess);
@@ -370,6 +377,44 @@ public sealed class Tip08TransactionBoundE2eProofTests
                     nameof(EvidenceResultTypeDto.FaceMatch))),
         };
 
+    private static EvidenceResultSubmissionRequestDto LivenessEvidence(
+        string verificationSessionId,
+        string liveArtifactId) =>
+        Evidence(EvidenceResultTypeDto.Liveness, [liveArtifactId], "summary:tip08-liveness") with
+        {
+            PayloadHash = null,
+            EngineName = "fixture-liveness",
+            EngineVersion = "tip72",
+            LivenessEvidenceDecisionBasis = new LivenessEvidenceDecisionBasisDto(
+                liveArtifactId,
+                "sha256:tip08-liveness-artifact",
+                LivenessScore: 0.92m,
+                AdapterRequestedVerdict: "live",
+                Method: "fixture-liveness",
+                LivenessGrade: "passive-2d-only",
+                ThresholdApplied: null,
+                new LivenessCaptureBindingDto(
+                    EvidenceCanonicalization.HashCanonical("tip-69-capture-session-challenge", new
+                    {
+                        sessionId = verificationSessionId,
+                        challenge = Challenge,
+                    }),
+                    verificationSessionId,
+                    "ldev_capture",
+                    RawArtifactSentinel,
+                    CapturedAt: new DateTimeOffset(2026, 6, 26, 7, 8, 9, TimeSpan.Zero),
+                    "sha256:tip08-liveness-artifact"),
+                ServerDerivedIsLive: true,
+                ServerDecisionResult: null,
+                AdapterRequestedResult: VerificationResultDto.Passed,
+                SanitizedSummaryLabel: "summary:tip08-liveness",
+                new VerificationExtensionDescriptorDto(
+                    "liveness",
+                    nameof(RequiredCheckTypeDto.Liveness),
+                    VerificationExtensionCategoryDto.IdentityEvidence,
+                    nameof(EvidenceResultTypeDto.Liveness))),
+        };
+
     private static string ExpectedNfcPayloadHash(
         string verificationSessionId,
         string artifactId) =>
@@ -475,6 +520,50 @@ public sealed class Tip08TransactionBoundE2eProofTests
                 engineName = "fixture-face-match",
                 engineVersion = "tip70",
                 sanitizedSummaryLabel = "summary:tip08-face-match",
+            });
+
+    private static string ExpectedLivenessPayloadHash(
+        string verificationSessionId,
+        string liveArtifactId) =>
+        EvidenceCanonicalization.HashCanonical(
+            "tip-72-liveness-decision-basis",
+            new
+            {
+                extension = new
+                {
+                    id = "liveness",
+                    requiredCheckType = "Liveness",
+                    category = "IdentityEvidence",
+                    emitsEvidenceType = "Liveness",
+                },
+                flags = new[] { "CAPTURE_BOUND_TO_SESSION" },
+                liveMediaArtifact = new
+                {
+                    artifactId = liveArtifactId,
+                    artifactHash = "sha256:tip08-liveness-artifact",
+                },
+                livenessScore = (decimal?)0.92m,
+                adapterRequestedVerdict = "live",
+                method = "fixture-liveness",
+                livenessGrade = "passive-2d-only",
+                thresholdApplied = 0.80m,
+                liveCaptureBinding = new
+                {
+                    challengeHash = EvidenceCanonicalization.HashCanonical("tip-69-capture-session-challenge", new
+                    {
+                        sessionId = verificationSessionId,
+                        challenge = Challenge,
+                    }),
+                    sessionId = verificationSessionId,
+                    captureAgentId = "ldev_capture",
+                    deviceId = RawArtifactSentinel,
+                    capturedAt = new DateTimeOffset(2026, 6, 26, 7, 8, 9, TimeSpan.Zero),
+                    artifactHash = "sha256:tip08-liveness-artifact",
+                },
+                serverDerivedIsLive = true,
+                serverDecisionResult = "Passed",
+                adapterRequestedResult = "Passed",
+                sanitizedSummaryLabel = "summary:tip08-liveness",
             });
 
     private static TestFixture CreateFixture()
