@@ -596,6 +596,36 @@ public sealed class Tip05EvidenceApplicationTests
     }
 
     [Fact]
+    public async Task Tip73_liveness_default_policy_accepts_liveness_media_but_rejects_selfie_reuse()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(
+            fixture,
+            [RequiredCheckTypeDto.Liveness]);
+        var liveMedia = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            LivenessArtifact(),
+            CancellationToken.None);
+        var selfie = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value.VerificationSessionId,
+            SelfieArtifact(),
+            CancellationToken.None);
+
+        var accepted = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            LivenessEvidence(new LivenessScenario(session.Value.VerificationSessionId, liveMedia.Value!.CaptureArtifactId)),
+            CancellationToken.None);
+
+        Assert.True(liveMedia.IsSuccess);
+        Assert.True(accepted.IsSuccess);
+        Assert.False(selfie.IsSuccess);
+        Assert.Equal("ARTIFACT_TYPE_NOT_ALLOWED", selfie.Error?.Code);
+    }
+
+    [Fact]
     public async Task Tip72_liveness_tampered_score_or_verdict_changes_payload_hash()
     {
         var fixture = CreateFixture();
@@ -757,6 +787,49 @@ public sealed class Tip05EvidenceApplicationTests
         Assert.False(rejected.IsSuccess);
         Assert.Equal("LIVENESS_METHOD_UNEARNED", rejected.Error?.Code);
         Assert.Empty(fixture.Evidence.EvidenceResults);
+    }
+
+    [Theory]
+    [InlineData("silent-face", "silent-face-minifasnet", "minifasnet-v2+onnxruntime-1.20.1", true, null)]
+    [InlineData("silent-face", "fixture-liveness", "tip72", false, "LIVENESS_METHOD_UNEARNED")]
+    [InlineData("fixture-liveness", "fixture-liveness", "tip72", true, null)]
+    [InlineData("fixture-liveness", "silent-face-minifasnet", "minifasnet-v2+onnxruntime-1.20.1", false, "LIVENESS_DECISION_BASIS_MISMATCH")]
+    [InlineData("silent-face", "silent-face-minifasnet-typo", "minifasnet-v2+onnxruntime-1.20.1", false, "LIVENESS_METHOD_UNEARNED")]
+    public async Task Tip73_liveness_method_engine_allowlist_fails_closed(
+        string method,
+        string engineName,
+        string engineVersion,
+        bool succeeds,
+        string? errorCode)
+    {
+        var fixture = CreateFixture();
+        var scenario = await CreateTrustedLivenessScenarioAsync(fixture);
+
+        var result = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            scenario.SessionId,
+            LivenessEvidence(
+                scenario,
+                method: method,
+                engineName: engineName,
+                engineVersion: engineVersion),
+            CancellationToken.None);
+
+        Assert.Equal(succeeds, result.IsSuccess);
+        if (succeeds)
+        {
+            var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.Liveness);
+            Assert.Equal(engineName, evidence.EngineName);
+            Assert.Equal(engineVersion, evidence.EngineVersion);
+            Assert.Equal(
+                ExpectedLivenessPayloadHash(scenario, method: method),
+                evidence.PayloadHash?.ToString());
+        }
+        else
+        {
+            Assert.Equal(errorCode, result.Error?.Code);
+            Assert.Empty(fixture.Evidence.EvidenceResults);
+        }
     }
 
     [Fact]
@@ -1002,7 +1075,10 @@ public sealed class Tip05EvidenceApplicationTests
         LivenessScenario scenario,
         decimal score = 0.92m,
         string? adapterRequestedVerdict = "live",
-        bool? serverDerivedIsLive = true) =>
+        bool? serverDerivedIsLive = true,
+        string method = "fixture-liveness",
+        string engineName = "fixture-liveness",
+        string engineVersion = "tip72") =>
         new(
             EvidenceResultTypeDto.Liveness,
             [scenario.LiveArtifactId],
@@ -1013,11 +1089,11 @@ public sealed class Tip05EvidenceApplicationTests
             SanitizedSummaryRef: "summary:liveness",
             PayloadHash: null,
             SignaturePlaceholderStatusDto.PlaceholderUnverified,
-            "fixture-liveness",
-            "tip72",
+            engineName,
+            engineVersion,
             RequestId: "req-liveness",
             CorrelationId: "corr-tip72",
-            LivenessEvidenceDecisionBasis: LivenessBasis(scenario, score, adapterRequestedVerdict, serverDerivedIsLive));
+            LivenessEvidenceDecisionBasis: LivenessBasis(scenario, score, adapterRequestedVerdict, serverDerivedIsLive, method));
 
     private static FaceMatchEvidenceDecisionBasisDto FaceMatchBasis(
         FaceMatchScenario scenario,
@@ -1058,13 +1134,14 @@ public sealed class Tip05EvidenceApplicationTests
         LivenessScenario scenario,
         decimal score = 0.92m,
         string? adapterRequestedVerdict = "live",
-        bool? serverDerivedIsLive = true) =>
+        bool? serverDerivedIsLive = true,
+        string method = "fixture-liveness") =>
         new(
             scenario.LiveArtifactId,
             "sha256:liveness-artifact",
             score,
             adapterRequestedVerdict,
-            "fixture-liveness",
+            method,
             "passive-2d-only",
             ThresholdApplied: null,
             new LivenessCaptureBindingDto(
@@ -1193,7 +1270,8 @@ public sealed class Tip05EvidenceApplicationTests
         string? adapterRequestedVerdict = "live",
         bool serverDerivedIsLive = true,
         string serverDecisionResult = "Passed",
-        IReadOnlyList<string>? flags = null) =>
+        IReadOnlyList<string>? flags = null,
+        string method = "fixture-liveness") =>
         EvidenceCanonicalization.HashCanonical(
             "tip-72-liveness-decision-basis",
             Tip72NormalizedBasis(
@@ -1202,7 +1280,8 @@ public sealed class Tip05EvidenceApplicationTests
                 adapterRequestedVerdict,
                 serverDerivedIsLive,
                 serverDecisionResult,
-                flags ?? ["CAPTURE_BOUND_TO_SESSION"]));
+                flags ?? ["CAPTURE_BOUND_TO_SESSION"],
+                method));
 
     private static object Tip70NormalizedBasis(
         FaceMatchScenario scenario,
@@ -1262,7 +1341,8 @@ public sealed class Tip05EvidenceApplicationTests
         string? adapterRequestedVerdict,
         bool serverDerivedIsLive,
         string serverDecisionResult,
-        IReadOnlyList<string> flags) =>
+        IReadOnlyList<string> flags,
+        string method = "fixture-liveness") =>
         new
         {
             extension = new
@@ -1280,7 +1360,7 @@ public sealed class Tip05EvidenceApplicationTests
             },
             livenessScore = (decimal?)score,
             adapterRequestedVerdict,
-            method = "fixture-liveness",
+            method,
             livenessGrade = "passive-2d-only",
             thresholdApplied = 0.80m,
             liveCaptureBinding = new

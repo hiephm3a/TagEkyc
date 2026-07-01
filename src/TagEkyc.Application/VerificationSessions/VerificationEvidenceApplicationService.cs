@@ -884,21 +884,21 @@ public sealed class VerificationEvidenceApplicationService(
                 400);
         }
 
-        if (IsReservedRealLivenessMethod(basis.Method))
-        {
-            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
-                "LIVENESS_METHOD_UNEARNED",
-                "Liveness method is reserved for a real server-side engine and cannot be asserted by this server build.",
-                400);
-        }
-
-        if (!string.Equals(basis.Method, "fixture-liveness", StringComparison.Ordinal) ||
-            !string.Equals(basis.LivenessGrade, "passive-2d-only", StringComparison.Ordinal))
+        if (!string.Equals(basis.LivenessGrade, "passive-2d-only", StringComparison.Ordinal))
         {
             return SessionOperationResult<LivenessEvidencePreparation>.Failure(
                 "LIVENESS_DECISION_BASIS_MISMATCH",
                 "Liveness method and livenessGrade must describe the server-supported fixture path honestly.",
                 400);
+        }
+
+        var methodConsistency = ValidateLivenessMethodEngineConsistency(
+            basis.Method,
+            request.EngineName,
+            request.EngineVersion);
+        if (methodConsistency is not null)
+        {
+            return methodConsistency;
         }
 
         if (!Guid.TryParse(basis.LiveMediaArtifactId, out var liveMediaArtifactId))
@@ -1088,8 +1088,49 @@ public sealed class VerificationEvidenceApplicationService(
             _ => false,
         };
 
-    private static bool IsReservedRealLivenessMethod(string method) =>
-        string.Equals(method.Trim(), "silent-face", StringComparison.OrdinalIgnoreCase);
+    private const string FixtureLivenessMethod = "fixture-liveness";
+    private const string FixtureLivenessEngineName = "fixture-liveness";
+    private const string SilentFaceMethod = "silent-face";
+    private const string SilentFaceEngineName = "silent-face-minifasnet";
+    private const string SilentFaceEngineVersion = "minifasnet-v2+onnxruntime-1.20.1";
+
+    private static SessionOperationResult<LivenessEvidencePreparation>? ValidateLivenessMethodEngineConsistency(
+        string method,
+        string engineName,
+        string engineVersion)
+    {
+        if (string.Equals(method, SilentFaceMethod, StringComparison.Ordinal))
+        {
+            if (string.Equals(engineName, SilentFaceEngineName, StringComparison.Ordinal) &&
+                string.Equals(engineVersion, SilentFaceEngineVersion, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_METHOD_UNEARNED",
+                "Liveness silent-face method requires an explicit allowlisted engine name and version.",
+                400);
+        }
+
+        if (string.Equals(method, FixtureLivenessMethod, StringComparison.Ordinal))
+        {
+            if (string.Equals(engineName, FixtureLivenessEngineName, StringComparison.Ordinal))
+            {
+                return null;
+            }
+
+            return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+                "LIVENESS_DECISION_BASIS_MISMATCH",
+                "Liveness fixture method requires the fixture liveness engine.",
+                400);
+        }
+
+        return SessionOperationResult<LivenessEvidencePreparation>.Failure(
+            "LIVENESS_DECISION_BASIS_MISMATCH",
+            "Liveness method and livenessGrade must describe a server-supported liveness path honestly.",
+            400);
+    }
 
     private async Task<SessionOperationResult<WritableSessionContext<T>>> LoadWritableSessionAsync<T>(
         AuthenticatedClientContext caller,
