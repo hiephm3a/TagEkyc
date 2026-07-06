@@ -356,7 +356,7 @@ public sealed class VerificationEvidenceApplicationService(
             stateEvents.Add("SESSION_STATE_CHANGED");
         }
 
-        if (IsReadyToComplete(session, priorEvidence.Concat([evidence])) &&
+        if (EvidenceSelection.AllRequiredChecksPassed(session, priorEvidence.Concat([evidence])) &&
             finalState == VerificationSessionState.InProgress)
         {
             finalState = VerificationSessionState.ReadyToComplete;
@@ -1348,24 +1348,6 @@ public sealed class VerificationEvidenceApplicationService(
             EvidenceResultTypeDto.FraudRisk => false,
             _ => false,
         };
-    }
-
-    private static bool IsReadyToComplete(
-        VerificationSession session,
-        IEnumerable<EvidenceResult> allEvidence)
-    {
-        var latestByCheck = allEvidence
-            .Select(evidence => new
-            {
-                Check = MapEvidenceToCheck(evidence.ResultType),
-                Evidence = evidence,
-            })
-            .GroupBy(item => item.Check)
-            .ToDictionary(group => group.Key, group => group.Last().Evidence);
-
-        return session.RequiredChecks.All(check =>
-            latestByCheck.TryGetValue(check, out var latest) &&
-            latest.Result == VerificationResult.Passed);
     }
 
     private static bool IsSanitizedSummaryRefAllowed(string? value)

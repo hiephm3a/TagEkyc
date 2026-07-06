@@ -101,6 +101,11 @@ public sealed class Tip04ApiEndpointTests
             },
             route =>
             {
+                Assert.Equal("/api/ekyc/verification-sessions/{id}/evidence-ledger", route.Pattern);
+                Assert.Equal(["GET"], route.Methods);
+            },
+            route =>
+            {
                 Assert.Equal("/api/ekyc/verification-sessions/{id}/evidence-results", route.Pattern);
                 Assert.Equal(["POST"], route.Methods);
             });

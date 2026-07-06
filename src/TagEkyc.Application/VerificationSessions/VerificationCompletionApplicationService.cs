@@ -77,7 +77,7 @@ public sealed class VerificationCompletionApplicationService(
         }
 
         var evidence = await evidenceResults.ListBySessionAsync(session.Id, cancellationToken);
-        var latestEvidence = LatestEvidenceByRequiredCheck(evidence);
+        var latestEvidence = EvidenceSelection.LatestEvidenceByRequiredCheck(evidence);
         var missingChecks = session.RequiredChecks
             .Where(check => !latestEvidence.ContainsKey(check))
             .OrderBy(check => check)
@@ -510,18 +510,6 @@ public sealed class VerificationCompletionApplicationService(
 
         return SessionOperationResult<CompleteVerificationSessionResponseDto>.Success(ToCompleteResponse(session, package));
     }
-
-    private static IReadOnlyDictionary<RequiredCheckType, EvidenceResult> LatestEvidenceByRequiredCheck(IEnumerable<EvidenceResult> evidence) =>
-        evidence
-            .OrderBy(candidate => candidate.CreatedAt)
-            .ThenBy(candidate => candidate.Id)
-            .Select(candidate => new
-            {
-                Check = MapEvidenceToCheck(candidate.ResultType),
-                Evidence = candidate,
-            })
-            .GroupBy(candidate => candidate.Check)
-            .ToDictionary(group => group.Key, group => group.Last().Evidence);
 
     private static VerificationResult CalculateFinalResult(IReadOnlyList<EvidenceResult> evidence, bool forceReview)
     {

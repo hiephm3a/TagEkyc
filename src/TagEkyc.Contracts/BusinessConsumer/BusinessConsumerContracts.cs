@@ -54,6 +54,42 @@ public sealed record VerificationSessionSummaryDto(
     string CorrelationId,
     DateTimeOffset? CompletedAt);
 
+public enum EvidenceLedgerSubmissionStatusDto
+{
+    Missing = 0,
+    Submitted = 1,
+}
+
+public sealed record EvidenceLedgerRequiredCheckDto(
+    RequiredCheckTypeDto CheckType,
+    EvidenceLedgerSubmissionStatusDto SubmissionStatus,
+    VerificationResultDto? Result,
+    string? CurrentEvidenceResultId,
+    string? PayloadHash,
+    DateTimeOffset? CreatedAt);
+
+public sealed record EvidenceLedgerCaptureArtifactDto(
+    string CaptureArtifactId,
+    string ArtifactType,
+    string? ArtifactHash,
+    DateTimeOffset CreatedAt);
+
+public sealed record EvidenceLedgerEvidenceResultDto(
+    string EvidenceResultId,
+    string ResultType,
+    VerificationResultDto Result,
+    string? PayloadHash,
+    DateTimeOffset CreatedAt);
+
+public sealed record EvidenceLedgerDto(
+    string VerificationSessionId,
+    VerificationSessionStateDto State,
+    bool EvidenceCompleteEligible,
+    bool AllRequiredChecksPassed,
+    IReadOnlyList<EvidenceLedgerRequiredCheckDto> RequiredChecks,
+    IReadOnlyList<EvidenceLedgerCaptureArtifactDto> AcceptedCaptureArtifacts,
+    IReadOnlyList<EvidenceLedgerEvidenceResultDto> AcceptedEvidenceResults);
+
 public sealed record EvidenceRefSummaryDto(
     string ResultType,
     string EvidenceResultId,

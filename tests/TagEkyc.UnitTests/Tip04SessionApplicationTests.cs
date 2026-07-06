@@ -233,9 +233,13 @@ public sealed class Tip04SessionApplicationTests
     private static TestFixture CreateFixture()
     {
         var sessions = new LocalDevInMemoryVerificationSessionRepository();
+        var artifacts = new LocalDevInMemoryCaptureArtifactRepository();
+        var evidence = new LocalDevInMemoryEvidenceResultRepository();
         var audit = new LocalDevInMemoryAuditEventRepository();
         var service = new VerificationSessionApplicationService(
             sessions,
+            artifacts,
+            evidence,
             audit,
             new LocalDevRuntimePolicySource());
 

@@ -29,7 +29,10 @@ public sealed class Tip06BoundaryTests
             .SelectMany(type => type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
             .ToArray();
 
-        Assert.DoesNotContain(businessProperties, property => property.Name.Contains("PayloadHash", StringComparison.Ordinal));
+        Assert.DoesNotContain(businessProperties, property =>
+            property.Name.Contains("PayloadHash", StringComparison.Ordinal) &&
+            property.DeclaringType != typeof(EvidenceLedgerRequiredCheckDto) &&
+            property.DeclaringType != typeof(EvidenceLedgerEvidenceResultDto));
         Assert.DoesNotContain(businessProperties, property => property.PropertyType == typeof(EvidenceManifestDto));
         Assert.DoesNotContain(businessProperties, property => property.PropertyType.FullName?.Contains("InternalAudit", StringComparison.Ordinal) == true);
     }

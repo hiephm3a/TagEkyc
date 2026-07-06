@@ -529,7 +529,7 @@ public sealed class Tip06CompletionApplicationTests
             packages,
             manifests,
             audit);
-        var sessionService = new VerificationSessionApplicationService(sessions, audit, policies);
+        var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
         var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
         var completionService = new VerificationCompletionApplicationService(
             sessions,

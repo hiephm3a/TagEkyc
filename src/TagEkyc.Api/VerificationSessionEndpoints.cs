@@ -16,6 +16,7 @@ public static class VerificationSessionEndpoints
     {
         endpoints.MapPost("/api/ekyc/verification-sessions", CreateAsync);
         endpoints.MapGet("/api/ekyc/verification-sessions/{id}", GetAsync);
+        endpoints.MapGet("/api/ekyc/verification-sessions/{id}/evidence-ledger", GetEvidenceLedgerAsync);
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/capture-artifacts", AppendCaptureArtifactAsync);
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/evidence-results", AppendEvidenceResultAsync);
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/complete", CompleteAsync);
@@ -61,6 +62,28 @@ public static class VerificationSessionEndpoints
         }
 
         var result = await queries.GetSummaryAsync(authentication.Value!, id, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return ToError(result.Error!, httpContext.TraceIdentifier);
+        }
+
+        return Results.Ok(result.Value);
+    }
+
+    private static async Task<IResult> GetEvidenceLedgerAsync(
+        HttpContext httpContext,
+        string id,
+        ILocalDevApiKeyAuthenticator authenticator,
+        IVerificationSessionQueries queries,
+        CancellationToken cancellationToken)
+    {
+        var authentication = authenticator.Authenticate(httpContext, ReadScope);
+        if (!authentication.IsSuccess)
+        {
+            return ToError(authentication.Error!, httpContext.TraceIdentifier);
+        }
+
+        var result = await queries.GetEvidenceLedgerAsync(authentication.Value!, id, cancellationToken);
         if (!result.IsSuccess)
         {
             return ToError(result.Error!, httpContext.TraceIdentifier);

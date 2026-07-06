@@ -582,7 +582,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
             packages,
             manifests,
             audit);
-        var sessionService = new VerificationSessionApplicationService(sessions, audit, policies);
+        var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
         var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
         var completionService = new VerificationCompletionApplicationService(
             sessions,

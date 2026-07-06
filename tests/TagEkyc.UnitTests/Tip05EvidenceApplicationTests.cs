@@ -948,7 +948,7 @@ public sealed class Tip05EvidenceApplicationTests
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
         var metadataReferences = new LocalDevInMemoryMetadataReferenceRegistry();
-        var sessionService = new VerificationSessionApplicationService(sessions, audit, policies);
+        var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
         var service = new VerificationEvidenceApplicationService(
             sessions,
             artifacts,

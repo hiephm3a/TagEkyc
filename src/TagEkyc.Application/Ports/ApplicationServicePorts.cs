@@ -30,6 +30,11 @@ public interface IVerificationSessionQueries
         AuthenticatedClientContext caller,
         string verificationSessionId,
         CancellationToken cancellationToken = default);
+
+    Task<SessionOperationResult<EvidenceLedgerDto>> GetEvidenceLedgerAsync(
+        AuthenticatedClientContext caller,
+        string verificationSessionId,
+        CancellationToken cancellationToken = default);
 }
 
 public interface ICaptureArtifactCommands

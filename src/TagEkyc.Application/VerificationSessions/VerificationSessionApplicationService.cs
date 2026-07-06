@@ -7,6 +7,8 @@ namespace TagEkyc.Application.VerificationSessions;
 
 public sealed class VerificationSessionApplicationService(
     IVerificationSessionRepository sessions,
+    ICaptureArtifactRepository captureArtifacts,
+    IEvidenceResultRepository evidenceResults,
     IAuditEventRepository auditEvents,
     ILocalDevClientPolicyProvider policies)
     : IVerificationSessionCommands, IVerificationSessionQueries
@@ -216,6 +218,96 @@ public sealed class VerificationSessionApplicationService(
             session.CompletedAt));
     }
 
+    public async Task<SessionOperationResult<EvidenceLedgerDto>> GetEvidenceLedgerAsync(
+        AuthenticatedClientContext caller,
+        string verificationSessionId,
+        CancellationToken cancellationToken = default)
+    {
+        var callerError = ApplicationAuthorization.RequireBusinessSessionRead<EvidenceLedgerDto>(caller);
+        if (callerError is not null)
+        {
+            return callerError;
+        }
+
+        if (!Guid.TryParse(verificationSessionId, out var sessionId))
+        {
+            return SessionOperationResult<EvidenceLedgerDto>.Failure(
+                "SESSION_NOT_FOUND",
+                "Verification session was not found.",
+                404);
+        }
+
+        var session = await sessions.GetAsync(sessionId, cancellationToken);
+        if (session is null)
+        {
+            return SessionOperationResult<EvidenceLedgerDto>.Failure(
+                "SESSION_NOT_FOUND",
+                "Verification session was not found.",
+                404);
+        }
+
+        if (session.ClientApplicationId != caller.ClientApplicationId)
+        {
+            await auditEvents.AppendAsync(CreateAuditEvent(caller, session, "SESSION_ACCESS_DENIED"), cancellationToken);
+            return Forbidden<EvidenceLedgerDto>("FORBIDDEN_CLIENT_APPLICATION", "The session belongs to another client application.");
+        }
+
+        var artifacts = await captureArtifacts.ListBySessionAsync(session.Id, cancellationToken);
+        var evidence = await evidenceResults.ListBySessionAsync(session.Id, cancellationToken);
+        var latestEvidence = EvidenceSelection.LatestEvidenceByRequiredCheck(evidence);
+        var requiredChecks = session.RequiredChecks
+            .OrderBy(check => check)
+            .Select(check =>
+            {
+                if (!latestEvidence.TryGetValue(check, out var latest))
+                {
+                    return new EvidenceLedgerRequiredCheckDto(
+                        ToDto(check),
+                        EvidenceLedgerSubmissionStatusDto.Missing,
+                        Result: null,
+                        CurrentEvidenceResultId: null,
+                        PayloadHash: null,
+                        CreatedAt: null);
+                }
+
+                return new EvidenceLedgerRequiredCheckDto(
+                    ToDto(check),
+                    EvidenceLedgerSubmissionStatusDto.Submitted,
+                    ToDto(latest.Result),
+                    FormatId(latest.Id),
+                    latest.PayloadHash?.ToString(),
+                    latest.CreatedAt);
+            })
+            .ToArray();
+
+        var evidenceCompleteEligible = session.RequiredChecks.All(check =>
+            latestEvidence.TryGetValue(check, out var latest) &&
+            latest.PayloadHash is not null &&
+            latest.Result != VerificationResult.NotSupported);
+
+        return SessionOperationResult<EvidenceLedgerDto>.Success(new EvidenceLedgerDto(
+            FormatId(session.Id),
+            ToDto(session.State),
+            evidenceCompleteEligible,
+            EvidenceSelection.AllRequiredChecksPassed(session, evidence),
+            requiredChecks,
+            artifacts
+                .Select(artifact => new EvidenceLedgerCaptureArtifactDto(
+                    FormatId(artifact.Id),
+                    artifact.ArtifactType.ToString(),
+                    artifact.ArtifactHash?.ToString(),
+                    artifact.CreatedAt))
+                .ToArray(),
+            evidence
+                .Select(item => new EvidenceLedgerEvidenceResultDto(
+                    FormatId(item.Id),
+                    item.ResultType.ToString(),
+                    ToDto(item.Result),
+                    item.PayloadHash?.ToString(),
+                    item.CreatedAt))
+                .ToArray()));
+    }
+
     private static (string Code, string Message)? ValidateRequestShape(CreateVerificationSessionRequestDto request)
     {
         if (string.IsNullOrWhiteSpace(request.SubjectRef))
@@ -322,6 +414,19 @@ public sealed class VerificationSessionApplicationService(
             RequiredCheckTypeDto.Liveness => RequiredCheckType.Liveness,
             RequiredCheckTypeDto.Fingerprint => RequiredCheckType.Fingerprint,
             RequiredCheckTypeDto.RiskEvaluation => RequiredCheckType.RiskEvaluation,
+            _ => throw new ArgumentOutOfRangeException(nameof(checkType), checkType, null),
+        };
+
+    private static RequiredCheckTypeDto ToDto(RequiredCheckType checkType) =>
+        checkType switch
+        {
+            RequiredCheckType.CaptureQuality => RequiredCheckTypeDto.CaptureQuality,
+            RequiredCheckType.DocumentOcr => RequiredCheckTypeDto.DocumentOcr,
+            RequiredCheckType.DocumentNfc => RequiredCheckTypeDto.DocumentNfc,
+            RequiredCheckType.FaceMatch => RequiredCheckTypeDto.FaceMatch,
+            RequiredCheckType.Liveness => RequiredCheckTypeDto.Liveness,
+            RequiredCheckType.Fingerprint => RequiredCheckTypeDto.Fingerprint,
+            RequiredCheckType.RiskEvaluation => RequiredCheckTypeDto.RiskEvaluation,
             _ => throw new ArgumentOutOfRangeException(nameof(checkType), checkType, null),
         };
 

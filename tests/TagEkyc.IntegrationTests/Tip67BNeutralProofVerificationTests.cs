@@ -258,7 +258,7 @@ public sealed class Tip67BNeutralProofVerificationTests
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
         var finalization = new LocalDevInMemoryVerificationFinalizationBoundary(sessions, decisions, packages, manifests, audit);
-        var sessionService = new VerificationSessionApplicationService(sessions, audit, policies);
+        var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
         var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
         var completionService = new VerificationCompletionApplicationService(
             sessions,
