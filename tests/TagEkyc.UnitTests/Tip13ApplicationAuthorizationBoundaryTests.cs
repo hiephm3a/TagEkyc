@@ -45,12 +45,14 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             BusinessCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = await fixture.EvidenceService.AppendEvidenceResultAsync(
             BusinessCaller(),
             session.Value.VerificationSessionId,
             CaptureQualityEvidence(["00000000000000000000000000000000"]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         AssertForbidden(capture, "CALLER_CATEGORY_NOT_ALLOWED");
         AssertForbidden(evidence, "CALLER_CATEGORY_NOT_ALLOWED");
@@ -84,7 +86,8 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             CaptureCaller(),
             session.Value.VerificationSessionId,
             CaptureQualityEvidence(["00000000000000000000000000000000"]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         AssertForbidden(create, "MISSING_SCOPE");
         AssertForbidden(read, "MISSING_SCOPE");
@@ -102,14 +105,16 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         Assert.True(artifact.IsSuccess);
 
         var trustedEvidence = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value.VerificationSessionId,
             CaptureQualityEvidence([artifact.Value!.CaptureArtifactId]) with { RetryReasonCode = "TRUSTED-BOUNDARY-RETRY" },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
             session.Value.VerificationSessionId,
@@ -138,7 +143,8 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             TrustedCaller(),
             session.Value.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(trustedEvidence.IsSuccess);
         Assert.True(completed.IsSuccess);
@@ -168,12 +174,14 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             CaptureCallerForOtherClientWithoutBinding(),
             session.Value.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var trustedWrite = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCallerForOtherClientWithoutBinding(),
             session.Value.VerificationSessionId,
             CaptureQualityEvidence(["00000000000000000000000000000000"]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         AssertForbidden(businessRead, "FORBIDDEN_CLIENT_APPLICATION");
         AssertForbidden(packageRead, "FORBIDDEN_CLIENT_APPLICATION");
@@ -210,12 +218,14 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             reserved,
             session.Value.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = await fixture.EvidenceService.AppendEvidenceResultAsync(
             reserved,
             session.Value.VerificationSessionId,
             CaptureQualityEvidence(["00000000000000000000000000000000"]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         AssertForbidden(create, "CALLER_CATEGORY_NOT_ALLOWED");
         AssertForbidden(read, "CALLER_CATEGORY_NOT_ALLOWED");
@@ -293,7 +303,8 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             CaptureCaller(),
             verificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(artifact.IsSuccess);
         return await CompleteSessionWithExistingArtifactAsync(fixture, verificationSessionId, artifact.Value!.CaptureArtifactId);
@@ -308,7 +319,8 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             TrustedCaller(),
             verificationSessionId,
             CaptureQualityEvidence([captureArtifactId]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
             verificationSessionId,
@@ -332,6 +344,7 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
         var manifests = new LocalDevInMemoryEvidenceManifestRepository();
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
+        var idempotency = new LocalDevInMemoryAppendIdempotencyStore(sessions, artifacts, evidence, audit);
         var finalization = new LocalDevInMemoryVerificationFinalizationBoundary(
             sessions,
             decisions,
@@ -339,7 +352,7 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
             manifests,
             audit);
         var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
-        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
+        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies, idempotency, idempotency);
         var completionService = new VerificationCompletionApplicationService(
             sessions,
             artifacts,

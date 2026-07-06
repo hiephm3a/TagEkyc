@@ -591,7 +591,8 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
                     MetadataHash: "sha256:metadata",
                     RequestId: "req-artifact",
                     CorrelationId: "corr-artifact"),
-                CancellationToken.None);
+                CancellationToken.None,
+                $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(result.IsSuccess, result.Error?.Code);
         return result.Value!;
@@ -618,7 +619,8 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
                     "s1",
                     RequestId: "req-evidence",
                     CorrelationId: "corr-evidence"),
-                CancellationToken.None);
+                CancellationToken.None,
+                $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(result.IsSuccess, result.Error?.Code);
     }

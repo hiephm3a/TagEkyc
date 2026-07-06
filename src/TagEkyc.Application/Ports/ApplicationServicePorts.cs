@@ -43,7 +43,8 @@ public interface ICaptureArtifactCommands
         AuthenticatedClientContext caller,
         string verificationSessionId,
         CaptureArtifactSubmissionRequestDto request,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        string? idempotencyKey = null);
 }
 
 public interface ITrustedEvidenceResultCommands
@@ -52,7 +53,8 @@ public interface ITrustedEvidenceResultCommands
         AuthenticatedClientContext caller,
         string verificationSessionId,
         EvidenceResultSubmissionRequestDto request,
-        CancellationToken cancellationToken = default);
+        CancellationToken cancellationToken = default,
+        string? idempotencyKey = null);
 }
 
 public interface IEvidencePackageQueries

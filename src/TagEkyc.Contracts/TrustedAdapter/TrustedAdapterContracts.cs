@@ -129,7 +129,8 @@ public sealed record EvidenceResultSubmissionResponseDto(
     string EvidenceResultId,
     bool Accepted,
     string SessionState,
-    string? NextAction);
+    string? NextAction,
+    bool Deduplicated = false);
 
 public sealed record DocumentResultSubmissionRequestDto(
     string DocumentType,

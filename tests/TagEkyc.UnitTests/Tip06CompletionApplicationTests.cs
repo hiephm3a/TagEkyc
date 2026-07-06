@@ -25,12 +25,14 @@ public sealed class Tip06CompletionApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value!.VerificationSessionId,
             CaptureQualityEvidence([artifact.Value!.CaptureArtifactId]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
@@ -125,7 +127,8 @@ public sealed class Tip06CompletionApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             NfcArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var expectedPayloadHash = ExpectedNfcPayloadHash(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId);
         var mutatedPayloadHash = ExpectedNfcPayloadHash(
             session.Value.VerificationSessionId,
@@ -147,7 +150,8 @@ public sealed class Tip06CompletionApplicationTests
             {
                 ReasonCodes = ["OPERATIONAL_REASON_ONLY"],
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
             session.Value.VerificationSessionId,
@@ -181,17 +185,20 @@ public sealed class Tip06CompletionApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             NfcArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var selfieArtifact = await fixture.EvidenceService.AppendCaptureArtifactAsync(
             CaptureCaller(),
             session.Value.VerificationSessionId,
             SelfieArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value.VerificationSessionId,
             NfcEvidence(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var nfcEvidence = fixture.Evidence.EvidenceResults.Single(evidence => evidence.ResultType == EvidenceResultType.NfcValidation);
         var scenario = new FaceMatchScenario(
             session.Value.VerificationSessionId,
@@ -211,7 +218,8 @@ public sealed class Tip06CompletionApplicationTests
             {
                 ReasonCodes = ["OPERATIONAL_REASON_ONLY"],
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
             session.Value.VerificationSessionId,
@@ -244,7 +252,8 @@ public sealed class Tip06CompletionApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             LivenessArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var scenario = new LivenessScenario(
             session.Value.VerificationSessionId,
             liveArtifact.Value!.CaptureArtifactId);
@@ -260,7 +269,8 @@ public sealed class Tip06CompletionApplicationTests
             {
                 ReasonCodes = ["OPERATIONAL_REASON_ONLY"],
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
             session.Value.VerificationSessionId,
@@ -293,13 +303,15 @@ public sealed class Tip06CompletionApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             NfcArtifact(CaptureSourceDto.ExternalPreStaged),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var evidenceAccepted = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value.VerificationSessionId,
             NfcEvidence(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var persistedEvidence = fixture.Evidence.EvidenceResults.Single();
         var storedBeforeCompletion = await fixture.Sessions.GetAsync(
             Guid.Parse(session.Value.VerificationSessionId),
@@ -332,7 +344,8 @@ public sealed class Tip06CompletionApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DocumentFrontArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value.VerificationSessionId,
@@ -341,7 +354,8 @@ public sealed class Tip06CompletionApplicationTests
                 Result = VerificationResultDto.FailedIdentity,
                 ReasonCodes = ["DOCUMENT_DATA_MISMATCH"],
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
@@ -365,12 +379,14 @@ public sealed class Tip06CompletionApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value.VerificationSessionId,
             CaptureQualityEvidence([artifact.Value!.CaptureArtifactId]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
@@ -461,12 +477,14 @@ public sealed class Tip06CompletionApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value.VerificationSessionId,
             CaptureQualityEvidence([artifact.Value!.CaptureArtifactId]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
             session.Value.VerificationSessionId,
@@ -523,6 +541,7 @@ public sealed class Tip06CompletionApplicationTests
         var manifests = new LocalDevInMemoryEvidenceManifestRepository();
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
+        var idempotency = new LocalDevInMemoryAppendIdempotencyStore(sessions, artifacts, evidence, audit);
         var finalization = new LocalDevInMemoryVerificationFinalizationBoundary(
             sessions,
             decisions,
@@ -530,7 +549,7 @@ public sealed class Tip06CompletionApplicationTests
             manifests,
             audit);
         var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
-        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
+        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies, idempotency, idempotency);
         var completionService = new VerificationCompletionApplicationService(
             sessions,
             artifacts,

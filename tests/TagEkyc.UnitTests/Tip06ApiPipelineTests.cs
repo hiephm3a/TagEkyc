@@ -233,7 +233,8 @@ public sealed class Tip06ApiPipelineTests
             client,
             $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts",
             CaptureAgentKey,
-            DeviceMetadataArtifact());
+            DeviceMetadataArtifact(),
+            $"tip06-device-metadata-{Guid.NewGuid():N}");
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var json = await ReadJsonAsync(response);
@@ -246,7 +247,8 @@ public sealed class Tip06ApiPipelineTests
             client,
             $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts",
             CaptureAgentKey,
-            DocumentFrontArtifact());
+            DocumentFrontArtifact(),
+            $"tip06-document-front-{Guid.NewGuid():N}");
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var json = await ReadJsonAsync(response);
@@ -259,7 +261,8 @@ public sealed class Tip06ApiPipelineTests
             client,
             $"/api/ekyc/verification-sessions/{sessionId}/evidence-results",
             TrustedAdapterKey,
-            CaptureQualityEvidence([artifactId]));
+            CaptureQualityEvidence([artifactId]),
+            $"tip06-capture-quality-{Guid.NewGuid():N}");
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
@@ -274,7 +277,8 @@ public sealed class Tip06ApiPipelineTests
             client,
             $"/api/ekyc/verification-sessions/{sessionId}/evidence-results",
             TrustedAdapterKey,
-            DocumentOcrEvidence([artifactId], result));
+            DocumentOcrEvidence([artifactId], result),
+            $"tip06-document-ocr-{Guid.NewGuid():N}");
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
     }
@@ -332,7 +336,8 @@ public sealed class Tip06ApiPipelineTests
         HttpClient client,
         string requestUri,
         string? apiKey,
-        object body)
+        object body,
+        string? idempotencyKey = null)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
         {
@@ -342,6 +347,11 @@ public sealed class Tip06ApiPipelineTests
         if (!string.IsNullOrWhiteSpace(apiKey))
         {
             request.Headers.Add(LocalDevApiKeyAuthenticator.HeaderName, apiKey);
+        }
+
+        if (idempotencyKey is not null)
+        {
+            request.Headers.Add("Idempotency-Key", idempotencyKey);
         }
 
         return await client.SendAsync(request);
@@ -415,6 +425,9 @@ public sealed class Tip06ApiPipelineTests
             builder.Services.AddSingleton<IEvidencePackageRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidencePackageRepository>());
             builder.Services.AddSingleton<LocalDevInMemoryEvidenceManifestRepository>();
             builder.Services.AddSingleton<IInternalEvidenceManifestRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceManifestRepository>());
+            builder.Services.AddSingleton<LocalDevInMemoryAppendIdempotencyStore>();
+            builder.Services.AddSingleton<IAppendIdempotencyRepository>(sp => sp.GetRequiredService<LocalDevInMemoryAppendIdempotencyStore>());
+            builder.Services.AddSingleton<IAppendIdempotencyBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryAppendIdempotencyStore>());
             builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
             builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
             builder.Services.AddSingleton<IEvidenceSigner, TestEvidenceSigner>();

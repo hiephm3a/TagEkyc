@@ -193,22 +193,26 @@ public sealed class Tip08TransactionBoundE2eProofTests
             CaptureCaller(),
             verificationSessionId,
             Artifact(CaptureArtifactTypeDto.DeviceCaptureMetadata, artifactHash: null, metadataHash: "sha256:tip08-device-metadata"),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var nfc = await fixture.EvidenceService.AppendCaptureArtifactAsync(
             CaptureCaller(),
             verificationSessionId,
             Artifact(CaptureArtifactTypeDto.NfcReadArtifact, "sha256:tip08-nfc-artifact", metadataHash: null),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var selfie = await fixture.EvidenceService.AppendCaptureArtifactAsync(
             CaptureCaller(),
             verificationSessionId,
             Artifact(CaptureArtifactTypeDto.SelfieImage, "sha256:tip08-selfie-artifact", metadataHash: null),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var liveness = await fixture.EvidenceService.AppendCaptureArtifactAsync(
             CaptureCaller(),
             verificationSessionId,
             Artifact(CaptureArtifactTypeDto.LivenessMedia, "sha256:tip08-liveness-artifact", metadataHash: null),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(metadata.IsSuccess);
         Assert.True(nfc.IsSuccess);
@@ -231,12 +235,14 @@ public sealed class Tip08TransactionBoundE2eProofTests
             TrustedCaller(),
             verificationSessionId,
             Evidence(EvidenceResultTypeDto.CaptureQuality, [artifactIds.Metadata], "summary:tip08-capture-quality"),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var documentNfc = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             verificationSessionId,
             NfcEvidence(verificationSessionId, artifactIds.Nfc),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var faceMatch = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             verificationSessionId,
@@ -246,12 +252,14 @@ public sealed class Tip08TransactionBoundE2eProofTests
                 documentNfc.Value!.EvidenceResultId,
                 ExpectedNfcPayloadHash(verificationSessionId, artifactIds.Nfc),
                 artifactIds.Selfie),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var liveness = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             verificationSessionId,
             LivenessEvidence(verificationSessionId, artifactIds.Liveness),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(captureQuality.IsSuccess);
         Assert.True(documentNfc.IsSuccess);
@@ -576,6 +584,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
         var manifests = new LocalDevInMemoryEvidenceManifestRepository();
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
+        var idempotency = new LocalDevInMemoryAppendIdempotencyStore(sessions, artifacts, evidence, audit);
         var finalization = new LocalDevInMemoryVerificationFinalizationBoundary(
             sessions,
             decisions,
@@ -583,7 +592,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
             manifests,
             audit);
         var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
-        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
+        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies, idempotency, idempotency);
         var completionService = new VerificationCompletionApplicationService(
             sessions,
             artifacts,

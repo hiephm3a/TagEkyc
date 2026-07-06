@@ -66,6 +66,60 @@ public interface IAuditEventRepository
     Task<IReadOnlyList<AuditEvent>> ListBySessionAsync(Guid verificationSessionId, CancellationToken cancellationToken = default);
 }
 
+public sealed record AppendIdempotencyRecord(
+    Guid VerificationSessionId,
+    string IdempotencyKey,
+    string EndpointKind,
+    string SubmissionSlot,
+    Guid MintedId,
+    string Fingerprint,
+    DateTimeOffset CreatedAt);
+
+public enum AppendIdempotencyApplyStatus
+{
+    Applied = 0,
+    Deduplicated = 1,
+    SlotMismatch = 2,
+    PayloadMismatch = 3,
+}
+
+public sealed record AppendIdempotencyApplyResult(
+    AppendIdempotencyApplyStatus Status,
+    AppendIdempotencyRecord Record);
+
+public sealed record AppendCaptureArtifactWrite(
+    AppendIdempotencyRecord Idempotency,
+    CaptureArtifact Artifact,
+    VerificationSession Session,
+    VerificationSessionState FinalState,
+    IReadOnlyList<AuditEvent> AuditEvents);
+
+public sealed record AppendEvidenceResultWrite(
+    AppendIdempotencyRecord Idempotency,
+    EvidenceResult EvidenceResult,
+    VerificationSession Session,
+    VerificationSessionState FinalState,
+    IReadOnlyList<AuditEvent> AuditEvents);
+
+public interface IAppendIdempotencyRepository
+{
+    Task<AppendIdempotencyRecord?> GetAsync(
+        Guid verificationSessionId,
+        string idempotencyKey,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IAppendIdempotencyBoundary
+{
+    Task<AppendIdempotencyApplyResult> TryApplyCaptureArtifactAsync(
+        AppendCaptureArtifactWrite write,
+        CancellationToken cancellationToken = default);
+
+    Task<AppendIdempotencyApplyResult> TryApplyEvidenceResultAsync(
+        AppendEvidenceResultWrite write,
+        CancellationToken cancellationToken = default);
+}
+
 public interface IClientApplicationPolicyReader
 {
     Task<ClientApplication?> GetClientApplicationAsync(Guid clientApplicationId, CancellationToken cancellationToken = default);

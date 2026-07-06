@@ -213,7 +213,8 @@ public sealed class Tip67BNeutralProofVerificationTests
                 MetadataHash: "sha256:metadata",
                 RequestId: "req-artifact",
                 CorrelationId: "corr-artifact"),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         Assert.True(artifact.IsSuccess, artifact.Error?.Code);
 
         var evidence = await fixture.EvidenceService.AppendEvidenceResultAsync(
@@ -233,7 +234,8 @@ public sealed class Tip67BNeutralProofVerificationTests
                 "s1",
                 RequestId: "req-evidence",
                 CorrelationId: "corr-evidence"),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         Assert.True(evidence.IsSuccess, evidence.Error?.Code);
 
         var completed = await fixture.CompletionService.CompleteAsync(
@@ -257,9 +259,10 @@ public sealed class Tip67BNeutralProofVerificationTests
         var manifests = new LocalDevInMemoryEvidenceManifestRepository();
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
+        var idempotency = new LocalDevInMemoryAppendIdempotencyStore(sessions, artifacts, evidence, audit);
         var finalization = new LocalDevInMemoryVerificationFinalizationBoundary(sessions, decisions, packages, manifests, audit);
         var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
-        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
+        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies, idempotency, idempotency);
         var completionService = new VerificationCompletionApplicationService(
             sessions,
             artifacts,

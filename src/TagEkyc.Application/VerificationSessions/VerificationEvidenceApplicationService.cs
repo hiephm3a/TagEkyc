@@ -12,6 +12,8 @@ public sealed class VerificationEvidenceApplicationService(
     IEvidenceResultRepository evidenceResults,
     IAuditEventRepository auditEvents,
     ILocalDevClientPolicyProvider policies,
+    IAppendIdempotencyRepository idempotencyRecords,
+    IAppendIdempotencyBoundary appendBoundary,
     IMetadataReferenceRegistry? metadataReferences = null)
     : ICaptureArtifactCommands, ITrustedEvidenceResultCommands
 {
@@ -50,7 +52,8 @@ public sealed class VerificationEvidenceApplicationService(
         AuthenticatedClientContext caller,
         string verificationSessionId,
         CaptureArtifactSubmissionRequestDto request,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        string? idempotencyKey = null)
     {
         var callerError = ApplicationAuthorization.RequireCaptureArtifactAppend<CaptureArtifactSubmissionResponseDto>(caller);
         if (callerError is not null)
@@ -58,7 +61,16 @@ public sealed class VerificationEvidenceApplicationService(
             return callerError;
         }
 
-        var context = await LoadWritableSessionAsync<CaptureArtifactSubmissionResponseDto>(
+        var key = ValidateIdempotencyKey<CaptureArtifactSubmissionResponseDto>(idempotencyKey);
+        if (!key.IsSuccess)
+        {
+            return SessionOperationResult<CaptureArtifactSubmissionResponseDto>.Failure(
+                key.Error!.Code,
+                key.Error.Message,
+                key.Error.StatusCode);
+        }
+
+        var context = await LoadAppendSessionAsync<CaptureArtifactSubmissionResponseDto>(
             caller,
             verificationSessionId,
             cancellationToken);
@@ -72,6 +84,7 @@ public sealed class VerificationEvidenceApplicationService(
 
         var session = context.Value!.Session;
         var policy = context.Value.Policy;
+        var existing = await idempotencyRecords.GetAsync(session.Id, key.Value!, cancellationToken);
         var captureAgentId = string.IsNullOrWhiteSpace(request.CaptureAgentId)
             ? caller.KeyPrefix
             : request.CaptureAgentId;
@@ -122,18 +135,49 @@ public sealed class VerificationEvidenceApplicationService(
             request.CorrelationId ?? session.CorrelationId,
             now,
             ExpiresAt: null);
+        var submissionSlot = artifact.ArtifactType.ToString();
+        var fingerprint = FingerprintCaptureArtifact(artifact);
+        if (existing is not null)
+        {
+            return await ResolveCaptureArtifactReplayAsync(existing, submissionSlot, fingerprint, artifact, session, caller, cancellationToken);
+        }
+
+        var writableError = ValidateWritableAppendSession<CaptureArtifactSubmissionResponseDto>(session);
+        if (writableError is not null)
+        {
+            return writableError;
+        }
 
         var finalState = session.State;
-        await captureArtifacts.AppendAsync(artifact, cancellationToken);
-        await RegisterCaptureArtifactMetadataReferenceAsync(artifact, now, cancellationToken);
+        var auditWrites = new List<AuditEvent>();
         if (session.State == VerificationSessionState.Created)
         {
             finalState = VerificationSessionState.InProgress;
-            await sessions.SetStateAsync(session.Id, finalState, cancellationToken);
-            await auditEvents.AppendAsync(CreateAuditEvent(caller, session, "SESSION_STATE_CHANGED"), cancellationToken);
+            auditWrites.Add(CreateAuditEvent(caller, session, "SESSION_STATE_CHANGED"));
         }
 
-        await auditEvents.AppendAsync(CreateAuditEvent(caller, session, "CAPTURE_ARTIFACT_RECORDED"), cancellationToken);
+        auditWrites.Add(CreateAuditEvent(caller, session, "CAPTURE_ARTIFACT_RECORDED"));
+        var apply = await appendBoundary.TryApplyCaptureArtifactAsync(
+            new AppendCaptureArtifactWrite(
+                new AppendIdempotencyRecord(
+                    session.Id,
+                    key.Value!,
+                    "captureArtifact",
+                    submissionSlot,
+                    artifact.Id,
+                    fingerprint,
+                    now),
+                artifact,
+                session,
+                finalState,
+                auditWrites),
+            cancellationToken);
+        if (apply.Status != AppendIdempotencyApplyStatus.Applied)
+        {
+            return await ResolveCaptureArtifactReplayAsync(apply.Record, submissionSlot, fingerprint, artifact, session, caller, cancellationToken);
+        }
+
+        await RegisterCaptureArtifactMetadataReferenceAsync(artifact, now, cancellationToken);
 
         return SessionOperationResult<CaptureArtifactSubmissionResponseDto>.Success(new CaptureArtifactSubmissionResponseDto(
             FormatId(artifact.Id),
@@ -148,7 +192,8 @@ public sealed class VerificationEvidenceApplicationService(
         AuthenticatedClientContext caller,
         string verificationSessionId,
         EvidenceResultSubmissionRequestDto request,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        string? idempotencyKey = null)
     {
         var callerError = ApplicationAuthorization.RequireTrustedEvidenceAppend<EvidenceResultSubmissionResponseDto>(caller);
         if (callerError is not null)
@@ -156,7 +201,16 @@ public sealed class VerificationEvidenceApplicationService(
             return callerError;
         }
 
-        var context = await LoadWritableSessionAsync<EvidenceResultSubmissionResponseDto>(
+        var key = ValidateIdempotencyKey<EvidenceResultSubmissionResponseDto>(idempotencyKey);
+        if (!key.IsSuccess)
+        {
+            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+                key.Error!.Code,
+                key.Error.Message,
+                key.Error.StatusCode);
+        }
+
+        var context = await LoadAppendSessionAsync<EvidenceResultSubmissionResponseDto>(
             caller,
             verificationSessionId,
             cancellationToken);
@@ -170,6 +224,7 @@ public sealed class VerificationEvidenceApplicationService(
 
         var session = context.Value!.Session;
         var policy = context.Value.Policy;
+        var existing = await idempotencyRecords.GetAsync(session.Id, key.Value!, cancellationToken);
         var resultType = ToDomain(request.ResultType);
         if (resultType == EvidenceResultType.FraudRisk)
         {
@@ -344,15 +399,25 @@ public sealed class VerificationEvidenceApplicationService(
             request.RequestId ?? session.RequestId,
             request.CorrelationId ?? session.CorrelationId,
             now);
+        var submissionSlot = evidence.ResultType.ToString();
+        var fingerprint = FingerprintEvidenceResult(evidence);
+        if (existing is not null)
+        {
+            return await ResolveEvidenceResultReplayAsync(existing, submissionSlot, fingerprint, evidence, session, caller, cancellationToken);
+        }
+
+        var writableError = ValidateWritableAppendSession<EvidenceResultSubmissionResponseDto>(session);
+        if (writableError is not null)
+        {
+            return writableError;
+        }
 
         var finalState = session.State;
         var stateEvents = new List<string>();
-        await evidenceResults.AppendAsync(evidence, cancellationToken);
 
         if (session.State == VerificationSessionState.Created)
         {
             finalState = VerificationSessionState.InProgress;
-            await sessions.SetStateAsync(session.Id, finalState, cancellationToken);
             stateEvents.Add("SESSION_STATE_CHANGED");
         }
 
@@ -360,16 +425,32 @@ public sealed class VerificationEvidenceApplicationService(
             finalState == VerificationSessionState.InProgress)
         {
             finalState = VerificationSessionState.ReadyToComplete;
-            await sessions.SetStateAsync(session.Id, finalState, cancellationToken);
             stateEvents.Add("SESSION_STATE_CHANGED");
         }
 
-        foreach (var stateEvent in stateEvents)
+        var auditWrites = stateEvents
+            .Select(stateEvent => CreateAuditEvent(caller, session, stateEvent))
+            .Append(CreateAuditEvent(caller, session, "EVIDENCE_RESULT_RECORDED"))
+            .ToArray();
+        var apply = await appendBoundary.TryApplyEvidenceResultAsync(
+            new AppendEvidenceResultWrite(
+                new AppendIdempotencyRecord(
+                    session.Id,
+                    key.Value!,
+                    "evidenceResult",
+                    submissionSlot,
+                    evidence.Id,
+                    fingerprint,
+                    now),
+                evidence,
+                session,
+                finalState,
+                auditWrites),
+            cancellationToken);
+        if (apply.Status != AppendIdempotencyApplyStatus.Applied)
         {
-            await auditEvents.AppendAsync(CreateAuditEvent(caller, session, stateEvent), cancellationToken);
+            return await ResolveEvidenceResultReplayAsync(apply.Record, submissionSlot, fingerprint, evidence, session, caller, cancellationToken);
         }
-
-        await auditEvents.AppendAsync(CreateAuditEvent(caller, session, "EVIDENCE_RESULT_RECORDED"), cancellationToken);
 
         return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Success(new EvidenceResultSubmissionResponseDto(
             FormatId(evidence.Id),
@@ -377,6 +458,141 @@ public sealed class VerificationEvidenceApplicationService(
             finalState.ToString(),
             NextAction: effectiveResult == VerificationResultDto.RetryRequired ? "RETRY_CAPTURE" : null));
     }
+
+    private static SessionOperationResult<string> ValidateIdempotencyKey<T>(string? idempotencyKey)
+    {
+        if (string.IsNullOrWhiteSpace(idempotencyKey))
+        {
+            return SessionOperationResult<string>.Failure(
+                "IDEMPOTENCY_KEY_REQUIRED",
+                "Idempotency-Key is required for append operations.",
+                400);
+        }
+
+        if (idempotencyKey.Length > 256 || idempotencyKey.Any(char.IsControl))
+        {
+            return SessionOperationResult<string>.Failure(
+                "IDEMPOTENCY_KEY_INVALID_FORMAT",
+                "Idempotency-Key must be 256 characters or fewer and must not contain control characters.",
+                400);
+        }
+
+        return SessionOperationResult<string>.Success(idempotencyKey);
+    }
+
+    private async Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> ResolveCaptureArtifactReplayAsync(
+        AppendIdempotencyRecord record,
+        string submissionSlot,
+        string fingerprint,
+        CaptureArtifact artifact,
+        VerificationSession session,
+        AuthenticatedClientContext caller,
+        CancellationToken cancellationToken)
+    {
+        var mismatch = ResolveReplayMismatch<CaptureArtifactSubmissionResponseDto>(record, "captureArtifact", submissionSlot, fingerprint);
+        if (mismatch is not null)
+        {
+            return mismatch;
+        }
+
+        await auditEvents.AppendAsync(CreateDeduplicatedAuditEvent(caller, session, "CAPTURE_ARTIFACT_DEDUPLICATED", record), cancellationToken);
+        return SessionOperationResult<CaptureArtifactSubmissionResponseDto>.Success(new CaptureArtifactSubmissionResponseDto(
+            FormatId(record.MintedId),
+            FormatId(session.Id),
+            artifact.ArtifactHash?.ToString(),
+            Accepted: true,
+            session.State.ToString(),
+            artifact.CorrelationId,
+            Deduplicated: true));
+    }
+
+    private async Task<SessionOperationResult<EvidenceResultSubmissionResponseDto>> ResolveEvidenceResultReplayAsync(
+        AppendIdempotencyRecord record,
+        string submissionSlot,
+        string fingerprint,
+        EvidenceResult evidence,
+        VerificationSession session,
+        AuthenticatedClientContext caller,
+        CancellationToken cancellationToken)
+    {
+        var mismatch = ResolveReplayMismatch<EvidenceResultSubmissionResponseDto>(record, "evidenceResult", submissionSlot, fingerprint);
+        if (mismatch is not null)
+        {
+            return mismatch;
+        }
+
+        await auditEvents.AppendAsync(CreateDeduplicatedAuditEvent(caller, session, "EVIDENCE_RESULT_DEDUPLICATED", record), cancellationToken);
+        return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Success(new EvidenceResultSubmissionResponseDto(
+            FormatId(record.MintedId),
+            Accepted: true,
+            session.State.ToString(),
+            NextAction: evidence.Result == VerificationResult.RetryRequired ? "RETRY_CAPTURE" : null,
+            Deduplicated: true));
+    }
+
+    private static SessionOperationResult<T>? ResolveReplayMismatch<T>(
+        AppendIdempotencyRecord record,
+        string endpointKind,
+        string submissionSlot,
+        string fingerprint)
+    {
+        if (!string.Equals(record.EndpointKind, endpointKind, StringComparison.Ordinal) ||
+            !string.Equals(record.SubmissionSlot, submissionSlot, StringComparison.Ordinal))
+        {
+            return SessionOperationResult<T>.Failure(
+                "IDEMPOTENCY_KEY_SLOT_MISMATCH",
+                "Idempotency-Key was already used for a different append slot.",
+                409);
+        }
+
+        if (!string.Equals(record.Fingerprint, fingerprint, StringComparison.Ordinal))
+        {
+            return SessionOperationResult<T>.Failure(
+                "IDEMPOTENCY_KEY_PAYLOAD_MISMATCH",
+                "Idempotency-Key was already used for a materially different payload.",
+                409);
+        }
+
+        return null;
+    }
+
+    private static string FingerprintCaptureArtifact(CaptureArtifact artifact) =>
+        EvidenceCanonicalization.HashCanonical("tip-80s-i-append-idempotency-capture-artifact", new
+        {
+            endpointKind = "captureArtifact",
+            sessionId = artifact.VerificationSessionId.ToString("N"),
+            artifactType = artifact.ArtifactType.ToString(),
+            artifactHash = artifact.ArtifactHash?.ToString(),
+            metadataHash = artifact.MetadataHash?.ToString(),
+            captureSource = artifact.CaptureSource.ToString(),
+            deviceId = artifact.DeviceId,
+            captureAgentId = artifact.CaptureAgentId,
+            requestId = artifact.RequestId,
+            correlationId = artifact.CorrelationId,
+        });
+
+    private static string FingerprintEvidenceResult(EvidenceResult evidence) =>
+        EvidenceCanonicalization.HashCanonical("tip-80s-i-append-idempotency-evidence-result", new
+        {
+            endpointKind = "evidenceResult",
+            sessionId = evidence.VerificationSessionId.ToString("N"),
+            resultType = evidence.ResultType.ToString(),
+            effectiveResult = evidence.Result.ToString(),
+            effectiveReasonCodes = evidence.ReasonCodes.ToArray(),
+            evidence.Confidence,
+            evidence.RetryReasonCode,
+            evidence.SanitizedSummaryRef,
+            effectivePayloadHash = evidence.PayloadHash?.ToString(),
+            payloadSignatureStatus = evidence.PayloadSignatureStatus.ToString(),
+            evidence.EngineName,
+            evidence.EngineVersion,
+            inputCaptureArtifactIds = evidence.InputCaptureArtifactIds
+                .Select(id => id.ToString("N"))
+                .Order(StringComparer.Ordinal)
+                .ToArray(),
+            requestId = evidence.RequestId,
+            correlationId = evidence.CorrelationId,
+        });
 
     private static SessionOperationResult<NfcEvidencePreparation> PrepareNfcEvidenceResult(
         VerificationSession session,
@@ -1202,6 +1418,81 @@ public sealed class VerificationEvidenceApplicationService(
         return SessionOperationResult<WritableSessionContext<T>>.Success(new WritableSessionContext<T>(session, policy));
     }
 
+    private async Task<SessionOperationResult<WritableSessionContext<T>>> LoadAppendSessionAsync<T>(
+        AuthenticatedClientContext caller,
+        string verificationSessionId,
+        CancellationToken cancellationToken)
+    {
+        if (!Guid.TryParse(verificationSessionId, out var sessionId))
+        {
+            return SessionOperationResult<WritableSessionContext<T>>.Failure(
+                "SESSION_NOT_FOUND",
+                "Verification session was not found.",
+                404);
+        }
+
+        var session = await sessions.GetAsync(sessionId, cancellationToken);
+        if (session is null)
+        {
+            return SessionOperationResult<WritableSessionContext<T>>.Failure(
+                "SESSION_NOT_FOUND",
+                "Verification session was not found.",
+                404);
+        }
+
+        if (!ApplicationAuthorization.CanAccessClientApplication(caller, session.ClientApplicationId))
+        {
+            await auditEvents.AppendAsync(CreateAuditEvent(caller, session, "SESSION_ACCESS_DENIED"), cancellationToken);
+            return SessionOperationResult<WritableSessionContext<T>>.Failure(
+                "SESSION_ACCESS_DENIED",
+                "Caller is not authorized to write this session.",
+                403);
+        }
+
+        var policy = await policies.GetPolicyAsync(session.ClientApplicationId, cancellationToken);
+        if (policy is null)
+        {
+            return SessionOperationResult<WritableSessionContext<T>>.Failure(
+                "SESSION_ACCESS_DENIED",
+                "Client policy was not found.",
+                403);
+        }
+
+        return SessionOperationResult<WritableSessionContext<T>>.Success(new WritableSessionContext<T>(session, policy));
+    }
+
+    private static SessionOperationResult<T>? ValidateWritableAppendSession<T>(VerificationSession session)
+    {
+        if (session.ExpiresAt <= DateTimeOffset.UtcNow)
+        {
+            return SessionOperationResult<T>.Failure(
+                "SESSION_EXPIRED",
+                "Verification session is expired.",
+                403);
+        }
+
+        if (session.State == VerificationSessionState.ReadyToComplete)
+        {
+            return SessionOperationResult<T>.Failure(
+                "SESSION_READY_TO_COMPLETE",
+                "Verification session is ready to complete and no longer accepts TIP-05 writes.",
+                409);
+        }
+
+        if (session.State is VerificationSessionState.Completed or
+            VerificationSessionState.Cancelled or
+            VerificationSessionState.Expired or
+            VerificationSessionState.TechnicalTerminal)
+        {
+            return SessionOperationResult<T>.Failure(
+                "SESSION_TERMINAL",
+                "Verification session is terminal.",
+                409);
+        }
+
+        return null;
+    }
+
     private static SessionOperationResult<T>? ValidateArtifactPolicy<T>(
         VerificationSession session,
         LocalDevClientPolicy policy,
@@ -1480,6 +1771,43 @@ public sealed class VerificationEvidenceApplicationService(
             session.RequestId,
             session.CorrelationId,
             DateTimeOffset.UtcNow);
+
+    private static AuditEvent CreateDeduplicatedAuditEvent(
+        AuthenticatedClientContext caller,
+        VerificationSession session,
+        string eventType,
+        AppendIdempotencyRecord record)
+    {
+        var idempotencyKeyHash = EvidenceCanonicalization.HashCanonical("tip-80s-i-idempotency-key-audit", new
+        {
+            sessionId = session.Id.ToString("N"),
+            idempotencyKey = record.IdempotencyKey,
+        });
+
+        var auditHash = EvidenceCanonicalization.HashCanonical("tip-80s-i-append-deduplicated-audit", new
+        {
+            eventType,
+            sessionId = session.Id.ToString("N"),
+            endpointKind = record.EndpointKind,
+            submissionSlot = record.SubmissionSlot,
+            mintedId = record.MintedId.ToString("N"),
+            idempotencyKeyHash,
+            deduplicated = true,
+        });
+
+        return new AuditEvent(
+            Guid.NewGuid(),
+            caller.ClientApplicationId,
+            session.Id,
+            caller.CallerCategory.ToString(),
+            caller.KeyPrefix,
+            eventType,
+            new HashRef(auditHash),
+            EventPayloadRef: null,
+            session.RequestId,
+            session.CorrelationId,
+            DateTimeOffset.UtcNow);
+    }
 
     private static string FormatId(Guid id) => id.ToString("N");
 

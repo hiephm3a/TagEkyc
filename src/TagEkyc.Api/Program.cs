@@ -102,6 +102,9 @@ static void ConfigurePersistence(WebApplicationBuilder builder)
     builder.Services.AddSingleton<IEvidencePackageRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidencePackageRepository>());
     builder.Services.AddSingleton<LocalDevInMemoryEvidenceManifestRepository>();
     builder.Services.AddSingleton<IInternalEvidenceManifestRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceManifestRepository>());
+    builder.Services.AddSingleton<LocalDevInMemoryAppendIdempotencyStore>();
+    builder.Services.AddSingleton<IAppendIdempotencyRepository>(sp => sp.GetRequiredService<LocalDevInMemoryAppendIdempotencyStore>());
+    builder.Services.AddSingleton<IAppendIdempotencyBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryAppendIdempotencyStore>());
     builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
     builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
 }

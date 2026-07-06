@@ -24,6 +24,9 @@ public static class TagEkycPersistenceServiceCollectionExtensions
         services.AddScoped<IInternalEvidenceManifestRepository, EfEvidenceManifestRepository>();
         services.AddScoped<IAuditEventRepository, EfAuditEventRepository>();
         services.AddScoped<IVerificationFinalizationBoundary, EfVerificationFinalizationBoundary>();
+        services.AddScoped<EfAppendIdempotencyBoundary>();
+        services.AddScoped<IAppendIdempotencyRepository>(sp => sp.GetRequiredService<EfAppendIdempotencyBoundary>());
+        services.AddScoped<IAppendIdempotencyBoundary>(sp => sp.GetRequiredService<EfAppendIdempotencyBoundary>());
 
         return services;
     }

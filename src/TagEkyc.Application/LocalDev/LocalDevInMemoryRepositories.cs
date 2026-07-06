@@ -155,6 +155,109 @@ public sealed class LocalDevInMemoryAuditEventRepository : IAuditEventRepository
     }
 }
 
+public sealed class LocalDevInMemoryAppendIdempotencyStore(
+    LocalDevInMemoryVerificationSessionRepository sessions,
+    LocalDevInMemoryCaptureArtifactRepository captureArtifacts,
+    LocalDevInMemoryEvidenceResultRepository evidenceResults,
+    LocalDevInMemoryAuditEventRepository auditEvents)
+    : IAppendIdempotencyRepository, IAppendIdempotencyBoundary
+{
+    private readonly Dictionary<(Guid SessionId, string Key), AppendIdempotencyRecord> records = new();
+
+    public IReadOnlyList<AppendIdempotencyRecord> Records
+    {
+        get
+        {
+            lock (LocalDevInMemoryVisibilityGate.SyncRoot)
+            {
+                return records.Values.ToArray();
+            }
+        }
+    }
+
+    public Task<AppendIdempotencyRecord?> GetAsync(
+        Guid verificationSessionId,
+        string idempotencyKey,
+        CancellationToken cancellationToken = default)
+    {
+        lock (LocalDevInMemoryVisibilityGate.SyncRoot)
+        {
+            records.TryGetValue((verificationSessionId, idempotencyKey), out var record);
+            return Task.FromResult(record);
+        }
+    }
+
+    public Task<AppendIdempotencyApplyResult> TryApplyCaptureArtifactAsync(
+        AppendCaptureArtifactWrite write,
+        CancellationToken cancellationToken = default)
+    {
+        lock (LocalDevInMemoryVisibilityGate.SyncRoot)
+        {
+            if (records.TryGetValue((write.Idempotency.VerificationSessionId, write.Idempotency.IdempotencyKey), out var existing))
+            {
+                return Task.FromResult(Replay(existing, write.Idempotency));
+            }
+
+            records[(write.Idempotency.VerificationSessionId, write.Idempotency.IdempotencyKey)] = write.Idempotency;
+            captureArtifacts.AppendAsync(write.Artifact, cancellationToken).GetAwaiter().GetResult();
+            if (write.Session.State != write.FinalState)
+            {
+                sessions.SetStateAsync(write.Session.Id, write.FinalState, cancellationToken).GetAwaiter().GetResult();
+            }
+
+            foreach (var auditEvent in write.AuditEvents)
+            {
+                auditEvents.AppendAsync(auditEvent, cancellationToken).GetAwaiter().GetResult();
+            }
+
+            return Task.FromResult(new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.Applied, write.Idempotency));
+        }
+    }
+
+    public Task<AppendIdempotencyApplyResult> TryApplyEvidenceResultAsync(
+        AppendEvidenceResultWrite write,
+        CancellationToken cancellationToken = default)
+    {
+        lock (LocalDevInMemoryVisibilityGate.SyncRoot)
+        {
+            if (records.TryGetValue((write.Idempotency.VerificationSessionId, write.Idempotency.IdempotencyKey), out var existing))
+            {
+                return Task.FromResult(Replay(existing, write.Idempotency));
+            }
+
+            records[(write.Idempotency.VerificationSessionId, write.Idempotency.IdempotencyKey)] = write.Idempotency;
+            evidenceResults.AppendAsync(write.EvidenceResult, cancellationToken).GetAwaiter().GetResult();
+            if (write.Session.State != write.FinalState)
+            {
+                sessions.SetStateAsync(write.Session.Id, write.FinalState, cancellationToken).GetAwaiter().GetResult();
+            }
+
+            foreach (var auditEvent in write.AuditEvents)
+            {
+                auditEvents.AppendAsync(auditEvent, cancellationToken).GetAwaiter().GetResult();
+            }
+
+            return Task.FromResult(new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.Applied, write.Idempotency));
+        }
+    }
+
+    private static AppendIdempotencyApplyResult Replay(AppendIdempotencyRecord existing, AppendIdempotencyRecord attempted)
+    {
+        if (!string.Equals(existing.EndpointKind, attempted.EndpointKind, StringComparison.Ordinal) ||
+            !string.Equals(existing.SubmissionSlot, attempted.SubmissionSlot, StringComparison.Ordinal))
+        {
+            return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.SlotMismatch, existing);
+        }
+
+        if (!string.Equals(existing.Fingerprint, attempted.Fingerprint, StringComparison.Ordinal))
+        {
+            return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.PayloadMismatch, existing);
+        }
+
+        return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.Deduplicated, existing);
+    }
+}
+
 public sealed class LocalDevInMemoryVerificationDecisionRepository : IVerificationDecisionRepository
 {
     private readonly ConcurrentQueue<VerificationDecision> decisions = new();

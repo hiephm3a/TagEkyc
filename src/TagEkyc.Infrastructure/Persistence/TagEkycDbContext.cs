@@ -19,6 +19,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
 
     public DbSet<AuditEventRow> AuditEvents => Set<AuditEventRow>();
 
+    public DbSet<AppendIdempotencyRecordRow> AppendIdempotencyRecords => Set<AppendIdempotencyRecordRow>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("tagekyc");
@@ -176,6 +178,22 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.RequestId).HasMaxLength(128).IsRequired();
             entity.Property(row => row.CorrelationId).HasMaxLength(128).IsRequired();
             entity.HasIndex(row => row.VerificationSessionId);
+            entity.HasOne<VerificationSessionRow>()
+                .WithMany()
+                .HasForeignKey(row => row.VerificationSessionId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<AppendIdempotencyRecordRow>(entity =>
+        {
+            entity.ToTable("append_idempotency_records");
+            entity.HasKey(row => new { row.VerificationSessionId, row.IdempotencyKey });
+            entity.Property(row => row.IdempotencyKey).HasMaxLength(256).IsRequired();
+            entity.Property(row => row.EndpointKind).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.SubmissionSlot).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.Fingerprint).HasMaxLength(128).IsRequired();
+            entity.HasIndex(row => new { row.VerificationSessionId, row.IdempotencyKey }).IsUnique();
+            entity.HasIndex(row => row.MintedId);
             entity.HasOne<VerificationSessionRow>()
                 .WithMany()
                 .HasForeignKey(row => row.VerificationSessionId)

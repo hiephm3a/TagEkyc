@@ -106,7 +106,14 @@ public static class VerificationSessionEndpoints
             return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
         }
 
-        var result = await commands.AppendCaptureArtifactAsync(authentication.Value!, id, request, cancellationToken);
+        var idempotencyKey = httpContext.Request.Headers["Idempotency-Key"].FirstOrDefault();
+        var keyError = ValidateAppendIdempotencyKey(idempotencyKey);
+        if (keyError is not null)
+        {
+            return ToError(keyError, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        var result = await commands.AppendCaptureArtifactAsync(authentication.Value!, id, request, cancellationToken, idempotencyKey);
         if (!result.IsSuccess)
         {
             return ToError(result.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
@@ -131,7 +138,14 @@ public static class VerificationSessionEndpoints
             return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
         }
 
-        var result = await commands.AppendEvidenceResultAsync(authentication.Value!, id, request, cancellationToken);
+        var idempotencyKey = httpContext.Request.Headers["Idempotency-Key"].FirstOrDefault();
+        var keyError = ValidateAppendIdempotencyKey(idempotencyKey);
+        if (keyError is not null)
+        {
+            return ToError(keyError, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        var result = await commands.AppendEvidenceResultAsync(authentication.Value!, id, request, cancellationToken, idempotencyKey);
         if (!result.IsSuccess)
         {
             return ToError(result.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
@@ -213,6 +227,27 @@ public static class VerificationSessionEndpoints
         Results.Json(
             new ErrorEnvelope(new ErrorBody(error.Code, error.Message, correlationId)),
             statusCode: error.StatusCode);
+
+    private static SessionOperationError? ValidateAppendIdempotencyKey(string? idempotencyKey)
+    {
+        if (string.IsNullOrWhiteSpace(idempotencyKey))
+        {
+            return new SessionOperationError(
+                "IDEMPOTENCY_KEY_REQUIRED",
+                "Idempotency-Key is required for append operations.",
+                400);
+        }
+
+        if (idempotencyKey.Length > 256 || idempotencyKey.Any(char.IsControl))
+        {
+            return new SessionOperationError(
+                "IDEMPOTENCY_KEY_INVALID_FORMAT",
+                "Idempotency-Key must be 256 characters or fewer and must not contain control characters.",
+                400);
+        }
+
+        return null;
+    }
 
     private sealed record ErrorEnvelope(ErrorBody Error);
 

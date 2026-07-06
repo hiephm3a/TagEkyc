@@ -35,7 +35,8 @@ public sealed class Tip05EvidenceApplicationTests
             BusinessCaller(),
             session.Value!.VerificationSessionId,
             DocumentFrontArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(result.IsSuccess);
         Assert.Equal("CALLER_CATEGORY_NOT_ALLOWED", result.Error?.Code);
@@ -52,19 +53,22 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DocumentFrontArtifact() with { ArtifactHash = null, MetadataHash = null },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var fingerprint = await fixture.Service.AppendCaptureArtifactAsync(
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DocumentFrontArtifact() with { ArtifactType = CaptureArtifactTypeDto.FingerprintCapture },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var accepted = await fixture.Service.AppendCaptureArtifactAsync(
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.Equal("INVALID_CAPTURE_ARTIFACT", missingHash.Error?.Code);
         Assert.Equal("FINGERPRINT_NOT_ENABLED", fingerprint.Error?.Code);
@@ -83,7 +87,8 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(accepted.IsSuccess);
         var referenceId = new MetadataReferenceId($"capture-artifact-metadata:{accepted.Value!.CaptureArtifactId}");
@@ -118,32 +123,37 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var missingPayloadHash = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value!.VerificationSessionId,
             CaptureQualityEvidence([artifact.Value!.CaptureArtifactId]) with { PayloadHash = null },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var missingInput = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value!.VerificationSessionId,
             CaptureQualityEvidence([]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var nfcSession = await CreateSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
         var metadataArtifact = await fixture.Service.AppendCaptureArtifactAsync(
             CaptureCaller(),
             nfcSession.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var incompatible = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             nfcSession.Value!.VerificationSessionId,
             CaptureQualityEvidence([metadataArtifact.Value!.CaptureArtifactId]) with { ResultType = EvidenceResultTypeDto.NfcValidation },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.Equal("INVALID_HASH_REF", missingPayloadHash.Error?.Code);
         Assert.Equal("INPUT_CAPTURE_ARTIFACTS_REQUIRED", missingInput.Error?.Code);
@@ -159,7 +169,8 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             NfcArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var barePassed = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
@@ -170,7 +181,8 @@ public sealed class Tip05EvidenceApplicationTests
                 PayloadHash = null,
                 NfcEvidenceDecisionBasis = null,
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(barePassed.IsSuccess);
         Assert.Equal("NFC_EVIDENCE_DECOMPOSITION_REQUIRED", barePassed.Error?.Code);
@@ -186,7 +198,8 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             NfcArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var spoofed = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
@@ -195,7 +208,8 @@ public sealed class Tip05EvidenceApplicationTests
             {
                 PayloadHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(spoofed.IsSuccess);
         Assert.Equal("NFC_PAYLOAD_HASH_MISMATCH", spoofed.Error?.Code);
@@ -211,7 +225,8 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             NfcArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var rejected = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
@@ -225,7 +240,8 @@ public sealed class Tip05EvidenceApplicationTests
                     SanitizedSummaryLabel = "plaintext-cccd-123",
                 },
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(rejected.IsSuccess);
         Assert.Equal("INVALID_EVIDENCE_RESULT", rejected.Error?.Code);
@@ -242,7 +258,8 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             NfcArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var accepted = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
@@ -254,7 +271,8 @@ public sealed class Tip05EvidenceApplicationTests
                     nfcArtifact.Value.CaptureArtifactId,
                     includePositiveBindingFlag: false),
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single();
 
         Assert.True(accepted.IsSuccess);
@@ -272,13 +290,15 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             NfcArtifact(CaptureSourceDto.ExternalPreStaged),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var accepted = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value.VerificationSessionId,
             ValidNfcEvidence(session.Value.VerificationSessionId, nfcArtifact.Value!.CaptureArtifactId),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single();
 
         Assert.True(accepted.IsSuccess);
@@ -299,7 +319,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             FaceMatchEvidence(scenario) with { FaceMatchEvidenceDecisionBasis = null },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(barePassed.IsSuccess);
         Assert.Equal("FACE_MATCH_DECISION_BASIS_REQUIRED", barePassed.Error?.Code);
@@ -322,7 +343,8 @@ public sealed class Tip05EvidenceApplicationTests
                     SanitizedSummaryLabel = "biometric:raw-face",
                 },
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(rejected.IsSuccess);
         Assert.Equal("INVALID_EVIDENCE_RESULT", rejected.Error?.Code);
@@ -344,7 +366,8 @@ public sealed class Tip05EvidenceApplicationTests
             {
                 PayloadHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(spoofed.IsSuccess);
         Assert.Equal("FACE_MATCH_PAYLOAD_HASH_MISMATCH", spoofed.Error?.Code);
@@ -361,7 +384,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             FaceMatchEvidence(scenario),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.FaceMatch);
 
         Assert.True(accepted.IsSuccess);
@@ -387,7 +411,8 @@ public sealed class Tip05EvidenceApplicationTests
                 EngineName = "viewfacecore-seetaface6",
                 EngineVersion = "0.3.8+face-models/6.0.7+runtime-win-x64/6.0.7",
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.FaceMatch);
 
         Assert.True(accepted.IsSuccess);
@@ -410,7 +435,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             FaceMatchEvidence(scenario, referenceSource: FaceMatchReferenceFaceSourceDto.DocumentImage),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.FaceMatch);
 
         Assert.True(accepted.IsSuccess);
@@ -429,7 +455,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             nonPassed.SessionId,
             FaceMatchEvidence(nonPassed),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var missingAccepted = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             missing.SessionId,
@@ -440,7 +467,8 @@ public sealed class Tip05EvidenceApplicationTests
                     ReferenceEvidenceResultId = Guid.NewGuid().ToString("N"),
                 },
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var faceMatches = fixture.Evidence.EvidenceResults
             .Where(candidate => candidate.ResultType == EvidenceResultType.FaceMatch)
@@ -474,7 +502,8 @@ public sealed class Tip05EvidenceApplicationTests
                     ReferencePayloadHash = other.NfcPayloadHash,
                 },
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults
             .Where(candidate => candidate.ResultType == EvidenceResultType.FaceMatch)
             .Single();
@@ -494,7 +523,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             FaceMatchEvidence(scenario, score: 0.42m, isMatch: false),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.FaceMatch);
 
         Assert.True(accepted.IsSuccess);
@@ -512,7 +542,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             FaceMatchEvidence(scenario, score: 0.92m, isMatch: false),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(conflict.IsSuccess);
         Assert.Equal("FACE_MATCH_DECISION_BASIS_MISMATCH", conflict.Error?.Code);
@@ -529,7 +560,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             FaceMatchEvidence(scenario),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.FaceMatch);
 
         Assert.True(accepted.IsSuccess);
@@ -548,7 +580,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             LivenessEvidence(scenario) with { LivenessEvidenceDecisionBasis = null },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(barePassed.IsSuccess);
         Assert.Equal("LIVENESS_DECISION_BASIS_REQUIRED", barePassed.Error?.Code);
@@ -568,7 +601,8 @@ public sealed class Tip05EvidenceApplicationTests
             {
                 PayloadHash = "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(spoofed.IsSuccess);
         Assert.Equal("LIVENESS_PAYLOAD_HASH_MISMATCH", spoofed.Error?.Code);
@@ -585,7 +619,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             LivenessEvidence(scenario),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.Liveness);
 
         Assert.True(accepted.IsSuccess);
@@ -606,18 +641,21 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             LivenessArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var selfie = await fixture.Service.AppendCaptureArtifactAsync(
             CaptureCaller(),
             session.Value.VerificationSessionId,
             SelfieArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var accepted = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value.VerificationSessionId,
             LivenessEvidence(new LivenessScenario(session.Value.VerificationSessionId, liveMedia.Value!.CaptureArtifactId)),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(liveMedia.IsSuccess);
         Assert.True(accepted.IsSuccess);
@@ -657,7 +695,8 @@ public sealed class Tip05EvidenceApplicationTests
             {
                 ReasonCodes = ["OPERATIONAL_REASON_ONLY"],
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.Liveness);
 
         Assert.True(accepted.IsSuccess);
@@ -675,7 +714,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             LivenessEvidence(scenario, score: 0.42m, adapterRequestedVerdict: "uncertain", serverDerivedIsLive: false),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.Liveness);
 
         Assert.True(accepted.IsSuccess);
@@ -702,7 +742,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             LivenessEvidence(scenario, score: 0.92m, adapterRequestedVerdict: "spoof"),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.Liveness);
 
         Assert.True(accepted.IsSuccess);
@@ -726,7 +767,8 @@ public sealed class Tip05EvidenceApplicationTests
             TrustedCaller(),
             scenario.SessionId,
             LivenessEvidence(scenario),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.Liveness);
 
         Assert.True(accepted.IsSuccess);
@@ -756,7 +798,8 @@ public sealed class Tip05EvidenceApplicationTests
                     SanitizedSummaryLabel = "biometric:raw-liveness",
                 },
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(rejected.IsSuccess);
         Assert.Equal("INVALID_EVIDENCE_RESULT", rejected.Error?.Code);
@@ -782,7 +825,8 @@ public sealed class Tip05EvidenceApplicationTests
                     Method = "silent-face",
                 },
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.False(rejected.IsSuccess);
         Assert.Equal("LIVENESS_METHOD_UNEARNED", rejected.Error?.Code);
@@ -813,7 +857,8 @@ public sealed class Tip05EvidenceApplicationTests
                 method: method,
                 engineName: engineName,
                 engineVersion: engineVersion),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.Equal(succeeds, result.IsSuccess);
         if (succeeds)
@@ -841,25 +886,29 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var review = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value!.VerificationSessionId,
             CaptureQualityEvidence([artifact.Value!.CaptureArtifactId]) with { Result = VerificationResultDto.ReviewRequired },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var passed = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value!.VerificationSessionId,
             CaptureQualityEvidence([artifact.Value!.CaptureArtifactId]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var afterReady = await fixture.Service.AppendCaptureArtifactAsync(
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var summary = await fixture.Sessions.GetAsync(Guid.Parse(session.Value!.VerificationSessionId), CancellationToken.None);
 
@@ -882,13 +931,15 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             DeviceMetadataArtifact(),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value!.VerificationSessionId,
             CaptureQualityEvidence([artifact.Value!.CaptureArtifactId]),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         var summary = await fixture.SessionService.GetSummaryAsync(
             BusinessCaller(),
@@ -948,6 +999,7 @@ public sealed class Tip05EvidenceApplicationTests
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
         var metadataReferences = new LocalDevInMemoryMetadataReferenceRegistry();
+        var idempotency = new LocalDevInMemoryAppendIdempotencyStore(sessions, artifacts, evidence, audit);
         var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
         var service = new VerificationEvidenceApplicationService(
             sessions,
@@ -955,6 +1007,8 @@ public sealed class Tip05EvidenceApplicationTests
             evidence,
             audit,
             policies,
+            idempotency,
+            idempotency,
             metadataReferences);
 
         return new TestFixture(service, sessionService, sessions, artifacts, evidence, audit, metadataReferences);
@@ -1391,12 +1445,14 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             NfcArtifact(nfcSource),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var selfieArtifact = await fixture.Service.AppendCaptureArtifactAsync(
             CaptureCaller(),
             session.Value.VerificationSessionId,
             SelfieArtifact(liveSource),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var nfcEvidence = await fixture.Service.AppendEvidenceResultAsync(
             TrustedCaller(),
             session.Value.VerificationSessionId,
@@ -1404,7 +1460,8 @@ public sealed class Tip05EvidenceApplicationTests
             {
                 Result = nfcResult,
             },
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var persistedNfc = fixture.Evidence.EvidenceResults.Single(candidate =>
             candidate.VerificationSessionId == Guid.Parse(session.Value.VerificationSessionId) &&
             candidate.ResultType == EvidenceResultType.NfcValidation);
@@ -1432,7 +1489,8 @@ public sealed class Tip05EvidenceApplicationTests
             CaptureCaller(),
             session.Value!.VerificationSessionId,
             LivenessArtifact(liveSource),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(liveArtifact.IsSuccess);
 

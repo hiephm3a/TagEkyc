@@ -1,4 +1,5 @@
 using System.Reflection;
+using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Contracts.Common;
 using TagEkyc.Contracts.InternalAudit.Manifest;
@@ -327,6 +328,28 @@ internal static class DomainRowMapper
             row.RequestId,
             row.CorrelationId,
             row.OccurredAt);
+
+    public static AppendIdempotencyRecordRow ToRow(AppendIdempotencyRecord record) =>
+        new()
+        {
+            VerificationSessionId = record.VerificationSessionId,
+            IdempotencyKey = record.IdempotencyKey,
+            EndpointKind = record.EndpointKind,
+            SubmissionSlot = record.SubmissionSlot,
+            MintedId = record.MintedId,
+            Fingerprint = record.Fingerprint,
+            CreatedAt = record.CreatedAt,
+        };
+
+    public static AppendIdempotencyRecord ToDomain(AppendIdempotencyRecordRow row) =>
+        new(
+            row.VerificationSessionId,
+            row.IdempotencyKey,
+            row.EndpointKind,
+            row.SubmissionSlot,
+            row.MintedId,
+            row.Fingerprint,
+            row.CreatedAt);
 
     private static HashRef? ToHash(string? value) => value is null ? null : new HashRef(value);
 

@@ -203,7 +203,8 @@ public sealed class Tip80SLedgerTests
                 "sha256:metadata",
                 RequestId: "req-artifact",
                 CorrelationId: "corr-artifact"),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(result.IsSuccess, result.Error?.Code);
         return result.Value!;
@@ -233,7 +234,8 @@ public sealed class Tip80SLedgerTests
                 "s1",
                 RequestId: $"req-{payloadHash}",
                 CorrelationId: $"corr-{payloadHash}"),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
 
         Assert.True(accepted.IsSuccess, accepted.Error?.Code);
         return accepted.Value!;
@@ -276,8 +278,9 @@ public sealed class Tip80SLedgerTests
         var evidence = new LocalDevInMemoryEvidenceResultRepository();
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
+        var idempotency = new LocalDevInMemoryAppendIdempotencyStore(sessions, artifacts, evidence, audit);
         var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
-        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
+        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies, idempotency, idempotency);
 
         return new TestFixture(sessionService, evidenceService, sessions, evidence, audit);
     }

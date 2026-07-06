@@ -158,7 +158,8 @@ public sealed class Tip07CompletionNotificationApplicationTests
                 MetadataHash: "sha256:metadata",
                 RequestId: "req-artifact",
                 CorrelationId: "corr-artifact"),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             verificationSessionId,
@@ -176,7 +177,8 @@ public sealed class Tip07CompletionNotificationApplicationTests
                 "s1",
                 RequestId: "req-evidence",
                 CorrelationId: "corr-evidence"),
-            CancellationToken.None);
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
         var completed = await fixture.CompletionService.CompleteAsync(
             BusinessCaller(),
             verificationSessionId,
@@ -199,6 +201,7 @@ public sealed class Tip07CompletionNotificationApplicationTests
         var manifests = new LocalDevInMemoryEvidenceManifestRepository();
         var audit = new LocalDevInMemoryAuditEventRepository();
         var policies = new LocalDevRuntimePolicySource();
+        var idempotency = new LocalDevInMemoryAppendIdempotencyStore(sessions, artifacts, evidence, audit);
         var finalization = new LocalDevInMemoryVerificationFinalizationBoundary(
             sessions,
             decisions,
@@ -206,7 +209,7 @@ public sealed class Tip07CompletionNotificationApplicationTests
             manifests,
             audit);
         var sessionService = new VerificationSessionApplicationService(sessions, artifacts, evidence, audit, policies);
-        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies);
+        var evidenceService = new VerificationEvidenceApplicationService(sessions, artifacts, evidence, audit, policies, idempotency, idempotency);
         var completionService = new VerificationCompletionApplicationService(
             sessions,
             artifacts,

@@ -36,12 +36,12 @@ public sealed class Tip05ApiPipelineTests
         var artifact = DeviceMetadataArtifact();
         var evidence = CaptureQualityEvidence(["00000000-0000-0000-0000-000000000001"]);
 
-        var businessCapture = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts", BusinessKey, artifact);
-        var businessEvidence = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/evidence-results", BusinessKey, evidence);
-        var captureEvidence = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/evidence-results", CaptureAgentKey, evidence);
-        var trustedCapture = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts", TrustedAdapterKey, artifact);
-        var missingKey = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts", apiKey: null, artifact);
-        var unknownKey = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts", UnknownKey, artifact);
+        var businessCapture = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts", BusinessKey, artifact, "tip05-business-capture");
+        var businessEvidence = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/evidence-results", BusinessKey, evidence, "tip05-business-evidence");
+        var captureEvidence = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/evidence-results", CaptureAgentKey, evidence, "tip05-capture-evidence");
+        var trustedCapture = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts", TrustedAdapterKey, artifact, "tip05-trusted-capture");
+        var missingKey = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts", apiKey: null, artifact, "tip05-missing-api-key");
+        var unknownKey = await PostJsonAsync(api.Client, $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts", UnknownKey, artifact, "tip05-unknown-key");
 
         await AssertErrorAsync(businessCapture, HttpStatusCode.Forbidden, "CALLER_CATEGORY_NOT_ALLOWED");
         await AssertErrorAsync(businessEvidence, HttpStatusCode.Forbidden, "CALLER_CATEGORY_NOT_ALLOWED");
@@ -61,7 +61,8 @@ public sealed class Tip05ApiPipelineTests
             api.Client,
             $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts",
             CaptureAgentKey,
-            DeviceMetadataArtifact());
+            DeviceMetadataArtifact(),
+            "tip05-happy-artifact");
         Assert.Equal(HttpStatusCode.Created, artifactResponse.StatusCode);
         var artifactJson = await ReadJsonAsync(artifactResponse);
         Assert.Equal("InProgress", artifactJson["sessionState"]?.GetValue<string>());
@@ -79,7 +80,8 @@ public sealed class Tip05ApiPipelineTests
             api.Client,
             $"/api/ekyc/verification-sessions/{sessionId}/evidence-results",
             TrustedAdapterKey,
-            CaptureQualityEvidence([artifactId]));
+            CaptureQualityEvidence([artifactId]),
+            "tip05-happy-evidence");
         Assert.Equal(HttpStatusCode.Created, evidenceResponse.StatusCode);
         var evidenceJson = await ReadJsonAsync(evidenceResponse);
         Assert.Equal("ReadyToComplete", evidenceJson["sessionState"]?.GetValue<string>());
@@ -107,12 +109,14 @@ public sealed class Tip05ApiPipelineTests
             api.Client,
             $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts",
             CaptureAgentKey,
-            DeviceMetadataArtifact());
+            DeviceMetadataArtifact(),
+            "tip05-after-ready-artifact");
         var evidenceAfterReady = await PostJsonAsync(
             api.Client,
             $"/api/ekyc/verification-sessions/{sessionId}/evidence-results",
             TrustedAdapterKey,
-            CaptureQualityEvidence([artifactId]));
+            CaptureQualityEvidence([artifactId]),
+            "tip05-after-ready-evidence");
 
         await AssertErrorAsync(captureAfterReady, HttpStatusCode.Conflict, "SESSION_READY_TO_COMPLETE");
         await AssertErrorAsync(evidenceAfterReady, HttpStatusCode.Conflict, "SESSION_READY_TO_COMPLETE");
@@ -129,7 +133,8 @@ public sealed class Tip05ApiPipelineTests
             api.Client,
             $"/api/ekyc/verification-sessions/{captureQualitySessionId}/evidence-results",
             TrustedAdapterKey,
-            CaptureQualityEvidence([captureQualityArtifactId]) with { PayloadHash = null });
+            CaptureQualityEvidence([captureQualityArtifactId]) with { PayloadHash = null },
+            "tip05-missing-payload");
 
         var nfcSessionId = await CreateSessionAsync(api.Client, RequiredCheckTypeDto.DocumentNfc);
         var metadataArtifactId = await AppendDeviceMetadataArtifactAsync(api.Client, nfcSessionId);
@@ -137,10 +142,40 @@ public sealed class Tip05ApiPipelineTests
             api.Client,
             $"/api/ekyc/verification-sessions/{nfcSessionId}/evidence-results",
             TrustedAdapterKey,
-            CaptureQualityEvidence([metadataArtifactId]) with { ResultType = EvidenceResultTypeDto.NfcValidation });
+            CaptureQualityEvidence([metadataArtifactId]) with { ResultType = EvidenceResultTypeDto.NfcValidation },
+            "tip05-incompatible");
 
         await AssertErrorAsync(missingPayloadHash, HttpStatusCode.BadRequest, "INVALID_HASH_REF");
         await AssertErrorAsync(incompatible, HttpStatusCode.BadRequest, "INVALID_EVIDENCE_RESULT");
+    }
+
+    [Fact]
+    public async Task Tip80SI_append_endpoints_require_well_formed_idempotency_key()
+    {
+        await using var api = await TestApiApp.CreateAsync();
+        var sessionId = await CreateSessionAsync(api.Client, RequiredCheckTypeDto.CaptureQuality);
+
+        var missing = await PostJsonAsync(
+            api.Client,
+            $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts",
+            CaptureAgentKey,
+            DeviceMetadataArtifact());
+        var whitespace = await PostJsonAsync(
+            api.Client,
+            $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts",
+            CaptureAgentKey,
+            DeviceMetadataArtifact(),
+            " ");
+        var oversize = await PostJsonAsync(
+            api.Client,
+            $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts",
+            CaptureAgentKey,
+            DeviceMetadataArtifact(),
+            new string('x', 257));
+
+        await AssertErrorAsync(missing, HttpStatusCode.BadRequest, "IDEMPOTENCY_KEY_REQUIRED");
+        await AssertErrorAsync(whitespace, HttpStatusCode.BadRequest, "IDEMPOTENCY_KEY_REQUIRED");
+        await AssertErrorAsync(oversize, HttpStatusCode.BadRequest, "IDEMPOTENCY_KEY_INVALID_FORMAT");
     }
 
     [Fact]
@@ -216,7 +251,8 @@ public sealed class Tip05ApiPipelineTests
             client,
             $"/api/ekyc/verification-sessions/{sessionId}/capture-artifacts",
             CaptureAgentKey,
-            DeviceMetadataArtifact());
+            DeviceMetadataArtifact(),
+            $"tip05-device-metadata-{Guid.NewGuid():N}");
 
         Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         var json = await ReadJsonAsync(response);
@@ -254,7 +290,8 @@ public sealed class Tip05ApiPipelineTests
         HttpClient client,
         string requestUri,
         string? apiKey,
-        object body)
+        object body,
+        string? idempotencyKey = null)
     {
         using var request = new HttpRequestMessage(HttpMethod.Post, requestUri)
         {
@@ -264,6 +301,11 @@ public sealed class Tip05ApiPipelineTests
         if (!string.IsNullOrWhiteSpace(apiKey))
         {
             request.Headers.Add(LocalDevApiKeyAuthenticator.HeaderName, apiKey);
+        }
+
+        if (idempotencyKey is not null)
+        {
+            request.Headers.Add("Idempotency-Key", idempotencyKey);
         }
 
         return await client.SendAsync(request);
@@ -339,6 +381,9 @@ public sealed class Tip05ApiPipelineTests
             builder.Services.AddSingleton<IEvidencePackageRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidencePackageRepository>());
             builder.Services.AddSingleton<LocalDevInMemoryEvidenceManifestRepository>();
             builder.Services.AddSingleton<IInternalEvidenceManifestRepository>(sp => sp.GetRequiredService<LocalDevInMemoryEvidenceManifestRepository>());
+            builder.Services.AddSingleton<LocalDevInMemoryAppendIdempotencyStore>();
+            builder.Services.AddSingleton<IAppendIdempotencyRepository>(sp => sp.GetRequiredService<LocalDevInMemoryAppendIdempotencyStore>());
+            builder.Services.AddSingleton<IAppendIdempotencyBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryAppendIdempotencyStore>());
             builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
             builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
             builder.Services.AddSingleton<IEvidenceSigner, TestEvidenceSigner>();

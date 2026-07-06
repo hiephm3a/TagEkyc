@@ -37,4 +37,5 @@ public sealed record CaptureArtifactSubmissionResponseDto(
     string? ArtifactHash,
     bool Accepted,
     string SessionState,
-    string CorrelationId);
+    string CorrelationId,
+    bool Deduplicated = false);
