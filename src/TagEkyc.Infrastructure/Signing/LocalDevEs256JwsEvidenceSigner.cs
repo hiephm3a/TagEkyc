@@ -6,7 +6,7 @@ using TagEkyc.Domain;
 
 namespace TagEkyc.Infrastructure.Signing;
 
-public sealed class LocalDevEs256JwsEvidenceSigner : IEvidenceSigner, IDisposable
+public sealed class LocalDevEs256JwsEvidenceSigner : IEvidenceSigner, IEs256PublicJwkSource, IDisposable
 {
     public const string DefaultKeyId = "localdev-es256-v1";
 
@@ -114,6 +114,12 @@ public sealed class LocalDevEs256JwsEvidenceSigner : IEvidenceSigner, IDisposabl
         publicKey.ImportParameters(parameters);
         return publicKey;
     }
+
+    public string KeyId => keyId;
+
+    public string PublicKeyJwk => ExportPublicKeyJwk();
+
+    public string PublicKeyFingerprint => Es256JwsEvidenceSignatureBuilder.ComputePublicKeyFingerprint(PublicKeyJwk);
 
     public void Dispose()
     {

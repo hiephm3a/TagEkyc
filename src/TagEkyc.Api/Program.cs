@@ -56,6 +56,12 @@ app.MapGet("/build", () => Results.Ok(new
     applicationAssembly = typeof(ApplicationMarker).Assembly.GetName().Name,
 }));
 
+app.MapGet("/.well-known/jwks.json", (HttpContext httpContext, IEs256JwksProvider jwksProvider) =>
+{
+    httpContext.Response.Headers.CacheControl = "no-store";
+    return Results.Ok(jwksProvider.GetJwks());
+});
+
 app.MapGet("/", () => Results.Ok(new SessionStatusPlaceholder(
     "skeleton",
     "STANDARD_EKYC_PROFILE",
@@ -111,6 +117,8 @@ static void ConfigurePersistence(WebApplicationBuilder builder)
 
 static void ConfigureEvidenceSigning(WebApplicationBuilder builder)
 {
+    ValidateProductionTrialP12Configuration(builder);
+
     builder.Services
         .AddOptions<EvidenceSigningOptions>()
         .Bind(builder.Configuration.GetSection(EvidenceSigningOptions.SectionName))
@@ -120,6 +128,10 @@ static void ConfigureEvidenceSigning(WebApplicationBuilder builder)
     builder.Services
         .AddOptions<LocalDevEs256JwsEvidenceSignerOptions>()
         .Bind(builder.Configuration.GetSection(LocalDevEs256JwsEvidenceSignerOptions.SectionName));
+
+    builder.Services
+        .AddOptions<ProductionTrialP12Es256JwsEvidenceSignerOptions>()
+        .Bind(builder.Configuration.GetSection(EvidenceSigningOptions.SectionName));
 
     builder.Services
         .AddOptions<Pkcs11Es256JwsEvidenceSignerOptions>()
@@ -136,29 +148,60 @@ static void ConfigureEvidenceSigning(WebApplicationBuilder builder)
         {
             EvidenceSigningBackends.LocalDev => new LocalDevEs256JwsEvidenceSigner(
                 sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<LocalDevEs256JwsEvidenceSignerOptions>>().Value),
+            EvidenceSigningBackends.ProductionTrialP12 => new ProductionTrialP12Es256JwsEvidenceSigner(
+                sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<ProductionTrialP12Es256JwsEvidenceSignerOptions>>().Value),
             EvidenceSigningBackends.Pkcs11 => new Pkcs11Es256JwsEvidenceSigner(
                 sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<Pkcs11Es256JwsEvidenceSignerOptions>>().Value),
             _ => throw new InvalidOperationException("Unsupported evidence signing backend."),
         };
     });
+    builder.Services.AddSingleton<IEs256PublicJwkSource>(sp =>
+        sp.GetRequiredService<IEvidenceSigner>() as IEs256PublicJwkSource
+        ?? throw new InvalidOperationException("Evidence signing backend does not expose a public ES256 JWK."));
+    builder.Services.AddSingleton(sp =>
+        builder.Configuration.GetSection($"{EvidenceSigningOptions.SectionName}:Jwks").Get<Es256JwksOptions>()
+        ?? new Es256JwksOptions());
+    builder.Services.AddSingleton<IEs256JwksProvider, Es256JwksProvider>();
     builder.Services.AddHostedService<EvidenceSignerStartupValidationHostedService>();
 }
 
 static bool ValidateEvidenceSigningBackend(EvidenceSigningOptions options, bool isProduction)
 {
     if (!string.IsNullOrWhiteSpace(options.Backend) &&
-        options.Backend is not EvidenceSigningBackends.LocalDev and not EvidenceSigningBackends.Pkcs11)
+        options.Backend is not EvidenceSigningBackends.LocalDev and not EvidenceSigningBackends.ProductionTrialP12 and not EvidenceSigningBackends.Pkcs11)
     {
         return false;
     }
 
-    if ((isProduction || options.RequireHardwareSigner) &&
+    if (options.RequireHardwareSigner &&
         !string.Equals(options.Backend, EvidenceSigningBackends.Pkcs11, StringComparison.Ordinal))
     {
         return false;
     }
 
+    if (isProduction &&
+        options.Backend is not EvidenceSigningBackends.ProductionTrialP12 and not EvidenceSigningBackends.Pkcs11)
+    {
+        return false;
+    }
+
     return true;
+}
+
+static void ValidateProductionTrialP12Configuration(WebApplicationBuilder builder)
+{
+    var backend = builder.Configuration[$"{EvidenceSigningOptions.SectionName}:Backend"];
+    if (builder.Environment.IsProduction() &&
+        string.Equals(backend, EvidenceSigningBackends.LocalDev, StringComparison.Ordinal))
+    {
+        throw new InvalidOperationException("PROD_SIGNING_LOCALDEV_BACKEND_FORBIDDEN");
+    }
+
+    if (string.Equals(backend, EvidenceSigningBackends.ProductionTrialP12, StringComparison.Ordinal) &&
+        !string.IsNullOrWhiteSpace(builder.Configuration[$"{EvidenceSigningOptions.SectionName}:P12Password"]))
+    {
+        throw new InvalidOperationException("PROD_SIGNING_P12_PASSWORD_PLAINTEXT_FORBIDDEN");
+    }
 }
 
 public partial class Program;

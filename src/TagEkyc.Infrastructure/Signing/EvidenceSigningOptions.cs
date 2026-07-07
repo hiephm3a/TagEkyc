@@ -13,10 +13,14 @@ public sealed class EvidenceSigningOptions
 
     public bool IsPkcs11Backend =>
         string.Equals(Backend, EvidenceSigningBackends.Pkcs11, StringComparison.Ordinal);
+
+    public bool IsProductionTrialP12Backend =>
+        string.Equals(Backend, EvidenceSigningBackends.ProductionTrialP12, StringComparison.Ordinal);
 }
 
 public static class EvidenceSigningBackends
 {
     public const string LocalDev = "LocalDev";
+    public const string ProductionTrialP12 = "ProductionTrialP12";
     public const string Pkcs11 = "Pkcs11";
 }

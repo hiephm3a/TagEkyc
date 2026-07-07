@@ -7,7 +7,7 @@ using TagEkyc.Domain;
 
 namespace TagEkyc.Infrastructure.Signing;
 
-public sealed class Pkcs11Es256JwsEvidenceSigner : IEvidenceSigner
+public sealed class Pkcs11Es256JwsEvidenceSigner : IEvidenceSigner, IEs256PublicJwkSource, IEvidenceSignerStartupValidator
 {
     private static readonly byte[] EcPublicKeyParams = Convert.FromHexString("06082A8648CE3D030107");
 
@@ -76,6 +76,21 @@ public sealed class Pkcs11Es256JwsEvidenceSigner : IEvidenceSigner
             throw new InvalidOperationException("PKCS#11 public key does not match the configured private signing key.");
         }
     }
+
+    public void ValidateStartup(CancellationToken cancellationToken = default) => ValidateToken(cancellationToken);
+
+    public string KeyId => options.Kid!;
+
+    public string PublicKeyJwk
+    {
+        get
+        {
+            using var context = OpenSigningContext();
+            return context.PublicKeyJwk;
+        }
+    }
+
+    public string PublicKeyFingerprint => Es256JwsEvidenceSignatureBuilder.ComputePublicKeyFingerprint(PublicKeyJwk);
 
     private SignedPayload SignPayload(string payloadJson, CancellationToken cancellationToken)
     {

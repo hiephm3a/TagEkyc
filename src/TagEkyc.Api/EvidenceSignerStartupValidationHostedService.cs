@@ -3,15 +3,18 @@ using TagEkyc.Infrastructure.Signing;
 
 namespace TagEkyc.Api;
 
-internal sealed class EvidenceSignerStartupValidationHostedService(IEvidenceSigner evidenceSigner) : IHostedService
+internal sealed class EvidenceSignerStartupValidationHostedService(
+    IEvidenceSigner evidenceSigner,
+    IEs256JwksProvider jwksProvider) : IHostedService
 {
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        if (evidenceSigner is Pkcs11Es256JwsEvidenceSigner pkcs11Signer)
+        if (evidenceSigner is IEvidenceSignerStartupValidator validator)
         {
-            pkcs11Signer.ValidateToken(cancellationToken);
+            validator.ValidateStartup(cancellationToken);
         }
 
+        jwksProvider.ValidateStartup(cancellationToken);
         return Task.CompletedTask;
     }
 
