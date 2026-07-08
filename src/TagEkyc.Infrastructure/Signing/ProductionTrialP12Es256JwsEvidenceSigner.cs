@@ -4,6 +4,7 @@ using System.Text;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Domain;
+using TagEkyc.Infrastructure.Secrets;
 
 namespace TagEkyc.Infrastructure.Signing;
 
@@ -22,7 +23,7 @@ public sealed class ProductionTrialP12Es256JwsEvidenceSigner :
     {
         var validated = ValidateOptions(options);
         KeyId = validated.KeyId!;
-        var password = ProductionTrialP12SecretResolver.Resolve(validated.P12PasswordSecretRef!);
+        var password = ResolveP12Password(validated.P12PasswordSecretRef!);
 
         try
         {
@@ -189,6 +190,22 @@ public sealed class ProductionTrialP12Es256JwsEvidenceSigner :
 
         return options;
     }
+
+    private static string ResolveP12Password(string secretRef)
+    {
+        try
+        {
+            return SecretRefResolver.Resolve(secretRef).Value;
+        }
+        catch (SecretRefResolutionException exception) when (exception.ErrorKind == SecretRefErrorKind.Invalid)
+        {
+            throw new InvalidOperationException("PROD_SIGNING_P12_PASSWORD_SECRET_REF_INVALID");
+        }
+        catch (SecretRefResolutionException exception) when (exception.ErrorKind == SecretRefErrorKind.Missing)
+        {
+            throw new InvalidOperationException("PROD_SIGNING_P12_PASSWORD_SECRET_UNAVAILABLE");
+        }
+    }
 }
 
 public sealed class ProductionTrialP12Es256JwsEvidenceSignerOptions
@@ -198,35 +215,4 @@ public sealed class ProductionTrialP12Es256JwsEvidenceSignerOptions
     public string? P12PasswordSecretRef { get; init; }
 
     public string? KeyId { get; init; }
-}
-
-public static class ProductionTrialP12SecretResolver
-{
-    public static string Resolve(string secretRef)
-    {
-        if (secretRef.StartsWith("env:", StringComparison.OrdinalIgnoreCase))
-        {
-            var variableName = secretRef["env:".Length..];
-            var value = Environment.GetEnvironmentVariable(variableName);
-            return string.IsNullOrWhiteSpace(value)
-                ? throw new InvalidOperationException("PROD_SIGNING_P12_PASSWORD_SECRET_UNAVAILABLE")
-                : value;
-        }
-
-        if (secretRef.StartsWith("file:", StringComparison.OrdinalIgnoreCase))
-        {
-            var path = secretRef["file:".Length..];
-            if (!Path.IsPathFullyQualified(path) || !File.Exists(path))
-            {
-                throw new InvalidOperationException("PROD_SIGNING_P12_PASSWORD_SECRET_UNAVAILABLE");
-            }
-
-            var value = File.ReadAllText(path).TrimEnd('\r', '\n');
-            return string.IsNullOrWhiteSpace(value)
-                ? throw new InvalidOperationException("PROD_SIGNING_P12_PASSWORD_SECRET_UNAVAILABLE")
-                : value;
-        }
-
-        throw new InvalidOperationException("PROD_SIGNING_P12_PASSWORD_SECRET_REF_INVALID");
-    }
 }

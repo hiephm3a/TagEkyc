@@ -6,6 +6,7 @@ using TagEkyc.Application.LocalDev;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.Secrets;
 using TagEkyc.Infrastructure.Signing;
 using ApplicationMarker = TagEkyc.Application.AssemblyMarker;
 using TagEkyc.Contracts;
@@ -80,12 +81,19 @@ static void ConfigurePersistence(WebApplicationBuilder builder)
 
     if (builder.Environment.IsProduction() && !options.IsPostgres)
     {
-        throw new InvalidOperationException("Production requires TagEkyc:Persistence:Provider=Postgres.");
+        throw new InvalidOperationException("PROD_PERSISTENCE_INMEMORY_FORBIDDEN");
     }
 
     if (options.IsPostgres)
     {
-        builder.Services.AddTagEkycPostgresPersistence(options.ConnectionString ?? string.Empty);
+        var connectionString = ResolvePersistenceConnectionString(options, builder.Environment.IsProduction());
+        builder.Services.AddTagEkycPostgresPersistence(connectionString);
+        if (builder.Environment.IsProduction())
+        {
+            builder.Services.AddScoped<PostgresProductionReadinessValidator>();
+            builder.Services.AddHostedService<PostgresProductionReadinessHostedService>();
+        }
+
         return;
     }
 
@@ -113,6 +121,47 @@ static void ConfigurePersistence(WebApplicationBuilder builder)
     builder.Services.AddSingleton<IAppendIdempotencyBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryAppendIdempotencyStore>());
     builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
     builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
+}
+
+static string ResolvePersistenceConnectionString(TagEkycPersistenceOptions options, bool isProduction)
+{
+    if (isProduction)
+    {
+        if (!string.IsNullOrWhiteSpace(options.ConnectionString))
+        {
+            throw new InvalidOperationException("PROD_DB_CONNECTION_PLAINTEXT_FORBIDDEN");
+        }
+
+        return ResolveDbConnectionStringSecret(options.ConnectionStringSecretRef);
+    }
+
+    if (!string.IsNullOrWhiteSpace(options.ConnectionStringSecretRef))
+    {
+        return ResolveDbConnectionStringSecret(options.ConnectionStringSecretRef);
+    }
+
+    return options.ConnectionString ?? string.Empty;
+}
+
+static string ResolveDbConnectionStringSecret(string? secretRef)
+{
+    if (string.IsNullOrWhiteSpace(secretRef))
+    {
+        throw new InvalidOperationException("PROD_DB_CONNECTION_SECRET_MISSING");
+    }
+
+    try
+    {
+        return SecretRefResolver.Resolve(secretRef).Value;
+    }
+    catch (SecretRefResolutionException exception) when (exception.ErrorKind == SecretRefErrorKind.Invalid)
+    {
+        throw new InvalidOperationException("PROD_DB_CONNECTION_SECRET_INVALID");
+    }
+    catch (SecretRefResolutionException exception) when (exception.ErrorKind == SecretRefErrorKind.Missing)
+    {
+        throw new InvalidOperationException("PROD_DB_CONNECTION_SECRET_MISSING");
+    }
 }
 
 static void ConfigureEvidenceSigning(WebApplicationBuilder builder)

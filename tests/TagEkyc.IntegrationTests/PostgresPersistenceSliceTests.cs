@@ -586,7 +586,7 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
             });
 
         var exception = Assert.Throws<InvalidOperationException>(() => factory.CreateClient());
-        Assert.Contains("Production requires TagEkyc:Persistence:Provider=Postgres", exception.ToString(), StringComparison.Ordinal);
+        Assert.Contains("PROD_PERSISTENCE_INMEMORY_FORBIDDEN", exception.ToString(), StringComparison.Ordinal);
     }
 
     private ServiceProvider BuildProvider()

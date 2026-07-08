@@ -8,6 +8,8 @@ public sealed class TagEkycPersistenceOptions
 
     public string? ConnectionString { get; set; }
 
+    public string? ConnectionStringSecretRef { get; set; }
+
     public bool IsPostgres => string.Equals(Provider, "Postgres", StringComparison.OrdinalIgnoreCase);
 
     public bool IsInMemory => string.Equals(Provider, "InMemory", StringComparison.OrdinalIgnoreCase);
