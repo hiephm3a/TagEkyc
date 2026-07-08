@@ -1,18 +1,22 @@
+using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Domain;
 
 namespace TagEkyc.Application.LocalDev;
 
-public sealed class LocalDevApiKeyValidator(LocalDevRuntimePolicySource policies)
+public sealed class LocalDevApiKeyValidator(IApiKeyStore apiKeyStore, ILocalDevClientPolicyProvider policies)
 {
-    public SessionOperationResult<AuthenticatedClientContext> Validate(string? apiKeyValue, string? requiredScope = null)
+    public async Task<SessionOperationResult<AuthenticatedClientContext>> ValidateAsync(
+        string? apiKeyValue,
+        string? requiredScope = null,
+        CancellationToken cancellationToken = default)
     {
         if (string.IsNullOrWhiteSpace(apiKeyValue))
         {
             return Unauthorized("INVALID_API_KEY", "API key is required.");
         }
 
-        var apiKey = policies.ApiKeys.SingleOrDefault(candidate => candidate.ApiKeyValue == apiKeyValue);
+        var apiKey = await apiKeyStore.FindByPresentedKeyAsync(apiKeyValue, cancellationToken);
         if (apiKey is null)
         {
             return Unauthorized("INVALID_API_KEY", "API key is invalid.");
@@ -28,7 +32,7 @@ public sealed class LocalDevApiKeyValidator(LocalDevRuntimePolicySource policies
             return Unauthorized("API_KEY_EXPIRED", "API key is expired.");
         }
 
-        var policy = policies.Policies.SingleOrDefault(candidate => candidate.ClientApplicationId == apiKey.ClientApplicationId);
+        var policy = await policies.GetPolicyAsync(apiKey.ClientApplicationId, cancellationToken);
         if (policy is null || policy.Status == ClientApplicationStatus.Disabled)
         {
             return Unauthorized("CLIENT_APPLICATION_DISABLED", "Client application is disabled.");

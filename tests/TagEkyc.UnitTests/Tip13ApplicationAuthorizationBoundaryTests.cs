@@ -275,7 +275,7 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
     [Fact]
     public void Localdev_runtime_keys_remain_current_actor_scope_profiles_only()
     {
-        var keys = new LocalDevRuntimePolicySource().ApiKeys;
+        var keys = new LocalDevApiKeyStore().ApiKeys;
 
         Assert.DoesNotContain(keys, key => key.CallerCategory == AuthenticatedCallerCategory.OperatorAdmin);
         Assert.Contains(keys, key =>

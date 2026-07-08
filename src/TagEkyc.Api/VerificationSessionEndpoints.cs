@@ -29,11 +29,11 @@ public static class VerificationSessionEndpoints
     private static async Task<IResult> CreateAsync(
         HttpContext httpContext,
         CreateVerificationSessionRequestDto request,
-        ILocalDevApiKeyAuthenticator authenticator,
+        IApiKeyAuthenticator authenticator,
         IVerificationSessionCommands commands,
         CancellationToken cancellationToken)
     {
-        var authentication = authenticator.Authenticate(httpContext, CreateScope);
+        var authentication = await authenticator.AuthenticateAsync(httpContext, CreateScope, cancellationToken);
         if (!authentication.IsSuccess)
         {
             return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
@@ -52,11 +52,11 @@ public static class VerificationSessionEndpoints
     private static async Task<IResult> GetAsync(
         HttpContext httpContext,
         string id,
-        ILocalDevApiKeyAuthenticator authenticator,
+        IApiKeyAuthenticator authenticator,
         IVerificationSessionQueries queries,
         CancellationToken cancellationToken)
     {
-        var authentication = authenticator.Authenticate(httpContext, ReadScope);
+        var authentication = await authenticator.AuthenticateAsync(httpContext, ReadScope, cancellationToken);
         if (!authentication.IsSuccess)
         {
             return ToError(authentication.Error!, httpContext.TraceIdentifier);
@@ -74,11 +74,11 @@ public static class VerificationSessionEndpoints
     private static async Task<IResult> GetEvidenceLedgerAsync(
         HttpContext httpContext,
         string id,
-        ILocalDevApiKeyAuthenticator authenticator,
+        IApiKeyAuthenticator authenticator,
         IVerificationSessionQueries queries,
         CancellationToken cancellationToken)
     {
-        var authentication = authenticator.Authenticate(httpContext, ReadScope);
+        var authentication = await authenticator.AuthenticateAsync(httpContext, ReadScope, cancellationToken);
         if (!authentication.IsSuccess)
         {
             return ToError(authentication.Error!, httpContext.TraceIdentifier);
@@ -97,11 +97,11 @@ public static class VerificationSessionEndpoints
         HttpContext httpContext,
         string id,
         CaptureArtifactSubmissionRequestDto request,
-        ILocalDevApiKeyAuthenticator authenticator,
+        IApiKeyAuthenticator authenticator,
         ICaptureArtifactCommands commands,
         CancellationToken cancellationToken)
     {
-        var authentication = authenticator.Authenticate(httpContext);
+        var authentication = await authenticator.AuthenticateAsync(httpContext, cancellationToken: cancellationToken);
         if (!authentication.IsSuccess)
         {
             return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
@@ -129,11 +129,11 @@ public static class VerificationSessionEndpoints
         HttpContext httpContext,
         string id,
         EvidenceResultSubmissionRequestDto request,
-        ILocalDevApiKeyAuthenticator authenticator,
+        IApiKeyAuthenticator authenticator,
         ITrustedEvidenceResultCommands commands,
         CancellationToken cancellationToken)
     {
-        var authentication = authenticator.Authenticate(httpContext);
+        var authentication = await authenticator.AuthenticateAsync(httpContext, cancellationToken: cancellationToken);
         if (!authentication.IsSuccess)
         {
             return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
@@ -161,11 +161,11 @@ public static class VerificationSessionEndpoints
         HttpContext httpContext,
         string id,
         CompleteVerificationSessionRequestDto request,
-        ILocalDevApiKeyAuthenticator authenticator,
+        IApiKeyAuthenticator authenticator,
         IVerificationSessionCompletionCommands commands,
         CancellationToken cancellationToken)
     {
-        var authentication = authenticator.Authenticate(httpContext);
+        var authentication = await authenticator.AuthenticateAsync(httpContext, cancellationToken: cancellationToken);
         if (!authentication.IsSuccess)
         {
             return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
@@ -184,11 +184,11 @@ public static class VerificationSessionEndpoints
         HttpContext httpContext,
         string id,
         CancelVerificationSessionRequestDto request,
-        ILocalDevApiKeyAuthenticator authenticator,
+        IApiKeyAuthenticator authenticator,
         IVerificationSessionCompletionCommands commands,
         CancellationToken cancellationToken)
     {
-        var authentication = authenticator.Authenticate(httpContext);
+        var authentication = await authenticator.AuthenticateAsync(httpContext, cancellationToken: cancellationToken);
         if (!authentication.IsSuccess)
         {
             return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
@@ -206,11 +206,11 @@ public static class VerificationSessionEndpoints
     private static async Task<IResult> GetEvidencePackageAsync(
         HttpContext httpContext,
         string id,
-        ILocalDevApiKeyAuthenticator authenticator,
+        IApiKeyAuthenticator authenticator,
         IEvidencePackageQueries queries,
         CancellationToken cancellationToken)
     {
-        var authentication = authenticator.Authenticate(httpContext);
+        var authentication = await authenticator.AuthenticateAsync(httpContext, cancellationToken: cancellationToken);
         if (!authentication.IsSuccess)
         {
             return ToError(authentication.Error!, httpContext.TraceIdentifier);
@@ -228,11 +228,11 @@ public static class VerificationSessionEndpoints
     private static async Task<IResult> GetEvidencePackageVerificationViewAsync(
         HttpContext httpContext,
         string id,
-        ILocalDevApiKeyAuthenticator authenticator,
+        IApiKeyAuthenticator authenticator,
         IEvidencePackageQueries queries,
         CancellationToken cancellationToken)
     {
-        var authentication = authenticator.Authenticate(httpContext);
+        var authentication = await authenticator.AuthenticateAsync(httpContext, cancellationToken: cancellationToken);
         if (!authentication.IsSuccess)
         {
             return ToError(authentication.Error!, httpContext.TraceIdentifier);

@@ -12,13 +12,13 @@ namespace TagEkyc.UnitTests;
 public sealed class Tip04SessionApplicationTests
 {
     [Fact]
-    public void Localdev_auth_uses_tag_ekyc_api_key_header_only()
+    public async Task Localdev_auth_uses_tag_ekyc_api_key_header_only()
     {
-        var authenticator = new LocalDevApiKeyAuthenticator(new LocalDevApiKeyValidator(new LocalDevRuntimePolicySource()));
+        var authenticator = CreateAuthenticator();
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Headers.Authorization = "Bearer localdev-business-key";
 
-        var missingHeader = authenticator.Authenticate(httpContext, "business.session.create");
+        var missingHeader = await authenticator.AuthenticateAsync(httpContext, "business.session.create", CancellationToken.None);
 
         Assert.False(missingHeader.IsSuccess);
         Assert.Equal("INVALID_API_KEY", missingHeader.Error?.Code);
@@ -26,24 +26,45 @@ public sealed class Tip04SessionApplicationTests
 
         httpContext.Request.Headers[LocalDevApiKeyAuthenticator.HeaderName] = "localdev-business-key";
 
-        var authenticated = authenticator.Authenticate(httpContext, "business.session.create");
+        var authenticated = await authenticator.AuthenticateAsync(httpContext, "business.session.create", CancellationToken.None);
 
         Assert.True(authenticated.IsSuccess);
         Assert.Equal(LocalDevRuntimePolicySource.BusinessClientId, authenticated.Value?.ClientApplicationId);
     }
 
     [Fact]
-    public void Disabled_client_is_auth_failure()
+    public async Task Disabled_client_is_auth_failure()
     {
-        var authenticator = new LocalDevApiKeyAuthenticator(new LocalDevApiKeyValidator(new LocalDevRuntimePolicySource()));
+        var authenticator = CreateAuthenticator();
         var httpContext = new DefaultHttpContext();
         httpContext.Request.Headers[LocalDevApiKeyAuthenticator.HeaderName] = "localdev-disabled-client-key";
 
-        var result = authenticator.Authenticate(httpContext, "business.session.create");
+        var result = await authenticator.AuthenticateAsync(httpContext, "business.session.create", CancellationToken.None);
 
         Assert.False(result.IsSuccess);
         Assert.Equal("CLIENT_APPLICATION_DISABLED", result.Error?.Code);
         Assert.Equal(StatusCodes.Status401Unauthorized, result.Error?.StatusCode);
+    }
+
+    [Fact]
+    public async Task Localdev_api_key_store_resolves_seeded_key_without_returning_plaintext()
+    {
+        var store = new LocalDevApiKeyStore();
+
+        var resolved = await store.FindByPresentedKeyAsync("localdev-business-key", CancellationToken.None);
+        var unknown = await store.FindByPresentedKeyAsync("localdev-unknown-key", CancellationToken.None);
+
+        Assert.NotNull(resolved);
+        Assert.Equal(Guid.Parse("20000000-0000-0000-0000-000000000001"), resolved!.ApiKeyId);
+        Assert.Equal(LocalDevRuntimePolicySource.BusinessClientId, resolved.ClientApplicationId);
+        Assert.Equal("ldev_biz", resolved.KeyPrefix);
+        Assert.Contains("business.session.create", resolved.Scopes);
+        Assert.Equal(ApiKeyStatus.Active, resolved.Status);
+        Assert.Equal(AuthenticatedCallerCategory.BusinessConsumer, resolved.CallerCategory);
+        Assert.Null(unknown);
+        Assert.DoesNotContain(
+            typeof(TagEkyc.Application.Ports.ResolvedApiKey).GetProperties(),
+            property => property.Name.Contains("Value", StringComparison.OrdinalIgnoreCase));
     }
 
     [Fact]
@@ -244,6 +265,12 @@ public sealed class Tip04SessionApplicationTests
             new LocalDevRuntimePolicySource());
 
         return new TestFixture(service, sessions, audit);
+    }
+
+    private static LocalDevApiKeyAuthenticator CreateAuthenticator()
+    {
+        var policies = new LocalDevRuntimePolicySource();
+        return new LocalDevApiKeyAuthenticator(new LocalDevApiKeyValidator(new LocalDevApiKeyStore(), policies));
     }
 
     private static AuthenticatedClientContext BusinessCaller() =>

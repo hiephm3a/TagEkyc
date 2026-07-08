@@ -363,8 +363,10 @@ public sealed class Tip05ApiPipelineTests
             });
             builder.Services.AddSingleton<LocalDevRuntimePolicySource>();
             builder.Services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
+            builder.Services.AddSingleton<LocalDevApiKeyStore>();
+            builder.Services.AddSingleton<IApiKeyStore>(sp => sp.GetRequiredService<LocalDevApiKeyStore>());
             builder.Services.AddSingleton<LocalDevApiKeyValidator>();
-            builder.Services.AddSingleton<ILocalDevApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
+            builder.Services.AddSingleton<IApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
             builder.Services.AddSingleton<LocalDevInMemoryMetadataReferenceRegistry>();
             builder.Services.AddSingleton<IMetadataReferenceRegistry>(sp => sp.GetRequiredService<LocalDevInMemoryMetadataReferenceRegistry>());
             builder.Services.AddSingleton<LocalDevInMemoryVerificationSessionRepository>();
