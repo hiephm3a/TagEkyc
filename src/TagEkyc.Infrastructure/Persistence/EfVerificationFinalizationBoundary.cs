@@ -66,6 +66,53 @@ public sealed class EfVerificationFinalizationBoundary(
             write.CompletedSession);
     }
 
+    public async Task<VerificationFinalizationWriteResult> TryCancelAsync(
+        VerificationCancellationWrite write,
+        CancellationToken cancellationToken = default)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        var currentRow = await db.Sessions.SingleOrDefaultAsync(candidate => candidate.Id == write.ExpectedSession.Id, cancellationToken);
+        if (currentRow is null)
+        {
+            return new VerificationFinalizationWriteResult(VerificationFinalizationWriteStatus.NotFound, Session: null);
+        }
+
+        var current = DomainRowMapper.ToDomain(currentRow);
+        if (current.State == VerificationSessionState.Completed)
+        {
+            return new VerificationFinalizationWriteResult(VerificationFinalizationWriteStatus.AlreadyCompleted, current);
+        }
+
+        if (!MatchesExpectedSession(current, write.ExpectedSession) ||
+            current.State is VerificationSessionState.Expired
+                or VerificationSessionState.Cancelled
+                or VerificationSessionState.TechnicalTerminal ||
+            write.CancelledSession.State != VerificationSessionState.Cancelled)
+        {
+            return new VerificationFinalizationWriteResult(VerificationFinalizationWriteStatus.StateMismatch, current);
+        }
+
+        ApplySession(currentRow, write.CancelledSession);
+        db.AuditEvents.Add(DomainRowMapper.ToRow(write.CancellationAuditEvent));
+
+        try
+        {
+            await db.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            return new VerificationFinalizationWriteResult(
+                VerificationFinalizationWriteStatus.StateMismatch,
+                write.ExpectedSession);
+        }
+
+        return new VerificationFinalizationWriteResult(
+            VerificationFinalizationWriteStatus.Applied,
+            write.CancelledSession);
+    }
+
     private static void ApplySession(Entities.VerificationSessionRow row, VerificationSession session)
     {
         var replacement = DomainRowMapper.ToRow(session);

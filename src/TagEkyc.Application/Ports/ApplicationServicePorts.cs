@@ -22,6 +22,12 @@ public interface IVerificationSessionCompletionCommands
         string verificationSessionId,
         CompleteVerificationSessionRequestDto request,
         CancellationToken cancellationToken = default);
+
+    Task<SessionOperationResult<CancelVerificationSessionResponseDto>> CancelAsync(
+        AuthenticatedClientContext caller,
+        string verificationSessionId,
+        CancelVerificationSessionRequestDto request,
+        CancellationToken cancellationToken = default);
 }
 
 public interface IVerificationSessionQueries

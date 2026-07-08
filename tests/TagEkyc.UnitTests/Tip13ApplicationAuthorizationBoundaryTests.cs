@@ -280,7 +280,7 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
         Assert.DoesNotContain(keys, key => key.CallerCategory == AuthenticatedCallerCategory.OperatorAdmin);
         Assert.Contains(keys, key =>
             key.CallerCategory == AuthenticatedCallerCategory.BusinessConsumer &&
-            key.Scopes.SetEquals(["business.session.create", "business.session.read", "session.complete"]));
+            key.Scopes.SetEquals(["business.session.create", "business.session.read", "session.complete", "session.cancel"]));
         Assert.Contains(keys, key =>
             key.CallerCategory == AuthenticatedCallerCategory.CaptureAgent &&
             key.Scopes.SetEquals(["capture.artifact.append"]));
@@ -489,6 +489,7 @@ public sealed class Tip13ApplicationAuthorizationBoundaryTests
                 "business.session.create",
                 "business.session.read",
                 "session.complete",
+                "session.cancel",
                 "capture.artifact.append",
                 "trusted.evidence.append",
             },

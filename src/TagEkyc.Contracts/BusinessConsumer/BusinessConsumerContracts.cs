@@ -102,6 +102,17 @@ public sealed record CompleteVerificationSessionRequestDto(
     string? RequestId = null,
     string? CorrelationId = null);
 
+public sealed record CancelVerificationSessionRequestDto(
+    string? Reason = null,
+    string? RequestId = null,
+    string? CorrelationId = null);
+
+public sealed record CancelVerificationSessionResponseDto(
+    string VerificationSessionId,
+    VerificationSessionStateDto State,
+    string RequestId,
+    string CorrelationId);
+
 public sealed record CompleteVerificationSessionResponseDto(
     string VerificationSessionId,
     VerificationSessionStateDto State,

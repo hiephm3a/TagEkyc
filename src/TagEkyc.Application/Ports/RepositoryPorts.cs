@@ -81,6 +81,7 @@ public enum AppendIdempotencyApplyStatus
     Deduplicated = 1,
     SlotMismatch = 2,
     PayloadMismatch = 3,
+    SessionTerminal = 4,
 }
 
 public sealed record AppendIdempotencyApplyResult(
@@ -135,6 +136,11 @@ public sealed record VerificationFinalizationWrite(
     EvidenceManifestDto Manifest,
     AuditEvent CompletionAuditEvent);
 
+public sealed record VerificationCancellationWrite(
+    VerificationSession ExpectedSession,
+    VerificationSession CancelledSession,
+    AuditEvent CancellationAuditEvent);
+
 public enum VerificationFinalizationWriteStatus
 {
     Applied = 0,
@@ -151,5 +157,9 @@ public interface IVerificationFinalizationBoundary
 {
     Task<VerificationFinalizationWriteResult> TryFinalizeAsync(
         VerificationFinalizationWrite write,
+        CancellationToken cancellationToken = default);
+
+    Task<VerificationFinalizationWriteResult> TryCancelAsync(
+        VerificationCancellationWrite write,
         CancellationToken cancellationToken = default);
 }

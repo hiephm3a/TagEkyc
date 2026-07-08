@@ -198,6 +198,12 @@ public sealed class LocalDevInMemoryAppendIdempotencyStore(
                 return Task.FromResult(Replay(existing, write.Idempotency));
             }
 
+            var current = sessions.GetAsync(write.Session.Id, cancellationToken).GetAwaiter().GetResult();
+            if (current is null || IsTerminal(current.State))
+            {
+                return Task.FromResult(new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.SessionTerminal, write.Idempotency));
+            }
+
             records[(write.Idempotency.VerificationSessionId, write.Idempotency.IdempotencyKey)] = write.Idempotency;
             captureArtifacts.AppendAsync(write.Artifact, cancellationToken).GetAwaiter().GetResult();
             if (write.Session.State != write.FinalState)
@@ -223,6 +229,12 @@ public sealed class LocalDevInMemoryAppendIdempotencyStore(
             if (records.TryGetValue((write.Idempotency.VerificationSessionId, write.Idempotency.IdempotencyKey), out var existing))
             {
                 return Task.FromResult(Replay(existing, write.Idempotency));
+            }
+
+            var current = sessions.GetAsync(write.Session.Id, cancellationToken).GetAwaiter().GetResult();
+            if (current is null || IsTerminal(current.State))
+            {
+                return Task.FromResult(new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.SessionTerminal, write.Idempotency));
             }
 
             records[(write.Idempotency.VerificationSessionId, write.Idempotency.IdempotencyKey)] = write.Idempotency;
@@ -256,6 +268,12 @@ public sealed class LocalDevInMemoryAppendIdempotencyStore(
 
         return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.Deduplicated, existing);
     }
+
+    private static bool IsTerminal(VerificationSessionState state) =>
+        state is VerificationSessionState.Completed
+            or VerificationSessionState.Cancelled
+            or VerificationSessionState.Expired
+            or VerificationSessionState.TechnicalTerminal;
 }
 
 public sealed class LocalDevInMemoryVerificationDecisionRepository : IVerificationDecisionRepository
@@ -458,6 +476,57 @@ public sealed class LocalDevInMemoryVerificationFinalizationBoundary(
             return Task.FromResult(new VerificationFinalizationWriteResult(
                 VerificationFinalizationWriteStatus.Applied,
                 write.CompletedSession));
+        }
+    }
+
+    public Task<VerificationFinalizationWriteResult> TryCancelAsync(
+        VerificationCancellationWrite write,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+
+        lock (LocalDevInMemoryVisibilityGate.SyncRoot)
+        {
+            var current = sessions.GetAsync(write.ExpectedSession.Id, cancellationToken)
+                .GetAwaiter()
+                .GetResult();
+            if (current is null)
+            {
+                return Task.FromResult(new VerificationFinalizationWriteResult(
+                    VerificationFinalizationWriteStatus.NotFound,
+                    Session: null));
+            }
+
+            if (current.State == VerificationSessionState.Completed)
+            {
+                return Task.FromResult(new VerificationFinalizationWriteResult(
+                    VerificationFinalizationWriteStatus.AlreadyCompleted,
+                    current));
+            }
+
+            if (current != write.ExpectedSession ||
+                current.State is VerificationSessionState.Expired
+                    or VerificationSessionState.Cancelled
+                    or VerificationSessionState.TechnicalTerminal ||
+                write.CancelledSession.State != VerificationSessionState.Cancelled)
+            {
+                return Task.FromResult(new VerificationFinalizationWriteResult(
+                    VerificationFinalizationWriteStatus.StateMismatch,
+                    current));
+            }
+
+            if (!sessions.TryReplace(current, write.CancelledSession))
+            {
+                return Task.FromResult(new VerificationFinalizationWriteResult(
+                    VerificationFinalizationWriteStatus.StateMismatch,
+                    current));
+            }
+
+            auditEvents.AppendAsync(write.CancellationAuditEvent, cancellationToken).GetAwaiter().GetResult();
+
+            return Task.FromResult(new VerificationFinalizationWriteResult(
+                VerificationFinalizationWriteStatus.Applied,
+                write.CancelledSession));
         }
     }
 

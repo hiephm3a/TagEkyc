@@ -438,6 +438,62 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
     }
 
     [Fact]
+    public async Task Ef_append_boundary_rechecks_cancelled_session_before_stale_nonterminal_write()
+    {
+        await using var provider = BuildProvider();
+        var session = await CreateCaptureQualitySessionAsync(provider, "external-pg-cancel-revive-guard");
+        const string existingKey = "tip82s-cancel-revive|artifact-existing";
+        var artifact = await AppendArtifactAsync(provider, session.VerificationSessionId, existingKey, "sha256:metadata");
+        var sessionId = Guid.Parse(session.VerificationSessionId);
+
+        VerificationSession staleSession;
+        await using (var staleScope = provider.CreateAsyncScope())
+        {
+            staleSession = await staleScope.ServiceProvider.GetRequiredService<IVerificationSessionRepository>()
+                .GetAsync(sessionId, CancellationToken.None)
+                ?? throw new InvalidOperationException("Stale session snapshot missing.");
+            Assert.Equal(VerificationSessionState.InProgress, staleSession.State);
+        }
+
+        await CancelAsync(provider, session.VerificationSessionId);
+
+        await using (var boundaryScope = provider.CreateAsyncScope())
+        {
+            var boundary = boundaryScope.ServiceProvider.GetRequiredService<IAppendIdempotencyBoundary>();
+            var boundaryResult = await boundary.TryApplyCaptureArtifactAsync(
+                new AppendCaptureArtifactWrite(
+                    IdempotencyRecord(sessionId, "tip82s-cancel-revive|artifact-new", "captureArtifact", "DeviceCaptureMetadata"),
+                    DomainArtifact(sessionId, "sha256:new-metadata"),
+                    staleSession,
+                    VerificationSessionState.InProgress,
+                    []),
+                CancellationToken.None);
+
+            Assert.Equal(AppendIdempotencyApplyStatus.SessionTerminal, boundaryResult.Status);
+        }
+
+        var replay = await AppendArtifactAsync(provider, session.VerificationSessionId, existingKey, "sha256:metadata");
+        var newAppend = await AppendArtifactForResultAsync(
+            provider,
+            session.VerificationSessionId,
+            "tip82s-cancel-revive|artifact-service-new",
+            "sha256:service-new-metadata");
+
+        Assert.True(replay.Deduplicated);
+        Assert.False(newAppend.IsSuccess);
+        Assert.Equal("SESSION_TERMINAL", newAppend.Error!.Code);
+        Assert.Equal(409, newAppend.Error.StatusCode);
+
+        await using var db = postgres.CreateDbContext();
+        var current = await db.Sessions.AsNoTracking().SingleAsync(row => row.Id == sessionId);
+        Assert.Equal("Cancelled", current.State);
+        Assert.Equal(1, await db.CaptureArtifacts.CountAsync(row => row.VerificationSessionId == sessionId));
+        Assert.Equal(0, await db.EvidenceResults.CountAsync(row => row.VerificationSessionId == sessionId));
+        Assert.Equal(1, await db.AppendIdempotencyRecords.CountAsync(row => row.VerificationSessionId == sessionId));
+        Assert.Equal(artifact.CaptureArtifactId, replay.CaptureArtifactId);
+    }
+
+    [Fact]
     public async Task Stale_finalization_write_returns_state_mismatch()
     {
         await using var provider = BuildProvider();
@@ -576,9 +632,28 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
     }
 
     private static async Task<CaptureArtifactSubmissionResponseDto> AppendArtifactAsync(IServiceProvider provider, string sessionId)
+        => await AppendArtifactAsync(provider, sessionId, $"test-idempotency-{Guid.NewGuid():N}", "sha256:metadata");
+
+    private static async Task<CaptureArtifactSubmissionResponseDto> AppendArtifactAsync(
+        IServiceProvider provider,
+        string sessionId,
+        string idempotencyKey,
+        string metadataHash)
+    {
+        var result = await AppendArtifactForResultAsync(provider, sessionId, idempotencyKey, metadataHash);
+
+        Assert.True(result.IsSuccess, result.Error?.Code);
+        return result.Value!;
+    }
+
+    private static async Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> AppendArtifactForResultAsync(
+        IServiceProvider provider,
+        string sessionId,
+        string idempotencyKey,
+        string metadataHash)
     {
         await using var scope = provider.CreateAsyncScope();
-        var result = await scope.ServiceProvider.GetRequiredService<VerificationEvidenceApplicationService>()
+        return await scope.ServiceProvider.GetRequiredService<VerificationEvidenceApplicationService>()
             .AppendCaptureArtifactAsync(
                 CaptureCaller(),
                 sessionId,
@@ -588,14 +663,11 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
                     "ldev_capture",
                     "device-1",
                     ArtifactHash: null,
-                    MetadataHash: "sha256:metadata",
+                    MetadataHash: metadataHash,
                     RequestId: "req-artifact",
                     CorrelationId: "corr-artifact"),
                 CancellationToken.None,
-                $"test-idempotency-{Guid.NewGuid():N}");
-
-        Assert.True(result.IsSuccess, result.Error?.Code);
-        return result.Value!;
+                idempotencyKey);
     }
 
     private static async Task AppendEvidenceAsync(IServiceProvider provider, string sessionId, string artifactId)
@@ -635,6 +707,20 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
                 new CompleteVerificationSessionRequestDto(
                     RequestId: "req-complete",
                     CorrelationId: "corr-complete"),
+                CancellationToken.None);
+
+        Assert.True(result.IsSuccess, result.Error?.Code);
+        return result.Value!;
+    }
+
+    private static async Task<CancelVerificationSessionResponseDto> CancelAsync(IServiceProvider provider, string sessionId)
+    {
+        await using var scope = provider.CreateAsyncScope();
+        var result = await scope.ServiceProvider.GetRequiredService<VerificationCompletionApplicationService>()
+            .CancelAsync(
+                BusinessCancelCaller(),
+                sessionId,
+                new CancelVerificationSessionRequestDto("caller_void", "req-cancel", "corr-cancel"),
                 CancellationToken.None);
 
         Assert.True(result.IsSuccess, result.Error?.Code);
@@ -778,6 +864,38 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
                 completedAt));
     }
 
+    private static CaptureArtifact DomainArtifact(Guid sessionId, string metadataHash) =>
+        new(
+            Guid.NewGuid(),
+            sessionId,
+            CaptureArtifactType.DeviceCaptureMetadata,
+            CaptureSource.MobileSdk,
+            "ldev_capture",
+            "device-1",
+            VaultRef: null,
+            ArtifactHash: null,
+            MetadataHash: new HashRef(metadataHash),
+            CaptureArtifactQualityState.Pending,
+            RetryReasonCode: null,
+            "req-artifact",
+            "corr-artifact",
+            DateTimeOffset.UtcNow,
+            ExpiresAt: null);
+
+    private static AppendIdempotencyRecord IdempotencyRecord(
+        Guid sessionId,
+        string key,
+        string endpointKind,
+        string slot) =>
+        new(
+            sessionId,
+            key,
+            endpointKind,
+            slot,
+            Guid.NewGuid(),
+            $"sha256:{Guid.NewGuid():N}",
+            DateTimeOffset.UtcNow);
+
     private sealed class TwoPartyAsyncGate
     {
         private readonly TaskCompletionSource release = new(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -801,6 +919,14 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
             "ldev_biz",
             AuthenticatedCallerCategory.BusinessConsumer,
             new HashSet<string> { "business.session.create", "business.session.read", "session.complete" });
+
+    private static AuthenticatedClientContext BusinessCancelCaller() =>
+        new(
+            Guid.Parse("20000000-0000-0000-0000-000000000010"),
+            LocalDevRuntimePolicySource.BusinessClientId,
+            "ldev_cancel",
+            AuthenticatedCallerCategory.BusinessConsumer,
+            new HashSet<string> { "session.cancel" });
 
     private static AuthenticatedClientContext CaptureCaller() =>
         new(

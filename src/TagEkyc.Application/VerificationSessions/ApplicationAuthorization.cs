@@ -5,6 +5,7 @@ internal static class ApplicationAuthorization
     public const string BusinessSessionCreateScope = "business.session.create";
     public const string BusinessSessionReadScope = "business.session.read";
     public const string SessionCompleteScope = "session.complete";
+    public const string SessionCancelScope = "session.cancel";
     public const string CaptureArtifactAppendScope = "capture.artifact.append";
     public const string TrustedEvidenceAppendScope = "trusted.evidence.append";
 
@@ -27,6 +28,13 @@ internal static class ApplicationAuthorization
             caller,
             AuthenticatedCallerCategory.BusinessConsumer,
             SessionCompleteScope,
+            "The API key is not scoped for this endpoint.");
+
+    public static SessionOperationResult<T>? RequireBusinessCancellation<T>(AuthenticatedClientContext caller) =>
+        RequireCategoryThenScope<T>(
+            caller,
+            AuthenticatedCallerCategory.BusinessConsumer,
+            SessionCancelScope,
             "The API key is not scoped for this endpoint.");
 
     public static SessionOperationResult<T>? RequireBusinessReadEndpoint<T>(AuthenticatedClientContext caller) =>

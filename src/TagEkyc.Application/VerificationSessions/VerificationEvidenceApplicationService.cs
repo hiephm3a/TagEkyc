@@ -172,6 +172,11 @@ public sealed class VerificationEvidenceApplicationService(
                 finalState,
                 auditWrites),
             cancellationToken);
+        if (apply.Status == AppendIdempotencyApplyStatus.SessionTerminal)
+        {
+            return SessionTerminal<CaptureArtifactSubmissionResponseDto>();
+        }
+
         if (apply.Status != AppendIdempotencyApplyStatus.Applied)
         {
             return await ResolveCaptureArtifactReplayAsync(apply.Record, submissionSlot, fingerprint, artifact, session, caller, cancellationToken);
@@ -447,6 +452,11 @@ public sealed class VerificationEvidenceApplicationService(
                 finalState,
                 auditWrites),
             cancellationToken);
+        if (apply.Status == AppendIdempotencyApplyStatus.SessionTerminal)
+        {
+            return SessionTerminal<EvidenceResultSubmissionResponseDto>();
+        }
+
         if (apply.Status != AppendIdempotencyApplyStatus.Applied)
         {
             return await ResolveEvidenceResultReplayAsync(apply.Record, submissionSlot, fingerprint, evidence, session, caller, cancellationToken);
@@ -555,6 +565,12 @@ public sealed class VerificationEvidenceApplicationService(
 
         return null;
     }
+
+    private static SessionOperationResult<T> SessionTerminal<T>() =>
+        SessionOperationResult<T>.Failure(
+            "SESSION_TERMINAL",
+            "Verification session is terminal.",
+            409);
 
     private static string FingerprintCaptureArtifact(CaptureArtifact artifact) =>
         EvidenceCanonicalization.HashCanonical("tip-80s-i-append-idempotency-capture-artifact", new

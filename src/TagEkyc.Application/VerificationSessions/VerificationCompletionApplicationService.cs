@@ -24,6 +24,7 @@ public sealed class VerificationCompletionApplicationService(
     private const string PackageVersion = EvidenceCanonicalization.PackageVersion;
     private const string CanonicalizationScheme = EvidenceCanonicalization.CanonicalizationScheme;
     private const string HashAlgorithm = EvidenceCanonicalization.HashAlgorithm;
+    private const string DefaultCancelReason = "caller_void";
 
     public async Task<SessionOperationResult<CompleteVerificationSessionResponseDto>> CompleteAsync(
         AuthenticatedClientContext caller,
@@ -311,6 +312,47 @@ public sealed class VerificationCompletionApplicationService(
                 "Verification session changed before finalization completed.",
                 409),
         };
+    }
+
+    public async Task<SessionOperationResult<CancelVerificationSessionResponseDto>> CancelAsync(
+        AuthenticatedClientContext caller,
+        string verificationSessionId,
+        CancelVerificationSessionRequestDto request,
+        CancellationToken cancellationToken = default)
+    {
+        var callerError = ApplicationAuthorization.RequireBusinessCancellation<CancelVerificationSessionResponseDto>(caller);
+        if (callerError is not null)
+        {
+            return callerError;
+        }
+
+        var reason = ValidateCancelReason(request.Reason);
+        if (reason.Error is not null)
+        {
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Failure(
+                reason.Error.Code,
+                reason.Error.Message,
+                reason.Error.StatusCode);
+        }
+
+        if (!Guid.TryParse(verificationSessionId, out var sessionId))
+        {
+            return NotFound<CancelVerificationSessionResponseDto>("SESSION_NOT_FOUND", "Verification session was not found.");
+        }
+
+        var session = await sessions.GetAsync(sessionId, cancellationToken);
+        if (session is null)
+        {
+            return NotFound<CancelVerificationSessionResponseDto>("SESSION_NOT_FOUND", "Verification session was not found.");
+        }
+
+        if (session.ClientApplicationId != caller.ClientApplicationId)
+        {
+            await auditEvents.AppendAsync(CreateAuditEvent(caller, session, "SESSION_ACCESS_DENIED", session.RequestId, session.CorrelationId), cancellationToken);
+            return Forbidden<CancelVerificationSessionResponseDto>("FORBIDDEN_CLIENT_APPLICATION", "The session belongs to another client application.");
+        }
+
+        return await TryCancelLoadedSessionAsync(caller, session, request, reason.Value!, RetryOnNonTerminalStateMismatch: true, cancellationToken);
     }
 
     public async Task<SessionOperationResult<EvidencePackageSummaryDto>> GetEvidencePackageAsync(
@@ -773,6 +815,135 @@ public sealed class VerificationCompletionApplicationService(
             requestId,
             correlationId,
             DateTimeOffset.UtcNow);
+
+    private static AuditEvent CreateCancellationAuditEvent(
+        AuthenticatedClientContext caller,
+        VerificationSession session,
+        string requestId,
+        string correlationId,
+        string reason) =>
+        new(
+            Guid.NewGuid(),
+            caller.ClientApplicationId,
+            session.Id,
+            caller.CallerCategory.ToString(),
+            caller.KeyPrefix,
+            "SESSION_CANCELLED",
+            new HashRef($"sha256:localdev-session-cancelled"),
+            EventPayloadRef: reason,
+            requestId,
+            correlationId,
+            DateTimeOffset.UtcNow);
+
+    private async Task<SessionOperationResult<CancelVerificationSessionResponseDto>> TryCancelLoadedSessionAsync(
+        AuthenticatedClientContext caller,
+        VerificationSession session,
+        CancelVerificationSessionRequestDto request,
+        string reason,
+        bool RetryOnNonTerminalStateMismatch,
+        CancellationToken cancellationToken)
+    {
+        var terminal = ClassifyCancellationTerminal(session);
+        if (terminal is not null)
+        {
+            return terminal;
+        }
+
+        var effectiveRequestId = FirstNonEmpty(request.RequestId, session.RequestId, $"req-{session.Id:N}");
+        var effectiveCorrelationId = FirstNonEmpty(request.CorrelationId, session.CorrelationId, $"corr-{session.Id:N}");
+        var cancelledSession = session.WithCancellation(effectiveRequestId, effectiveCorrelationId);
+        var auditEvent = CreateCancellationAuditEvent(caller, session, effectiveRequestId, effectiveCorrelationId, reason);
+        var writeResult = await finalizationBoundary.TryCancelAsync(
+            new VerificationCancellationWrite(session, cancelledSession, auditEvent),
+            cancellationToken);
+
+        if (writeResult.Status == VerificationFinalizationWriteStatus.Applied)
+        {
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Success(ToCancelResponse(cancelledSession));
+        }
+
+        if (writeResult.Status == VerificationFinalizationWriteStatus.NotFound)
+        {
+            return NotFound<CancelVerificationSessionResponseDto>("SESSION_NOT_FOUND", "Verification session was not found.");
+        }
+
+        var current = writeResult.Session ?? await sessions.GetAsync(session.Id, cancellationToken);
+        if (current is null)
+        {
+            return NotFound<CancelVerificationSessionResponseDto>("SESSION_NOT_FOUND", "Verification session was not found.");
+        }
+
+        if (current.State == VerificationSessionState.Cancelled)
+        {
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Success(ToCancelResponse(current));
+        }
+
+        if (current.State is VerificationSessionState.Completed or VerificationSessionState.Expired or VerificationSessionState.TechnicalTerminal ||
+            current.ExpiresAt <= DateTimeOffset.UtcNow)
+        {
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Failure(
+                "SESSION_TERMINAL",
+                "Verification session is terminal.",
+                409);
+        }
+
+        return RetryOnNonTerminalStateMismatch
+            ? await TryCancelLoadedSessionAsync(caller, current, request, reason, RetryOnNonTerminalStateMismatch: false, cancellationToken)
+            : SessionOperationResult<CancelVerificationSessionResponseDto>.Failure(
+                "FINALIZATION_CONFLICT",
+                "Verification session changed before cancellation completed.",
+                409);
+    }
+
+    private static SessionOperationResult<string> ValidateCancelReason(string? reason)
+    {
+        if (string.IsNullOrEmpty(reason))
+        {
+            return SessionOperationResult<string>.Success(DefaultCancelReason);
+        }
+
+        if (reason.Length > 64 || reason.Any(character => !IsCancelReasonTokenCharacter(character)))
+        {
+            return SessionOperationResult<string>.Failure(
+                "INVALID_CANCEL_REASON",
+                "Cancel reason must be a non-sensitive token of 64 characters or fewer.",
+                400);
+        }
+
+        return SessionOperationResult<string>.Success(reason);
+    }
+
+    private static bool IsCancelReasonTokenCharacter(char character) =>
+        character is >= 'A' and <= 'Z' ||
+        character is >= 'a' and <= 'z' ||
+        character is >= '0' and <= '9' ||
+        character is '_' or '.' or ':' or '-';
+
+    private static SessionOperationResult<CancelVerificationSessionResponseDto>? ClassifyCancellationTerminal(VerificationSession session)
+    {
+        if (session.State == VerificationSessionState.Cancelled)
+        {
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Success(ToCancelResponse(session));
+        }
+
+        if (session.State is VerificationSessionState.Completed or VerificationSessionState.Expired or VerificationSessionState.TechnicalTerminal ||
+            session.ExpiresAt <= DateTimeOffset.UtcNow)
+        {
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Failure(
+                "SESSION_TERMINAL",
+                "Verification session is terminal.",
+                409);
+        }
+
+        return null;
+    }
+
+    private static CancelVerificationSessionResponseDto ToCancelResponse(VerificationSession session) =>
+        new(
+            session.Id.ToString("N"),
+            ToDto(session.State),
+            session.RequestId,
+            session.CorrelationId);
 
     private static RequiredCheckType MapEvidenceToCheck(EvidenceResultType resultType) =>
         resultType switch

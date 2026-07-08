@@ -167,6 +167,31 @@ public sealed record VerificationSession
             CreatedAt,
             CompletedAt);
 
+    public VerificationSession WithCancellation(string requestId, string correlationId) =>
+        new(
+            Id,
+            ClientApplicationId,
+            SubjectRef,
+            Profile,
+            Purpose,
+            RequiredChecks,
+            ExternalSessionId,
+            ClientReference,
+            Challenge,
+            requestId,
+            correlationId,
+            VerificationSessionState.Cancelled,
+            Result,
+            AssuranceLevel,
+            FinalDecisionId,
+            EvidencePackageId,
+            EvidencePackageHash,
+            ManifestHash,
+            Metadata,
+            ExpiresAt,
+            CreatedAt,
+            CompletedAt);
+
     public VerificationSession WithCompletion(
         VerificationResult result,
         AssuranceLevel assuranceLevel,

@@ -26,6 +26,7 @@ public sealed class LocalDevRuntimePolicySource : ILocalDevClientPolicyProvider
         "business.session.create",
         "business.session.read",
         "session.complete",
+        "session.cancel",
     };
 
     private static readonly IReadOnlySet<string> CaptureAgentScopes = new HashSet<string>
@@ -79,7 +80,7 @@ public sealed class LocalDevRuntimePolicySource : ILocalDevClientPolicyProvider
             BusinessClientId,
             "localdev-complete-only-key",
             "ldev_complete",
-            new HashSet<string> { "business.session.create", "session.complete" },
+            new HashSet<string> { "business.session.create", "session.complete", "session.cancel" },
             ApiKeyStatus.Active,
             DateTimeOffset.UtcNow.AddYears(10),
             AuthenticatedCallerCategory.BusinessConsumer),

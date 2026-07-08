@@ -29,6 +29,12 @@ public sealed class EfAppendIdempotencyBoundary(TagEkycDbContext db)
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         try
         {
+            if (await IsSessionTerminalAsync(write.Session.Id, cancellationToken))
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.SessionTerminal, write.Idempotency);
+            }
+
             db.AppendIdempotencyRecords.Add(DomainRowMapper.ToRow(write.Idempotency));
             db.CaptureArtifacts.Add(DomainRowMapper.ToRow(write.Artifact));
             await ApplySessionStateAsync(write.Session.Id, write.FinalState, cancellationToken);
@@ -38,6 +44,17 @@ public sealed class EfAppendIdempotencyBoundary(TagEkycDbContext db)
             await transaction.CommitAsync(cancellationToken);
 
             return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.Applied, write.Idempotency);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            db.ChangeTracker.Clear();
+            if (await IsSessionTerminalAsync(write.Session.Id, cancellationToken))
+            {
+                return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.SessionTerminal, write.Idempotency);
+            }
+
+            throw;
         }
         catch (DbUpdateException)
         {
@@ -53,6 +70,12 @@ public sealed class EfAppendIdempotencyBoundary(TagEkycDbContext db)
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         try
         {
+            if (await IsSessionTerminalAsync(write.Session.Id, cancellationToken))
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.SessionTerminal, write.Idempotency);
+            }
+
             db.AppendIdempotencyRecords.Add(DomainRowMapper.ToRow(write.Idempotency));
             db.EvidenceResults.Add(DomainRowMapper.ToRow(write.EvidenceResult));
             await ApplySessionStateAsync(write.Session.Id, write.FinalState, cancellationToken);
@@ -62,6 +85,17 @@ public sealed class EfAppendIdempotencyBoundary(TagEkycDbContext db)
             await transaction.CommitAsync(cancellationToken);
 
             return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.Applied, write.Idempotency);
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            db.ChangeTracker.Clear();
+            if (await IsSessionTerminalAsync(write.Session.Id, cancellationToken))
+            {
+                return new AppendIdempotencyApplyResult(AppendIdempotencyApplyStatus.SessionTerminal, write.Idempotency);
+            }
+
+            throw;
         }
         catch (DbUpdateException)
         {
@@ -77,6 +111,18 @@ public sealed class EfAppendIdempotencyBoundary(TagEkycDbContext db)
     {
         var row = await db.Sessions.SingleAsync(candidate => candidate.Id == verificationSessionId, cancellationToken);
         row.State = finalState.ToString();
+    }
+
+    private async Task<bool> IsSessionTerminalAsync(Guid verificationSessionId, CancellationToken cancellationToken)
+    {
+        var row = await db.Sessions
+            .AsNoTracking()
+            .SingleAsync(candidate => candidate.Id == verificationSessionId, cancellationToken);
+        var state = Enum.Parse<VerificationSessionState>(row.State);
+        return state is VerificationSessionState.Completed
+            or VerificationSessionState.Cancelled
+            or VerificationSessionState.Expired
+            or VerificationSessionState.TechnicalTerminal;
     }
 
     private void AddAuditEvents(IReadOnlyList<AuditEvent> auditEvents)

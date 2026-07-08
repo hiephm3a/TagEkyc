@@ -20,6 +20,7 @@ public static class VerificationSessionEndpoints
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/capture-artifacts", AppendCaptureArtifactAsync);
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/evidence-results", AppendEvidenceResultAsync);
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/complete", CompleteAsync);
+        endpoints.MapPost("/api/ekyc/verification-sessions/{id}/cancel", CancelAsync);
         endpoints.MapGet("/api/ekyc/evidence-packages/{id}", GetEvidencePackageAsync);
         endpoints.MapGet("/api/ekyc/evidence-packages/{id}/verification-view", GetEvidencePackageVerificationViewAsync);
         return endpoints;
@@ -171,6 +172,29 @@ public static class VerificationSessionEndpoints
         }
 
         var result = await commands.CompleteAsync(authentication.Value!, id, request, cancellationToken);
+        if (!result.IsSuccess)
+        {
+            return ToError(result.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        return Results.Ok(result.Value);
+    }
+
+    private static async Task<IResult> CancelAsync(
+        HttpContext httpContext,
+        string id,
+        CancelVerificationSessionRequestDto request,
+        ILocalDevApiKeyAuthenticator authenticator,
+        IVerificationSessionCompletionCommands commands,
+        CancellationToken cancellationToken)
+    {
+        var authentication = authenticator.Authenticate(httpContext);
+        if (!authentication.IsSuccess)
+        {
+            return ToError(authentication.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
+        }
+
+        var result = await commands.CancelAsync(authentication.Value!, id, request, cancellationToken);
         if (!result.IsSuccess)
         {
             return ToError(result.Error!, request.CorrelationId ?? httpContext.TraceIdentifier);
