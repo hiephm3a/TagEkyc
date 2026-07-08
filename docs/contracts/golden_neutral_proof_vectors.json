@@ -1,0 +1,75 @@
+{
+  "schemaVersion": "tip-67g-golden-neutral-proof-v1",
+  "vectors": [
+    {
+      "name": "medium-capture-quality-v1",
+      "assuranceTarget": "Medium",
+      "generatedByCommit": "f0c3cffdfd56ec37da78a8e7e8a8e9a2ef82c624",
+      "generatedAt": "2026-07-08T12:33:43.5424770Z",
+      "sourceTestMethod": "Tip67GGoldenNeutralProofVectorTests.Manual_generate_tip67g_golden_vectors",
+      "syntheticNoPii": true,
+      "signerKid": "tip67g-golden-key-v1",
+      "kid": "tip67g-golden-key-v1",
+      "publicKeyFingerprint": "sha256:8714a8f2b5c94ba99aaf5548067bc77be3ce9e8b086bfd9d2e3cf496d41639b8",
+      "expectedTrustAnchor": {
+        "kid": "tip67g-golden-key-v1",
+        "publicKeyFingerprint": "sha256:8714a8f2b5c94ba99aaf5548067bc77be3ce9e8b086bfd9d2e3cf496d41639b8"
+      },
+      "publicKeyJwk": "{\u0022crv\u0022:\u0022P-256\u0022,\u0022kty\u0022:\u0022EC\u0022,\u0022x\u0022:\u0022nY-NgfyiDjXcJAyY4i9W_gWA9OpNVT1kxGuVbffX8nA\u0022,\u0022y\u0022:\u0022yMoQPCLDqQqYhLfTAXoxCeYMhxYmvx1Xa3g1C7xpgEo\u0022}",
+      "jws": "eyJhbGciOiJFUzI1NiIsImtpZCI6InRpcDY3Zy1nb2xkZW4ta2V5LXYxIn0.eyJhc3N1cmFuY2VMZXZlbCI6Ik1lZGl1bSIsImNhbm9uaWNhbGl6YXRpb25TY2hlbWUiOiJyZmM4Nzg1LWpjcy12MSIsImNoYWxsZW5nZSI6Im9wYXF1ZSBjaGFsbGVuZ2U6IG1lZGl1bS0xMjMiLCJjb21wbGV0ZWRDaGVja3MiOlsiQ2FwdHVyZVF1YWxpdHkiXSwiZXZpZGVuY2VFbmdpbmVzIjpbeyJjaGVja1R5cGUiOiJDYXB0dXJlUXVhbGl0eSIsImVuZ2luZU5hbWUiOiJsb2NhbGRldi1xdWFsaXR5IiwiZW5naW5lVmVyc2lvbiI6InMxIiwiZXZpZGVuY2VSZXN1bHRJZCI6ImY3YmNhZDBlZjczMTQ0ZjI5OTNjNGNhMDZjNGYyOGZlIiwiZXZpZGVuY2VSZXN1bHRUeXBlIjoiQ2FwdHVyZVF1YWxpdHkifV0sImhhc2hBbGdvcml0aG0iOiJzaGEyNTYiLCJpZGVudGl0eVJlZiI6InNoYTI1Njo3ZGM4MTk4YmMxY2E5MWMxOWRiOWFkNTdiNDBhMWU5NmNiMTFhNThjZDI2MDg1NmVhNzg4MGZjMDgwMDlhOGE1IiwicGFja2FnZUlkIjoiYjhlY2Y0YmJjODMzNTQ1OTk4OWFlNDU1NmYxZTU1NDQiLCJwYWNrYWdlVmVyc2lvbiI6ImV2aWRlbmNlLXBhY2thZ2UtdjIiLCJwcm9vZlZlcnNpb24iOiJuZXV0cmFsLXByb29mLXYxIiwicHVycG9zZSI6Ik5ldXRyYWxFa3ljUHJvb2ZTaWduYXR1cmUiLCJyZXF1aXJlZENoZWNrcyI6WyJDYXB0dXJlUXVhbGl0eSJdLCJyZXN1bHQiOiJQYXNzZWQiLCJyZXN1bHRIYXNoIjoic2hhMjU2OmQ1YTUxODRhYTVmNmI0ZWE4OTBmNTZkMDM2Mzk0NTk2MGViMDFiNGZlZGY4MTFlMTk4YjBjZmZmY2UwMzI0ODAiLCJyZXN1bHRIYXNoQWxnb3JpdGhtIjoic2hhMjU2IiwicmVzdWx0SGFzaENhbm9uaWNhbGl6YXRpb25TY2hlbWUiOiJyZmM4Nzg1LWpjcy12MSIsInNlc3Npb25JZCI6IjdkZGI3MjA2ZjI2NzRkMTA5Njg4ZjdmZDA5OGVkNjY0Iiwic2lnbmVkQXQiOiIyMDI2LTA3LTA4VDEyOjMzOjQzLjY4MDgwMjBaIiwic2lnbmVkTWFuaWZlc3RIYXNoIjoic2hhMjU2OjY2ODUxOGQ3YzdjNjI5NWZhYjVhMzIxYjcyNmJiOTk1MTA1ZWJmMjE5NTFmYmQ4N2UwN2ZjOTYzZTE3ZGUwM2QifQ.TLjB-mg8EmBoJqvRXV8xc0GHCfEloZborzKWjH5QUZZtfpPzTl7GbPCh-oEJWl9OgKQn__Mdn_7QNxlxCUc3Bw",
+      "signature": {
+        "format": "JWS",
+        "scheme": "jws-es256-v1",
+        "algorithm": "ES256"
+      },
+      "constants": {
+        "proofVersion": "neutral-proof-v1",
+        "resultHashAlgorithm": "sha256",
+        "resultHashCanonicalizationScheme": "rfc8785-jcs-v1",
+        "resultHashLabel": "tip-67b-neutral-proof-result",
+        "identityRefLabel": "tip-67b-identity-ref-v1"
+      },
+      "identityRefInputs": {
+        "clientApplicationId": "10000000000000000000000000000001",
+        "subjectRef": "subject-ref-medium",
+        "label": "tip-67b-identity-ref-v1"
+      },
+      "challengeInput": {
+        "expectedChallenge": "opaque challenge: medium-123"
+      },
+      "claims": {
+        "proofVersion": "neutral-proof-v1",
+        "purpose": "NeutralEkycProofSignature",
+        "sessionId": "7ddb7206f2674d109688f7fd098ed664",
+        "identityRef": "sha256:7dc8198bc1ca91c19db9ad57b40a1e96cb11a58cd260856ea7880fc08009a8a5",
+        "packageId": "b8ecf4bbc8335459989ae4556f1e5544",
+        "packageVersion": "evidence-package-v2",
+        "canonicalizationScheme": "rfc8785-jcs-v1",
+        "hashAlgorithm": "sha256",
+        "result": "Passed",
+        "assuranceLevel": "Medium",
+        "requiredChecks": [
+          "CaptureQuality"
+        ],
+        "completedChecks": [
+          "CaptureQuality"
+        ],
+        "evidenceEngines": [
+          {
+            "evidenceResultType": "CaptureQuality",
+            "evidenceResultId": "f7bcad0ef73144f2993c4ca06c4f28fe",
+            "engineName": "localdev-quality",
+            "engineVersion": "s1",
+            "checkType": "CaptureQuality"
+          }
+        ],
+        "signedAt": "2026-07-08T12:33:43.6808020Z",
+        "challenge": "opaque challenge: medium-123",
+        "signedManifestHash": "sha256:668518d7c7c6295fab5a321b726bb995105ebf21951fbd87e07fc963e17de03d",
+        "resultHash": "sha256:d5a5184aa5f6b4ea890f56d0363945960eb01b4fedf811e198b0cfffce032480",
+        "resultHashAlgorithm": "sha256",
+        "resultHashCanonicalizationScheme": "rfc8785-jcs-v1"
+      }
+    }
+  ]
+}
