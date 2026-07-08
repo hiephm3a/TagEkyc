@@ -144,6 +144,17 @@ These TIP-25 gaps remain covered by accepted S2 follow-on status. TIP-35 does no
 
 **Non-resolution:** TIP-35 registration is not itself resolution. TIP-35 creates the debt record and gate.
 
+### G-005 Consent withdrawal mid-capture enforcement seam not wired
+
+**Status:** Registered as a P0 real-customer go-live blocker.
+
+**Debt:** The CaptureAgent consent gate has a withdrawal seam, but the shipped Host/WPF composition currently constructs `CaptureAgentOrchestrator` without an `IConsentWithdrawalSignal` (`TagEkyc.CaptureAgent` `Program.cs:49`, `CaptureAgentComposition.cs:89`). As a result, a consent withdrawal that occurs after launch or during capture may be recorded by the caller but not observed by the running agent, and the server may still retain submitted evidence unless a companion server-side void/cancel path is applied. This weakens the legal meaning of any evidence captured after withdrawal and prevents a real-customer go-live claim that withdrawal is enforced end-to-end.
+
+**Required gate:** Before any real-customer eKYC go-live or lawful-consent enforcement claim, either:
+
+- TIP-82W wires a production `IConsentWithdrawalSignal` into CaptureAgent Host and WPF and TIP-82S adds server-side withdrawal void/cancel or equivalent prevention of normal completion after withdrawal; or
+- the DPO/legal owner explicitly risk-accepts the gap for the deployment scope, with the accepted residual risk recorded and the system prohibited from claiming withdrawal enforcement beyond the recorded boundary.
+
 ## 7. New Artifact/Raw Evidence Debts
 
 ### ART-001 Artifact/raw evidence storage boundary unresolved
