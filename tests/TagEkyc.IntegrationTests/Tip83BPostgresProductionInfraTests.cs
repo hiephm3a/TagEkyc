@@ -4,6 +4,7 @@ using System.Text.Json;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
+using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.Signing;
 
@@ -126,6 +127,10 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
 
         try
         {
+            await Tip84BTestSupport.SeedActiveApiKeyAsync(
+                postgres,
+                Tip84BTestSupport.PresentedKey,
+                Tip84BTestSupport.Pepper);
             using var factory = ProductionFactory(builder =>
             {
                 ConfigureProductionDb(builder, postgres.ConnectionString);
@@ -262,6 +267,7 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
                 builder.UseSetting("environment", "Production");
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 configure(builder);
+                ConfigureProductionApiKeyStore(builder);
             });
 
     private static void ConfigureProductionDb(IWebHostBuilder builder, string connectionString)
@@ -277,6 +283,12 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
         builder.UseSetting("TagEkyc:EvidenceSigning:P12Path", p12Path);
         builder.UseSetting("TagEkyc:EvidenceSigning:P12PasswordSecretRef", secretRef);
         builder.UseSetting("TagEkyc:EvidenceSigning:KeyId", "tagekyc-es256-2026-v1");
+    }
+
+    private static void ConfigureProductionApiKeyStore(IWebHostBuilder builder)
+    {
+        builder.UseSetting("TagEkyc:ApiKeyStore:Backend", ApiKeyStoreBackends.Postgres);
+        builder.UseSetting("TagEkyc:ApiKeyStore:PepperSecretRef", Tip84BTestSupport.PepperSecretRef());
     }
 
     private static TagEkycDbContext CreateDbContext(string connectionString)

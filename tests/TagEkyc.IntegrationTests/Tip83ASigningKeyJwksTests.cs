@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Domain;
+using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Signing;
 
 namespace TagEkyc.IntegrationTests;
@@ -36,6 +37,10 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
 
         try
         {
+            await Tip84BTestSupport.SeedActiveApiKeyAsync(
+                postgres,
+                Tip84BTestSupport.PresentedKey,
+                Tip84BTestSupport.Pepper);
             using var factory = ProductionTrialFactory(p12Path, $"env:{secretName}", "tagekyc-es256-2026-v1", previousKeysPath);
             using var client = factory.CreateClient();
 
@@ -87,6 +92,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
                 builder.UseSetting("environment", "Production");
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 ConfigureProductionDb(builder, postgres.ConnectionString);
+                ConfigureProductionApiKeyStore(builder);
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", EvidenceSigningBackends.ProductionTrialP12);
                 builder.UseSetting("TagEkyc:EvidenceSigning:RequireHardwareSigner", "true");
             });
@@ -140,6 +146,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
                 builder.UseSetting("environment", "Production");
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 ConfigureProductionDb(builder, postgres.ConnectionString);
+                ConfigureProductionApiKeyStore(builder);
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", EvidenceSigningBackends.ProductionTrialP12);
                 builder.UseSetting("TagEkyc:EvidenceSigning:P12Password", "plaintext-secret");
             });
@@ -262,6 +269,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
                 builder.UseSetting("environment", "Production");
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 ConfigureProductionDb(builder, postgres.ConnectionString);
+                ConfigureProductionApiKeyStore(builder);
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", EvidenceSigningBackends.ProductionTrialP12);
                 if (p12Path is not null)
                 {
@@ -286,6 +294,12 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
         var secretName = $"TAGEKYC_TIP83A_DB_{Guid.NewGuid():N}";
         Environment.SetEnvironmentVariable(secretName, connectionString);
         builder.UseSetting("TagEkyc:Persistence:ConnectionStringSecretRef", $"env:{secretName}");
+    }
+
+    private static void ConfigureProductionApiKeyStore(IWebHostBuilder builder)
+    {
+        builder.UseSetting("TagEkyc:ApiKeyStore:Backend", ApiKeyStoreBackends.Postgres);
+        builder.UseSetting("TagEkyc:ApiKeyStore:PepperSecretRef", Tip84BTestSupport.PepperSecretRef());
     }
 
     private static string PreviousKeysJson(IEs256PublicJwkSource signer, string caseName = "valid")

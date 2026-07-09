@@ -5,6 +5,7 @@ using TagEkyc.Api.LocalDev;
 using TagEkyc.Application.LocalDev;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
+using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.Secrets;
 using TagEkyc.Infrastructure.Signing;
@@ -20,16 +21,11 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-builder.Services.AddSingleton<LocalDevRuntimePolicySource>();
-builder.Services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
-builder.Services.AddSingleton<LocalDevApiKeyStore>();
-builder.Services.AddSingleton<IApiKeyStore>(sp => sp.GetRequiredService<LocalDevApiKeyStore>());
-builder.Services.AddSingleton<LocalDevApiKeyValidator>();
-builder.Services.AddSingleton<IApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
 builder.Services.AddSingleton<LocalDevInMemoryMetadataReferenceRegistry>();
 builder.Services.AddSingleton<IMetadataReferenceRegistry>(sp => sp.GetRequiredService<LocalDevInMemoryMetadataReferenceRegistry>());
 ConfigureEvidenceSigning(builder);
 ConfigurePersistence(builder);
+ConfigureApiKeyStore(builder);
 builder.Services.AddScoped<VerificationSessionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
 builder.Services.AddScoped<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
@@ -123,6 +119,64 @@ static void ConfigurePersistence(WebApplicationBuilder builder)
     builder.Services.AddSingleton<IAppendIdempotencyBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryAppendIdempotencyStore>());
     builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
     builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
+}
+
+static void ConfigureApiKeyStore(WebApplicationBuilder builder)
+{
+    var options = builder.Configuration
+        .GetSection(ApiKeyStoreOptions.SectionName)
+        .Get<ApiKeyStoreOptions>() ?? new ApiKeyStoreOptions();
+    var backend = string.IsNullOrWhiteSpace(options.Backend)
+        ? ApiKeyStoreBackends.LocalDev
+        : options.Backend;
+    var persistence = builder.Configuration
+        .GetSection(TagEkycPersistenceOptions.SectionName)
+        .Get<TagEkycPersistenceOptions>() ?? new TagEkycPersistenceOptions();
+
+    builder.Services.AddSingleton<LocalDevRuntimePolicySource>();
+    builder.Services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
+    builder.Services.AddScoped<LocalDevApiKeyValidator>();
+    builder.Services.AddScoped<IApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
+
+    if (builder.Environment.IsProduction() &&
+        !string.IsNullOrWhiteSpace(options.Pepper))
+    {
+        throw new InvalidOperationException("PROD_APIKEY_PEPPER_SECRET_REF_INVALID");
+    }
+
+    if (builder.Environment.IsProduction() &&
+        string.Equals(backend, ApiKeyStoreBackends.LocalDev, StringComparison.OrdinalIgnoreCase))
+    {
+        throw new InvalidOperationException("PROD_APIKEY_LOCALDEV_STORE_FORBIDDEN");
+    }
+
+    if (string.Equals(backend, ApiKeyStoreBackends.Postgres, StringComparison.OrdinalIgnoreCase))
+    {
+        if (!persistence.IsPostgres)
+        {
+            throw new InvalidOperationException("PROD_APIKEY_REQUIRES_POSTGRES_PERSISTENCE");
+        }
+
+        builder.Services.AddSingleton(new ApiKeyStorePepperSecretRef(options.PepperSecretRef));
+        builder.Services.AddScoped(sp =>
+            ApiKeyStorePepperResolver.Resolve(sp.GetRequiredService<ApiKeyStorePepperSecretRef>().Value));
+        builder.Services.AddScoped<IApiKeyStore, PostgresHashedApiKeyStore>();
+        if (builder.Environment.IsProduction())
+        {
+            builder.Services.AddScoped<ApiKeyStoreProductionReadinessValidator>();
+            builder.Services.AddHostedService<ApiKeyStoreProductionReadinessHostedService>();
+        }
+
+        return;
+    }
+
+    if (!string.Equals(backend, ApiKeyStoreBackends.LocalDev, StringComparison.OrdinalIgnoreCase))
+    {
+        throw new InvalidOperationException($"Unsupported TagEkyc API key store backend '{backend}'.");
+    }
+
+    builder.Services.AddScoped<LocalDevApiKeyStore>();
+    builder.Services.AddScoped<IApiKeyStore>(sp => sp.GetRequiredService<LocalDevApiKeyStore>());
 }
 
 static string ResolvePersistenceConnectionString(TagEkycPersistenceOptions options, bool isProduction)

@@ -21,6 +21,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
 
     public DbSet<AppendIdempotencyRecordRow> AppendIdempotencyRecords => Set<AppendIdempotencyRecordRow>();
 
+    public DbSet<ApiKeyRow> ApiKeys => Set<ApiKeyRow>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("tagekyc");
@@ -198,6 +200,29 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                 .WithMany()
                 .HasForeignKey(row => row.VerificationSessionId)
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<ApiKeyRow>(entity =>
+        {
+            entity.ToTable("api_keys", table =>
+                table.HasCheckConstraint("CK_api_keys_KeyHash_Length", "octet_length(\"KeyHash\") = 32"));
+#pragma warning disable CS0618
+            entity.UseXminAsConcurrencyToken();
+#pragma warning restore CS0618
+            entity.HasKey(row => row.ApiKeyId);
+            entity.Property(row => row.PrincipalId).IsRequired();
+            entity.Property(row => row.CredentialRef).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.CredentialType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.CredentialStatus).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.KeyPrefix).HasMaxLength(16).IsRequired();
+            entity.Property(row => row.KeyHash).HasColumnType("bytea").IsRequired();
+            entity.Property(row => row.ScopesJson).HasColumnType("jsonb").IsRequired();
+            entity.Property(row => row.CallerCategory).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.AllowedClientApplicationIdsJson).HasColumnType("jsonb");
+            entity.Property(row => row.AllowedCaptureAgentIdsJson).HasColumnType("jsonb");
+            entity.Property(row => row.OAuthClientId).HasMaxLength(128);
+            entity.Property(row => row.MtlsSubjectDn).HasMaxLength(512);
+            entity.HasIndex(row => row.KeyPrefix).IsUnique();
         });
     }
 }

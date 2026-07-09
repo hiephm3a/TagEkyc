@@ -74,7 +74,8 @@ public sealed class PostgresProductionReadinessValidator(TagEkycDbContext dbCont
             Throw(MigrationsPending);
         }
 
-        if (!await TableExistsAsync("tagekyc", "append_idempotency_records", cancellationToken))
+        if (!await TableExistsAsync("tagekyc", "append_idempotency_records", cancellationToken) ||
+            !await TableExistsAsync("tagekyc", "api_keys", cancellationToken))
         {
             Throw(RequiredTableMissing);
         }
