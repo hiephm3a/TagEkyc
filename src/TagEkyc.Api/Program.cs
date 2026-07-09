@@ -23,9 +23,16 @@ builder.Services.ConfigureHttpJsonOptions(options =>
 
 builder.Services.AddSingleton<LocalDevInMemoryMetadataReferenceRegistry>();
 builder.Services.AddSingleton<IMetadataReferenceRegistry>(sp => sp.GetRequiredService<LocalDevInMemoryMetadataReferenceRegistry>());
+builder.Services
+    .AddOptions<TagEkycPersistenceOptions>()
+    .Bind(builder.Configuration.GetSection(TagEkycPersistenceOptions.SectionName));
+builder.Services
+    .AddOptions<ApiKeyStoreOptions>()
+    .Bind(builder.Configuration.GetSection(ApiKeyStoreOptions.SectionName));
 ConfigureEvidenceSigning(builder);
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
+ConfigureReadiness(builder);
 builder.Services.AddScoped<VerificationSessionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
 builder.Services.AddScoped<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
@@ -46,6 +53,8 @@ app.MapGet("/health", () => Results.Ok(new
     status = "ok",
     service = "TagEkyc.Api",
 }));
+
+app.MapReadinessEndpoint();
 
 app.MapGet("/build", () => Results.Ok(new
 {
@@ -177,6 +186,19 @@ static void ConfigureApiKeyStore(WebApplicationBuilder builder)
 
     builder.Services.AddScoped<LocalDevApiKeyStore>();
     builder.Services.AddScoped<IApiKeyStore>(sp => sp.GetRequiredService<LocalDevApiKeyStore>());
+}
+
+static void ConfigureReadiness(WebApplicationBuilder builder)
+{
+    if (!builder.Environment.IsProduction())
+    {
+        return;
+    }
+
+    builder.Services.AddScoped<IReadinessCheck, ProductionPostureReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, PostgresReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
 }
 
 static string ResolvePersistenceConnectionString(TagEkycPersistenceOptions options, bool isProduction)
