@@ -77,6 +77,7 @@ Core finding: 62 TIPs compress to **a small set of state-models + packet-schemas
 | D-10 | 3 real signature layers (payload/webhook/evidencePackage) — EBS-07 | before legal/audit reliance |
 | D-11 | Webhook delivery/retry/outbox | when real callback needed (deferred since TIP-07) |
 | D-12 | Operator/admin access semantics; cross-client support lookup; GOV-001 crosswalk | S2+ / before cross-client features |
+| D-13 | Production auth posture for managed API keys: HMAC-SHA256 keyed hash in Postgres with non-secret prefix selector, pepper via SecretRefResolver, managed API keys for trial actors; full IdP/OAuth/mTLS and lifecycle admin deferred. Schema is provider-neutral (PrincipalId/CredentialRef/CredentialType/CredentialStatus) and pre-stages nullable OAuth/mTLS columns (OAuthClientId/MtlsSubjectDn) as forward-compat scaffold with no runtime path yet | TIP-84B/TIP-84C / before production-auth hardening beyond trial |
 
 ## 4. Live contradictions to fix during consolidation
 
