@@ -377,6 +377,8 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
         await Assert.ThrowsAsync<PostgresException>(() =>
             db.Database.ExecuteSqlRawAsync("""UPDATE tagekyc.evidence_results SET "Result" = "Result";"""));
         await Assert.ThrowsAsync<PostgresException>(() =>
+            db.Database.ExecuteSqlRawAsync("""UPDATE tagekyc.audit_events SET "EventType" = "EventType";"""));
+        await Assert.ThrowsAsync<PostgresException>(() =>
             db.Database.ExecuteSqlRawAsync("""DELETE FROM tagekyc.audit_events;"""));
     }
 

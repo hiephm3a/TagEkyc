@@ -33,6 +33,19 @@ After migration, production startup must fail closed unless all are true:
 
 Failure codes are sanitized: `PROD_DB_UNREACHABLE`, `PROD_DB_PROVIDER_INVALID`, `PROD_DB_MIGRATION_HISTORY_MISSING`, `PROD_DB_MIGRATIONS_PENDING`, `PROD_DB_REQUIRED_TABLE_MISSING`.
 
+## Audit Append-Only Posture
+
+The enforced database control for the append-only evidence/audit tables is the `tagekyc.deny_append_only_mutation()` trigger function installed by `20260621075836_InitialPostgresPersistence`. It creates `BEFORE UPDATE OR DELETE` triggers on `capture_artifacts`, `evidence_results`, `verification_decisions`, `evidence_packages`, `evidence_manifests`, and `audit_events`, including `tr_audit_events_append_only` for `tagekyc.audit_events`. This control is covered by the Postgres persistence slice tests.
+
+For stronger runtime hardening, deploy with separate identities:
+
+- Use an owner/migrator identity to own the schema and apply migrations.
+- Use a non-owner runtime application role for the API service.
+- Grant the runtime role only the privileges needed by the application.
+- For the append-only tables, the runtime role should have `INSERT`/`SELECT` only and no `UPDATE`, `DELETE`, `ALTER`, `DROP`, or trigger-disable capability.
+
+This is deployment guidance, not auto-applied SQL. Concrete role names and grants belong to the hospital deployment plan. A migration run by the schema owner cannot make that same owner least-privileged; the runtime role split must be provisioned operationally.
+
 ## Evidence Record
 
 Record only:
