@@ -277,10 +277,14 @@ public sealed class Tip84BHashedApiKeyStoreTests(PostgresPersistenceFixture post
                 builder.UseSetting("environment", "Production");
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 configure(builder);
+                ConfigureRetention(builder);
             });
 
     private static void ConfigureProductionDb(IWebHostBuilder builder, string connectionString) =>
         builder.UseSetting("TagEkyc:Persistence:ConnectionStringSecretRef", DbSecretRef(connectionString));
+
+    private static void ConfigureRetention(IWebHostBuilder builder) =>
+        builder.UseSetting("TagEkyc:Retention:RegulatedEvidenceRetentionDays", "30");
 
     private static void ConfigureProductionTrialP12(IWebHostBuilder builder, bool createValidP12)
     {

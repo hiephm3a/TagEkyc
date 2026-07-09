@@ -163,6 +163,7 @@ public sealed class Tip83E1ReadinessEndpointTests
                 builder.UseSetting("TagEkyc:ApiKeyStore:Backend", ApiKeyStoreBackends.Postgres);
                 builder.UseSetting("TagEkyc:ApiKeyStore:PepperSecretRef", Tip84BTestSupport.PepperSecretRef());
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", EvidenceSigningBackends.ProductionTrialP12);
+                builder.UseSetting("TagEkyc:Retention:RegulatedEvidenceRetentionDays", "30");
                 builder.ConfigureTestServices(services =>
                 {
                     RemoveReadinessHostedServices(services);

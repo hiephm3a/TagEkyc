@@ -7,6 +7,7 @@ using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.Retention;
 using TagEkyc.Infrastructure.Secrets;
 using TagEkyc.Infrastructure.Signing;
 using ApplicationMarker = TagEkyc.Application.AssemblyMarker;
@@ -32,6 +33,7 @@ builder.Services
 ConfigureEvidenceSigning(builder);
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
+ConfigureRetention(builder);
 ConfigureReadiness(builder);
 builder.Services.AddScoped<VerificationSessionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
@@ -199,6 +201,40 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
     builder.Services.AddScoped<IReadinessCheck, PostgresReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
+}
+
+static void ConfigureRetention(WebApplicationBuilder builder)
+{
+    ValidateRetentionConfiguration(builder);
+
+    builder.Services
+        .AddOptions<RetentionOptions>()
+        .Bind(builder.Configuration.GetSection(RetentionOptions.SectionName))
+        .Validate(
+            options => options.RegulatedEvidenceRetentionDays is null or (> 0 and <= RetentionOptions.MaxRegulatedEvidenceRetentionDays),
+            "Invalid retention window configuration.")
+        .ValidateOnStart();
+}
+
+static void ValidateRetentionConfiguration(WebApplicationBuilder builder)
+{
+    if (!builder.Environment.IsProduction())
+    {
+        return;
+    }
+
+    var rawWindow = builder.Configuration[$"{RetentionOptions.SectionName}:RegulatedEvidenceRetentionDays"];
+    if (string.IsNullOrWhiteSpace(rawWindow))
+    {
+        throw new InvalidOperationException("PROD_RETENTION_POLICY_MISSING");
+    }
+
+    if (!int.TryParse(rawWindow, out var windowDays) ||
+        windowDays <= 0 ||
+        windowDays > RetentionOptions.MaxRegulatedEvidenceRetentionDays)
+    {
+        throw new InvalidOperationException("PROD_RETENTION_WINDOW_INVALID");
+    }
 }
 
 static string ResolvePersistenceConnectionString(TagEkycPersistenceOptions options, bool isProduction)

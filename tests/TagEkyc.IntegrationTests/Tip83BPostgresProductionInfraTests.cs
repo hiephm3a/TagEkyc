@@ -268,6 +268,7 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 configure(builder);
                 ConfigureProductionApiKeyStore(builder);
+                ConfigureRetention(builder);
             });
 
     private static void ConfigureProductionDb(IWebHostBuilder builder, string connectionString)
@@ -290,6 +291,9 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
         builder.UseSetting("TagEkyc:ApiKeyStore:Backend", ApiKeyStoreBackends.Postgres);
         builder.UseSetting("TagEkyc:ApiKeyStore:PepperSecretRef", Tip84BTestSupport.PepperSecretRef());
     }
+
+    private static void ConfigureRetention(IWebHostBuilder builder) =>
+        builder.UseSetting("TagEkyc:Retention:RegulatedEvidenceRetentionDays", "30");
 
     private static TagEkycDbContext CreateDbContext(string connectionString)
     {

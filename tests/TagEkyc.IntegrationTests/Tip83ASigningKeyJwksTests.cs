@@ -93,6 +93,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 ConfigureProductionDb(builder, postgres.ConnectionString);
                 ConfigureProductionApiKeyStore(builder);
+                ConfigureRetention(builder);
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", EvidenceSigningBackends.ProductionTrialP12);
                 builder.UseSetting("TagEkyc:EvidenceSigning:RequireHardwareSigner", "true");
             });
@@ -147,6 +148,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 ConfigureProductionDb(builder, postgres.ConnectionString);
                 ConfigureProductionApiKeyStore(builder);
+                ConfigureRetention(builder);
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", EvidenceSigningBackends.ProductionTrialP12);
                 builder.UseSetting("TagEkyc:EvidenceSigning:P12Password", "plaintext-secret");
             });
@@ -270,6 +272,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 ConfigureProductionDb(builder, postgres.ConnectionString);
                 ConfigureProductionApiKeyStore(builder);
+                ConfigureRetention(builder);
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", EvidenceSigningBackends.ProductionTrialP12);
                 if (p12Path is not null)
                 {
@@ -301,6 +304,9 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
         builder.UseSetting("TagEkyc:ApiKeyStore:Backend", ApiKeyStoreBackends.Postgres);
         builder.UseSetting("TagEkyc:ApiKeyStore:PepperSecretRef", Tip84BTestSupport.PepperSecretRef());
     }
+
+    private static void ConfigureRetention(IWebHostBuilder builder) =>
+        builder.UseSetting("TagEkyc:Retention:RegulatedEvidenceRetentionDays", "30");
 
     private static string PreviousKeysJson(IEs256PublicJwkSource signer, string caseName = "valid")
     {

@@ -46,6 +46,14 @@ For stronger runtime hardening, deploy with separate identities:
 
 This is deployment guidance, not auto-applied SQL. Concrete role names and grants belong to the hospital deployment plan. A migration run by the schema owner cannot make that same owner least-privileged; the runtime role split must be provisioned operationally.
 
+## Retention Policy Declaration
+
+Production requires a declared retention window for regulated evidence at `TagEkyc:Retention:RegulatedEvidenceRetentionDays`. The value is supplied by Legal/DPO under the governing Vietnamese legal basis; this runbook intentionally ships no day-count value. `LocalDevEphemeral` has no production retention window.
+
+Startup refuses production mode when the regulated-evidence retention window is missing or invalid. Until automated retention enforcement is built, the declared window is an operational/legal control: record it in deployment configuration, review it with Legal/DPO, and use it for manual retention, export, and decommission decisions.
+
+The application does not auto-enforce retention in this slice. Automated purge remains deferred until the append-only evidence/audit retention mechanism is decided.
+
 ## Evidence Record
 
 Record only:
