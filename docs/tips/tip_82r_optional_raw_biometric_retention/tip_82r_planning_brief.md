@@ -2,7 +2,7 @@
 
 ## Status
 
-PROPOSED / DECISION TIP ONLY. **v0.9 (2026-07-10)** - v0.2 patched after Contractor review: added a recommendation per decision (so this can be RATIFIED, not just read), a Track A/Track B split, the crypto-shred vs append-only analysis, the consent-withdrawal-after-retention transition, and the controller-liability flag. v0.3 folded GPT review: explicit mode matrix, recommended initial posture, consent purpose/recipient binding, per-flow minimum-needed table, backup/object-version blocker, stricter access/export audit defaults, BusinessConsumer alternatives, and concrete follow-on split. v0.4 folded CC + GPT deep review: corrected trigger/crypto-shred overclaims, pinned Track A terminal/retry policy, added D-8 export topology and D-9 immutable policy versioning, expanded key hierarchy/audit/source-trace/recipient-erasure requirements, and recorded verify-on-code facts. v0.5 folded CC re-review: removed remaining crypto-shred "ONLY" wording, reconciled D-5 with existing proof-bound raw-byte `ArtifactHash`, defaulted D-8 away from server raw packet handoff, split `disposed` vs `crypto_shredded`, and clarified Track A disposal attestation vs crypto-shred proof. v0.6 verifies `NfcArtifactBytes` exactly: current HN212 production path hashes DG2 bytes, so `NfcArtifactHash` is a stable per-card biometric-derived identifier. v0.7 extracts that RRI to the hospital-trial DPO gate/debt register, records that the value is consumer-visible via current business read APIs, and keeps TIP-82R as a cross-reference rather than the owning approval gate. v0.8 corrects the framing: TIP-82R is the general raw-BIO retention/export policy for eKYC capture material; EIDCA is only a vendor/documentary example showing that a downstream integration may demand raw BIO exchange. v0.9 adds the cheaper mitigation path: stop disclosing `ArtifactHash` in consumer-facing ledger/package-summary DTOs before accepting risk or changing the proof contract.
+PROPOSED / DECISION TIP ONLY. **v1.1 (2026-07-10) - consistency fixes (DoD ratifies D-1..D-10 not D-9; D-2 rewritten as mode x controller pair, `SignFlow evidence store` removed from the option list; the DG2-RRI mitigation menu renamed (i)/(ii)/(iii) by disposition so "Option B" no longer collides with Track B). v1.0 - CC framing patch (Homeowner-approved scope):** (1) "supports" -> **governed PATH TO BUILD**; capability does NOT exist at runtime and is code-enforced fail-closed; (2) governing principle added - *TagEkyc avoids ungoverned raw BIO, not raw BIO*, with the irrevocability rationale for why the gate must cost a decision, not a config flag; (3) absolute `NEVER retain liveness` -> "not approved absent a specific Legal/DPO-approved flow" (gated default, not prohibition); (4) "defer Track B entirely" -> **defer UNTIL a retention purpose is established and ratified** (evidence-driven, not ideological); (5) **THREE modes** named separately (`external_export_only_no_retain` / `encrypted_export_packet` / `encrypted_raw_vault_retained`) - collapsing the packet mode into export-only is a named STOP; (6) **controller is an ORTHOGONAL AXIS** (TagEkyc / SignFlow / external TSP), `signflow_evidence_store` removed from the mode list - ratify the PAIR (mode x controller); (7) **new D-10 cross-border transfer gate** (jurisdiction of recipient AND processing infrastructure; fail-closed if outside VN or unknown) - previously absent entirely; (8) `SHA256(DG2)` RRI cross-referenced as a **governance lesson**, still owned by the debt register (`fa98531`), NOT by this TIP; (9) decision-only preserved - no runtime build, no B1/B2, no proof-contract change; (10) **no self-citation of legal instrument numbers** - Legal confirms the instrument/articles in force at ratification. Prior: **v0.9** - v0.2 patched after Contractor review: added a recommendation per decision (so this can be RATIFIED, not just read), a Track A/Track B split, the crypto-shred vs append-only analysis, the consent-withdrawal-after-retention transition, and the controller-liability flag. v0.3 folded GPT review: explicit mode matrix, recommended initial posture, consent purpose/recipient binding, per-flow minimum-needed table, backup/object-version blocker, stricter access/export audit defaults, BusinessConsumer alternatives, and concrete follow-on split. v0.4 folded CC + GPT deep review: corrected trigger/crypto-shred overclaims, pinned Track A terminal/retry policy, added D-8 export topology and D-9 immutable policy versioning, expanded key hierarchy/audit/source-trace/recipient-erasure requirements, and recorded verify-on-code facts. v0.5 folded CC re-review: removed remaining crypto-shred "ONLY" wording, reconciled D-5 with existing proof-bound raw-byte `ArtifactHash`, defaulted D-8 away from server raw packet handoff, split `disposed` vs `crypto_shredded`, and clarified Track A disposal attestation vs crypto-shred proof. v0.6 verifies `NfcArtifactBytes` exactly: current HN212 production path hashes DG2 bytes, so `NfcArtifactHash` is a stable per-card biometric-derived identifier. v0.7 extracts that RRI to the hospital-trial DPO gate/debt register, records that the value is consumer-visible via current business read APIs, and keeps TIP-82R as a cross-reference rather than the owning approval gate. v0.8 corrects the framing: TIP-82R is the general raw-BIO retention/export policy for eKYC capture material; EIDCA is only a vendor/documentary example showing that a downstream integration may demand raw BIO exchange. v0.9 adds the cheaper mitigation path: stop disclosing `ArtifactHash` in consumer-facing ledger/package-summary DTOs before accepting risk or changing the proof contract.
 
 This TIP does not authorize a runtime raw vault implementation. It records the policy, lifecycle, consent, audit, disposal, and integration decisions required before any raw biometric retention/export mode can be built.
 
@@ -42,41 +42,74 @@ Before Homeowner/Legal/DPO ratifies any EIDCA-backed flow, store a controlled co
 
 Define the optional raw biometric retention/export policy for eKYC capture material that can be activated only by explicit Legal/DPO-approved policy and consent scope.
 
+### Governing principle (v1.0)
+
+> **TagEkyc does not avoid raw BIO at all costs; it avoids UNGOVERNED raw BIO.**
+> The raw retention/export capability **does not exist at runtime today** and is **code-enforced fail-closed** (`raw_vault` -> `RETENTION_POLICY_UNSUPPORTED`; unknown modes -> `RETENTION_POLICY_INVALID`). This TIP does not create the capability.
+> When a lawful business/regulatory workflow genuinely requires raw BIO, there is a **governed PATH TO BUILD it** - via explicit purpose + legal basis/consent, a minimum-needed raw class set, DPO/Homeowner ratification, encryption, access/export audit, retention trigger + duration, disposal/crypto-shred, legal-hold handling, and no raw in ordinary DB tables, logs, receipts, or BusinessConsumer DTOs.
+> "Governed" means **the gate costs a decision, not a config flag.**
+
+**Why the gate must be expensive, not merely present:** biometric material is **irrevocable**. A leaked password is rotated; a leaked face/fingerprint/chip-portrait is not. The decision cost must therefore be proportional to the irreversibility of the harm - which is why every mode below requires a ratified purpose, not an operator toggle.
+
+**Governance lesson (cross-reference, NOT owned here).** The separate `SHA256(DG2)` RRI - owned by the git-tracked Phase 1 debt register (commit `fa98531`), not by TIP-82R - is **not** a reason to treat raw BIO as taboo. It IS admissible evidence about the **control environment**: a stable per-person identifier entered the append-only + signed-proof + consumer-API surface **without a DPO decision, without a DPIA entry, and unnoticed until adversarial verify-on-code surfaced it**. If ungoverned *hashes* could slip through, ungoverned *raw images* are the same failure mode at larger scale. That is exactly why this TIP asks for **pre-authorization** of the raw path rather than post-hoc discovery - and why the DPO should weigh it when calibrating how much process to require before enabling Track B. **Separate the ownership; do not separate the lesson.**
+
 Preserve the default TagEkyc posture:
 
 - Default mode: `verify_and_discard`.
-- Raw retention/export: optional, policy-gated, and fail-closed until approved.
-- TSP/EIDCA: example consumer/use-case only, not the policy scope.
+- Raw retention/export: optional, policy-gated, and fail-closed until approved. **Not prohibited - unbuilt and ungranted.**
+- TSP/EIDCA: example consumer/use-case only, not the policy scope. A regulated downstream (TSP acceptance, dispute handling, statutory obligation) may legitimately require raw exchange.
 - Business surfaces remain proof/hash-only unless a separate controlled export workflow is approved.
 
-## Track split (v0.2/v0.8) - decide A and B INDEPENDENTLY
+## Track split - decide A and B INDEPENDENTLY
 
 TIP-82R covers two different capabilities with different legal bases, consent scopes, and lifecycles. Split them so a transient export can be ratified without accidentally approving long-term raw retention:
 
-- **Track A - EXPORT, transient, no retention at rest.** Raw material is assembled in memory, submitted to an approved external party or approved adapter, and disposed. Legal/DPO must confirm the legal basis under applicable VN personal data protection law, including ND 13/2023 where applicable. Modes: `external_export_only_no_retain`, and `encrypted_export_packet` ONLY if retry/acceptance requires a short bounded hold.
-- **Track B - RETENTION at rest (vault).** TagEkyc (or SignFlow) keeps raw biometric beyond the export transaction, e.g. for a dispute window. Legal basis, consent purpose, DPIA, controller assignment, and retention schedule are SEPARATE Legal/DPO decisions. Modes: `encrypted_raw_vault`, `signflow_evidence_store`.
+- **Track A - EXPORT, transient.** Raw material is assembled, submitted to an approved recipient/adapter, and disposed. Modes: `external_export_only_no_retain`, `encrypted_export_packet`.
+- **Track B - RETENTION at rest (vault).** Raw biometric is kept beyond the export transaction, e.g. for a dispute window. Mode: `encrypted_raw_vault_retained`. Legal basis, consent purpose, DPIA, controller assignment, and retention schedule are SEPARATE Legal/DPO decisions.
 
-**Track A can be approved WITHOUT approving Track B.** A consumer/integration requirement to exchange raw material is not proof that TagEkyc should keep it. Approving B "because A needs raw material" is the failure mode this split prevents.
+Legal/DPO must confirm the legal basis under the **applicable VN personal-data regime**; Legal identifies the exact instrument and articles in force **at ratification time** (this TIP deliberately does not self-cite instrument numbers).
+
+**Track A can be approved WITHOUT approving Track B.** A consumer/integration requirement to EXCHANGE raw material is not proof that TagEkyc should KEEP it. Approving B "because A needs raw material" is the failure mode this split prevents.
+
+### THREE modes, not two (v1.0)
+
+Do NOT collapse the export modes into one. `encrypted_export_packet` is **transient-but-persisted** (survives a crash, has a TTL, needs crypto-shred + backup semantics). It is the mode most likely to be needed in practice and the one most likely to be smuggled in under the label "export only" if it is not named separately.
+
+1. **`external_export_only_no_retain`** - raw exists only in memory for one submission attempt. No durable retry.
+2. **`encrypted_export_packet`** - short-lived ENCRYPTED packet persisted until submission/acceptance; TTL + crypto-shred + disposal proof + backup/object-version semantics required before build.
+3. **`encrypted_raw_vault_retained`** - raw kept at rest for a ratified retention purpose; per-artifact keys, legal hold, access workflow, dual-control, crypto-shred proof.
+
+### Controller is an ORTHOGONAL AXIS, not a mode (v1.0)
+
+`signflow_evidence_store` is **NOT a storage mode** and must not appear in a list of modes - listing it there is exactly how a **legal liability decision** gets chosen as if it were a disk location. Model it as a second, independent dimension:
+
+| Axis | Values |
+| --- | --- |
+| **Mode** (what/how long) | `verify_and_discard` / `external_export_only_no_retain` / `encrypted_export_packet` / `encrypted_raw_vault_retained` |
+| **Controller** (who is legally responsible for the raw copy) | TagEkyc / SignFlow / external TSP-recipient |
+
+Every combination must be ratified as a PAIR (mode x controller). Assigning the controller to SignFlow or an external TSP transfers DPIA, consent text, subject-rights handling, breach-notification duty, retention, and disposal proof to that party. That is a Legal/DPO decision about **liability**, not a technical one about disks.
 
 ## Recommended Initial Posture (v0.3)
 
 - Keep TagEkyc default `verify_and_discard`.
-- Do NOT build `encrypted_raw_vault` for the hospital trial or as a side effect of any external integration.
+- Do NOT build `encrypted_raw_vault_retained` for the hospital trial or as a side effect of any external integration.
 - If an approved consumer requires raw material, prefer `external_export_only_no_retain`.
 - Permit `encrypted_export_packet` only when retry/acceptance handling genuinely requires a short-lived encrypted packet with TTL and disposal proof.
-- Build `encrypted_raw_vault` only after explicit Legal/DPO dispute-retention requirement, consent text, controller assignment, key-management design, legal-hold workflow, and backup/object-version disposal semantics are ratified.
+- **Defer `encrypted_raw_vault_retained` UNTIL a retention PURPOSE is established and ratified** (not "defer entirely" - the deferral is evidence-driven, not a prohibition). Enabling it requires an explicit Legal/DPO retention requirement, consent text, controller assignment, key-management design, legal-hold workflow, and backup/object-version disposal semantics.
 
-## Mode Decision Matrix (v0.3)
+## Mode Decision Matrix
+
+Mode answers *what/how long*. **Controller** (who is legally responsible for the raw copy) is a SEPARATE axis - see the controller table above. Ratify the PAIR (mode x controller) per flow.
 
 | Mode | Track | Raw export | Raw retention at rest | Approval posture | Disposal/audit |
 | --- | --- | --- | --- | --- | --- |
-| `verify_and_discard` | Baseline | No | No | Default | Agent disposes raw buffers after verification; proof/hash-only server records. |
-| `external_export_only_no_retain` | Track A | Yes, only to approved recipient | No TagEkyc raw vault | Recommended first posture when an approved flow requires raw exchange | Dispose immediately after accepted submission or terminal failure policy; immutable export audit. |
-| `encrypted_export_packet` | Track A | Yes, via encrypted packet | Short-lived pending-export packet only | Allowed only if retry/acceptance requires it | TTL, crypto-shred, disposal proof, and backup/object-version decision required before build. |
-| `encrypted_raw_vault` | Track B | Controlled export possible | Yes | Deferred unless Legal/DPO requires dispute retention | Per-artifact keys, legal hold, access workflow, dual-control for human access, crypto-shred proof. |
-| `signflow_evidence_store` | Track B / controller transfer | Controlled export possible | Yes, outside TagEkyc controller | Legal/DPO decision, not a storage convenience | SignFlow becomes assigned raw-BIO controller/store with its own DPIA, consent text, breach duties, retention, and disposal proof. |
- 
-Homeowner/Legal/DPO must ratify a specific mode per flow. Approval of Track A does not approve Track B.
+| `verify_and_discard` | Baseline | No | No | Default; the only mode that exists today | Agent disposes raw buffers after verification; proof/hash-only server records. |
+| `external_export_only_no_retain` | Track A | Yes, only to approved recipient | No | Recommended first posture when an approved flow requires raw exchange | Dispose immediately after accepted submission or terminal failure; immutable export audit; disposal is an ATTESTATION (no ciphertext/key existed). |
+| `encrypted_export_packet` | Track A | Yes, via encrypted packet | Short-lived pending-export packet only | Allowed only if retry/acceptance genuinely requires durable retry | TTL, crypto-shred, disposal proof, and backup/object-version decision required before build. |
+| `encrypted_raw_vault_retained` | Track B | Controlled export possible | Yes | Deferred UNTIL a retention purpose is established and ratified | Per-artifact keys, legal hold, access workflow, dual-control for human access, crypto-shred proof. |
+
+Homeowner/Legal/DPO must ratify a specific **mode x controller** pair per flow. Approval of Track A does not approve Track B. **No mode above except `verify_and_discard` exists at runtime today.**
 
 Mode-gate invariant (v0.4, verified against CaptureAgent):
 
@@ -113,8 +146,9 @@ Allowed future modes, subject to decision:
 - `verify_and_discard`: remains default.
 - `external_export_only_no_retain`: raw packet generated for approved external submission, then discarded.
 - `encrypted_export_packet`: short-lived encrypted packet retained only until submission/acceptance.
-- `encrypted_raw_vault`: TagEkyc-controlled encrypted vault with TTL, legal hold, audit, and crypto-shred.
-- `signflow_evidence_store`: only if Legal/DPO explicitly assigns SignFlow as the raw evidence controller/store.
+- `encrypted_raw_vault_retained`: encrypted vault at rest with TTL, legal hold, audit, and crypto-shred.
+
+Controller (orthogonal axis, NOT a mode): TagEkyc / SignFlow / external TSP-recipient. `signflow_evidence_store` is deliberately NOT listed as a mode - it is the (mode x controller=SignFlow) pair and carries a controller-liability transfer.
 
 ## Out of Scope
 
@@ -131,7 +165,7 @@ Allowed future modes, subject to decision:
 Homeowner / Legal / DPO decide. Every item below carries a proposed answer + rationale so this TIP can be RATIFIED in one pass rather than re-designed. The bias throughout is **data-minimization + fail-closed toward less raw material**.
 
 **D-1. Raw classes allowed.** Options: CCCD chip DG/SOD data (`sod`, DG1/DG2/DG13/DG15 or other groups actually read) / DG2 portrait or extracted chip portrait / selfie image / liveness frame-video or PAD artifacts / hand-signature image / face-matching material (`chip_image`,`selfie_image`,`face_matching_score`) / other flow-specific raw capture data.
-> **RECOMMEND (minimal):** approve raw classes per flow, purpose, and recipient; default to **none retained/exported** unless the approved flow proves need. When export is required, allow only the minimum raw class set needed by that flow and prefer Track A transient export. **NEVER** retain liveness frame/video by default (highest sensitivity, no demonstrated general need). Hand-signature image and other special capture data require a specific approved flow and consent purpose.
+> **RECOMMEND (minimal):** approve raw classes per flow, purpose, and recipient; default to **none retained/exported** unless the approved flow proves need. When export is required, allow only the minimum raw class set needed by that flow and prefer Track A transient export. Liveness frame/video: **not approved absent a specific Legal/DPO-approved flow** (highest sensitivity, no demonstrated general need today - a gated default, NOT a prohibition). Hand-signature image and other special capture data require a specific approved flow and consent purpose.
 > *Rationale:* every extra class widens the DPIA scope and the breach blast-radius. Adding a class later is cheap; un-collecting it is not.
 
 Minimum-needed rule (v0.3): for each flow, export only the raw class set required by the approved vendor contract and consent policy. Do not export every raw class that the Agent happens to have captured.
@@ -149,16 +183,20 @@ Minimum-needed rule (v0.3): for each flow, export only the raw class set require
 
 `face_matching.chip_image` is DG2/chip-raw for policy purposes and is blocked by the same default as DG2. Only `selfie_image` and `face_matching_score` are outside that DG2/chip-raw block. Derived scores/proof hashes are not raw BIO, but may still be sensitive metadata and must remain audit-safe/proof-bound. `face_matching_score` is not a liveness frame/video retention approval.
 
-**D-2. Storage/control location.** Options: TagEkyc encrypted vault / SignFlow evidence store / encrypted export packet only / external-only no-retain / hybrid short pending-export cache.
-> **RECOMMEND:** approve **Track A = `external_export_only_no_retain`** as the default approved mode, with **`encrypted_export_packet`** (short, bounded TTL) permitted ONLY where retry/acceptance genuinely requires holding the packet. **DEFER Track B** (`encrypted_raw_vault`, `signflow_evidence_store`) entirely.
+**D-2. Mode x controller pair (per flow).** Two independent axes, ratified as a PAIR:
+> - **MODE** (what/how long): `external_export_only_no_retain` / `encrypted_export_packet` / `encrypted_raw_vault_retained`.
+> - **CONTROLLER** (who is legally responsible for the raw copy): TagEkyc / SignFlow / external TSP-recipient.
+>
+> `SignFlow evidence store` is deliberately NOT a mode option - it is the (mode x controller=SignFlow) pair and carries a controller-liability transfer, not a disk choice.
+> **RECOMMEND:** approve **Track A = `external_export_only_no_retain`** as the default approved mode, with **`encrypted_export_packet`** (short, bounded TTL) permitted ONLY where retry/acceptance genuinely requires holding the packet. **DEFER Track B (`encrypted_raw_vault_retained`) UNTIL a retention purpose is established and ratified** - the deferral is evidence-driven (no retention purpose has been demonstrated), NOT a prohibition. Controller assignment is decided separately on its own axis.
 > *Rationale:* a requirement to submit/exchange raw material is not the same as a requirement to keep it. Track B costs a controller assignment, a DPIA, a retention schedule, and a disposal worker - none of which is justified without an explicit retention purpose.
-> **WARNING: `signflow_evidence_store` is NOT a storage-location choice - it REASSIGNS THE DATA CONTROLLER/PROCESSOR BOUNDARY.** Legal/DPO must confirm responsibilities under applicable VN personal data protection law, including ND 13/2023 where applicable: DPIA, consent text, subject-rights handling, breach-notification duty, retention, and disposal proof. Choosing it is a LEGAL decision about liability, not a technical one about disks. Do not pick it as "just where the bytes live".
+> **WARNING - CONTROLLER IS A SEPARATE AXIS, NOT A MODE.** Assigning the raw-copy controller to SignFlow or an external TSP-recipient REASSIGNS THE DATA CONTROLLER/PROCESSOR BOUNDARY. Legal/DPO must confirm responsibilities under the **applicable VN personal-data regime** (Legal identifies the instrument and articles in force at ratification; this TIP does not self-cite): DPIA, consent text, subject-rights handling, breach-notification duty, retention, and disposal proof. Choosing it is a LEGAL decision about liability, not a technical one about disks. Ratify the PAIR (mode x controller); never pick a controller as "just where the bytes live".
 
 **D-3. Retention trigger and duration.** Options: until external acceptance / through workflow completion / dispute window / only under legal hold / immediate disposal after success.
 > **RECOMMEND:** retain **only until the approved external/workflow acceptance point**, with a short bounded TTL for retry (hours, not days), then **immediate crypto-shred** if anything was retained encrypted. After workflow success (for example CTS issuance/signing success in a TSP flow) -> dispose IMMEDIATELY unless a Legal/DPO-approved hold applies. **No dispute-window retention** unless Legal specifically requires it - and if so it becomes Track B with its own consent + DPIA.
 
 **D-4. Consent scope.** Options: separate `export_raw_biometric_to_recipient` / `retain_raw_biometric` / `retain_for_dispute` / whether reuse for a new purpose needs fresh consent.
-> **RECOMMEND:** SEPARATE, explicit scopes - `export_raw_biometric_to_recipient` (Track A, recipient-bound) and `retain_raw_biometric` (Track B, deferred). **Do NOT bundle either into the existing capture consent.** Reuse for a new purpose (for example signing-time selfie reuse) -> **requires fresh consent** (ND 13/2023 purpose-limitation).
+> **RECOMMEND:** SEPARATE, explicit scopes - `export_raw_biometric_to_recipient` (Track A, recipient-bound) and `retain_raw_biometric` (Track B, deferred). **Do NOT bundle either into the existing capture consent.** Reuse for a new purpose (for example signing-time selfie reuse) -> **requires fresh consent** (purpose-limitation under the applicable VN personal-data regime; Legal confirms the instrument/articles at ratification).
 > **Coupling to the SHIPPED consent contract (do not re-invent):** these scopes must flow through the existing chain - the caller emits a bound consent assertion, the Agent gate verifies `scope >= required` (`TAGEKYC_CONSENT_*`, TIP-82), and the withdrawal sentinel remains live. A new scope is a new value in that contract, not a new mechanism.
 
 Purpose/recipient binding (v0.3): the consent assertion and policy record must bind more than the scope string. They must bind:
@@ -195,12 +233,12 @@ Erasure severity: `SHA256(DG2)` cannot be crypto-shredded because it is a plaint
 
 Consumer exposure (v0.9, verified on code): `ArtifactHash` leaves the server to authorized BusinessConsumer read endpoints today. `GET /api/ekyc/verification-sessions/{id}/evidence-ledger` returns `EvidenceLedgerCaptureArtifactDto.ArtifactHash`, and `GET /api/ekyc/evidence-packages/{id}` returns `EvidencePackageSummaryDto.EvidenceRefs[*].ArtifactHash` via `ToPublicEvidenceRef`. The verification-view DTO does not directly list evidence refs. Client-application access controls prevent one consumer from reading another consumer's sessions, but they do **not** prevent cross-consumer correlation if two consumers receive or compare the same globally stable `SHA256(DG2)` value for the same CCCD/person.
 
-DPO mitigation menu (v0.9):
-- **Option A - acknowledge/ratify residual risk.** DPO explicitly accepts that a stable, pseudonymous identifier derived from the CCCD chip portrait is retained in append-only proof history/backups and is currently disclosed to authorized BusinessConsumers.
-- **Option B - stop disclosing it to BusinessConsumers (recommended first mitigation).** Remove or replace `ArtifactHash` in the two consumer-facing DTO surfaces (`EvidenceLedgerCaptureArtifactDto.ArtifactHash` and `EvidenceRefSummaryDto.ArtifactHash`) with an opaque/non-linkable reference or a consumer-scoped value. Keep the internal proof-bound hash unchanged. This is an API-contract change, not a proof-contract change.
-- **Option C - change the proof hash scheme.** If DPO rejects even internal retention/linkability, open a separate proof-contract TIP, for example replacing global raw-byte hashes with keyed/domain-separated/session-varying identifiers or another reviewed binding scheme. This affects the proof contract, golden vectors such as TIP-67G fixtures, SignFlow/consumer verifier behavior, and Agent hash computation/keying. Do not change it inside TIP-82R.
+DPO disposition menu for the `SHA256(DG2)` RRI (v0.9; named by disposition to avoid collision with Track A/B):
+- **(i) ACKNOWLEDGE/RATIFY residual risk.** DPO explicitly accepts that a stable, pseudonymous identifier derived from the CCCD chip portrait is retained in append-only proof history/backups and is currently disclosed to authorized BusinessConsumers.
+- **(ii) STOP DISCLOSING it to BusinessConsumers = the B1 API-egress mitigation (recommended first; distinct from Track B raw-vault).** Remove or replace `ArtifactHash` in the two consumer-facing DTO surfaces (`EvidenceLedgerCaptureArtifactDto.ArtifactHash` and `EvidenceRefSummaryDto.ArtifactHash`) with an opaque/non-linkable reference or a consumer-scoped value. Keep the internal proof-bound hash unchanged. This is an API-contract change, NOT a proof-contract change. It reduces third-party exposure + cross-consumer correlation but does NOT erase the internal append-only/backup/proof copy - the RRI stays open.
+- **(iii) CHANGE THE PROOF HASH SCHEME.** If DPO rejects even internal retention/linkability, open a separate proof-contract TIP, for example replacing global raw-byte hashes with keyed/domain-separated/session-varying identifiers or another reviewed binding scheme. This affects the proof contract, golden vectors such as TIP-67G fixtures, SignFlow/consumer verifier behavior, and Agent hash computation/keying. Do not change it inside TIP-82R.
 
-Option B feasibility (v0.9, verified on code/docs): consumer proof verification does **not** require exposed `ArtifactHash`. TIP-67G `resultHash` preimage has exactly 16 fields and no `ArtifactHash`; `Es256JwsEvidenceSignatureBuilder.BuildProofClaimJson` builds `resultHash` from proof fields ending in `signedManifestHash`; TIP-67B verifier rules say clients verify the JWS, read facts only from the decoded signed claim, recompute `resultHash`, and bind to `resultHash`. Therefore suppressing `ArtifactHash` from ledger/package-summary DTOs can reduce cross-consumer correlation without rewriting signed proof history.
+B1 (consumer API-egress mitigation - distinct from Track B raw-vault) feasibility (v0.9, verified on code/docs): consumer proof verification does **not** require exposed `ArtifactHash`. TIP-67G `resultHash` preimage has exactly 16 fields and no `ArtifactHash`; `Es256JwsEvidenceSignatureBuilder.BuildProofClaimJson` builds `resultHash` from proof fields ending in `signedManifestHash`; TIP-67B verifier rules say clients verify the JWS, read facts only from the decoded signed claim, recompute `resultHash`, and bind to `resultHash`. Therefore suppressing `ArtifactHash` from ledger/package-summary DTOs can reduce cross-consumer correlation without rewriting signed proof history.
 
 **D-6. Deletion / crypto-shred.** Options: TTL evaluator / disposal proof / key-destruction semantics / backup+object-version handling / legal-hold override.
 > **RECOMMEND: crypto-shred is the PRIMARY disposal mechanism for retained encrypted raw artifacts** (per-artifact data key; destroy the key -> ciphertext is unrecoverable). See the dedicated section below. Crypto-shred is recommended because it preserves append-only evidence posture and neutralizes backups/object versions you cannot chase; it is not the only theoretical append-only-compatible disposal mechanism.
@@ -234,7 +272,15 @@ Key hierarchy decision (v0.4):
 Recipient withdrawal/erasure obligation (v0.4): for any Track A export, the recipient contract/API must define withdrawal/erasure notification behavior. If a subject withdraws after export, the system records withdrawal and, if policy requires, sends an erasure/stop-processing notice to the recipient and audits notice id/result. If the recipient cannot honor erasure, the consent text must disclose this limitation before export.
 
 **D-9. Raw policy record versioning.** A raw export/retention policy id must point to an immutable versioned record, not a mutable config name.
-> **RECOMMEND:** every raw export/access/disposal audit references `policyId + policyVersion`. A policy record includes: mode, allowed raw classes, recipient, purpose, TTL, disposal trigger, consent text version, Legal/DPO approval reference, and export topology. Changing any field creates a new version; no mutation-in-place.
+> **RECOMMEND:** every raw export/access/disposal audit references `policyId + policyVersion`. A policy record includes: mode, **controller**, allowed raw classes, recipient, purpose, TTL, disposal trigger, consent text version, Legal/DPO approval reference, export topology, and **recipient/infrastructure jurisdiction**. Changing any field creates a new version; no mutation-in-place.
+
+**D-10. Cross-border transfer gate (v1.0 - previously missing entirely).** Options: recipient + processing infrastructure entirely inside Vietnam / recipient or infrastructure (incl. cloud region, sub-processors, support access) outside Vietnam.
+> **RECOMMEND: confirm jurisdiction BEFORE any export, and fail-closed if unknown.** Exporting raw BIO to a recipient (or to infrastructure) outside Vietnam is a **cross-border transfer of personal data** - a SEPARATE regulatory obligation (transfer-impact assessment / filing), NOT covered by a domestic DPIA. Pin:
+> - the policy record (D-9) must carry the recipient's and the processing infrastructure's **jurisdiction**, including cloud region and any sub-processor/support access path;
+> - if either is outside Vietnam, **Legal/DPO must ratify a cross-border personal-data transfer assessment before the first export**; the export path stays fail-closed until then;
+> - "the vendor is a Vietnamese company" is NOT sufficient - confirm where the data is actually processed and who can access it;
+> - Legal identifies the exact instrument, filing, and articles in force at ratification (this TIP does not self-cite).
+> *Rationale:* raw biometric leaving the jurisdiction is the single obligation most likely to be missed, because it hides behind a domestic-looking vendor relationship.
 
 ## Disposal mechanism: crypto-shred is the recommended answer (v0.4)
 
@@ -283,7 +329,7 @@ The shipped consent chain currently handles withdrawal BEFORE and DURING capture
 
 Required rule: after the approved workflow reaches its success/acceptance point, if the customer policy does not require long-term retention, raw BIO must move immediately to `disposed` for memory-only Track A or `crypto_shredded` for retained encrypted packets, with audit/attestation appropriate to the mode. For a TSP flow, this means after signing/CTS issuance succeeds.
 
-**Conflict rule (v0.4): legal hold vs right-to-erasure.** A subject's consent withdrawal and a Legal/DPO legal hold can point in opposite directions on the same artifact. Legal/DPO must confirm the rule under applicable VN personal data protection law, including ND 13/2023 where applicable. Pin: (a) the system does NOT auto-resolve it - the artifact enters `disposal_blocked_by_legal_hold`; (b) the conflict is escalated to the DPO with both legal bases recorded; (c) the artifact remains encrypted, access-restricted, and audited while blocked; (d) the subject is informed that disposal is suspended and why, per the consent text. The applicable raw-retention/export consent text must therefore SAY that a legal hold can suspend erasure - or the consent is misleading.
+**Conflict rule (v0.4): legal hold vs right-to-erasure.** A subject's consent withdrawal and a Legal/DPO legal hold can point in opposite directions on the same artifact. Legal/DPO must confirm the rule under the applicable VN personal-data regime (Legal identifies instrument/articles at ratification). Pin: (a) the system does NOT auto-resolve it - the artifact enters `disposal_blocked_by_legal_hold`; (b) the conflict is escalated to the DPO with both legal bases recorded; (c) the artifact remains encrypted, access-restricted, and audited while blocked; (d) the subject is informed that disposal is suspended and why, per the consent text. The applicable raw-retention/export consent text must therefore SAY that a legal hold can suspend erasure - or the consent is misleading.
 
 ## Integration Impact
 
@@ -325,15 +371,20 @@ These are code-checked facts used by this decision TIP; they are not new build a
 - Current Agent withdrawal chain: TIP-82/TIP-82W covers pre-capture, between-append, and after-partial-submit withdrawal (`CONSENT_WITHDRAWN_AFTER_PARTIAL_SUBMIT`). There is no current raw-retained/post-export lifecycle, so withdrawal-after-retention is a new TIP-82R policy/build requirement.
 - Current `ArtifactHash` reality: CaptureAgent computes `ArtifactHash` with `CaptureAgentHash.Sha256(bytes)` over plaintext NFC artifact bytes, selfie bytes, and liveness bytes (`Hn212CccdReader`, `Hn212FaceCaptureFrameStore`, `NoTempFileFaceCamera`). `ReflectionHn212SdkBridge` currently sets `NfcArtifactBytes = dg2.ToArray()`, so the NFC artifact hash is `SHA256(DG2)` today, not a session-varying envelope hash. The server validates the hash string shape and proof-binds it in normalized FaceMatch/Liveness/NFC decision basis. Therefore existing `NfcArtifactHash` is a stable per-card biometric-derived identifier and a DPO/Homeowner RRI, while selfie/liveness artifact hashes are capture-instance identifiers with lower cross-session linkability.
 - Current BusinessConsumer exposure: `ApplicationAuthorization.RequireBusinessSessionRead/RequireBusinessReadEndpoint` permits `BusinessConsumer` callers with `business.session.read`; `VerificationSessionApplicationService.GetEvidenceLedgerAsync` maps every accepted capture artifact to `EvidenceLedgerCaptureArtifactDto(..., artifact.ArtifactHash?.ToString(), ...)`; `VerificationCompletionApplicationService.ToPackageSummary` maps manifest refs to `EvidenceRefSummaryDto` through `ToPublicEvidenceRef`, preserving `evidenceRef.ArtifactHash`. Therefore `ArtifactHash`, including `SHA256(DG2)` for NFC artifacts, is returned to the authorized BusinessConsumer that owns the session/package. `EvidencePackageVerificationViewDto` itself does not include evidence refs, but this does not remove ledger/package-summary exposure.
-- Current consumer-verification dependency: no verified consumer proof path requires public `ArtifactHash`. TIP-67G's frozen `resultHash` preimage excludes `ArtifactHash`; TIP-67B's verifier contract uses only the verification view + decoded signed claim + pinned trust anchor, and `Es256JwsEvidenceSignatureBuilder.BuildProofClaimJson` computes `resultHash` from the neutral proof fields ending at `signedManifestHash`. This supports mitigation Option B: suppress `ArtifactHash` from consumer-facing ledger/package-summary DTOs without changing signed proof semantics.
+- Current consumer-verification dependency: no verified consumer proof path requires public `ArtifactHash`. TIP-67G's frozen `resultHash` preimage excludes `ArtifactHash`; TIP-67B's verifier contract uses only the verification view + decoded signed claim + pinned trust anchor, and `Es256JwsEvidenceSignatureBuilder.BuildProofClaimJson` computes `resultHash` from the neutral proof fields ending at `signedManifestHash`. This supports the **B1 consumer API-egress mitigation** (distinct from Track B raw-vault): suppress `ArtifactHash` from consumer-facing ledger/package-summary DTOs without changing signed proof semantics.
 
 ## Definition of Done for Decision TIP
 
 - [ ] Homeowner chooses whether this stays `TIP-82R` and approves the neutral title.
-- [ ] **Homeowner/Legal/DPO RATIFY or OVERRIDE each of D-1 .. D-9** (each carries a Contractor recommendation - the deliverable is a decision, not a re-design).
+- [ ] **Homeowner/Legal/DPO RATIFY or OVERRIDE each of D-1 .. D-10** (each carries a Contractor recommendation - the deliverable is a decision, not a re-design).
 - [ ] **Track A (export, transient) approved or rejected INDEPENDENTLY of Track B (retention at rest).** Approving A does not approve B.
 - [ ] Legal/DPO approve or reject raw BIO retention/export as an optional capability.
-- [ ] Allowed raw BIO classes enumerated (D-1); storage/control location selected (D-2, incl. the explicit acknowledgement that `signflow_evidence_store` REASSIGNS the data controller); retention triggers/durations defined (D-3).
+- [ ] Allowed raw BIO classes enumerated (D-1); **mode x controller PAIR ratified per flow** (D-2; controller is an orthogonal axis - assigning it to SignFlow/external TSP REASSIGNS the data controller); retention triggers/durations defined (D-3).
+- [ ] **D-10 cross-border gate closed:** recipient AND processing-infrastructure jurisdiction confirmed (incl. cloud region + sub-processor/support access). If either is outside Vietnam, a cross-border personal-data transfer assessment is ratified by Legal/DPO BEFORE the first export; export stays fail-closed until then.
+- [ ] **Framing invariants hold:** default remains `verify_and_discard`; `raw_vault` remains code-enforced fail-closed today; raw retention/export remains optional + policy-gated + Legal/DPO/Homeowner-approved (**not prohibited - unbuilt and ungranted**); this TIP authorizes NO runtime build, NO B1/B2 implementation, NO proof-contract change.
+- [ ] **B1 (consumer API-egress mitigation) remains a SEPARATE slice** and is NOT a substitute for any decision here.
+- [ ] **RRI `fa98531` (`SHA256(DG2)`) remains OPEN after this patch** - cross-referenced as a governance lesson, owned by the debt register, disposed of at the hospital-trial DPO gate.
+- [ ] Legal confirms the **exact applicable instrument and articles in force at ratification**; this TIP self-cites none.
 - [ ] Consent scopes named AND mapped to user-facing consent text, AND wired into the existing `TAGEKYC_CONSENT_*` scope contract (D-4) - including purpose, recipient, raw classes, retention mode, TTL/disposal trigger, and that **withdrawal after retention forces immediate crypto-shred**.
 - [ ] Access/export audit requirements defined (D-5), including cross-reference to the **hospital-trial DPO/Homeowner disposition of the existing proof-bound, backup-persistent, consumer-visible `SHA256(DG2)` RRI**: acknowledge/ratify, stop disclosing to BusinessConsumers, or open a proof-contract mitigation TIP. No new plaintext-biometric hashes in raw-export audit unless approved; Track A memory-disposal attestation vs Track B crypto-shred proof distinguished; DEK/KEK/wrapped-key destruction + key-store-backup/object-version semantics, and legal-hold rules defined (D-6).
 - [ ] Track A terminal/retry policy accepted: pure export-only has no durable retry; durable retry requires `encrypted_export_packet`.
@@ -370,13 +421,17 @@ STOP and ask for review if any draft/build:
 - Keeps raw BIO after CTS/signing success when the approved customer policy says dispose immediately.
 - **(v0.2/v0.5)** Designs retained-raw disposal as a row-level `DELETE`/`UPDATE` against the six trigger-protected evidence tables, or treats row purge as equivalent to backup-neutral disposal. Crypto-shred is the recommended retained-ciphertext mechanism; partition/drop-style alternatives need separate approval and still must address backups/object versions.
 - **(v0.2)** Places a raw vault INSIDE the evidence tables, or backs up the per-artifact key-store in an unshreddable backup (defeats crypto-shred entirely).
-- **(v0.2)** Treats `signflow_evidence_store` as a storage choice rather than a data-controller reassignment, or ships consent text that promises erasure without disclosing that a legal hold can suspend it.
+- **(v0.2/v1.0)** Treats the controller assignment (SignFlow / external TSP) as a storage-location choice rather than a data-controller reassignment, or ships consent text that promises erasure without disclosing that a legal hold can suspend it.
+- **(v1.0)** Reads "policy-gated" as "available on request", or presents the capability as existing at runtime. It does not exist; `raw_vault` is code-enforced fail-closed. The gate costs a decision, not a config flag.
+- **(v1.0)** Collapses `encrypted_export_packet` into `external_export_only_no_retain` (a persisted, TTL'd, crypto-shreddable packet is NOT memory-only export).
+- **(v1.0)** Exports raw BIO to a recipient or infrastructure outside Vietnam without a ratified cross-border transfer assessment (D-10), or accepts "the vendor is a Vietnamese company" as proof of domestic processing.
+- **(v1.0)** Cites a specific legal instrument/article inside this TIP as if it were legal advice; Legal confirms the instrument in force at ratification.
 - **(v0.2)** Approves Track B (retention at rest) as a side-effect of approving Track A (transient export), or sends DG2/chip raw before written vendor confirmation.
 - **(v0.4)** Implements durable retry under `external_export_only_no_retain`; durable retry is `encrypted_export_packet`.
 - **(v0.4)** Starts a build before D-8 export topology or D-9 policy-versioning is selected.
 - **(v0.4)** Claims crypto-shred while leaving recoverable DEKs/wrapped-DEKs/KEK material in ordinary backups or object versions.
 - **(v0.4/v0.5)** Puts new plaintext-biometric hashes such as `SHA256(raw selfie)` or `SHA256(raw DG2)` in raw-export/access audit without explicit Legal/DPO approval, or misreads the existing proof-bound `ArtifactHash` exception as permission to create new raw-BIO audit identifiers.
-- **(v0.4)** Treats technical notes about ND 13/2023 as legal advice instead of Legal/DPO-confirmed requirements.
+- **(v0.4/v1.0)** Treats this TIP's technical notes about the personal-data regime as legal advice instead of Legal/DPO-confirmed requirements.
 - **(v0.5)** Chooses Agent-to-TagEkyc-server packet handoff without an explicit decision to open a new server-side raw-packet surface.
 - **(v0.5)** Claims Track A memory-only disposal has cryptographic proof equivalent to crypto-shred; it has disposal attestation only.
 - **(v0.6)** Treats current `NfcArtifactHash = SHA256(DG2)` as harmless or already-approved without explicit DPO/Homeowner acknowledgement, or changes the proof-hash contract inside TIP-82R.
