@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Globalization;
 using System.Text.Json.Serialization;
 using TagEkyc.Api;
 using TagEkyc.Api.LocalDev;
@@ -34,11 +35,21 @@ ConfigureEvidenceSigning(builder);
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
 ConfigureRetention(builder);
+ConfigureDecisionThresholds(builder);
 ConfigureReadiness(builder);
 builder.Services.AddScoped<VerificationSessionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
 builder.Services.AddScoped<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
-builder.Services.AddScoped<VerificationEvidenceApplicationService>();
+builder.Services.AddScoped(sp => new VerificationEvidenceApplicationService(
+    sp.GetRequiredService<IVerificationSessionRepository>(),
+    sp.GetRequiredService<ICaptureArtifactRepository>(),
+    sp.GetRequiredService<IEvidenceResultRepository>(),
+    sp.GetRequiredService<IAuditEventRepository>(),
+    sp.GetRequiredService<ILocalDevClientPolicyProvider>(),
+    sp.GetRequiredService<IAppendIdempotencyRepository>(),
+    sp.GetRequiredService<IAppendIdempotencyBoundary>(),
+    sp.GetService<IMetadataReferenceRegistry>(),
+    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<DecisionThresholdOptions>>().Value));
 builder.Services.AddScoped<ICaptureArtifactCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
 builder.Services.AddScoped<ITrustedEvidenceResultCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
 builder.Services.AddScoped<VerificationCompletionApplicationService>();
@@ -234,6 +245,58 @@ static void ValidateRetentionConfiguration(WebApplicationBuilder builder)
         windowDays > RetentionOptions.MaxRegulatedEvidenceRetentionDays)
     {
         throw new InvalidOperationException("PROD_RETENTION_WINDOW_INVALID");
+    }
+}
+
+static void ConfigureDecisionThresholds(WebApplicationBuilder builder)
+{
+    ValidateDecisionThresholdConfiguration(builder);
+
+    builder.Services
+        .AddOptions<DecisionThresholdOptions>()
+        .Bind(builder.Configuration.GetSection(DecisionThresholdOptions.SectionName))
+        .Validate(
+            options => options.FaceMatch is > 0 and <= 1 &&
+                       options.Liveness is > 0 and <= 1,
+            "Invalid decision threshold configuration.")
+        .ValidateOnStart();
+}
+
+static void ValidateDecisionThresholdConfiguration(WebApplicationBuilder builder)
+{
+    if (!builder.Environment.IsProduction())
+    {
+        return;
+    }
+
+    ValidateProductionDecisionThreshold(
+        builder.Configuration[$"{DecisionThresholdOptions.SectionName}:FaceMatch"],
+        DecisionThresholdOptions.DefaultFaceMatch,
+        "PROD_THRESHOLD_FACE_MATCH_MISSING",
+        "PROD_THRESHOLD_FACE_MATCH_INVALID");
+    ValidateProductionDecisionThreshold(
+        builder.Configuration[$"{DecisionThresholdOptions.SectionName}:Liveness"],
+        DecisionThresholdOptions.DefaultLiveness,
+        "PROD_THRESHOLD_LIVENESS_MISSING",
+        "PROD_THRESHOLD_LIVENESS_INVALID");
+}
+
+static void ValidateProductionDecisionThreshold(
+    string? rawValue,
+    decimal approvedValue,
+    string missingCode,
+    string invalidCode)
+{
+    if (string.IsNullOrWhiteSpace(rawValue))
+    {
+        throw new InvalidOperationException(missingCode);
+    }
+
+    if (!decimal.TryParse(rawValue, NumberStyles.Number, CultureInfo.InvariantCulture, out var value) ||
+        value is <= 0 or > 1 ||
+        value != approvedValue)
+    {
+        throw new InvalidOperationException(invalidCode);
     }
 }
 

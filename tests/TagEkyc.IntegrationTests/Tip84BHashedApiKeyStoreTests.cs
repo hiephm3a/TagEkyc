@@ -278,6 +278,7 @@ public sealed class Tip84BHashedApiKeyStoreTests(PostgresPersistenceFixture post
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 configure(builder);
                 ConfigureRetention(builder);
+                ConfigureDecisionThresholds(builder);
             });
 
     private static void ConfigureProductionDb(IWebHostBuilder builder, string connectionString) =>
@@ -285,6 +286,12 @@ public sealed class Tip84BHashedApiKeyStoreTests(PostgresPersistenceFixture post
 
     private static void ConfigureRetention(IWebHostBuilder builder) =>
         builder.UseSetting("TagEkyc:Retention:RegulatedEvidenceRetentionDays", "30");
+
+    private static void ConfigureDecisionThresholds(IWebHostBuilder builder)
+    {
+        builder.UseSetting("TagEkyc:DecisionThresholds:FaceMatch", "0.80");
+        builder.UseSetting("TagEkyc:DecisionThresholds:Liveness", "0.80");
+    }
 
     private static void ConfigureProductionTrialP12(IWebHostBuilder builder, bool createValidP12)
     {

@@ -14,11 +14,11 @@ public sealed class VerificationEvidenceApplicationService(
     ILocalDevClientPolicyProvider policies,
     IAppendIdempotencyRepository idempotencyRecords,
     IAppendIdempotencyBoundary appendBoundary,
-    IMetadataReferenceRegistry? metadataReferences = null)
+    IMetadataReferenceRegistry? metadataReferences = null,
+    DecisionThresholdOptions? decisionThresholdOptions = null)
     : ICaptureArtifactCommands, ITrustedEvidenceResultCommands
 {
-    private const decimal FaceMatchThreshold = 0.80m;
-    private const decimal LivenessThreshold = 0.80m;
+    private readonly DecisionThresholdOptions decisionThresholds = decisionThresholdOptions ?? new DecisionThresholdOptions();
 
     private static readonly IReadOnlySet<string> RequiredNfcChipFlags = new HashSet<string>(StringComparer.Ordinal)
     {
@@ -801,7 +801,7 @@ public sealed class VerificationEvidenceApplicationService(
         };
     }
 
-    private static SessionOperationResult<FaceMatchEvidencePreparation> PrepareFaceMatchEvidenceResult(
+    private SessionOperationResult<FaceMatchEvidencePreparation> PrepareFaceMatchEvidenceResult(
         VerificationSession session,
         EvidenceResultSubmissionRequestDto request,
         IReadOnlyList<CaptureArtifact> inputArtifacts,
@@ -852,7 +852,7 @@ public sealed class VerificationEvidenceApplicationService(
                 400);
         }
 
-        var serverIsMatch = basis.MatchScore.Value >= FaceMatchThreshold;
+        var serverIsMatch = basis.MatchScore.Value >= decisionThresholds.FaceMatch;
         if (basis.IsMatch.HasValue && basis.IsMatch.Value != serverIsMatch)
         {
             return SessionOperationResult<FaceMatchEvidencePreparation>.Failure(
@@ -1005,7 +1005,7 @@ public sealed class VerificationEvidenceApplicationService(
             referenceArtifact.ArtifactHash?.ToString());
     }
 
-    private static object BuildNormalizedFaceMatchDecisionBasis(
+    private object BuildNormalizedFaceMatchDecisionBasis(
         VerificationSession session,
         EvidenceResultSubmissionRequestDto request,
         CaptureArtifact liveArtifact,
@@ -1033,7 +1033,7 @@ public sealed class VerificationEvidenceApplicationService(
                 artifactHash = liveArtifact.ArtifactHash?.ToString(),
             },
             matchScore = submittedBasis.MatchScore,
-            thresholdApplied = FaceMatchThreshold,
+            thresholdApplied = decisionThresholds.FaceMatch,
             isMatch = serverIsMatch,
             reference = new
             {
@@ -1061,7 +1061,7 @@ public sealed class VerificationEvidenceApplicationService(
         };
     }
 
-    private static SessionOperationResult<LivenessEvidencePreparation> PrepareLivenessEvidenceResult(
+    private SessionOperationResult<LivenessEvidencePreparation> PrepareLivenessEvidenceResult(
         VerificationSession session,
         EvidenceResultSubmissionRequestDto request,
         IReadOnlyList<CaptureArtifact> inputArtifacts)
@@ -1091,7 +1091,7 @@ public sealed class VerificationEvidenceApplicationService(
                 400);
         }
 
-        if (basis.ThresholdApplied.HasValue && basis.ThresholdApplied.Value != LivenessThreshold)
+        if (basis.ThresholdApplied.HasValue && basis.ThresholdApplied.Value != decisionThresholds.Liveness)
         {
             return SessionOperationResult<LivenessEvidencePreparation>.Failure(
                 "LIVENESS_DECISION_BASIS_MISMATCH",
@@ -1152,7 +1152,7 @@ public sealed class VerificationEvidenceApplicationService(
                 400);
         }
 
-        var serverDerivedIsLive = basis.LivenessScore.Value >= LivenessThreshold;
+        var serverDerivedIsLive = basis.LivenessScore.Value >= decisionThresholds.Liveness;
         if (basis.ServerDerivedIsLive.HasValue && basis.ServerDerivedIsLive.Value != serverDerivedIsLive)
         {
             return SessionOperationResult<LivenessEvidencePreparation>.Failure(
@@ -1253,7 +1253,7 @@ public sealed class VerificationEvidenceApplicationService(
                string.Equals(captureBinding.DeviceId, liveArtifact.DeviceId, StringComparison.Ordinal);
     }
 
-    private static object BuildNormalizedLivenessDecisionBasis(
+    private object BuildNormalizedLivenessDecisionBasis(
         VerificationSession session,
         EvidenceResultSubmissionRequestDto request,
         CaptureArtifact liveArtifact,
@@ -1284,7 +1284,7 @@ public sealed class VerificationEvidenceApplicationService(
             adapterRequestedVerdict,
             method = submittedBasis.Method,
             livenessGrade = submittedBasis.LivenessGrade,
-            thresholdApplied = LivenessThreshold,
+            thresholdApplied = decisionThresholds.Liveness,
             liveCaptureBinding = new
             {
                 challengeHash = submittedBinding?.ChallengeHash,

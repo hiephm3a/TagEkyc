@@ -395,6 +395,29 @@ public sealed class Tip05EvidenceApplicationTests
     }
 
     [Fact]
+    public async Task Tip86_explicit_default_thresholds_keep_face_match_payload_hash_byte_identical()
+    {
+        var fixture = CreateFixture(new DecisionThresholdOptions
+        {
+            FaceMatch = 0.80m,
+            Liveness = 0.80m,
+        });
+        var scenario = await CreateTrustedFaceMatchScenarioAsync(fixture);
+
+        var accepted = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            scenario.SessionId,
+            FaceMatchEvidence(scenario),
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
+        var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.FaceMatch);
+
+        Assert.True(accepted.IsSuccess);
+        Assert.Equal(VerificationResult.Passed, evidence.Result);
+        Assert.Equal(ExpectedFaceMatchPayloadHash(scenario), evidence.PayloadHash?.ToString());
+    }
+
+    [Fact]
     public async Task Tip71_pc_agent_happy_path_reaches_capture_bound_to_session_payload()
     {
         var fixture = CreateFixture();
@@ -533,6 +556,25 @@ public sealed class Tip05EvidenceApplicationTests
     }
 
     [Fact]
+    public async Task Tip86_face_match_at_threshold_is_passed()
+    {
+        var fixture = CreateFixture();
+        var scenario = await CreateTrustedFaceMatchScenarioAsync(fixture);
+
+        var accepted = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            scenario.SessionId,
+            FaceMatchEvidence(scenario, score: 0.80m, isMatch: true),
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
+        var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.FaceMatch);
+
+        Assert.True(accepted.IsSuccess);
+        Assert.Equal(VerificationResult.Passed, evidence.Result);
+        Assert.DoesNotContain("FACE_MATCH_BELOW_THRESHOLD", evidence.ReasonCodes);
+    }
+
+    [Fact]
     public async Task Tip70_adapter_is_match_conflict_is_rejected()
     {
         var fixture = CreateFixture();
@@ -628,6 +670,29 @@ public sealed class Tip05EvidenceApplicationTests
         Assert.Equal(VerificationResult.Passed, evidence.Result);
         Assert.Equal(ExpectedLivenessPayloadHash(scenario), evidence.PayloadHash?.ToString());
         Assert.DoesNotContain("silent-face", evidence.EngineName, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task Tip86_explicit_default_thresholds_keep_liveness_payload_hash_byte_identical()
+    {
+        var fixture = CreateFixture(new DecisionThresholdOptions
+        {
+            FaceMatch = 0.80m,
+            Liveness = 0.80m,
+        });
+        var scenario = await CreateTrustedLivenessScenarioAsync(fixture);
+
+        var accepted = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            scenario.SessionId,
+            LivenessEvidence(scenario),
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
+        var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.Liveness);
+
+        Assert.True(accepted.IsSuccess);
+        Assert.Equal(VerificationResult.Passed, evidence.Result);
+        Assert.Equal(ExpectedLivenessPayloadHash(scenario), evidence.PayloadHash?.ToString());
     }
 
     [Fact]
@@ -730,6 +795,25 @@ public sealed class Tip05EvidenceApplicationTests
                 serverDerivedIsLive: false,
                 serverDecisionResult: "ReviewRequired"),
             evidence.PayloadHash?.ToString());
+    }
+
+    [Fact]
+    public async Task Tip86_liveness_at_threshold_is_passed()
+    {
+        var fixture = CreateFixture();
+        var scenario = await CreateTrustedLivenessScenarioAsync(fixture);
+
+        var accepted = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            scenario.SessionId,
+            LivenessEvidence(scenario, score: 0.80m, adapterRequestedVerdict: "live", serverDerivedIsLive: true),
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
+        var evidence = fixture.Evidence.EvidenceResults.Single(candidate => candidate.ResultType == EvidenceResultType.Liveness);
+
+        Assert.True(accepted.IsSuccess);
+        Assert.Equal(VerificationResult.Passed, evidence.Result);
+        Assert.DoesNotContain("LIVENESS_BELOW_THRESHOLD", evidence.ReasonCodes);
     }
 
     [Fact]
@@ -991,7 +1075,7 @@ public sealed class Tip05EvidenceApplicationTests
         return await fixture.SessionService.CreateAsync(BusinessCaller(), request, cancellationToken: CancellationToken.None);
     }
 
-    private static TestFixture CreateFixture()
+    private static TestFixture CreateFixture(DecisionThresholdOptions? decisionThresholdOptions = null)
     {
         var sessions = new LocalDevInMemoryVerificationSessionRepository();
         var artifacts = new LocalDevInMemoryCaptureArtifactRepository();
@@ -1009,7 +1093,8 @@ public sealed class Tip05EvidenceApplicationTests
             policies,
             idempotency,
             idempotency,
-            metadataReferences);
+            metadataReferences,
+            decisionThresholdOptions);
 
         return new TestFixture(service, sessionService, sessions, artifacts, evidence, audit, metadataReferences);
     }

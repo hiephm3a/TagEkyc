@@ -121,6 +121,7 @@ public sealed class Tip83E3RetentionConfigTests(PostgresPersistenceFixture postg
                 builder.UseSetting("environment", "Production");
                 builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
                 configure(builder);
+                ConfigureDecisionThresholds(builder);
             });
 
     private static void ConfigureProductionDb(IWebHostBuilder builder, string connectionString)
@@ -147,6 +148,12 @@ public sealed class Tip83E3RetentionConfigTests(PostgresPersistenceFixture postg
     {
         builder.UseSetting("TagEkyc:ApiKeyStore:Backend", ApiKeyStoreBackends.Postgres);
         builder.UseSetting("TagEkyc:ApiKeyStore:PepperSecretRef", Tip84BTestSupport.PepperSecretRef());
+    }
+
+    private static void ConfigureDecisionThresholds(IWebHostBuilder builder)
+    {
+        builder.UseSetting("TagEkyc:DecisionThresholds:FaceMatch", "0.80");
+        builder.UseSetting("TagEkyc:DecisionThresholds:Liveness", "0.80");
     }
 
     private static byte[] CreateP12(string password)
