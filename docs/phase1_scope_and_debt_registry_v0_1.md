@@ -43,6 +43,7 @@
 | Priority | Debt | Description | Exit Trigger |
 | --- | --- | --- | --- |
 | P0 | Raw biometric protection | Define encryption, access, retention, and deletion controls before real biometric data is stored. | Before pilot with real users |
+| P0 | Stable DG2 artifact-hash RRI | Current HN212 production capture computes `NfcArtifactHash = SHA256(DG2)` over raw DG2 bytes. This is a stable per-card biometric-derived identifier, proof-bound into append-only evidence history, present in ordinary evidence-table backups, and returned to authorized BusinessConsumers through evidence-ledger / evidence-package summary APIs. It is not raw image retention, but it is not erasable by crypto-shred or ordinary row deletion. Access control prevents one consumer from reading another consumer's sessions, but does not prevent cross-consumer correlation if the same globally stable value is shared/compared. DPO/Homeowner must explicitly choose a disposition before real-patient hospital-trial reliance: acknowledge/ratify, stop disclosing `ArtifactHash` in consumer DTOs, or open a proof-contract mitigation TIP (keyed/domain-separated/session-varying binding, with blast-radius to TIP-67G/golden vectors, SignFlow/consumer verification, and Agent hash computation/keying). | Before hospital trial with real patients |
 | P0 | Capture artifact retention policy | Define retention, deletion, legal hold, vault lifecycle, and recapture handling for raw capture artifacts. | Before real user artifacts are stored |
 | P0 | Capture agent trust/scoping model | Define which agents, SDKs, gateways, and adapters may submit artifacts or evidence results. Business clients must not submit arbitrary `PASSED` evidence. | Before pilot with real capture devices |
 | P0 | Legal certification gap | Confirm certification requirements per jurisdiction and use case. | Before production claim |
@@ -109,6 +110,14 @@ Priority: P0
 Risk: Raw face, liveness, and fingerprint data create severe privacy and security exposure if stored or logged incorrectly.
 
 Mitigation: Use VaultRef/hash outside the vault boundary, audit access, and define retention before real data collection.
+
+### Stable DG2 Artifact Hash
+
+Priority: P0
+
+Risk: The current NFC proof chain stores and exposes `NfcArtifactHash = SHA256(DG2)`. Because DG2 is stable for the CCCD, this value can link sessions for the same card/person. It is proof-bound, append-only, present in backups, and consumer-visible to authorized BusinessConsumers for the owning client application. Client-application access control does not prevent cross-consumer correlation if recipients compare or leak the same globally stable value.
+
+Mitigation: Treat this git-tracked debt entry as the owning hospital-trial DPO/Homeowner disposition record, not as a raw-export TIP-82R detail. Preferred first mitigation is to stop disclosing `ArtifactHash` in BusinessConsumer evidence-ledger / evidence-package-summary DTOs while leaving the internal proof chain unchanged. If accepted, disclose the retained proof/evidence metadata in the trial DPIA/consent material. If DPO rejects even internal linkability, open a proof-contract mitigation TIP before real-patient reliance.
 
 ### Legal Certification Gap
 
