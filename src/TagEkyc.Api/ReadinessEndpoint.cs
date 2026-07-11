@@ -143,6 +143,22 @@ public sealed class PostgresReadinessCheck(PostgresProductionReadinessValidator 
     }
 }
 
+public sealed class RawExportRuntimePrivilegeReadinessCheck(RawExportRuntimePrivilegeValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportRuntimePrivilegeException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
 public sealed class ApiKeyStoreReadinessCheck(ApiKeyStoreProductionReadinessValidator validator) : IReadinessCheck
 {
     public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)

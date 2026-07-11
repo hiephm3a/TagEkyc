@@ -210,6 +210,7 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
 
     builder.Services.AddScoped<IReadinessCheck, ProductionPostureReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, PostgresReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportRuntimePrivilegeReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
 }

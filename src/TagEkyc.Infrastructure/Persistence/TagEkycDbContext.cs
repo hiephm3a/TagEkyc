@@ -23,6 +23,18 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
 
     public DbSet<ApiKeyRow> ApiKeys => Set<ApiKeyRow>();
 
+    public DbSet<RawExportPolicyVersionRow> RawExportPolicyVersions => Set<RawExportPolicyVersionRow>();
+
+    public DbSet<RawExportPolicyAllowedClassRow> RawExportPolicyAllowedClasses => Set<RawExportPolicyAllowedClassRow>();
+
+    public DbSet<RawExportPolicyRequirementRow> RawExportPolicyRequirements => Set<RawExportPolicyRequirementRow>();
+
+    public DbSet<RawExportPolicyClosureRow> RawExportPolicyClosures => Set<RawExportPolicyClosureRow>();
+
+    public DbSet<RawExportRequirementRuleSetRow> RawExportRequirementRuleSets => Set<RawExportRequirementRuleSetRow>();
+
+    public DbSet<RawExportRequirementRuleRow> RawExportRequirementRules => Set<RawExportRequirementRuleRow>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("tagekyc");
@@ -223,6 +235,119 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.OAuthClientId).HasMaxLength(128);
             entity.Property(row => row.MtlsSubjectDn).HasMaxLength(512);
             entity.HasIndex(row => row.KeyPrefix).IsUnique();
+        });
+
+        modelBuilder.Entity<RawExportRequirementRuleSetRow>(entity =>
+        {
+            entity.ToTable("raw_export_requirement_rule_sets", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_requirement_rule_sets_RuleSetId", "\"RuleSetId\" = 'RAW_EXPORT_REQUIREMENTS'");
+                table.HasCheckConstraint("CK_raw_export_requirement_rule_sets_HomeJurisdictionCode", "\"HomeJurisdictionCode\" ~ '^[A-Z]{2}$'");
+            });
+            entity.HasKey(row => new { row.RuleSetId, row.RuleSetVersion });
+            entity.Property(row => row.RuleSetId).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.MigrationRef).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.HomeJurisdictionCode).HasMaxLength(2).IsRequired();
+        });
+
+        modelBuilder.Entity<RawExportRequirementRuleRow>(entity =>
+        {
+            entity.ToTable("raw_export_requirement_rules", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_requirement_rules_RuleSetId", "\"RuleSetId\" = 'RAW_EXPORT_REQUIREMENTS'");
+                table.HasCheckConstraint("CK_raw_export_requirement_rules_RuleSelector", "\"RuleSelector\" IN ('Always','ModeEquals','ConsentRequired','AnyJurisdictionForeign')");
+                table.HasCheckConstraint("CK_raw_export_requirement_rules_RequirementType", "\"RequirementType\" IN ('LegalApproval','ConsentArtifact','Dpia','CrossBorderAssessment','RetentionSchedule')");
+                table.HasCheckConstraint("CK_raw_export_requirement_rules_SelectorOperand", @"(
+                    ""RuleSelector"" = 'ModeEquals' AND ""SelectorOperand"" IN ('ExternalExportOnlyNoRetain','EncryptedExportPacket','EncryptedRawVaultRetained')
+                ) OR (
+                    ""RuleSelector"" IN ('Always','ConsentRequired','AnyJurisdictionForeign') AND ""SelectorOperand"" IS NULL
+                )");
+            });
+            entity.HasKey(row => row.Id);
+            entity.Property(row => row.RuleSetId).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.RuleSelector).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.SelectorOperand).HasMaxLength(64);
+            entity.Property(row => row.RequirementType).HasMaxLength(64).IsRequired();
+            entity.HasOne<RawExportRequirementRuleSetRow>()
+                .WithMany()
+                .HasForeignKey(row => new { row.RuleSetId, row.RuleSetVersion })
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RawExportPolicyVersionRow>(entity =>
+        {
+            entity.ToTable("raw_export_policy_versions", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_policy_versions_Mode", "\"Mode\" IN ('ExternalExportOnlyNoRetain','EncryptedExportPacket','EncryptedRawVaultRetained')");
+                table.HasCheckConstraint("CK_raw_export_policy_versions_ConsentRequirement", "\"ConsentRequirement\" IN ('Required','NotRequired')");
+                table.HasCheckConstraint("CK_raw_export_policy_versions_Retention", @"(
+                    ""Mode"" = 'ExternalExportOnlyNoRetain' AND ""RetentionProfileRef"" IS NULL
+                ) OR (
+                    ""Mode"" IN ('EncryptedExportPacket','EncryptedRawVaultRetained') AND ""RetentionProfileRef"" IS NOT NULL
+                )");
+            });
+            entity.HasKey(row => new { row.PolicyId, row.PolicyVersion });
+            entity.Property(row => row.Mode).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.Purpose).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.RetentionProfileRef).HasMaxLength(128);
+            entity.Property(row => row.RetentionPurposeCode).HasMaxLength(128);
+            entity.Property(row => row.ConsentRequirement).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.RecipientCategory).HasMaxLength(128);
+            entity.Property(row => row.RecipientAssuranceRequirement).HasMaxLength(128);
+            entity.Property(row => row.ControllerRole).HasMaxLength(128);
+            entity.Property(row => row.ControllerEntityRef).HasMaxLength(256);
+            entity.Property(row => row.ControllerJurisdiction).HasMaxLength(2);
+            entity.Property(row => row.RecipientJurisdiction).HasMaxLength(2);
+            entity.Property(row => row.ProcessingInfrastructureJurisdiction).HasMaxLength(2);
+            entity.Property(row => row.TransferScenarioCode).HasMaxLength(128);
+            entity.Property(row => row.TransferLegalBasisCode).HasMaxLength(128);
+            entity.Property(row => row.RequirementRuleSetId).HasMaxLength(64).IsRequired();
+            entity.HasOne<RawExportRequirementRuleSetRow>()
+                .WithMany()
+                .HasForeignKey(row => new { row.RequirementRuleSetId, row.RequirementRuleSetVersion })
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RawExportPolicyAllowedClassRow>(entity =>
+        {
+            entity.ToTable("raw_export_policy_allowed_classes", table =>
+                table.HasCheckConstraint("CK_raw_export_policy_allowed_classes_RawClass", "\"RawClass\" IN ('ChipDg1','ChipDg2Portrait','ChipDg13','ChipDg15','ChipSod','AaChallenge','AaResponse','LiveSelfieImage','LivenessMedia','HandSignatureImage')"));
+            entity.HasKey(row => new { row.PolicyId, row.PolicyVersion, row.RawClass });
+            entity.Property(row => row.RawClass).HasMaxLength(64).IsRequired();
+            entity.HasOne<RawExportPolicyVersionRow>()
+                .WithMany()
+                .HasForeignKey(row => new { row.PolicyId, row.PolicyVersion })
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RawExportPolicyRequirementRow>(entity =>
+        {
+            entity.ToTable("raw_export_policy_requirements", table =>
+                table.HasCheckConstraint("CK_raw_export_policy_requirements_RequirementType", "\"RequirementType\" IN ('LegalApproval','ConsentArtifact','Dpia','CrossBorderAssessment','RetentionSchedule')"));
+            entity.HasKey(row => new { row.PolicyId, row.PolicyVersion, row.RequirementType });
+            entity.Property(row => row.RequirementType).HasMaxLength(64).IsRequired();
+            entity.HasOne<RawExportPolicyVersionRow>()
+                .WithMany()
+                .HasForeignKey(row => new { row.PolicyId, row.PolicyVersion })
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RawExportPolicyClosureRow>(entity =>
+        {
+            entity.ToTable("raw_export_policy_closures", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_policy_closures_ClosureType", "\"ClosureType\" IN ('CatalogApproved','Abandoned')");
+                table.HasCheckConstraint("CK_raw_export_policy_closures_Principal_NotBlank", "btrim(\"ClosedByPrincipalId\") <> ''");
+                table.HasCheckConstraint("CK_raw_export_policy_closures_DecisionRef_NotBlank", "btrim(\"DecisionRef\") <> ''");
+            });
+            entity.HasKey(row => new { row.PolicyId, row.PolicyVersion });
+            entity.Property(row => row.ClosureType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.ClosedByPrincipalId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.DecisionRef).HasMaxLength(256).IsRequired();
+            entity.HasOne<RawExportPolicyVersionRow>()
+                .WithOne()
+                .HasForeignKey<RawExportPolicyClosureRow>(row => new { row.PolicyId, row.PolicyVersion })
+                .OnDelete(DeleteBehavior.Restrict);
         });
     }
 }

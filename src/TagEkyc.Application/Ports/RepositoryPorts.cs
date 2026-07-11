@@ -128,6 +128,61 @@ public interface IClientApplicationPolicyReader
     Task<ApiKeyMetadata?> GetApiKeyMetadataAsync(string keyPrefix, CancellationToken cancellationToken = default);
 }
 
+public sealed record AddRawExportPolicyVersionCommand(
+    Guid PolicyId,
+    int ExpectedLatestVersion,
+    RawExportMode Mode,
+    string Purpose,
+    string? RetentionProfileRef,
+    string? RetentionPurposeCode,
+    RawExportConsentRequirement ConsentRequirement,
+    string? RecipientCategory,
+    string? RecipientAssuranceRequirement,
+    string? ControllerRole,
+    string? ControllerEntityRef,
+    string? ControllerJurisdiction,
+    string? RecipientJurisdiction,
+    string? ProcessingInfrastructureJurisdiction,
+    string? TransferScenarioCode,
+    string? TransferLegalBasisCode,
+    IReadOnlySet<RawExportRawClass> AllowedClasses);
+
+public sealed record CloseRawExportPolicyVersionCommand(
+    Guid PolicyId,
+    int PolicyVersion,
+    string ClosedByPrincipalId,
+    string DecisionRef);
+
+public interface IRawExportPolicyRepository
+{
+    Task<RawExportPolicyVersion> AddVersionAsync(
+        AddRawExportPolicyVersionCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion> CatalogApproveAsync(
+        CloseRawExportPolicyVersionCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion> AbandonDraftAsync(
+        CloseRawExportPolicyVersionCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion?> GetVersionAsync(
+        Guid policyId,
+        int policyVersion,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion?> GetLatestVersionAsync(
+        Guid policyId,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion?> GetLatestCatalogApprovedVersionAsync(
+        Guid policyId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<RawExportPolicyVersion>> ListAsync(CancellationToken cancellationToken = default);
+}
+
 public sealed record VerificationFinalizationWrite(
     VerificationSession ExpectedSession,
     VerificationSession CompletedSession,
