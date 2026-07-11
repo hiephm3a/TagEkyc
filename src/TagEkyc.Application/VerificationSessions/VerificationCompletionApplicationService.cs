@@ -741,8 +741,7 @@ public sealed class VerificationCompletionApplicationService(
             evidenceRef.Type,
             evidenceRef.Id,
             evidenceRef.Type,
-            evidenceRef.Id,
-            evidenceRef.ArtifactHash);
+            evidenceRef.Id);
 
     private static CompleteVerificationSessionResponseDto ToCompleteResponse(VerificationSession session) =>
         new(

@@ -262,12 +262,11 @@ public sealed class VerificationSessionApplicationService(
                 if (!latestEvidence.TryGetValue(check, out var latest))
                 {
                     return new EvidenceLedgerRequiredCheckDto(
-                        ToDto(check),
-                        EvidenceLedgerSubmissionStatusDto.Missing,
-                        Result: null,
-                        CurrentEvidenceResultId: null,
-                        PayloadHash: null,
-                        CreatedAt: null);
+                    ToDto(check),
+                    EvidenceLedgerSubmissionStatusDto.Missing,
+                    Result: null,
+                    CurrentEvidenceResultId: null,
+                    CreatedAt: null);
                 }
 
                 return new EvidenceLedgerRequiredCheckDto(
@@ -275,7 +274,6 @@ public sealed class VerificationSessionApplicationService(
                     EvidenceLedgerSubmissionStatusDto.Submitted,
                     ToDto(latest.Result),
                     FormatId(latest.Id),
-                    latest.PayloadHash?.ToString(),
                     latest.CreatedAt);
             })
             .ToArray();
@@ -295,7 +293,6 @@ public sealed class VerificationSessionApplicationService(
                 .Select(artifact => new EvidenceLedgerCaptureArtifactDto(
                     FormatId(artifact.Id),
                     artifact.ArtifactType.ToString(),
-                    artifact.ArtifactHash?.ToString(),
                     artifact.CreatedAt))
                 .ToArray(),
             evidence
@@ -303,7 +300,6 @@ public sealed class VerificationSessionApplicationService(
                     FormatId(item.Id),
                     item.ResultType.ToString(),
                     ToDto(item.Result),
-                    item.PayloadHash?.ToString(),
                     item.CreatedAt))
                 .ToArray()));
     }

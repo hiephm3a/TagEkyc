@@ -46,9 +46,15 @@ public sealed class Tip67BNeutralProofVerificationTests
         var json = JsonSerializer.Serialize(view.Value);
         Assert.DoesNotContain("subject-ref", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("clientApplicationId", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("artifactHash", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("payloadHash", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("vaultRef", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("\"d\"", view.Value.PublicKeyJwk, StringComparison.Ordinal);
+
+        using var claim = JsonDocument.Parse(Encoding.UTF8.GetString(Base64UrlDecode(view.Value.SignatureValue.Split('.')[1])));
+        var signedClaimJson = claim.RootElement.GetRawText();
+        Assert.DoesNotContain("artifactHash", signedClaimJson, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("payloadHash", signedClaimJson, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]

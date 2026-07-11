@@ -14,6 +14,7 @@
 - Added `GET /api/ekyc/evidence-packages/{id}/verification-view` and `EvidencePackageVerificationViewDto`.
 - Published the consumer verification contract: pinned key id plus public-key fingerprint, JWS verification, mirrored-field checks, recomputed resultHash, and challenge match.
 - Preserved `EvidencePackageSummaryDto` unchanged; proof exposure is isolated to the dedicated verification-view route.
+- Breaking privacy contract change: BusinessConsumer read DTOs no longer expose raw-derived `ArtifactHash` or `PayloadHash` fields. External consumers must migrate away from those fields; there is no replacement public identifier in this API contract.
 
 ### v0.4 - TIP-67A eKYC neutrality opaque challenge
 
@@ -179,9 +180,9 @@ The signature status is `Signed` for TIP-66 evidence packages and `PlaceholderUn
 
 `EvidencePackageSummaryDto` fields: `EvidencePackageId`, `VerificationSessionId`, `PackageVersion`, `PackageHash`, `ManifestHash`, `Result`, `AssuranceLevel`, `EvidenceRefs`, `EvidencePackageSignatureStatus`, `RequestId`, `CorrelationId`, `CompletedAt`.
 
-`EvidenceRefSummaryDto` fields: `ResultType`, `EvidenceResultId`, `Type`, `Id`, `ArtifactHash`.
+`EvidenceRefSummaryDto` fields: `ResultType`, `EvidenceResultId`, `Type`, `Id`.
 
-`Type` and `Id` are compatibility aliases for the public summary. Public package summaries do not expose internal manifest records or per-evidence payload internals.
+`Type` and `Id` are compatibility aliases for the public summary. Public package summaries do not expose internal manifest records, raw-derived artifact hashes, or per-evidence payload internals.
 
 ### 3.12 VerificationCompletedEventDto
 
@@ -267,9 +268,9 @@ Wrong caller category returns `CALLER_CATEGORY_NOT_ALLOWED` with HTTP 403 from a
 
 ## 6. Sanitization And Data Boundary
 
-Default BusinessConsumer create/session summary/completion/package responses must not expose raw capture artifacts, raw biometric/document/NFC/fingerprint payloads, plaintext identity values, `VaultRef`, internal manifest objects, adapter internals, API key material, per-evidence internal detail, `PayloadHash`, or `clientApplicationId`.
+Default BusinessConsumer create/session summary/completion/package responses must not expose raw capture artifacts, raw biometric/document/NFC/fingerprint payloads, plaintext identity values, `VaultRef`, internal manifest objects, adapter internals, API key material, per-evidence internal detail, `ArtifactHash`, `PayloadHash`, or `clientApplicationId`.
 
-`EvidencePackageSummaryDto.EvidenceRefs` exposes only public evidence refs: result type, evidence result id, compatibility aliases, and optional artifact hash. It does not expose `PayloadHash`, `SanitizedSummaryRef`, internal audit refs, internal manifest bodies, or raw inputs.
+`EvidencePackageSummaryDto.EvidenceRefs` exposes only public evidence refs: result type, evidence result id, and compatibility aliases. It does not expose `ArtifactHash`, `PayloadHash`, `SanitizedSummaryRef`, internal audit refs, internal manifest bodies, or raw inputs.
 
 `EvidencePackageVerificationViewDto` exposes proof material only for consumer verification. It must not expose raw `SubjectRef`, plaintext identity payloads, `VaultRef`, raw artifact refs, raw biometric/document/NFC/fingerprint data, private JWK fields, certificates, P12 material, API keys, or internal manifest rows. `Challenge` and `ClientReference` are caller-supplied echoes outside the PII guarantee.
 

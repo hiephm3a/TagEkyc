@@ -65,20 +65,17 @@ public sealed record EvidenceLedgerRequiredCheckDto(
     EvidenceLedgerSubmissionStatusDto SubmissionStatus,
     VerificationResultDto? Result,
     string? CurrentEvidenceResultId,
-    string? PayloadHash,
     DateTimeOffset? CreatedAt);
 
 public sealed record EvidenceLedgerCaptureArtifactDto(
     string CaptureArtifactId,
     string ArtifactType,
-    string? ArtifactHash,
     DateTimeOffset CreatedAt);
 
 public sealed record EvidenceLedgerEvidenceResultDto(
     string EvidenceResultId,
     string ResultType,
     VerificationResultDto Result,
-    string? PayloadHash,
     DateTimeOffset CreatedAt);
 
 public sealed record EvidenceLedgerDto(
@@ -94,8 +91,7 @@ public sealed record EvidenceRefSummaryDto(
     string ResultType,
     string EvidenceResultId,
     string Type,
-    string Id,
-    string? ArtifactHash);
+    string Id);
 
 public sealed record CompleteVerificationSessionRequestDto(
     bool ForceReview = false,

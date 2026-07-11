@@ -14,6 +14,11 @@ namespace TagEkyc.UnitTests;
 
 public sealed class Tip80SLedgerTests
 {
+    private static readonly JsonSerializerOptions JsonOptions = new()
+    {
+        Converters = { new JsonStringEnumConverter() },
+    };
+
     [Fact]
     public async Task Ledger_reports_evidence_gate_without_false_all_passed_claim()
     {
@@ -39,8 +44,8 @@ public sealed class Tip80SLedgerTests
         Assert.Equal(RequiredCheckTypeDto.CaptureQuality, check.CheckType);
         Assert.Equal(EvidenceLedgerSubmissionStatusDto.Submitted, check.SubmissionStatus);
         Assert.Equal(VerificationResultDto.FailedIdentity, check.Result);
-        Assert.Equal("sha256:failed-identity-payload", check.PayloadHash);
         Assert.NotNull(check.CurrentEvidenceResultId);
+        AssertNoRawDerivedHashes(JsonSerializer.Serialize(ledger.Value, JsonOptions));
     }
 
     [Fact]
@@ -71,12 +76,10 @@ public sealed class Tip80SLedgerTests
         Assert.True(ledger.Value!.EvidenceCompleteEligible);
         Assert.False(ledger.Value.AllRequiredChecksPassed);
         Assert.Equal(2, ledger.Value.AcceptedEvidenceResults.Count);
-        Assert.Contains(ledger.Value.AcceptedEvidenceResults, result => result.PayloadHash == "sha256:passed-payload");
-        Assert.Contains(ledger.Value.AcceptedEvidenceResults, result => result.PayloadHash == "sha256:retry-payload");
         var check = Assert.Single(ledger.Value.RequiredChecks);
         Assert.Equal(VerificationResultDto.RetryRequired, check.Result);
         Assert.Equal(newer.Id.ToString("N"), check.CurrentEvidenceResultId);
-        Assert.Equal("sha256:retry-payload", check.PayloadHash);
+        AssertNoRawDerivedHashes(JsonSerializer.Serialize(ledger.Value, JsonOptions));
     }
 
     [Fact]
@@ -164,8 +167,15 @@ public sealed class Tip80SLedgerTests
         Assert.DoesNotContain("InputCaptureArtifactIds", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("CaptureAgentId", json, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("DeviceId", json, StringComparison.OrdinalIgnoreCase);
+        AssertNoRawDerivedHashes(json);
         Assert.Contains("EvidenceCompleteEligible", json, StringComparison.Ordinal);
         Assert.Contains("AllRequiredChecksPassed", json, StringComparison.Ordinal);
+    }
+
+    private static void AssertNoRawDerivedHashes(string json)
+    {
+        Assert.DoesNotContain("artifactHash", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("payloadHash", json, StringComparison.OrdinalIgnoreCase);
     }
 
     private static async Task<CreateVerificationSessionResponseDto> CreateSessionAsync(TestFixture fixture)

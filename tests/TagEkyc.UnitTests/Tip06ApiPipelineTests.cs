@@ -15,6 +15,7 @@ using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.CaptureAgent;
 using TagEkyc.Contracts.Common;
 using TagEkyc.Contracts.TrustedAdapter;
+using TagEkyc.Infrastructure.Signing;
 
 namespace TagEkyc.UnitTests;
 
@@ -36,6 +37,13 @@ public sealed class Tip06ApiPipelineTests
         var sessionId = await CreateSessionAsync(api.Client, RequiredCheckTypeDto.CaptureQuality);
         var artifactId = await AppendDeviceMetadataArtifactAsync(api.Client, sessionId);
         await AppendCaptureQualityEvidenceAsync(api.Client, sessionId, artifactId);
+
+        using var ledgerRequest = new HttpRequestMessage(HttpMethod.Get, $"/api/ekyc/verification-sessions/{sessionId}/evidence-ledger");
+        ledgerRequest.Headers.Add(LocalDevApiKeyAuthenticator.HeaderName, BusinessKey);
+        var ledgerResponse = await api.Client.SendAsync(ledgerRequest);
+        Assert.Equal(HttpStatusCode.OK, ledgerResponse.StatusCode);
+        var ledgerJson = await ReadJsonAsync(ledgerResponse);
+        AssertNoRawDerivedHashes(ledgerJson.ToJsonString());
 
         var completeResponse = await PostJsonAsync(
             api.Client,
@@ -81,13 +89,19 @@ public sealed class Tip06ApiPipelineTests
         Assert.Equal("req-api-complete", packageJson["requestId"]?.GetValue<string>());
         Assert.Equal("corr-api-complete", packageJson["correlationId"]?.GetValue<string>());
         Assert.NotNull(packageJson["evidenceRefs"]?.AsArray().Single());
-        Assert.DoesNotContain("payloadHash", packageText, StringComparison.OrdinalIgnoreCase);
-        Assert.DoesNotContain("PayloadHash", packageText, StringComparison.Ordinal);
+        AssertNoRawDerivedHashes(packageText);
         Assert.DoesNotContain("vaultRef", packageText, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("clientApplicationId", packageText, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("InternalAudit", packageText, StringComparison.Ordinal);
         Assert.DoesNotContain("engineName", packageText, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("inputCaptureArtifactIds", packageText, StringComparison.OrdinalIgnoreCase);
+
+        using var verificationViewRequest = new HttpRequestMessage(HttpMethod.Get, $"/api/ekyc/evidence-packages/{packageId}/verification-view");
+        verificationViewRequest.Headers.Add(LocalDevApiKeyAuthenticator.HeaderName, BusinessKey);
+        var verificationViewResponse = await api.Client.SendAsync(verificationViewRequest);
+        Assert.Equal(HttpStatusCode.OK, verificationViewResponse.StatusCode);
+        var verificationViewJson = await ReadJsonAsync(verificationViewResponse);
+        AssertNoRawDerivedHashes(verificationViewJson.ToJsonString());
     }
 
     [Fact]
@@ -160,6 +174,12 @@ public sealed class Tip06ApiPipelineTests
         Assert.DoesNotContain("vaultRef", responseText, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("clientApplicationId", responseText, StringComparison.OrdinalIgnoreCase);
         Assert.DoesNotContain("InternalAudit", responseText, StringComparison.Ordinal);
+    }
+
+    private static void AssertNoRawDerivedHashes(string json)
+    {
+        Assert.DoesNotContain("artifactHash", json, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("payloadHash", json, StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
@@ -432,7 +452,7 @@ public sealed class Tip06ApiPipelineTests
             builder.Services.AddSingleton<IAppendIdempotencyBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryAppendIdempotencyStore>());
             builder.Services.AddSingleton<LocalDevInMemoryVerificationFinalizationBoundary>();
             builder.Services.AddSingleton<IVerificationFinalizationBoundary>(sp => sp.GetRequiredService<LocalDevInMemoryVerificationFinalizationBoundary>());
-            builder.Services.AddSingleton<IEvidenceSigner, TestEvidenceSigner>();
+            builder.Services.AddSingleton<IEvidenceSigner, LocalDevEs256JwsEvidenceSigner>();
             builder.Services.AddSingleton<VerificationSessionApplicationService>();
             builder.Services.AddSingleton<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
             builder.Services.AddSingleton<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());

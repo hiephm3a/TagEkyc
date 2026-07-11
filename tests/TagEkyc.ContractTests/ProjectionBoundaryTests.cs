@@ -24,6 +24,7 @@ public sealed class ProjectionBoundaryTests
             "Template",
             "Plaintext",
             "ApiKey",
+            "ArtifactHash",
             "PayloadHash",
             "PolicySnapshot",
             "Retention",
@@ -43,8 +44,16 @@ public sealed class ProjectionBoundaryTests
         {
             Assert.DoesNotContain(
                 forbiddenTerms,
-                term => property.Name.Contains(term, StringComparison.OrdinalIgnoreCase) &&
-                    !IsAllowedLedgerPayloadHash(property, term));
+                term => property.Name.Contains(term, StringComparison.OrdinalIgnoreCase));
+
+            var jsonName = property.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name;
+            if (!string.IsNullOrWhiteSpace(jsonName))
+            {
+                Assert.DoesNotContain(
+                    ["artifactHash", "payloadHash"],
+                    term => string.Equals(jsonName, term, StringComparison.OrdinalIgnoreCase));
+            }
+
             if (property.Name.Contains("ClientApplicationId", StringComparison.OrdinalIgnoreCase))
             {
                 Assert.Equal(typeof(VerificationCompletedEventDto), property.DeclaringType);
@@ -54,13 +63,6 @@ public sealed class ProjectionBoundaryTests
             Assert.DoesNotContain("TrustedAdapter", property.PropertyType.FullName ?? string.Empty, StringComparison.Ordinal);
         }
     }
-
-    private static bool IsAllowedLedgerPayloadHash(PropertyInfo property, string term) =>
-        string.Equals(term, "PayloadHash", StringComparison.OrdinalIgnoreCase) &&
-        string.Equals(property.Name, "PayloadHash", StringComparison.Ordinal) &&
-        property.DeclaringType is not null &&
-        (property.DeclaringType == typeof(EvidenceLedgerRequiredCheckDto) ||
-            property.DeclaringType == typeof(EvidenceLedgerEvidenceResultDto));
 
     [Fact]
     public void Client_application_id_is_limited_to_completion_notification_event()
