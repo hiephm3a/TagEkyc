@@ -46,6 +46,21 @@ For stronger runtime hardening, deploy with separate identities:
 
 This is deployment guidance, not auto-applied SQL. Concrete role names and grants belong to the hospital deployment plan. A migration run by the schema owner cannot make that same owner least-privileged; the runtime role split must be provisioned operationally.
 
+## Raw-Export Rule-Table Privilege Gate (TIP-88A)
+
+The raw-export requirement-rule tables `tagekyc.raw_export_requirement_rule_sets` and `tagekyc.raw_export_requirement_rules` (added by `20260711132410_Tip88ARawExportPolicyCatalog`) are migration-seeded and immutable at runtime. Two layers protect them:
+
+- In-DB enforcement, always on and role-independent: the `reject_raw_export_rule_runtime_mutation()` trigger raises on any `INSERT`/`UPDATE`/`DELETE` from any caller. Derivation rules can only change via a new migration.
+- Deployment gate, must be provisioned operationally: the production runtime application role MUST have `SELECT` only on both rule tables — no `INSERT`, `UPDATE`, or `DELETE`. Run by the schema owner (adjust the runtime role name to the hospital deployment plan):
+
+  ```sql
+  REVOKE INSERT, UPDATE, DELETE ON tagekyc.raw_export_requirement_rule_sets FROM <runtime_role>;
+  REVOKE INSERT, UPDATE, DELETE ON tagekyc.raw_export_requirement_rules FROM <runtime_role>;
+  GRANT SELECT ON tagekyc.raw_export_requirement_rule_sets, tagekyc.raw_export_requirement_rules TO <runtime_role>;
+  ```
+
+Production `/readiness` fails closed with `PROD_RAW_EXPORT_RULE_TABLE_MUTATION_PRIVILEGE` (HTTP 503) whenever the runtime principal (`current_user`) holds any mutation privilege on either rule table. A single-role deployment where the runtime identity equals the schema owner will therefore never become ready — this is intentional: provision the SELECT-only runtime role before go-live. Tracked as a P1 deployment gate in `docs/phase1_scope_and_debt_registry_v0_1.md`.
+
 ## Retention Policy Declaration
 
 Production requires a declared retention window for regulated evidence at `TagEkyc:Retention:RegulatedEvidenceRetentionDays`. The value is supplied by Legal/DPO under the governing Vietnamese legal basis; this runbook intentionally ships no day-count value. `LocalDevEphemeral` has no production retention window.
