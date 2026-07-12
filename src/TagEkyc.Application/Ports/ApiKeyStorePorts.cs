@@ -16,4 +16,5 @@ public sealed record ResolvedApiKey(
     DateTimeOffset? ExpiresAt,
     AuthenticatedCallerCategory CallerCategory,
     IReadOnlySet<Guid>? AllowedClientApplicationIds = null,
-    IReadOnlySet<string>? AllowedCaptureAgentIds = null);
+    IReadOnlySet<string>? AllowedCaptureAgentIds = null,
+    Guid PrincipalId = default);

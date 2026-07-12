@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TagEkyc.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using TagEkyc.Infrastructure.Persistence;
 namespace TagEkyc.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TagEkycDbContext))]
-    partial class TagEkycDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260712133151_Tip88B1RawExportControlPlane")]
+    partial class Tip88B1RawExportControlPlane
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

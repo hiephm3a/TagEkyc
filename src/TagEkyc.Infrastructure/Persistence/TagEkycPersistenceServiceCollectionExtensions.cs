@@ -24,7 +24,9 @@ public static class TagEkycPersistenceServiceCollectionExtensions
         services.AddScoped<IInternalEvidenceManifestRepository, EfEvidenceManifestRepository>();
         services.AddScoped<IAuditEventRepository, EfAuditEventRepository>();
         services.AddScoped<IRawExportPolicyRepository, EfRawExportPolicyRepository>();
+        services.AddScoped<IRawExportControlPlaneRepository, EfRawExportControlPlaneRepository>();
         services.AddScoped<RawExportRuntimePrivilegeValidator>();
+        services.AddScoped<RawExportControlPlaneReadinessValidator>();
         services.AddScoped<IVerificationFinalizationBoundary, EfVerificationFinalizationBoundary>();
         services.AddScoped<EfAppendIdempotencyBoundary>();
         services.AddScoped<IAppendIdempotencyRepository>(sp => sp.GetRequiredService<EfAppendIdempotencyBoundary>());

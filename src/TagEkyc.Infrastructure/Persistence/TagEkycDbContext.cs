@@ -35,6 +35,14 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
 
     public DbSet<RawExportRequirementRuleRow> RawExportRequirementRules => Set<RawExportRequirementRuleRow>();
 
+    public DbSet<RawExportGrantRow> RawExportGrants => Set<RawExportGrantRow>();
+
+    public DbSet<RawExportControlAuthorityRow> RawExportControlAuthorities => Set<RawExportControlAuthorityRow>();
+
+    public DbSet<RawExportFulfillmentRow> RawExportFulfillments => Set<RawExportFulfillmentRow>();
+
+    public DbSet<RawExportPolicyLifecycleRow> RawExportPolicyLifecycles => Set<RawExportPolicyLifecycleRow>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("tagekyc");
@@ -272,6 +280,16 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                 .WithMany()
                 .HasForeignKey(row => new { row.RuleSetId, row.RuleSetVersion })
                 .OnDelete(DeleteBehavior.Restrict);
+            var ruleSetId = entity.Metadata.FindProperty(nameof(RawExportRequirementRuleRow.RuleSetId));
+            var ruleSetVersion = entity.Metadata.FindProperty(nameof(RawExportRequirementRuleRow.RuleSetVersion));
+            if (ruleSetId is not null && ruleSetVersion is not null)
+            {
+                var conventionIndex = entity.Metadata.FindIndex([ruleSetId, ruleSetVersion]);
+                if (conventionIndex is not null)
+                {
+                    entity.Metadata.RemoveIndex(conventionIndex);
+                }
+            }
         });
 
         modelBuilder.Entity<RawExportPolicyVersionRow>(entity =>
@@ -347,6 +365,106 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.HasOne<RawExportPolicyVersionRow>()
                 .WithOne()
                 .HasForeignKey<RawExportPolicyClosureRow>(row => new { row.PolicyId, row.PolicyVersion })
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RawExportGrantRow>(entity =>
+        {
+            entity.ToTable("raw_export_grants", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_grants_EventType", "\"EventType\" IN ('Granted','Revoked')");
+                table.HasCheckConstraint("CK_raw_export_grants_DecisionRef_NotBlank", "btrim(\"DecisionRef\") <> ''");
+            });
+            entity.HasKey(row => new { row.PrincipalId, row.PolicyId, row.PolicyVersion, row.Revision });
+            entity.Property(row => row.EventType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.DecisionRef).HasMaxLength(256).IsRequired();
+            entity.HasOne<RawExportPolicyVersionRow>()
+                .WithMany()
+                .HasForeignKey(row => new { row.PolicyId, row.PolicyVersion })
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RawExportControlAuthorityRow>(entity =>
+        {
+            entity.ToTable("raw_export_control_authorities", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_control_authorities_AuthorityType", "\"AuthorityType\" IN ('GrantAdmin','RecorderAuthorityAdmin','ActivationAuthority','FulfillmentRecorder')");
+                table.HasCheckConstraint("CK_raw_export_control_authorities_ScopeType", "\"ScopeType\" IN ('Policy','Global')");
+                table.HasCheckConstraint("CK_raw_export_control_authorities_EventType", "\"EventType\" IN ('Granted','Revoked')");
+                table.HasCheckConstraint("CK_raw_export_control_authorities_ScopeShape", @"(
+                    ""ScopeType"" = 'Global' AND ""ScopeId"" IS NULL
+                ) OR (
+                    ""ScopeType"" = 'Policy' AND ""ScopeId"" IS NOT NULL
+                )");
+                table.HasCheckConstraint("CK_raw_export_control_authorities_RequirementShape", @"(
+                    ""AuthorityType"" = 'FulfillmentRecorder'
+                    AND ""RequirementType"" IN ('LegalApproval','Dpia','CrossBorderAssessment','RetentionSchedule')
+                ) OR (
+                    ""AuthorityType"" <> 'FulfillmentRecorder'
+                    AND ""RequirementType"" IS NULL
+                )");
+                table.HasCheckConstraint("CK_raw_export_control_authorities_DecisionRef_NotBlank", "btrim(\"DecisionRef\") <> ''");
+            });
+            entity.HasKey(row => row.AuthorityEventId);
+            entity.Property(row => row.AuthorityType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.ScopeType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.RequirementType).HasMaxLength(64);
+            entity.Property(row => row.EventType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.DecisionRef).HasMaxLength(256).IsRequired();
+        });
+
+        modelBuilder.Entity<RawExportFulfillmentRow>(entity =>
+        {
+            entity.ToTable("raw_export_fulfillments", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_fulfillments_RequirementType", "\"RequirementType\" IN ('LegalApproval','Dpia','CrossBorderAssessment','RetentionSchedule')");
+                table.HasCheckConstraint("CK_raw_export_fulfillments_EventType", "\"EventType\" IN ('Accepted','Withdrawn')");
+                table.HasCheckConstraint("CK_raw_export_fulfillments_EventShape", @"(
+                    ""EventType"" = 'Accepted'
+                    AND ""ArtifactRef"" IS NOT NULL
+                    AND btrim(""ArtifactRef"") <> ''
+                    AND ""ArtifactVersion"" IS NOT NULL
+                    AND btrim(""ArtifactVersion"") <> ''
+                    AND ""ValidFromUtc"" IS NOT NULL
+                    AND ""TargetRevision"" IS NULL
+                ) OR (
+                    ""EventType"" = 'Withdrawn'
+                    AND ""TargetRevision"" IS NOT NULL
+                    AND ""ArtifactRef"" IS NULL
+                    AND ""ArtifactVersion"" IS NULL
+                    AND ""ValidFromUtc"" IS NULL
+                    AND ""ValidUntilUtc"" IS NULL
+                    AND ""SupersedesRevision"" IS NULL
+                )");
+                table.HasCheckConstraint("CK_raw_export_fulfillments_Validity", "\"ValidUntilUtc\" IS NULL OR \"ValidFromUtc\" IS NULL OR \"ValidUntilUtc\" > \"ValidFromUtc\"");
+                table.HasCheckConstraint("CK_raw_export_fulfillments_DecisionRef_NotBlank", "btrim(\"FulfillmentDecisionRef\") <> ''");
+            });
+            entity.HasKey(row => row.FulfillmentEventId);
+            entity.Property(row => row.RequirementType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.EventType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.ArtifactRef).HasMaxLength(256);
+            entity.Property(row => row.ArtifactVersion).HasMaxLength(128);
+            entity.Property(row => row.FulfillmentDecisionRef).HasMaxLength(256).IsRequired();
+            entity.HasIndex(row => new { row.PolicyId, row.PolicyVersion, row.RequirementType, row.Revision }).IsUnique();
+            entity.HasOne<RawExportPolicyVersionRow>()
+                .WithMany()
+                .HasForeignKey(row => new { row.PolicyId, row.PolicyVersion })
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RawExportPolicyLifecycleRow>(entity =>
+        {
+            entity.ToTable("raw_export_policy_lifecycle", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_policy_lifecycle_EventType", "\"EventType\" IN ('Activated','Suspended','Revoked')");
+                table.HasCheckConstraint("CK_raw_export_policy_lifecycle_DecisionRef_NotBlank", "btrim(\"DecisionRef\") <> ''");
+            });
+            entity.HasKey(row => new { row.PolicyId, row.PolicyVersion, row.Revision });
+            entity.Property(row => row.EventType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.DecisionRef).HasMaxLength(256).IsRequired();
+            entity.HasOne<RawExportPolicyVersionRow>()
+                .WithMany()
+                .HasForeignKey(row => new { row.PolicyId, row.PolicyVersion })
                 .OnDelete(DeleteBehavior.Restrict);
         });
     }

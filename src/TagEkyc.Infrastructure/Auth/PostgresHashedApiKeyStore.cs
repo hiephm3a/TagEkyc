@@ -57,7 +57,8 @@ public sealed class PostgresHashedApiKeyStore(TagEkycDbContext dbContext, ApiKey
             row.ExpiresAt,
             category,
             DeserializeNullableSet<Guid>(row.AllowedClientApplicationIdsJson),
-            DeserializeNullableSet<string>(row.AllowedCaptureAgentIdsJson));
+            DeserializeNullableSet<string>(row.AllowedCaptureAgentIdsJson),
+            row.PrincipalId);
     }
 
     private static ApiKeyStatus MapStatus(string status) =>
