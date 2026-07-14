@@ -61,6 +61,31 @@ The raw-export requirement-rule tables `tagekyc.raw_export_requirement_rule_sets
 
 Production `/readiness` fails closed with `PROD_RAW_EXPORT_RULE_TABLE_MUTATION_PRIVILEGE` (HTTP 503) whenever the runtime principal (`current_user`) holds any mutation privilege on either rule table. A single-role deployment where the runtime identity equals the schema owner will therefore never become ready — this is intentional: provision the SELECT-only runtime role before go-live. Tracked as a P1 deployment gate in `docs/phase1_scope_and_debt_registry_v0_1.md`.
 
+## Raw-Export Control-Plane Role & Bootstrap Gate (TIP-88B1)
+
+TIP-88B1 (migration `20260712133151_Tip88B1RawExportControlPlane`) adds 4 append-only event tables written ONLY via `SECURITY DEFINER` functions, plus a root-authority model. Three layers:
+
+- In-DB enforcement, always on: direct raw-SQL INSERT into `raw_export_grants` / `raw_export_control_authorities` / `raw_export_fulfillments` / `raw_export_policy_lifecycle` is rejected; every append goes through a SD function that stamps the actor from a transaction-local GUC (`SET LOCAL tagekyc.actor_principal_id`), fail-closed on missing/blank/malformed.
+- Deployment gate, must be provisioned operationally (the migration creates the roles as `NOLOGIN`; wiring the app to the runtime role is a deployment step):
+  - `tagekyc_raw_export_deployer` — owns the SD functions; has INSERT on the 4 event tables. NOT the app's connection role.
+  - `tagekyc_runtime` — a least-privilege runtime CAPABILITY role (created `NOLOGIN`): the migration grants it `USAGE` on the schema + `EXECUTE` on the 4 append functions. It does NOT grant it table `SELECT` and it CANNOT be a login principal directly.
+  - `tagekyc_raw_export_bootstrapper` — deploy-only: `EXECUTE` on `raw_export_bootstrap_global_authority(...)` to seed the initial root authorities.
+  - **The app connects as a LOGIN principal `<app_login_role>` that HOLDS the `tagekyc_runtime` capability** (via role membership/inheritance, or `SET ROLE tagekyc_runtime` per session) — NOT as the deployer/bootstrapper. `current_user` (or the effective role) that `/readiness` and the append functions see must be the runtime capability, must fail the direct-event-table-write privilege check, and must pass the function-ACL check.
+  - **Grant the read set the resolver/readiness need (the SD append functions cover writes, but the resolver reads tables directly), with NO write. Grant it DIRECTLY to the `tagekyc_runtime` capability role** so it is the EFFECTIVE role's privilege under BOTH modes — role-inheritance AND `SET ROLE tagekyc_runtime` (a grant to only the app login role is SUSPENDED under `SET ROLE`, causing a generic resolver/readiness failure):
+    ```sql
+    GRANT SELECT ON
+      tagekyc.raw_export_policy_versions, tagekyc.raw_export_policy_requirements,
+      tagekyc.raw_export_policy_closures, tagekyc.raw_export_requirement_rule_sets,
+      tagekyc.raw_export_requirement_rules,
+      tagekyc.raw_export_grants, tagekyc.raw_export_control_authorities,
+      tagekyc.raw_export_fulfillments, tagekyc.raw_export_policy_lifecycle
+    TO tagekyc_runtime;   -- capability role; no INSERT/UPDATE/DELETE
+    ```
+    (A missing/ineffective SELECT surfaces as a generic resolver/readiness failure, not one of the five B1 codes below, until a dedicated read-privilege check is added.)
+  - Root `GrantAdmin` / `RecorderAuthorityAdmin` / `ActivationAuthority` authorities MUST be bootstrap-seeded with REAL operator principals (never a dev/default) before the control plane is used. Bootstrapping is deploy-time (bootstrapper role), never a runtime command.
+
+Production `/readiness` fails closed (HTTP 503) with any of: `PROD_RAW_EXPORT_ROOT_AUTHORITY_MISSING` (an authority class has no root), `PROD_RAW_EXPORT_ROOT_AUTHORITY_DEV_DEFAULT` (a dev/default principal seeded as root), `PROD_RAW_EXPORT_CONTROL_PLANE_TABLE_MUTATION_PRIVILEGE` (runtime principal can write the event tables directly), `PROD_RAW_EXPORT_CONTROL_PLANE_FUNCTION_ACL_INVALID` (SD/ACL/search_path drift), `PROD_RAW_EXPORT_CONTROL_PLANE_DEPLOYMENT_ROLE_INVALID` (role setup wrong). NOTE: the append actor principal is APPLICATION-ASSERTED, not DB-authenticated — its non-forgeability depends on the runtime/deployer role separation above being provisioned. Tracked as a P1 gate in `docs/phase1_scope_and_debt_registry_v0_1.md`.
+
 ## Retention Policy Declaration
 
 Production requires a declared retention window for regulated evidence at `TagEkyc:Retention:RegulatedEvidenceRetentionDays`. The value is supplied by Legal/DPO under the governing Vietnamese legal basis; this runbook intentionally ships no day-count value. `LocalDevEphemeral` has no production retention window.
