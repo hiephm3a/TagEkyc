@@ -43,6 +43,12 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
 
     public DbSet<RawExportPolicyLifecycleRow> RawExportPolicyLifecycles => Set<RawExportPolicyLifecycleRow>();
 
+    public DbSet<RawExportSubjectConsentEventRow> RawExportSubjectConsentEvents => Set<RawExportSubjectConsentEventRow>();
+
+    public DbSet<RawExportSubjectConsentClassRow> RawExportSubjectConsentClasses => Set<RawExportSubjectConsentClassRow>();
+
+    public DbSet<RawExportSubjectConsentAuthorityRow> RawExportSubjectConsentAuthorities => Set<RawExportSubjectConsentAuthorityRow>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("tagekyc");
@@ -466,6 +472,112 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                 .WithMany()
                 .HasForeignKey(row => new { row.PolicyId, row.PolicyVersion })
                 .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RawExportSubjectConsentEventRow>(entity =>
+        {
+            entity.ToTable("raw_export_subject_consent_events", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_subject_consent_events_EventType", "\"EventType\" IN ('Granted','Withdrawn')");
+                table.HasCheckConstraint("CK_raw_export_subject_consent_events_PurposeCode", "\"PurposeCode\" = 'SubjectRawBiometricExport'");
+                table.HasCheckConstraint("CK_raw_export_subject_consent_events_HashLength", "octet_length(\"ConsentScopeHash\") = 32");
+                table.HasCheckConstraint(
+                    "CK_raw_export_subject_consent_events_EventShape",
+                    """
+                    (
+                        "EventType" = 'Granted'
+                        AND "TargetRevision" IS NULL
+                        AND "ConsentTextVersion" IS NOT NULL AND btrim("ConsentTextVersion") <> ''
+                        AND "ConsentTextContentHash" IS NOT NULL AND btrim("ConsentTextContentHash") <> ''
+                        AND "ExternalConsentArtifactRef" IS NOT NULL AND btrim("ExternalConsentArtifactRef") <> ''
+                        AND ("DecisionRef" IS NULL OR btrim("DecisionRef") <> '')
+                        AND "ValidFromUtc" IS NOT NULL
+                        AND "CapturedAtUtc" IS NOT NULL
+                        AND "CapturedByPrincipalId" IS NOT NULL
+                        AND "WithdrawnByPrincipalId" IS NULL
+                        AND ("ValidUntilUtc" IS NULL OR "ValidUntilUtc" > "ValidFromUtc")
+                    ) OR (
+                        "EventType" = 'Withdrawn'
+                        AND "TargetRevision" IS NOT NULL
+                        AND "ConsentTextVersion" IS NULL
+                        AND "ConsentTextContentHash" IS NULL
+                        AND "ValidFromUtc" IS NULL
+                        AND "ValidUntilUtc" IS NULL
+                        AND "CapturedAtUtc" IS NULL
+                        AND "CapturedByPrincipalId" IS NULL
+                        AND "WithdrawnByPrincipalId" IS NOT NULL
+                    )
+                    """);
+            });
+            entity.HasKey(row => row.SubjectConsentRecordId);
+            entity.HasIndex(row => new
+            {
+                row.VerificationSessionId,
+                row.SubjectRef,
+                row.PolicyId,
+                row.PolicyVersion,
+                row.PurposeCode,
+                row.RecipientClientApplicationId,
+                row.Revision,
+            }).IsUnique();
+            entity.Property(row => row.SubjectRef).HasMaxLength(256).IsRequired();
+            entity.Property(row => row.EventType).HasMaxLength(32).IsRequired();
+            entity.Property(row => row.PurposeCode).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.ConsentTextVersion).HasMaxLength(128);
+            entity.Property(row => row.ConsentTextContentHash).HasMaxLength(256);
+            entity.Property(row => row.ExternalConsentArtifactRef).HasMaxLength(512);
+            entity.Property(row => row.DecisionRef).HasMaxLength(256);
+            entity.Property(row => row.RecordedAtUtc).IsRequired();
+        });
+
+        modelBuilder.Entity<RawExportSubjectConsentClassRow>(entity =>
+        {
+            entity.ToTable("raw_export_subject_consent_classes", table =>
+                table.HasCheckConstraint("CK_raw_export_subject_consent_classes_RawClass", "\"RawClass\" IN ('ChipDg1','ChipDg2Portrait','ChipDg13','ChipDg15','ChipSod','AaChallenge','AaResponse','LiveSelfieImage','LivenessMedia','HandSignatureImage')"));
+            entity.HasKey(row => new { row.SubjectConsentRecordId, row.RawClass });
+            entity.Property(row => row.RawClass).HasMaxLength(64).IsRequired();
+            entity.HasOne<RawExportSubjectConsentEventRow>()
+                .WithMany()
+                .HasForeignKey(row => row.SubjectConsentRecordId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<RawExportSubjectConsentAuthorityRow>(entity =>
+        {
+            entity.ToTable("raw_export_subject_consent_authorities", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_subject_consent_authorities_AuthorityType", "\"AuthorityType\" IN ('SubjectConsentRecorder','SubjectConsentWithdrawer')");
+                table.HasCheckConstraint("CK_raw_export_subject_consent_authorities_EventType", "\"EventType\" IN ('Granted','Revoked')");
+                table.HasCheckConstraint("CK_raw_export_subject_consent_authorities_DecisionRef_NotBlank", "\"DecisionRef\" IS NULL OR btrim(\"DecisionRef\") <> ''");
+                table.HasCheckConstraint(
+                    "CK_raw_export_subject_consent_authorities_EventShape",
+                    """
+                    (
+                        "EventType" = 'Granted'
+                        AND "TargetRevision" IS NULL
+                        AND "ValidFromUtc" IS NOT NULL
+                        AND ("ValidUntilUtc" IS NULL OR "ValidUntilUtc" > "ValidFromUtc")
+                    ) OR (
+                        "EventType" = 'Revoked'
+                        AND "TargetRevision" IS NOT NULL
+                        AND "ValidFromUtc" IS NULL
+                        AND "ValidUntilUtc" IS NULL
+                    )
+                    """);
+            });
+            entity.HasKey(row => row.AuthorityEventId);
+            entity.HasIndex(row => new
+            {
+                row.AuthorityPrincipalId,
+                row.ClientApplicationId,
+                row.AuthorityType,
+                row.Revision,
+            }).IsUnique();
+            entity.Property(row => row.AuthorityType).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.EventType).HasMaxLength(32).IsRequired();
+            entity.Property(row => row.DecisionRef).HasMaxLength(256);
+            entity.Property(row => row.RecordedByPrincipalId).IsRequired();
+            entity.Property(row => row.RecordedAtUtc).IsRequired();
         });
     }
 }

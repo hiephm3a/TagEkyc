@@ -258,6 +258,31 @@ public interface IRawExportControlPlaneRepository
         CancellationToken cancellationToken = default);
 }
 
+public interface IRawExportSubjectConsentRepository
+{
+    Task<int> GrantConsentAuthorityAsync(
+        RawExportSubjectConsentAuthorityCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<int> RevokeConsentAuthorityAsync(
+        RawExportSubjectConsentAuthorityCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportSubjectConsentSnapshot> RecordSubjectConsentGrantedAsync(
+        RawExportSubjectConsentGrantCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportSubjectConsentSnapshot> RecordSubjectConsentWithdrawnAsync(
+        RawExportSubjectConsentWithdrawCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportSubjectConsentSnapshot> ResolveSubjectExportConsentForAuthorizationAsync(
+        Guid verificationSessionId,
+        Guid policyId,
+        int policyVersion,
+        CancellationToken cancellationToken = default);
+}
+
 public sealed record VerificationFinalizationWrite(
     VerificationSession ExpectedSession,
     VerificationSession CompletedSession,

@@ -45,16 +45,16 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
 
     private static readonly FunctionExpectation[] ExpectedFunctions =
     [
-        new("raw_export_current_actor", true, false, false),
-        new("enforce_raw_export_control_plane_insert", false, false, false),
-        new("raw_export_policy_exists", true, false, false),
-        new("raw_export_has_current_authority", true, false, false),
-        new("raw_export_append_grant", true, true, false),
-        new("raw_export_append_control_authority", true, true, false),
-        new("raw_export_bootstrap_global_authority", true, false, true),
-        new("raw_export_append_fulfillment", true, true, false),
-        new("raw_export_activation_gates_hold", true, false, false),
-        new("raw_export_append_lifecycle", true, true, false),
+        new("tagekyc.enforce_raw_export_control_plane_insert()", false, false, false),
+        new("tagekyc.raw_export_activation_gates_hold(policy_id uuid, policy_version integer)", true, false, false),
+        new("tagekyc.raw_export_append_control_authority(principal_id uuid, authority_type text, scope_type text, scope_id uuid, requirement_type text, expected_revision integer, event_type text, decision_ref text)", true, true, false),
+        new("tagekyc.raw_export_append_fulfillment(policy_id uuid, policy_version integer, requirement_type text, expected_revision integer, event_type text, supersedes_revision integer, target_revision integer, artifact_ref text, artifact_version text, valid_from_utc timestamp with time zone, valid_until_utc timestamp with time zone, decision_ref text)", true, true, false),
+        new("tagekyc.raw_export_append_grant(principal_id uuid, policy_id uuid, policy_version integer, expected_revision integer, event_type text, client_application_id uuid, decision_ref text)", true, true, false),
+        new("tagekyc.raw_export_append_lifecycle(policy_id uuid, policy_version integer, expected_revision integer, event_type text, decision_ref text)", true, true, false),
+        new("tagekyc.raw_export_bootstrap_global_authority(principal_id uuid, authority_type text, decision_ref text)", true, false, true),
+        new("tagekyc.raw_export_current_actor()", true, false, false),
+        new("tagekyc.raw_export_has_current_authority(actor_id uuid, required_authority text, policy_id uuid, requirement_type text)", true, false, false),
+        new("tagekyc.raw_export_policy_exists(policy_id uuid)", true, false, false),
     ];
 
     public async Task ValidateAsync(CancellationToken cancellationToken)
@@ -145,10 +145,12 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
             """;
 
         var roles = new Dictionary<string, bool>(StringComparer.Ordinal);
-        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-        while (await reader.ReadAsync(cancellationToken))
         {
-            roles[reader.GetString(0)] = reader.GetBoolean(1);
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                roles[reader.GetString(0)] = reader.GetBoolean(1);
+            }
         }
 
         foreach (var role in new[] { "tagekyc_runtime", "tagekyc_raw_export_deployer", "tagekyc_raw_export_bootstrapper" })
@@ -179,21 +181,41 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         }
 
         await using var command = connection.CreateCommand();
-        command.CommandText = """
-            SELECT p.proname,
-                   p.prosecdef,
-                   owner.rolname,
-                   owner.rolcanlogin,
-                   COALESCE(array_to_string(p.proconfig, ','), ''),
-                   has_function_privilege('public', p.oid, 'EXECUTE'),
-                   has_function_privilege('tagekyc_runtime', p.oid, 'EXECUTE'),
-                   has_function_privilege('tagekyc_raw_export_bootstrapper', p.oid, 'EXECUTE')
-            FROM pg_proc p
-            JOIN pg_namespace n ON n.oid = p.pronamespace
-            JOIN pg_roles owner ON owner.oid = p.proowner
-            WHERE n.nspname = 'tagekyc'
-              AND (p.proname LIKE 'raw_export_%' OR p.proname = 'enforce_raw_export_control_plane_insert')
-            ORDER BY p.proname;
+        var expectedValues = string.Join(
+            $",{Environment.NewLine}",
+            ExpectedFunctions.Select(function => $"('{function.Name.Replace("'", "''")}')"));
+        command.CommandText = $$"""
+            WITH expected(signature) AS (
+                VALUES
+                    {{expectedValues}}
+            ),
+            actual AS (
+                SELECT n.nspname || '.' || p.proname || '(' || pg_catalog.pg_get_function_identity_arguments(p.oid) || ')' AS signature,
+                       p.oid,
+                       p.prosecdef,
+                       owner.rolname,
+                       owner.rolcanlogin,
+                       COALESCE(array_to_string(p.proconfig, ','), '') AS config,
+                       has_function_privilege('public', p.oid, 'EXECUTE') AS public_execute,
+                       has_function_privilege('tagekyc_runtime', p.oid, 'EXECUTE') AS runtime_execute,
+                       has_function_privilege('tagekyc_raw_export_bootstrapper', p.oid, 'EXECUTE') AS bootstrapper_execute
+                FROM pg_proc p
+                JOIN pg_namespace n ON n.oid = p.pronamespace
+                JOIN pg_roles owner ON owner.oid = p.proowner
+                WHERE n.nspname = 'tagekyc'
+            )
+            SELECT expected.signature,
+                   actual.oid IS NOT NULL,
+                   actual.prosecdef,
+                   actual.rolname,
+                   actual.rolcanlogin,
+                   actual.config,
+                   actual.public_execute,
+                   actual.runtime_execute,
+                   actual.bootstrapper_execute
+            FROM expected
+            LEFT JOIN actual ON actual.signature = expected.signature
+            ORDER BY expected.signature;
             """;
 
         var rows = new Dictionary<string, FunctionInfo>(StringComparer.Ordinal);
@@ -202,12 +224,13 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         {
             rows[reader.GetString(0)] = new FunctionInfo(
                 reader.GetBoolean(1),
-                reader.GetString(2),
-                reader.GetBoolean(3),
-                reader.GetString(4),
-                reader.GetBoolean(5),
-                reader.GetBoolean(6),
-                reader.GetBoolean(7));
+                reader.IsDBNull(2) ? false : reader.GetBoolean(2),
+                reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
+                !reader.IsDBNull(4) && reader.GetBoolean(4),
+                reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                !reader.IsDBNull(6) && reader.GetBoolean(6),
+                !reader.IsDBNull(7) && reader.GetBoolean(7),
+                !reader.IsDBNull(8) && reader.GetBoolean(8));
         }
 
         if (!rows.Keys.Order(StringComparer.Ordinal).SequenceEqual(
@@ -220,10 +243,11 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         foreach (var expected in ExpectedFunctions)
         {
             if (!rows.TryGetValue(expected.Name, out var actual) ||
+                !actual.Exists ||
                 actual.SecurityDefiner != expected.SecurityDefiner ||
                 actual.Owner != "tagekyc_raw_export_deployer" ||
                 actual.OwnerCanLogin ||
-                !actual.Config.Contains("search_path=pg_catalog", StringComparison.Ordinal) ||
+                actual.Config != "search_path=pg_catalog" ||
                 actual.PublicExecute ||
                 actual.RuntimeExecute != expected.RuntimeExecute ||
                 actual.BootstrapperExecute != expected.BootstrapperExecute)
@@ -240,6 +264,7 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         bool BootstrapperExecute);
 
     private sealed record FunctionInfo(
+        bool Exists,
         bool SecurityDefiner,
         string Owner,
         bool OwnerCanLogin,

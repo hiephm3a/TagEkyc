@@ -175,6 +175,22 @@ public sealed class RawExportControlPlaneReadinessCheck(RawExportControlPlaneRea
     }
 }
 
+public sealed class RawExportSubjectConsentReadinessCheck(RawExportSubjectConsentReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportSubjectConsentReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
 public sealed class ApiKeyStoreReadinessCheck(ApiKeyStoreProductionReadinessValidator validator) : IReadinessCheck
 {
     public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)

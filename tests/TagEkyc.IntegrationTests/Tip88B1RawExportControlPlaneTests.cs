@@ -61,15 +61,16 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         var functions = await QueryFunctionSecurityAsync(db);
 
         Assert.Equal(
-            expected.Select(item => item.Name).Order(StringComparer.Ordinal),
+            expected.Select(item => item.Signature).Order(StringComparer.Ordinal),
             functions.Keys.Order(StringComparer.Ordinal));
         foreach (var item in expected)
         {
-            var functionInfo = functions[item.Name];
+            var functionInfo = functions[item.Signature];
+            Assert.True(functionInfo.Exists);
             Assert.Equal("tagekyc_raw_export_deployer", functionInfo.Owner);
             Assert.False(functionInfo.OwnerCanLogin);
             Assert.Equal(item.SecurityDefiner, functionInfo.SecurityDefiner);
-            Assert.Contains("search_path=pg_catalog", functionInfo.Config);
+            Assert.Equal("search_path=pg_catalog", functionInfo.Config);
             Assert.False(functionInfo.PublicExecute);
             Assert.Equal(item.RuntimeExecute, functionInfo.RuntimeExecute);
             Assert.Equal(item.BootstrapperExecute, functionInfo.BootstrapperExecute);
@@ -400,6 +401,47 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
     }
 
     [Fact]
+    public async Task Readiness_function_acl_manifest_uses_actual_validator_and_rejects_drift()
+    {
+        await using var setup = postgres.CreateDbContext();
+        await BootstrapRootsAsync(setup, AdminPrincipal);
+        await ProvisionRuntimeReadinessSelectsAsync(setup);
+
+        await ValidateB1ReadinessAsRuntimeAsync();
+
+        var appendGrant = "tagekyc.raw_export_append_grant(uuid,uuid,integer,integer,text,uuid,text)";
+        var policyExists = "tagekyc.raw_export_policy_exists(uuid)";
+
+        await AssertB1FunctionDriftAsync(
+            $"ALTER FUNCTION {appendGrant} SET search_path = pg_catalog, public;",
+            $"ALTER FUNCTION {appendGrant} SET search_path = pg_catalog;");
+        await AssertB1FunctionDriftAsync(
+            $"GRANT EXECUTE ON FUNCTION {appendGrant} TO PUBLIC;",
+            $"REVOKE EXECUTE ON FUNCTION {appendGrant} FROM PUBLIC;");
+        await AssertB1FunctionDriftAsync(
+            $"ALTER FUNCTION {appendGrant} SECURITY INVOKER;",
+            $"ALTER FUNCTION {appendGrant} SECURITY DEFINER;");
+        await AssertB1FunctionDriftAsync(
+            $"ALTER FUNCTION {policyExists} RENAME TO raw_export_policy_exists_missing_probe;",
+            "ALTER FUNCTION tagekyc.raw_export_policy_exists_missing_probe(uuid) RENAME TO raw_export_policy_exists;");
+        await AssertB1FunctionDriftAsync(
+            "ALTER FUNCTION tagekyc.raw_export_policy_exists(uuid) RENAME TO raw_export_policy_exists_original_probe; CREATE OR REPLACE FUNCTION tagekyc.raw_export_policy_exists(policy_id uuid, ignored text) RETURNS boolean LANGUAGE sql SECURITY DEFINER SET search_path = pg_catalog AS $$ SELECT true $$; ALTER FUNCTION tagekyc.raw_export_policy_exists(uuid,text) OWNER TO tagekyc_raw_export_deployer; REVOKE ALL ON FUNCTION tagekyc.raw_export_policy_exists(uuid,text) FROM PUBLIC;",
+            "DROP FUNCTION IF EXISTS tagekyc.raw_export_policy_exists(uuid,text); ALTER FUNCTION tagekyc.raw_export_policy_exists_original_probe(uuid) RENAME TO raw_export_policy_exists;");
+
+        await using var extra = postgres.CreateDbContext();
+        await extra.Database.ExecuteSqlRawAsync(
+            "CREATE OR REPLACE FUNCTION tagekyc.raw_export_append_authorization_decision_probe() RETURNS integer LANGUAGE sql SET search_path = pg_catalog AS $$ SELECT 1 $$;");
+        try
+        {
+            await ValidateB1ReadinessAsRuntimeAsync();
+        }
+        finally
+        {
+            await extra.Database.ExecuteSqlRawAsync("DROP FUNCTION IF EXISTS tagekyc.raw_export_append_authorization_decision_probe();");
+        }
+    }
+
+    [Fact]
     public async Task Two_connection_same_revision_grant_race_has_exactly_one_winner()
     {
         var policyId = Guid.Parse("88b10000-0000-5000-8000-000000000070");
@@ -508,6 +550,45 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
             await db.Database.ExecuteSqlRawAsync($"""
                 SELECT tagekyc.raw_export_bootstrap_global_authority('{principalId}', '{authority}', 'decision:bootstrap:{authority}');
                 """);
+        }
+    }
+
+    private static async Task ProvisionRuntimeReadinessSelectsAsync(TagEkycDbContext db)
+    {
+        await db.Database.ExecuteSqlRawAsync("GRANT tagekyc_runtime TO tagekyc;");
+        await db.Database.ExecuteSqlRawAsync("""
+            GRANT SELECT ON
+                tagekyc.raw_export_grants,
+                tagekyc.raw_export_control_authorities,
+                tagekyc.raw_export_fulfillments,
+                tagekyc.raw_export_policy_lifecycle
+            TO tagekyc_runtime;
+            """);
+    }
+
+    private async Task ValidateB1ReadinessAsRuntimeAsync()
+    {
+        await using var db = postgres.CreateDbContext();
+        await db.Database.OpenConnectionAsync();
+        await db.Database.ExecuteSqlRawAsync("GRANT tagekyc_runtime TO tagekyc;");
+        await db.Database.ExecuteSqlRawAsync("SET ROLE tagekyc_runtime;");
+
+        await new RawExportControlPlaneReadinessValidator(db).ValidateAsync(CancellationToken.None);
+    }
+
+    private async Task AssertB1FunctionDriftAsync(string driftSql, string restoreSql)
+    {
+        await using var db = postgres.CreateDbContext();
+        await db.Database.ExecuteSqlRawAsync(driftSql);
+        try
+        {
+            var exception = await Assert.ThrowsAsync<RawExportControlPlaneReadinessException>(
+                ValidateB1ReadinessAsRuntimeAsync);
+            Assert.Equal(RawExportControlPlaneReadinessValidator.FunctionAclInvalid, exception.Code);
+        }
+        finally
+        {
+            await db.Database.ExecuteSqlRawAsync(restoreSql);
         }
     }
 
@@ -639,16 +720,16 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
 
     private static IReadOnlyList<FunctionExpectation> ExpectedFunctionSecurityManifest() =>
     [
-        new("enforce_raw_export_control_plane_insert", false, false, false),
-        new("raw_export_activation_gates_hold", true, false, false),
-        new("raw_export_append_control_authority", true, true, false),
-        new("raw_export_append_fulfillment", true, true, false),
-        new("raw_export_append_grant", true, true, false),
-        new("raw_export_append_lifecycle", true, true, false),
-        new("raw_export_bootstrap_global_authority", true, false, true),
-        new("raw_export_current_actor", true, false, false),
-        new("raw_export_has_current_authority", true, false, false),
-        new("raw_export_policy_exists", true, false, false),
+        new("tagekyc.enforce_raw_export_control_plane_insert()", false, false, false),
+        new("tagekyc.raw_export_activation_gates_hold(policy_id uuid, policy_version integer)", true, false, false),
+        new("tagekyc.raw_export_append_control_authority(principal_id uuid, authority_type text, scope_type text, scope_id uuid, requirement_type text, expected_revision integer, event_type text, decision_ref text)", true, true, false),
+        new("tagekyc.raw_export_append_fulfillment(policy_id uuid, policy_version integer, requirement_type text, expected_revision integer, event_type text, supersedes_revision integer, target_revision integer, artifact_ref text, artifact_version text, valid_from_utc timestamp with time zone, valid_until_utc timestamp with time zone, decision_ref text)", true, true, false),
+        new("tagekyc.raw_export_append_grant(principal_id uuid, policy_id uuid, policy_version integer, expected_revision integer, event_type text, client_application_id uuid, decision_ref text)", true, true, false),
+        new("tagekyc.raw_export_append_lifecycle(policy_id uuid, policy_version integer, expected_revision integer, event_type text, decision_ref text)", true, true, false),
+        new("tagekyc.raw_export_bootstrap_global_authority(principal_id uuid, authority_type text, decision_ref text)", true, false, true),
+        new("tagekyc.raw_export_current_actor()", true, false, false),
+        new("tagekyc.raw_export_has_current_authority(actor_id uuid, required_authority text, policy_id uuid, requirement_type text)", true, false, false),
+        new("tagekyc.raw_export_policy_exists(policy_id uuid)", true, false, false),
     ];
 
     private static async Task<IReadOnlyDictionary<string, FunctionSecurity>> QueryFunctionSecurityAsync(
@@ -662,20 +743,46 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
 
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT p.proname,
-                   p.prosecdef,
-                   owner.rolname,
-                   owner.rolcanlogin,
-                   COALESCE(array_to_string(p.proconfig, ','), ''),
-                   has_function_privilege('public', p.oid, 'EXECUTE'),
-                   has_function_privilege('tagekyc_runtime', p.oid, 'EXECUTE'),
-                   has_function_privilege('tagekyc_raw_export_bootstrapper', p.oid, 'EXECUTE')
-            FROM pg_proc p
-            JOIN pg_namespace n ON n.oid = p.pronamespace
-            JOIN pg_roles owner ON owner.oid = p.proowner
-            WHERE n.nspname = 'tagekyc'
-              AND (p.proname LIKE 'raw_export_%' OR p.proname = 'enforce_raw_export_control_plane_insert')
-            ORDER BY p.proname;
+            WITH expected(signature) AS (
+                VALUES
+                    ('tagekyc.enforce_raw_export_control_plane_insert()'),
+                    ('tagekyc.raw_export_activation_gates_hold(policy_id uuid, policy_version integer)'),
+                    ('tagekyc.raw_export_append_control_authority(principal_id uuid, authority_type text, scope_type text, scope_id uuid, requirement_type text, expected_revision integer, event_type text, decision_ref text)'),
+                    ('tagekyc.raw_export_append_fulfillment(policy_id uuid, policy_version integer, requirement_type text, expected_revision integer, event_type text, supersedes_revision integer, target_revision integer, artifact_ref text, artifact_version text, valid_from_utc timestamp with time zone, valid_until_utc timestamp with time zone, decision_ref text)'),
+                    ('tagekyc.raw_export_append_grant(principal_id uuid, policy_id uuid, policy_version integer, expected_revision integer, event_type text, client_application_id uuid, decision_ref text)'),
+                    ('tagekyc.raw_export_append_lifecycle(policy_id uuid, policy_version integer, expected_revision integer, event_type text, decision_ref text)'),
+                    ('tagekyc.raw_export_bootstrap_global_authority(principal_id uuid, authority_type text, decision_ref text)'),
+                    ('tagekyc.raw_export_current_actor()'),
+                    ('tagekyc.raw_export_has_current_authority(actor_id uuid, required_authority text, policy_id uuid, requirement_type text)'),
+                    ('tagekyc.raw_export_policy_exists(policy_id uuid)')
+            ),
+            actual AS (
+                SELECT n.nspname || '.' || p.proname || '(' || pg_catalog.pg_get_function_identity_arguments(p.oid) || ')' AS signature,
+                       p.oid,
+                       p.prosecdef,
+                       owner.rolname,
+                       owner.rolcanlogin,
+                       COALESCE(array_to_string(p.proconfig, ','), '') AS config,
+                       has_function_privilege('public', p.oid, 'EXECUTE') AS public_execute,
+                       has_function_privilege('tagekyc_runtime', p.oid, 'EXECUTE') AS runtime_execute,
+                       has_function_privilege('tagekyc_raw_export_bootstrapper', p.oid, 'EXECUTE') AS bootstrapper_execute
+                FROM pg_proc p
+                JOIN pg_namespace n ON n.oid = p.pronamespace
+                JOIN pg_roles owner ON owner.oid = p.proowner
+                WHERE n.nspname = 'tagekyc'
+            )
+            SELECT expected.signature,
+                   actual.oid IS NOT NULL,
+                   actual.prosecdef,
+                   actual.rolname,
+                   actual.rolcanlogin,
+                   actual.config,
+                   actual.public_execute,
+                   actual.runtime_execute,
+                   actual.bootstrapper_execute
+            FROM expected
+            LEFT JOIN actual ON actual.signature = expected.signature
+            ORDER BY expected.signature;
             """;
 
         var result = new Dictionary<string, FunctionSecurity>(StringComparer.Ordinal);
@@ -684,12 +791,13 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         {
             result[reader.GetString(0)] = new FunctionSecurity(
                 reader.GetBoolean(1),
-                reader.GetString(2),
-                reader.GetBoolean(3),
-                reader.GetString(4),
-                reader.GetBoolean(5),
-                reader.GetBoolean(6),
-                reader.GetBoolean(7));
+                reader.IsDBNull(2) ? false : reader.GetBoolean(2),
+                reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
+                !reader.IsDBNull(4) && reader.GetBoolean(4),
+                reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
+                !reader.IsDBNull(6) && reader.GetBoolean(6),
+                !reader.IsDBNull(7) && reader.GetBoolean(7),
+                !reader.IsDBNull(8) && reader.GetBoolean(8));
         }
 
         return result;
@@ -714,12 +822,13 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
     }
 
     private sealed record FunctionExpectation(
-        string Name,
+        string Signature,
         bool SecurityDefiner,
         bool RuntimeExecute,
         bool BootstrapperExecute);
 
     private sealed record FunctionSecurity(
+        bool Exists,
         bool SecurityDefiner,
         string Owner,
         bool OwnerCanLogin,
