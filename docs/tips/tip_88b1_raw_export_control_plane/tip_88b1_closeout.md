@@ -45,3 +45,7 @@ Provision three NOLOGIN capability roles and connect the app via a LOGIN princip
 
 - SECURITY DEFINER schema-assert test asserts owner/ACL/search_path over the full function inventory; the `prosecdef` (SECURITY DEFINER flag) direct assertion + all-function loop were added in the post-verify batch.
 - Full suite: Contract 13, Arch 46, Unit 180, Integration 159 + 1 skipped (the skip is the known shared-Postgres parallel-DB flakiness, not a 88B1 regression). EF model check: no pending model changes.
+
+## Non-normative extension note (TIP-88B1-E1, 2026-07-20)
+
+The B1 eligibility resolver contract was later extended additively by **TIP-88B1-E1 Fulfillment Expiry Projection** (landed `ccc2e37`): `RawExportFulfillmentRef` gained a trailing nullable `DateTimeOffset? ValidUntilUtc`, projected from the current effective fulfillment row the resolver already reads. This is a downstream-consumption extension for TIP-88B3's expiry formula; it does NOT change any TIP-88B1 eligibility semantics, schema, ACL, or lock behaviour. See `docs/tips/tip_88b1e1_fulfillment_expiry_projection/tip_88b1e1_closeout.md`.
