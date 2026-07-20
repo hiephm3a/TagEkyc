@@ -1,6 +1,8 @@
-# TIP-88B2 Raw Export Authorization Decision - Boundary / Placeholder
+# TIP-88B3 Raw Export Authorization Decision - Boundary / Placeholder
 
 Status: BOUNDARY ONLY (not a build brief). Opens **after TIP-88B1 (control plane) lands** AND the verification-session recon (below) is done. Split from TIP-88B per GPT + Codex round-2. Still INERT of raw bytes.
+
+> **Historical note (2026-07-19 rename):** this boundary doc predates the subject-consent split. Subject consent (the `ConsentArtifact`/per-subject gate referenced inline below) is now the DEDICATED greenfield slice **TIP-88B2 - Subject Export Consent** (`docs/tips/tip_88b2_subject_export_consent/`), which this authorization-decision slice CONSUMES via its resolver. This slice was renamed **TIP-88B2 (old) -> TIP-88B3** for a clean sequential order (88A / 88B1 / 88B2-consent / 88B3-decision). The current locked semantics live in `tip_88b3_planning_brief.md`; this file is retained as the verification-session recon record only.
 
 ## Scope (after 88B1 lands)
 The runtime authorization HOT PATH over the 88B1 control plane:
@@ -12,22 +14,23 @@ The runtime authorization HOT PATH over the 88B1 control plane:
 - **Concurrency** - authorize racing revoke / a new rule-set publish -> never a stale AUTHORIZED; real two-transaction tests.
 
 ## Round-3 boundary patches (GPT)
-1. **B2 MUST call the authoritative 88B1 LOCK-CAPABLE resolver** (`ResolveExportEligibilityForAuthorization(principalId, policyId, policyVersion)`, TIP-88B1 S2.5 - evaluation time is authoritative DB time, no caller `nowUtc`; it holds the canonical-ordered aggregate locks so a revoke/withdraw/publish cannot commit between eval and the Authorized write). B2 does NOT duplicate grant / lifecycle / fulfillment-validity / current-rule-set logic NOR invent its own state-locking protocol - it consumes B1's `State` + returned record IDs inside its atomic boundary. B2 ADDS only the subject/attempt-scoped gates B1 does not do (subject `ConsentArtifact`, session binding, idempotency, evidence, permit).
+1. **B3 MUST call the authoritative 88B1 LOCK-CAPABLE resolver** (`ResolveExportEligibilityForAuthorization(principalId, policyId, policyVersion)`, TIP-88B1 S2.5 - evaluation time is authoritative DB time, no caller `nowUtc`; it holds the canonical-ordered aggregate locks so a revoke/withdraw/publish cannot commit between eval and the Authorized write). B3 does NOT duplicate grant / lifecycle / fulfillment-validity / current-rule-set logic NOR invent its own state-locking protocol - it consumes B1's `State` + returned record IDs inside its atomic boundary. B3 ADDS only the subject/attempt-scoped gates B1 does not do (subject `ConsentArtifact`, session binding, idempotency, evidence, permit).
 2. **The exact allowed-class snapshot in a decision uses TYPED child rows (or a canonical deterministic representation), NOT an unspecified JSON collection** - so the frozen `AllowedRawClasses` is queryable + deterministically comparable and the assembly slice cannot re-resolve.
-3. B2 remains blocked on the verification-session recon AND 88B1 landing.
+3. B3 remains blocked on the verification-session recon AND 88B1 landing.
 
-## Locked principles carried into 88B2 (do not weaken)
+## Locked principles carried into 88B3 (do not weaken)
 - **[GPT-3] a permit is NOT an irrevocable bearer capability.** A non-consumed permit becomes UNUSABLE if, before assembly: the grant is revoked; the policy is Suspended/Revoked; the bound rule set is no longer current; a required fulfillment is withdrawn/expired; or the permit expires. **The raw-assembly slice MUST revalidate these current gates + expiry + one-time-consumption** - the permit is a decision record, not a token that survives revocation.
 - Carry all round-1 decisions: canonical principal = Guid; exact-version grant; dedicated typed decision table; current-rule-set + current-fulfillment re-check; revocable lifecycle; idempotency; permit freezes exact allowed classes; no raw bytes/hash/assembly; trust 88A CatalogApproved (no re-derivation).
 
-## Verification-session recon (REQUIRED before 88B2 design) - lock:
-- canonical `EkycSessionId` type/source (map to existing `VerificationSessionId`?);
-- tenant/client ownership of a session;
-- acceptable session state for export;
-- subject/session binding;
-- principal/client access boundary (cross-client session request must DENY).
+## Verification-session recon (RESOLVED on-code @ 2c684cf, CC 2026-07-12)
+Grounded on `TagEkyc.Domain.VerificationSession` (Id, ClientApplicationId, SubjectRef, ExternalSessionId, State) + `VerificationSessionState`:
+- **canonical `EkycSessionId` = `VerificationSession.Id` (Guid)** - the internal session id. `ExternalSessionId` (nullable string) is the CLIENT's own correlation, NOT the binding key (client-supplied/optional). B3's decision + permit bind `VerificationSessionId` (Guid), and may record `ExternalSessionId` as an audit echo only.
+- **ownership = `VerificationSession.ClientApplicationId` (Guid)**. There is NO separate tenant column - the client application IS the ownership/isolation boundary (consistent with 88A/88B1 having no tenant scoping). 
+- **acceptable session state for export = `Completed` ONLY.** Reject `Created`/`InProgress`/`ReadyToComplete` (eKYC not finished), and `Expired`/`Cancelled`/`TechnicalTerminal` (terminal-failed). (Export is over a COMPLETED verification.)
+- **subject/session binding = `VerificationSession.SubjectRef` (string, required).** B3's per-attempt subject-consent (`ConsentArtifact`) binds to `(VerificationSessionId, SubjectRef)`; the permit freezes the exact `SubjectRef`.
+- **principal/client access boundary (cross-client DENY):** the export attempt binds a SPECIFIC `VerificationSessionId`. B3 MUST enforce BOTH: (a) the authenticated caller's client (`AuthenticatedClientContext.ClientApplicationId` / `AllowedClientApplicationIds`) owns/can-access the session's `ClientApplicationId` - a cross-client session request is DENIED; AND (b) the caller's `PrincipalId` holds the 88B1 exact-version grant for the policy. The policy grant (principal->policy) is client-agnostic (88A policy has no client), so the SESSION-ownership check is the load-bearing cross-client guard that stops a policy-granted principal from exporting ANOTHER client's session's biometrics.
 
-Do NOT build 88B2 idempotency or permit schema before this recon is resolved.
+**B3 gate stack (per attempt, in one atomic txn):** authenticated principal+client -> session exists + owned-by-caller-client + `Completed` -> 88B1 `ResolveExportEligibilityForAuthorization` == Active (grant/lifecycle/fulfillment/rule-set) -> valid subject-consent for `(VerificationSessionId, SubjectRef)` -> idempotency -> write decision+evidence + issue permit (freezing `AllowedRawClasses` + `SubjectRef`). Any gate fail => deterministic DENY.
 
-## Deferred beyond 88B2 (raw-assembly slice)
+## Deferred beyond 88B3 (raw-assembly slice)
 Actual raw read/assemble, real package/manifest hash, exported-classes, delivery, transient dispose/attestation, and the one-time-CONSUMPTION ENFORCEMENT of a permit.
