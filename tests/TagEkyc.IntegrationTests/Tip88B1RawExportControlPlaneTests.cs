@@ -178,7 +178,13 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         Assert.Equal(1, snapshot.GrantRef?.Revision);
         Assert.Equal(1, snapshot.LifecycleRef?.Revision);
         Assert.Single(snapshot.FulfillmentRefs);
-        Assert.Equal(RawExportRequirementType.LegalApproval, snapshot.FulfillmentRefs[0].RequirementType);
+        var fulfillmentRef = snapshot.FulfillmentRefs[0];
+        Assert.Equal(RawExportRequirementType.LegalApproval, fulfillmentRef.RequirementType);
+        Assert.NotEqual(Guid.Empty, fulfillmentRef.FulfillmentEventId);
+        Assert.Equal(1, fulfillmentRef.Revision);
+        Assert.Equal("artifact:LegalApproval:1", fulfillmentRef.ArtifactRef);
+        Assert.Equal("v1", fulfillmentRef.ArtifactVersion);
+        Assert.NotNull(fulfillmentRef.ValidUntilUtc);
     }
 
     [Fact]
@@ -375,6 +381,166 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
     }
 
     [Fact]
+    public async Task Resolver_projects_fulfillment_expiry_from_current_persisted_row()
+    {
+        await using var db = postgres.CreateDbContext();
+        var policyId = Guid.Parse("88b10000-0000-5000-8000-000000000061");
+        await SeedApprovedPolicyAsync(db, policyId);
+        await BootstrapRootsAsync(db, AdminPrincipal);
+        var repository = new EfRawExportControlPlaneRepository(db);
+
+        await repository.GrantExportPolicyAsync(Grant(policyId, ConsumerPrincipal, 0));
+        await repository.GrantControlAuthorityAsync(RecorderAuthority(policyId, RecorderPrincipal, RawExportRequirementType.LegalApproval, 0));
+        var originalExpiry = DateTimeOffset.UtcNow.AddHours(4).AddTicks(8);
+        await repository.AcceptFulfillmentAsync(Accept(
+            policyId,
+            RawExportRequirementType.LegalApproval,
+            0,
+            null,
+            DateTimeOffset.UtcNow.AddMinutes(-1),
+            originalExpiry));
+        await repository.ActivatePolicyAsync(Lifecycle(policyId, 0, "decision:activate-finite-expiry"));
+
+        var finiteSnapshot = await ResolveForAuthorizationAsync(db, repository, policyId);
+        var finiteRef = Assert.Single(finiteSnapshot.FulfillmentRefs);
+        Assert.Equal(RawExportEligibilityState.Active, finiteSnapshot.State);
+        Assert.Equal(NormalizePostgresTimestamp(originalExpiry), finiteRef.ValidUntilUtc);
+
+        var openEndedPolicyId = Guid.Parse("88b10000-0000-5000-8000-000000000062");
+        await SeedApprovedPolicyAsync(db, openEndedPolicyId);
+        await repository.GrantExportPolicyAsync(Grant(openEndedPolicyId, ConsumerPrincipal, 0));
+        await repository.GrantControlAuthorityAsync(RecorderAuthority(openEndedPolicyId, RecorderPrincipal, RawExportRequirementType.LegalApproval, 0));
+        await repository.AcceptFulfillmentAsync(Accept(
+            openEndedPolicyId,
+            RawExportRequirementType.LegalApproval,
+            0,
+            null,
+            validUntil: null,
+            openEnded: true));
+        await repository.ActivatePolicyAsync(Lifecycle(openEndedPolicyId, 0, "decision:activate-open-ended"));
+
+        var openEndedSnapshot = await ResolveForAuthorizationAsync(db, repository, openEndedPolicyId);
+        var openEndedRef = Assert.Single(openEndedSnapshot.FulfillmentRefs);
+        Assert.Equal(RawExportEligibilityState.Active, openEndedSnapshot.State);
+        Assert.Null(openEndedRef.ValidUntilUtc);
+    }
+
+    [Fact]
+    public async Task Resolver_uses_current_accepted_row_for_expiry_and_does_not_fallback_after_expiry()
+    {
+        await using var db = postgres.CreateDbContext();
+        var policyId = Guid.Parse("88b10000-0000-5000-8000-000000000063");
+        await SeedApprovedPolicyAsync(db, policyId);
+        await BootstrapRootsAsync(db, AdminPrincipal);
+        var repository = new EfRawExportControlPlaneRepository(db);
+
+        await repository.GrantExportPolicyAsync(Grant(policyId, ConsumerPrincipal, 0));
+        await repository.GrantControlAuthorityAsync(RecorderAuthority(policyId, RecorderPrincipal, RawExportRequirementType.LegalApproval, 0));
+        var rev1 = await repository.AcceptFulfillmentAsync(Accept(
+            policyId,
+            RawExportRequirementType.LegalApproval,
+            0,
+            null,
+            validUntil: null,
+            openEnded: true));
+        var rev2Expiry = DateTimeOffset.UtcNow.AddSeconds(3);
+        var rev2 = await repository.AcceptFulfillmentAsync(Accept(
+            policyId,
+            RawExportRequirementType.LegalApproval,
+            1,
+            rev1,
+            validUntil: rev2Expiry));
+        await repository.ActivatePolicyAsync(Lifecycle(policyId, 0, "decision:activate-no-fallback"));
+
+        var beforeExpiry = await ResolveForAuthorizationAsync(db, repository, policyId);
+        var beforeRef = Assert.Single(beforeExpiry.FulfillmentRefs);
+        Assert.Equal(RawExportEligibilityState.Active, beforeExpiry.State);
+        Assert.Equal(rev2, beforeRef.Revision);
+        Assert.Equal($"artifact:LegalApproval:{rev2}", beforeRef.ArtifactRef);
+        Assert.Equal(NormalizePostgresTimestamp(rev2Expiry), beforeRef.ValidUntilUtc);
+
+        await WaitForDbTimeAtLeastAsync(db, rev2Expiry);
+        var afterExpiry = await ResolveForAuthorizationAsync(db, repository, policyId);
+        Assert.Equal(RawExportEligibilityState.Inactive, afterExpiry.State);
+        Assert.Equal(RawExportEligibilityCause.MissingOrInvalidFulfillment, afterExpiry.PrimaryCause);
+        Assert.Equal([RawExportEligibilityCause.MissingOrInvalidFulfillment], afterExpiry.Causes);
+        Assert.Empty(afterExpiry.FulfillmentRefs);
+    }
+
+    [Fact]
+    public async Task Resolver_projects_renewed_fulfillment_and_keeps_each_requirement_expiry()
+    {
+        await using var db = postgres.CreateDbContext();
+        var policyId = Guid.Parse("88b10000-0000-5000-8000-000000000064");
+        await SeedApprovedPolicyAsync(
+            db,
+            policyId,
+            mode: "EncryptedRawVaultRetained",
+            additionalRequirements: [RawExportRequirementType.RetentionSchedule, RawExportRequirementType.Dpia]);
+        await BootstrapRootsAsync(db, AdminPrincipal);
+        var repository = new EfRawExportControlPlaneRepository(db);
+
+        await repository.GrantExportPolicyAsync(Grant(policyId, ConsumerPrincipal, 0));
+        await repository.GrantControlAuthorityAsync(RecorderAuthority(policyId, RecorderPrincipal, RawExportRequirementType.LegalApproval, 0));
+        await repository.GrantControlAuthorityAsync(RecorderAuthority(policyId, RecorderPrincipal, RawExportRequirementType.RetentionSchedule, 0));
+        await repository.GrantControlAuthorityAsync(RecorderAuthority(policyId, RecorderPrincipal, RawExportRequirementType.Dpia, 0));
+        var withdrawnTarget = await repository.AcceptFulfillmentAsync(Accept(policyId, RawExportRequirementType.LegalApproval, 0, null));
+        await repository.WithdrawFulfillmentAsync(new RawExportFulfillmentWithdrawCommand(
+            RecorderPrincipal,
+            policyId,
+            1,
+            RawExportRequirementType.LegalApproval,
+            1,
+            withdrawnTarget,
+            "decision:withdraw-before-renewal"));
+        var legalRenewalExpiry = DateTimeOffset.UtcNow.AddHours(2);
+        var legalRenewal = await repository.AcceptFulfillmentAsync(Accept(
+            policyId,
+            RawExportRequirementType.LegalApproval,
+            2,
+            withdrawnTarget,
+            validUntil: legalRenewalExpiry));
+        var retentionExpiry = DateTimeOffset.UtcNow.AddHours(1);
+        var dpiaExpiry = DateTimeOffset.UtcNow.AddHours(3);
+        var retention = await repository.AcceptFulfillmentAsync(Accept(
+            policyId,
+            RawExportRequirementType.RetentionSchedule,
+            0,
+            null,
+            validUntil: retentionExpiry));
+        var dpia = await repository.AcceptFulfillmentAsync(Accept(
+            policyId,
+            RawExportRequirementType.Dpia,
+            0,
+            null,
+            validUntil: dpiaExpiry));
+        await repository.ActivatePolicyAsync(Lifecycle(policyId, 0, "decision:activate-multi-requirement"));
+
+        var snapshot = await ResolveForAuthorizationAsync(db, repository, policyId);
+
+        Assert.Equal(RawExportEligibilityState.Active, snapshot.State);
+        Assert.Null(snapshot.PrimaryCause);
+        Assert.Empty(snapshot.Causes);
+        Assert.Equal(
+            [RawExportRequirementType.Dpia, RawExportRequirementType.LegalApproval, RawExportRequirementType.RetentionSchedule],
+            snapshot.FulfillmentRefs.Select(item => item.RequirementType));
+        var legalRef = Assert.Single(snapshot.FulfillmentRefs, item => item.RequirementType == RawExportRequirementType.LegalApproval);
+        Assert.Equal(legalRenewal, legalRef.Revision);
+        Assert.Equal($"artifact:LegalApproval:{legalRenewal}", legalRef.ArtifactRef);
+        Assert.Equal(NormalizePostgresTimestamp(legalRenewalExpiry), legalRef.ValidUntilUtc);
+        Assert.Equal(dpia, Assert.Single(snapshot.FulfillmentRefs, item => item.RequirementType == RawExportRequirementType.Dpia).Revision);
+        Assert.Equal(NormalizePostgresTimestamp(dpiaExpiry), Assert.Single(snapshot.FulfillmentRefs, item => item.RequirementType == RawExportRequirementType.Dpia).ValidUntilUtc);
+        Assert.Equal(retention, Assert.Single(snapshot.FulfillmentRefs, item => item.RequirementType == RawExportRequirementType.RetentionSchedule).Revision);
+        Assert.Equal(NormalizePostgresTimestamp(retentionExpiry), Assert.Single(snapshot.FulfillmentRefs, item => item.RequirementType == RawExportRequirementType.RetentionSchedule).ValidUntilUtc);
+
+        var finiteMinimum = snapshot.FulfillmentRefs
+            .Select(item => item.ValidUntilUtc)
+            .Where(value => value is not null)
+            .Min();
+        Assert.Equal(NormalizePostgresTimestamp(retentionExpiry), finiteMinimum);
+    }
+
+    [Fact]
     public async Task Readiness_fails_when_required_root_is_missing_or_dev_default()
     {
         await using var missing = postgres.CreateDbContext();
@@ -526,7 +692,8 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         int expectedRevision,
         int? supersedesRevision,
         DateTimeOffset? validFrom = null,
-        DateTimeOffset? validUntil = null) =>
+        DateTimeOffset? validUntil = null,
+        bool openEnded = false) =>
         new(
             RecorderPrincipal,
             policyId,
@@ -537,7 +704,7 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
             $"artifact:{requirementType}:{expectedRevision + 1}",
             "v1",
             validFrom ?? DateTimeOffset.UtcNow.AddMinutes(-1),
-            validUntil ?? DateTimeOffset.UtcNow.AddHours(1),
+            validUntil ?? (openEnded ? null : DateTimeOffset.UtcNow.AddHours(1)),
             $"decision:fulfillment:{requirementType}:{expectedRevision + 1}");
 
     private RawExportLifecycleCommand Lifecycle(Guid policyId, int expectedRevision, string decisionRef) =>
@@ -624,16 +791,22 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         }
     }
 
-    private static async Task SeedApprovedPolicyAsync(TagEkycDbContext db, Guid policyId, bool includeConsentArtifact = false)
+    private static async Task SeedApprovedPolicyAsync(
+        TagEkycDbContext db,
+        Guid policyId,
+        bool includeConsentArtifact = false,
+        string mode = "ExternalExportOnlyNoRetain",
+        IReadOnlyList<RawExportRequirementType>? additionalRequirements = null)
     {
+        var retentionProfileRef = mode == "ExternalExportOnlyNoRetain" ? "NULL" : "'retention:test'";
         await using var transaction = await db.Database.BeginTransactionAsync();
         await db.Database.ExecuteSqlRawAsync($"""
             INSERT INTO tagekyc.raw_export_policy_versions
                 ("PolicyId","PolicyVersion","Mode","Purpose","RetentionPurposeCode","ConsentRequirement","ControllerRole","ControllerEntityRef",
-                 "ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt")
+                 "ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RetentionProfileRef","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt")
             VALUES
-                ('{policyId}',1,'ExternalExportOnlyNoRetain','purpose','NO_RETAIN','{(includeConsentArtifact ? "Required" : "NotRequired")}',
-                 'Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,transaction_timestamp());
+                ('{policyId}',1,'{mode}','purpose','NO_RETAIN','{(includeConsentArtifact ? "Required" : "NotRequired")}',
+                 'Processor','controller','VN','VN','VN',{retentionProfileRef},'RAW_EXPORT_REQUIREMENTS',1,transaction_timestamp());
             """);
         await db.Database.ExecuteSqlRawAsync($"""
             INSERT INTO tagekyc.raw_export_policy_allowed_classes
@@ -657,6 +830,16 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
                 """);
         }
 
+        foreach (var requirementType in additionalRequirements ?? [])
+        {
+            await db.Database.ExecuteSqlRawAsync($"""
+                INSERT INTO tagekyc.raw_export_policy_requirements
+                    ("PolicyId","PolicyVersion","RequirementType","CreatedAt")
+                VALUES
+                    ('{policyId}',1,'{requirementType}',transaction_timestamp());
+                """);
+        }
+
         await transaction.CommitAsync();
         await db.Database.ExecuteSqlRawAsync($"""
             INSERT INTO tagekyc.raw_export_policy_closures
@@ -664,6 +847,61 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
             VALUES
                 ('{policyId}',1,'CatalogApproved',transaction_timestamp(),'principal:catalog','decision:catalog');
             """);
+    }
+
+    private static async Task<RawExportEligibilitySnapshot> ResolveForAuthorizationAsync(
+        TagEkycDbContext db,
+        EfRawExportControlPlaneRepository repository,
+        Guid policyId)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync();
+        var snapshot = await repository.ResolveExportEligibilityForAuthorizationAsync(ConsumerPrincipal, policyId, 1);
+        await transaction.CommitAsync();
+        return snapshot;
+    }
+
+    private static async Task WaitForDbTimeAtLeastAsync(
+        TagEkycDbContext db,
+        DateTimeOffset threshold)
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+        while (!cts.IsCancellationRequested)
+        {
+            var now = await QueryDbTransactionTimestampAsync(db);
+            if (now >= threshold.ToUniversalTime())
+            {
+                return;
+            }
+
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cts.Token);
+        }
+
+        throw new TimeoutException("DB transaction_timestamp() did not reach the fulfillment expiry threshold.");
+    }
+
+    private static async Task<DateTimeOffset> QueryDbTransactionTimestampAsync(TagEkycDbContext db)
+    {
+        var connection = db.Database.GetDbConnection();
+        if (connection.State != System.Data.ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT transaction_timestamp();";
+        var value = await command.ExecuteScalarAsync();
+        return value switch
+        {
+            DateTimeOffset offset => offset.ToUniversalTime(),
+            DateTime dateTime => new DateTimeOffset(DateTime.SpecifyKind(dateTime, DateTimeKind.Utc)),
+            _ => throw new InvalidOperationException("Unexpected transaction_timestamp() result."),
+        };
+    }
+
+    private static DateTimeOffset NormalizePostgresTimestamp(DateTimeOffset value)
+    {
+        var utc = value.ToUniversalTime();
+        return new DateTimeOffset(utc.Ticks - (utc.Ticks % 10), TimeSpan.Zero);
     }
 
     private async Task<(bool Succeeded, string? Message)> ExecuteGrantFunctionInTransactionAsync(

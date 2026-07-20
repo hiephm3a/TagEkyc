@@ -73,7 +73,8 @@ public sealed record RawExportFulfillmentRef(
     Guid FulfillmentEventId,
     int Revision,
     string ArtifactRef,
-    string ArtifactVersion);
+    string ArtifactVersion,
+    DateTimeOffset? ValidUntilUtc);
 
 public sealed record RawExportEligibilitySnapshot(
     RawExportEligibilityState State,

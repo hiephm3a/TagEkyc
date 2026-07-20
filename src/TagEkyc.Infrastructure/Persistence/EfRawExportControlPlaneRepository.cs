@@ -149,7 +149,8 @@ public sealed class EfRawExportControlPlaneRepository(TagEkycDbContext db) : IRa
                 latest.FulfillmentEventId,
                 latest.Revision,
                 latest.ArtifactRef ?? string.Empty,
-                latest.ArtifactVersion ?? string.Empty));
+                latest.ArtifactVersion ?? string.Empty,
+                latest.ValidUntilUtc));
         }
 
         var causes = new List<RawExportEligibilityCause>();
