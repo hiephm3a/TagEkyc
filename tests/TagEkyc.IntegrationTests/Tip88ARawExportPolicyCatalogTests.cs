@@ -1,8 +1,11 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql;
 using TagEkyc.Application.Ports;
 using TagEkyc.Domain;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.RawExport;
 
 namespace TagEkyc.IntegrationTests;
 
@@ -19,7 +22,7 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
     public async Task Repository_adds_system_derived_policy_and_catalog_approves_inert_closure()
     {
         await using var db = postgres.CreateDbContext();
-        var repository = new EfRawExportPolicyRepository(db);
+        var repository = CreateRepository(db);
         var policyId = Guid.Parse("88a00000-0000-5000-8000-000000000001");
 
         var draft = await repository.AddVersionAsync(new AddRawExportPolicyVersionCommand(
@@ -39,10 +42,12 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
             ProcessingInfrastructureJurisdiction: "VN",
             TransferScenarioCode: null,
             TransferLegalBasisCode: null,
-            new HashSet<RawExportRawClass> { RawExportRawClass.LiveSelfieImage }));
+            new HashSet<RawExportRawClass> { RawExportRawClass.LiveSelfieImage },
+            PermitTtlSeconds: 300));
 
         Assert.Equal(RawExportPolicyStatus.Draft, draft.Status);
         Assert.Equal(1, draft.PolicyVersion);
+        Assert.Equal(300, draft.PermitTtlSeconds);
         Assert.Equal(RawExportPolicyConstants.RequirementRuleSetId, draft.RequirementRuleSetId);
         Assert.Equal(1, draft.RequirementRuleSetVersion);
         Assert.Equal(
@@ -102,6 +107,183 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
     }
 
     [Fact]
+    public async Task Permit_ttl_column_and_migration_owned_constraint_are_present_without_validation_backfill()
+    {
+        await using var db = postgres.CreateDbContext();
+
+        var columnIsNullable = await QueryScalarStringAsync(db, """
+            SELECT is_nullable
+            FROM information_schema.columns
+            WHERE table_schema = 'tagekyc'
+              AND table_name = 'raw_export_policy_versions'
+              AND column_name = 'PermitTtlSeconds';
+            """);
+        var constraint = await QueryConstraintAsync(db, "CK_raw_export_policy_versions_PermitTtlSeconds");
+
+        Assert.Equal("YES", columnIsNullable);
+        Assert.NotNull(constraint);
+        Assert.False(constraint!.Validated);
+        Assert.Contains("\"PermitTtlSeconds\" IS NOT NULL", constraint.Definition, StringComparison.Ordinal);
+        Assert.Contains("\"PermitTtlSeconds\" > 0", constraint.Definition, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task Permit_ttl_app_guards_reject_invalid_values_without_appending_closure()
+    {
+        await using var db = postgres.CreateDbContext();
+        var repository = CreateRepository(db, minSeconds: 60, maxSeconds: 120);
+        var rejectedAddPolicyId = Guid.Parse("88a00000-0000-5000-8000-000000000080");
+
+        var addException = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            repository.AddVersionAsync(new AddRawExportPolicyVersionCommand(
+                rejectedAddPolicyId,
+                0,
+                RawExportMode.ExternalExportOnlyNoRetain,
+                "ttl-policy",
+                null,
+                "NO_RETAIN",
+                RawExportConsentRequirement.Required,
+                null,
+                null,
+                "Processor",
+                "controller",
+                "VN",
+                "VN",
+                "VN",
+                null,
+                null,
+                new HashSet<RawExportRawClass> { RawExportRawClass.LiveSelfieImage },
+                121)));
+        Assert.Equal("RAW_EXPORT_POLICY_PERMIT_TTL_INVALID", addException.Message);
+        Assert.False(await db.RawExportPolicyVersions.AnyAsync(row => row.PolicyId == rejectedAddPolicyId));
+
+        var approvePolicyId = Guid.Parse("88a00000-0000-5000-8000-000000000081");
+        await InsertDraftAsync(db, approvePolicyId);
+        var approveException = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            repository.CatalogApproveAsync(new CloseRawExportPolicyVersionCommand(
+                approvePolicyId,
+                1,
+                "principal:catalog-author",
+                "decision:approval:ttl")));
+        Assert.Equal("RAW_EXPORT_POLICY_PERMIT_TTL_INVALID", approveException.Message);
+        Assert.False(await db.RawExportPolicyClosures.AnyAsync(row => row.PolicyId == approvePolicyId));
+
+        var abandoned = await repository.AbandonDraftAsync(new CloseRawExportPolicyVersionCommand(
+            approvePolicyId,
+            1,
+            "principal:catalog-author",
+            "decision:abandon:ttl"));
+        Assert.Equal(RawExportPolicyStatus.Abandoned, abandoned.Status);
+    }
+
+    [Fact]
+    public async Task Permit_ttl_check_constraint_rejects_direct_null_or_nonpositive_post_e2_versions()
+    {
+        await using var db = postgres.CreateDbContext();
+
+        var nullException = await Assert.ThrowsAsync<PostgresException>(() =>
+            InsertPolicyVersionRowOnlyAsync(db, Guid.Parse("88a00000-0000-5000-8000-000000000082"), null));
+        Assert.Equal(PostgresErrorCodes.CheckViolation, nullException.SqlState);
+        Assert.Equal("CK_raw_export_policy_versions_PermitTtlSeconds", nullException.ConstraintName);
+
+        var zeroException = await Assert.ThrowsAsync<PostgresException>(() =>
+            InsertPolicyVersionRowOnlyAsync(db, Guid.Parse("88a00000-0000-5000-8000-000000000083"), 0));
+        Assert.Equal(PostgresErrorCodes.CheckViolation, zeroException.SqlState);
+        Assert.Equal("CK_raw_export_policy_versions_PermitTtlSeconds", zeroException.ConstraintName);
+    }
+
+    [Fact]
+    public async Task Legacy_null_ttl_survives_migration_but_cannot_be_catalog_approved()
+    {
+        await using var db = postgres.CreateDbContext();
+        await db.Database.EnsureDeletedAsync();
+        var migrator = db.GetService<IMigrator>();
+        await migrator.MigrateAsync("20260720022629_Tip88B2SubjectExportConsent");
+
+        var policyId = Guid.Parse("88a00000-0000-5000-8000-000000000084");
+        var approvedPolicyId = Guid.Parse("88a00000-0000-5000-8000-000000000088");
+        await InsertPreE2DraftAsync(db, approvedPolicyId, includeConsentArtifact: true);
+        await InsertClosureAsync(db, approvedPolicyId, "CatalogApproved");
+        await InsertPreE2DraftAsync(db, policyId, includeConsentArtifact: true);
+
+        await migrator.MigrateAsync("20260721070118_Tip88AE2PolicyPermitTtlField");
+        var repository = CreateRepository(db);
+
+        var legacyApproved = await repository.GetVersionAsync(approvedPolicyId, 1);
+        Assert.NotNull(legacyApproved);
+        Assert.Equal(RawExportPolicyStatus.CatalogApproved, legacyApproved!.Status);
+        Assert.Null(legacyApproved.PermitTtlSeconds);
+
+        var latestApproved = await repository.GetLatestCatalogApprovedVersionAsync(approvedPolicyId);
+        Assert.NotNull(latestApproved);
+        Assert.Equal(approvedPolicyId, latestApproved!.PolicyId);
+        Assert.Equal(RawExportPolicyStatus.CatalogApproved, latestApproved.Status);
+        Assert.Null(latestApproved.PermitTtlSeconds);
+
+        var listedApproved = Assert.Single(
+            await repository.ListAsync(),
+            version => version.PolicyId == approvedPolicyId && version.PolicyVersion == 1);
+        Assert.Equal(RawExportPolicyStatus.CatalogApproved, listedApproved.Status);
+        Assert.Null(listedApproved.PermitTtlSeconds);
+
+        var appException = await Assert.ThrowsAsync<InvalidOperationException>(() =>
+            repository.CatalogApproveAsync(new CloseRawExportPolicyVersionCommand(
+                policyId,
+                1,
+                "principal:catalog-author",
+                "decision:legacy-null")));
+        Assert.Equal("RAW_EXPORT_POLICY_PERMIT_TTL_INVALID", appException.Message);
+        Assert.False(await db.RawExportPolicyClosures.AnyAsync(row => row.PolicyId == policyId));
+
+        var dbException = await Assert.ThrowsAsync<PostgresException>(() =>
+            InsertClosureAsync(db, policyId, "CatalogApproved"));
+        Assert.Equal("P0001", dbException.SqlState);
+        Assert.Equal("RAW_EXPORT_POLICY_PERMIT_TTL_INVALID", dbException.MessageText);
+        Assert.False(await db.RawExportPolicyClosures.AnyAsync(row => row.PolicyId == policyId));
+
+        await InsertClosureAsync(db, policyId, "Abandoned");
+        Assert.True(await db.RawExportPolicyClosures.AnyAsync(row => row.PolicyId == policyId && row.ClosureType == "Abandoned"));
+    }
+
+    [Fact]
+    public async Task Migration_rollback_restores_pre_e2_closure_function_and_pre_e2_sql_paths()
+    {
+        await using var db = postgres.CreateDbContext();
+        await db.Database.EnsureDeletedAsync();
+        var migrator = db.GetService<IMigrator>();
+
+        await migrator.MigrateAsync("20260720022629_Tip88B2SubjectExportConsent");
+        var baselineFunction = await QueryFunctionSnapshotAsync(db);
+
+        await migrator.MigrateAsync("20260721070118_Tip88AE2PolicyPermitTtlField");
+        await migrator.MigrateAsync("20260720022629_Tip88B2SubjectExportConsent");
+
+        Assert.False(await ColumnExistsAsync(db, "raw_export_policy_versions", "PermitTtlSeconds"));
+        Assert.Null(await QueryConstraintAsync(db, "CK_raw_export_policy_versions_PermitTtlSeconds"));
+        Assert.Equal(baselineFunction, await QueryFunctionSnapshotAsync(db));
+
+        var approvedPolicyId = Guid.Parse("88a00000-0000-5000-8000-000000000085");
+        await InsertPreE2DraftAsync(db, approvedPolicyId, includeConsentArtifact: true);
+        await InsertClosureAsync(db, approvedPolicyId, "CatalogApproved");
+        Assert.True(await db.RawExportPolicyClosures.AnyAsync(row => row.PolicyId == approvedPolicyId && row.ClosureType == "CatalogApproved"));
+
+        var abandonedPolicyId = Guid.Parse("88a00000-0000-5000-8000-000000000086");
+        await InsertPreE2DraftAsync(db, abandonedPolicyId, includeConsentArtifact: true);
+        await InsertClosureAsync(db, abandonedPolicyId, "Abandoned");
+        Assert.True(await db.RawExportPolicyClosures.AnyAsync(row => row.PolicyId == abandonedPolicyId && row.ClosureType == "Abandoned"));
+
+        var incompletePolicyId = Guid.Parse("88a00000-0000-5000-8000-000000000087");
+        await InsertPreE2DraftAsync(db, incompletePolicyId, includeConsentArtifact: false);
+        var incompleteException = await Assert.ThrowsAsync<PostgresException>(() =>
+            InsertClosureAsync(db, incompletePolicyId, "CatalogApproved"));
+        Assert.Equal("P0001", incompleteException.SqlState);
+        Assert.Equal("RAW_EXPORT_CATALOG_INCOMPLETE_REQUIREMENTS", incompleteException.MessageText);
+
+        await migrator.MigrateAsync("20260721070118_Tip88AE2PolicyPermitTtlField");
+        Assert.True(await ColumnExistsAsync(db, "raw_export_policy_versions", "PermitTtlSeconds"));
+    }
+
+    [Fact]
     public async Task Runtime_privilege_validator_rejects_rule_table_mutation_privilege()
     {
         await using var db = postgres.CreateDbContext();
@@ -143,9 +325,9 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
             db.Database.ExecuteSqlRawAsync($"""INSERT INTO tagekyc.raw_export_policy_requirements ("PolicyId","PolicyVersion","RequirementType","CreatedAt") VALUES ('{childPolicyId}',1,'Dpia',transaction_timestamp());"""));
 
         await Assert.ThrowsAsync<PostgresException>(() =>
-            db.Database.ExecuteSqlRawAsync("""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt") VALUES ('88a00000-0000-5000-8000-000000000020',2,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,transaction_timestamp());"""));
+            db.Database.ExecuteSqlRawAsync("""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt") VALUES ('88a00000-0000-5000-8000-000000000020',2,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,300,transaction_timestamp());"""));
         await Assert.ThrowsAsync<PostgresException>(() =>
-            db.Database.ExecuteSqlRawAsync("""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt") VALUES ('88a00000-0000-5000-8000-000000000021',1,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',99,transaction_timestamp());"""));
+            db.Database.ExecuteSqlRawAsync("""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt") VALUES ('88a00000-0000-5000-8000-000000000021',1,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',99,300,transaction_timestamp());"""));
         await Assert.ThrowsAsync<PostgresException>(() =>
             db.Database.ExecuteSqlRawAsync("""INSERT INTO tagekyc.raw_export_requirement_rule_sets ("RuleSetId","RuleSetVersion","MigrationRef","HomeJurisdictionCode","CreatedAt") VALUES ('LEGACY',1,'test','VN',transaction_timestamp());"""));
         await Assert.ThrowsAsync<PostgresException>(() =>
@@ -162,11 +344,11 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
         await InsertDraftAsync(db, policyId);
 
         await Assert.ThrowsAsync<PostgresException>(() =>
-            db.Database.ExecuteSqlRawAsync($"""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt") VALUES ('{policyId}',2,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,transaction_timestamp());"""));
+            db.Database.ExecuteSqlRawAsync($"""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt") VALUES ('{policyId}',2,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,300,transaction_timestamp());"""));
 
         await InsertClosureAsync(db, policyId, "Abandoned");
 
-        var repository = new EfRawExportPolicyRepository(db);
+        var repository = CreateRepository(db);
         var second = await repository.AddVersionAsync(new AddRawExportPolicyVersionCommand(
             policyId,
             ExpectedLatestVersion: 1,
@@ -184,7 +366,8 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
             "VN",
             null,
             null,
-            new HashSet<RawExportRawClass> { RawExportRawClass.LiveSelfieImage }));
+            new HashSet<RawExportRawClass> { RawExportRawClass.LiveSelfieImage },
+            300));
 
         Assert.Equal(2, second.PolicyVersion);
         Assert.Equal(RawExportPolicyStatus.Draft, second.Status);
@@ -218,7 +401,7 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
     public async Task Csharp_and_database_requirement_derivation_have_parity_for_home_jurisdiction_vectors()
     {
         await using var db = postgres.CreateDbContext();
-        var repository = new EfRawExportPolicyRepository(db);
+        var repository = CreateRepository(db);
         var policyId = Guid.Parse("88a00000-0000-5000-8000-000000000050");
 
         var draft = await repository.AddVersionAsync(new AddRawExportPolicyVersionCommand(
@@ -238,7 +421,8 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
             "VN",
             "cross-border",
             "contract",
-            new HashSet<RawExportRawClass> { RawExportRawClass.ChipDg2Portrait }));
+            new HashSet<RawExportRawClass> { RawExportRawClass.ChipDg2Portrait },
+            300));
 
         Assert.Equal(
             new[]
@@ -266,11 +450,11 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
         await SeedRuleSetVersionAsync(db, 2, includeRules: true);
 
         await Assert.ThrowsAsync<PostgresException>(() =>
-            db.Database.ExecuteSqlRawAsync("""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt") VALUES ('88a00000-0000-5000-8000-000000000060',1,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,transaction_timestamp());"""));
+            db.Database.ExecuteSqlRawAsync("""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt") VALUES ('88a00000-0000-5000-8000-000000000060',1,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,300,transaction_timestamp());"""));
 
         await SeedRuleSetVersionAsync(db, 3, includeRules: false);
         await Assert.ThrowsAsync<PostgresException>(() =>
-            db.Database.ExecuteSqlRawAsync("""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt") VALUES ('88a00000-0000-5000-8000-000000000061',1,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',3,transaction_timestamp());"""));
+            db.Database.ExecuteSqlRawAsync("""INSERT INTO tagekyc.raw_export_policy_versions ("PolicyId","PolicyVersion","Mode","Purpose","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt") VALUES ('88a00000-0000-5000-8000-000000000061',1,'ExternalExportOnlyNoRetain','purpose','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',3,300,transaction_timestamp());"""));
     }
 
     [Fact]
@@ -305,6 +489,12 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
             db.Database.ExecuteSqlRawAsync($"DELETE FROM tagekyc.{tableName};"));
     }
 
+    private static EfRawExportPolicyRepository CreateRepository(
+        TagEkycDbContext db,
+        int minSeconds = RawExportPermitTtlOptions.DefaultMinSeconds,
+        int maxSeconds = RawExportPermitTtlOptions.DefaultMaxSeconds)
+        => new(db, RawExportPermitTtlBoundsState.Valid(minSeconds, maxSeconds));
+
     private static async Task InsertDraftAsync(
         TagEkycDbContext db,
         Guid policyId,
@@ -314,9 +504,9 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
         await using var transaction = await db.Database.BeginTransactionAsync();
         await db.Database.ExecuteSqlRawAsync($"""
             INSERT INTO tagekyc.raw_export_policy_versions
-                ("PolicyId","PolicyVersion","Mode","Purpose","RetentionPurposeCode","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt")
+                ("PolicyId","PolicyVersion","Mode","Purpose","RetentionPurposeCode","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt")
             VALUES
-                ('{policyId}',1,'ExternalExportOnlyNoRetain','purpose','NO_RETAIN','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,transaction_timestamp());
+                ('{policyId}',1,'ExternalExportOnlyNoRetain','purpose','NO_RETAIN','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,300,transaction_timestamp());
             """);
         await db.Database.ExecuteSqlRawAsync($"""
             INSERT INTO tagekyc.raw_export_policy_allowed_classes
@@ -347,6 +537,51 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
                     ("PolicyId","PolicyVersion","RequirementType","CreatedAt")
                 VALUES
                     ('{policyId}',1,'{extraRequirement}',transaction_timestamp());
+                """);
+        }
+
+        await transaction.CommitAsync();
+    }
+
+    private static Task InsertPolicyVersionRowOnlyAsync(TagEkycDbContext db, Guid policyId, int? permitTtlSeconds)
+        => db.Database.ExecuteSqlRawAsync($"""
+            INSERT INTO tagekyc.raw_export_policy_versions
+                ("PolicyId","PolicyVersion","Mode","Purpose","RetentionPurposeCode","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt")
+            VALUES
+                ('{policyId}',1,'ExternalExportOnlyNoRetain','purpose','NO_RETAIN','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,{(permitTtlSeconds is null ? "NULL" : permitTtlSeconds.Value.ToString())},transaction_timestamp());
+            """);
+
+    private static async Task InsertPreE2DraftAsync(
+        TagEkycDbContext db,
+        Guid policyId,
+        bool includeConsentArtifact)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync();
+        await db.Database.ExecuteSqlRawAsync($"""
+            INSERT INTO tagekyc.raw_export_policy_versions
+                ("PolicyId","PolicyVersion","Mode","Purpose","RetentionPurposeCode","ConsentRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt")
+            VALUES
+                ('{policyId}',1,'ExternalExportOnlyNoRetain','purpose','NO_RETAIN','Required','Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,transaction_timestamp());
+            """);
+        await db.Database.ExecuteSqlRawAsync($"""
+            INSERT INTO tagekyc.raw_export_policy_allowed_classes
+                ("PolicyId","PolicyVersion","RawClass","CreatedAt")
+            VALUES
+                ('{policyId}',1,'LiveSelfieImage',transaction_timestamp());
+            """);
+        await db.Database.ExecuteSqlRawAsync($"""
+            INSERT INTO tagekyc.raw_export_policy_requirements
+                ("PolicyId","PolicyVersion","RequirementType","CreatedAt")
+            VALUES
+                ('{policyId}',1,'LegalApproval',transaction_timestamp());
+            """);
+        if (includeConsentArtifact)
+        {
+            await db.Database.ExecuteSqlRawAsync($"""
+                INSERT INTO tagekyc.raw_export_policy_requirements
+                    ("PolicyId","PolicyVersion","RequirementType","CreatedAt")
+                VALUES
+                    ('{policyId}',1,'ConsentArtifact',transaction_timestamp());
                 """);
         }
 
@@ -475,6 +710,108 @@ public sealed class Tip88ARawExportPolicyCatalogTests(PostgresPersistenceFixture
         command.CommandText = sql;
         return await command.ExecuteScalarAsync() as string;
     }
+
+    private static async Task<ConstraintSnapshot?> QueryConstraintAsync(TagEkycDbContext db, string constraintName)
+    {
+        var connection = db.Database.GetDbConnection();
+        if (connection.State != System.Data.ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT pg_get_constraintdef(oid), convalidated
+            FROM pg_constraint
+            WHERE conname = @constraintName;
+            """;
+        command.Parameters.Add(new NpgsqlParameter("constraintName", constraintName));
+        await using var reader = await command.ExecuteReaderAsync();
+        if (!await reader.ReadAsync())
+        {
+            return null;
+        }
+
+        return new ConstraintSnapshot(reader.GetString(0), reader.GetBoolean(1));
+    }
+
+    private static async Task<bool> ColumnExistsAsync(TagEkycDbContext db, string tableName, string columnName)
+    {
+        var connection = db.Database.GetDbConnection();
+        if (connection.State != System.Data.ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT EXISTS (
+                SELECT 1
+                FROM information_schema.columns
+                WHERE table_schema = 'tagekyc'
+                  AND table_name = @tableName
+                  AND column_name = @columnName);
+            """;
+        command.Parameters.Add(new NpgsqlParameter("tableName", tableName));
+        command.Parameters.Add(new NpgsqlParameter("columnName", columnName));
+        return (bool)(await command.ExecuteScalarAsync() ?? false);
+    }
+
+    private static async Task<FunctionSnapshot> QueryFunctionSnapshotAsync(TagEkycDbContext db)
+    {
+        var connection = db.Database.GetDbConnection();
+        if (connection.State != System.Data.ConnectionState.Open)
+        {
+            await connection.OpenAsync();
+        }
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT
+                p.oid::regprocedure::text,
+                pg_get_userbyid(p.proowner),
+                l.lanname,
+                p.provolatile::text,
+                p.proisstrict,
+                p.prosecdef,
+                COALESCE(array_to_string(p.proconfig, ','), ''),
+                COALESCE(array_to_string(p.proacl::text[], ','), ''),
+                pg_get_functiondef(p.oid)
+            FROM pg_proc p
+            JOIN pg_namespace n ON n.oid = p.pronamespace
+            JOIN pg_language l ON l.oid = p.prolang
+            WHERE n.nspname = 'tagekyc'
+              AND p.proname = 'enforce_raw_export_policy_closure_insert';
+            """;
+        await using var reader = await command.ExecuteReaderAsync();
+        Assert.True(await reader.ReadAsync());
+        return new FunctionSnapshot(
+            reader.GetString(0),
+            reader.GetString(1),
+            reader.GetString(2),
+            reader.GetString(3),
+            reader.GetBoolean(4),
+            reader.GetBoolean(5),
+            reader.GetString(6),
+            reader.GetString(7),
+            NormalizeFunctionBody(reader.GetString(8)));
+    }
+
+    private static string NormalizeFunctionBody(string body)
+        => string.Join('\n', body.Split('\n').Select(line => line.TrimEnd()));
+
+    private sealed record ConstraintSnapshot(string Definition, bool Validated);
+
+    private sealed record FunctionSnapshot(
+        string Signature,
+        string Owner,
+        string Language,
+        string Volatility,
+        bool Strict,
+        bool SecurityDefiner,
+        string Config,
+        string Acl,
+        string Body);
 }
 
 #pragma warning restore EF1002

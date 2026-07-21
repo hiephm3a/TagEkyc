@@ -2,15 +2,29 @@ using Microsoft.EntityFrameworkCore;
 using TagEkyc.Application.Ports;
 using TagEkyc.Domain;
 using TagEkyc.Infrastructure.Persistence.Entities;
+using TagEkyc.Infrastructure.RawExport;
 
 namespace TagEkyc.Infrastructure.Persistence;
 
-public sealed class EfRawExportPolicyRepository(TagEkycDbContext db) : IRawExportPolicyRepository
+public sealed class EfRawExportPolicyRepository : IRawExportPolicyRepository
 {
+    private readonly TagEkycDbContext db;
+    private readonly RawExportPermitTtlBoundsState permitTtlBounds;
+
+    public EfRawExportPolicyRepository(TagEkycDbContext db, RawExportPermitTtlBoundsState? permitTtlBounds = null)
+    {
+        this.db = db;
+        this.permitTtlBounds = permitTtlBounds ?? RawExportPermitTtlBoundsState.Valid(
+            RawExportPermitTtlOptions.DefaultMinSeconds,
+            RawExportPermitTtlOptions.DefaultMaxSeconds);
+    }
+
     public async Task<RawExportPolicyVersion> AddVersionAsync(
         AddRawExportPolicyVersionCommand command,
         CancellationToken cancellationToken = default)
     {
+        ValidatePermitTtl(command.PermitTtlSeconds);
+
         if (command.AllowedClasses.Count == 0)
         {
             throw new InvalidOperationException("RAW_EXPORT_POLICY_ALLOWED_CLASSES_EMPTY");
@@ -53,6 +67,7 @@ public sealed class EfRawExportPolicyRepository(TagEkycDbContext db) : IRawExpor
             TransferLegalBasisCode = Normalize(command.TransferLegalBasisCode),
             RequirementRuleSetId = ruleSet.RuleSetId,
             RequirementRuleSetVersion = ruleSet.RuleSetVersion,
+            PermitTtlSeconds = command.PermitTtlSeconds,
             CreatedAt = now,
         };
         var requirements = RawExportRequirementEvaluator.Derive(version, ruleSet, rules);
@@ -63,12 +78,12 @@ public sealed class EfRawExportPolicyRepository(TagEkycDbContext db) : IRawExpor
                 ("PolicyId","PolicyVersion","Mode","Purpose","RetentionProfileRef","RetentionPurposeCode","ConsentRequirement",
                  "RecipientCategory","RecipientAssuranceRequirement","ControllerRole","ControllerEntityRef","ControllerJurisdiction",
                  "RecipientJurisdiction","ProcessingInfrastructureJurisdiction","TransferScenarioCode","TransferLegalBasisCode",
-                 "RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt")
+                 "RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt")
             VALUES
                 ({version.PolicyId},{version.PolicyVersion},{version.Mode},{version.Purpose},{version.RetentionProfileRef},{version.RetentionPurposeCode},{version.ConsentRequirement},
                  {version.RecipientCategory},{version.RecipientAssuranceRequirement},{version.ControllerRole},{version.ControllerEntityRef},{version.ControllerJurisdiction},
                  {version.RecipientJurisdiction},{version.ProcessingInfrastructureJurisdiction},{version.TransferScenarioCode},{version.TransferLegalBasisCode},
-                 {version.RequirementRuleSetId},{version.RequirementRuleSetVersion},{version.CreatedAt});
+                 {version.RequirementRuleSetId},{version.RequirementRuleSetVersion},{version.PermitTtlSeconds},{version.CreatedAt});
             """, cancellationToken);
 
         foreach (var rawClass in command.AllowedClasses.OrderBy(rawClass => rawClass.ToString()))
@@ -163,6 +178,18 @@ public sealed class EfRawExportPolicyRepository(TagEkycDbContext db) : IRawExpor
         RawExportPolicyClosureType closureType,
         CancellationToken cancellationToken)
     {
+        if (closureType == RawExportPolicyClosureType.CatalogApproved)
+        {
+            var version = await db.RawExportPolicyVersions.AsNoTracking()
+                .SingleOrDefaultAsync(row => row.PolicyId == command.PolicyId && row.PolicyVersion == command.PolicyVersion, cancellationToken);
+            if (version is null)
+            {
+                throw new InvalidOperationException("RAW_EXPORT_POLICY_VERSION_NOT_FOUND");
+            }
+
+            ValidatePermitTtl(version.PermitTtlSeconds);
+        }
+
         var closure = new RawExportPolicyClosureRow
         {
             PolicyId = command.PolicyId,
@@ -244,7 +271,16 @@ public sealed class EfRawExportPolicyRepository(TagEkycDbContext db) : IRawExpor
             allowedClasses.ToHashSet(),
             requirements.ToHashSet(),
             status,
-            domainClosure);
+            domainClosure,
+            version.PermitTtlSeconds);
+    }
+
+    private void ValidatePermitTtl(int? permitTtlSeconds)
+    {
+        if (permitTtlSeconds is null || !permitTtlBounds.Allows(permitTtlSeconds.Value))
+        {
+            throw new InvalidOperationException("RAW_EXPORT_POLICY_PERMIT_TTL_INVALID");
+        }
     }
 
     private static string RequireNonBlank(string value, string paramName)

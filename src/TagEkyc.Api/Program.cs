@@ -8,6 +8,7 @@ using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.RawExport;
 using TagEkyc.Infrastructure.Retention;
 using TagEkyc.Infrastructure.Secrets;
 using TagEkyc.Infrastructure.Signing;
@@ -32,6 +33,7 @@ builder.Services
     .AddOptions<ApiKeyStoreOptions>()
     .Bind(builder.Configuration.GetSection(ApiKeyStoreOptions.SectionName));
 ConfigureEvidenceSigning(builder);
+ConfigureRawExportPermitTtl(builder);
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
 ConfigureRetention(builder);
@@ -213,8 +215,17 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
     builder.Services.AddScoped<IReadinessCheck, RawExportRuntimePrivilegeReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportControlPlaneReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportSubjectConsentReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportPermitTtlReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
+}
+
+static void ConfigureRawExportPermitTtl(WebApplicationBuilder builder)
+{
+    var bounds = RawExportPermitTtlOptions.Resolve(
+        builder.Configuration[$"{RawExportPermitTtlOptions.SectionName}:{RawExportPermitTtlOptions.PermitTtlMinSecondsKey}"],
+        builder.Configuration[$"{RawExportPermitTtlOptions.SectionName}:{RawExportPermitTtlOptions.PermitTtlMaxSecondsKey}"]);
+    builder.Services.AddSingleton(bounds);
 }
 
 static void ConfigureRetention(WebApplicationBuilder builder)

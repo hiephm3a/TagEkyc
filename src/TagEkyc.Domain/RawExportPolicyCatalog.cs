@@ -79,7 +79,8 @@ public sealed record RawExportPolicyVersion(
     IReadOnlySet<RawExportRawClass> AllowedClasses,
     IReadOnlySet<RawExportRequirementType> Requirements,
     RawExportPolicyStatus Status,
-    RawExportPolicyClosure? Closure);
+    RawExportPolicyClosure? Closure,
+    int? PermitTtlSeconds);
 
 public sealed record RawExportPolicyClosure(
     RawExportPolicyClosureType ClosureType,

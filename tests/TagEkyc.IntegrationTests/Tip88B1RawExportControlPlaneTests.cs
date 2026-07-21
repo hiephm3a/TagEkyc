@@ -803,10 +803,10 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         await db.Database.ExecuteSqlRawAsync($"""
             INSERT INTO tagekyc.raw_export_policy_versions
                 ("PolicyId","PolicyVersion","Mode","Purpose","RetentionPurposeCode","ConsentRequirement","ControllerRole","ControllerEntityRef",
-                 "ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RetentionProfileRef","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt")
+                 "ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RetentionProfileRef","RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt")
             VALUES
                 ('{policyId}',1,'{mode}','purpose','NO_RETAIN','{(includeConsentArtifact ? "Required" : "NotRequired")}',
-                 'Processor','controller','VN','VN','VN',{retentionProfileRef},'RAW_EXPORT_REQUIREMENTS',1,transaction_timestamp());
+                 'Processor','controller','VN','VN','VN',{retentionProfileRef},'RAW_EXPORT_REQUIREMENTS',1,300,transaction_timestamp());
             """);
         await db.Database.ExecuteSqlRawAsync($"""
             INSERT INTO tagekyc.raw_export_policy_allowed_classes

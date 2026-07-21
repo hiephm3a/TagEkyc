@@ -326,6 +326,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.TransferScenarioCode).HasMaxLength(128);
             entity.Property(row => row.TransferLegalBasisCode).HasMaxLength(128);
             entity.Property(row => row.RequirementRuleSetId).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.PermitTtlSeconds).IsRequired(false);
             entity.HasOne<RawExportRequirementRuleSetRow>()
                 .WithMany()
                 .HasForeignKey(row => new { row.RequirementRuleSetId, row.RequirementRuleSetVersion })

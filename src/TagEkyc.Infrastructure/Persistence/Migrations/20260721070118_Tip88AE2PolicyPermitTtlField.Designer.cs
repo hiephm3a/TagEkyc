@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using TagEkyc.Infrastructure.Persistence;
@@ -11,9 +12,11 @@ using TagEkyc.Infrastructure.Persistence;
 namespace TagEkyc.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(TagEkycDbContext))]
-    partial class TagEkycDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260721070118_Tip88AE2PolicyPermitTtlField")]
+    partial class Tip88AE2PolicyPermitTtlField
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1034,11 +1037,11 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
 
                     b.ToTable("raw_export_subject_consent_authorities", "tagekyc", t =>
                         {
-                        t.HasCheckConstraint("CK_raw_export_subject_consent_authorities_AuthorityType", "\"AuthorityType\" IN ('SubjectConsentRecorder','SubjectConsentWithdrawer')");
+                            t.HasCheckConstraint("CK_raw_export_subject_consent_authorities_AuthorityType", "\"AuthorityType\" IN ('SubjectConsentRecorder','SubjectConsentWithdrawer')");
 
-                        t.HasCheckConstraint("CK_raw_export_subject_consent_authorities_DecisionRef_NotBlank", "\"DecisionRef\" IS NULL OR btrim(\"DecisionRef\") <> ''");
+                            t.HasCheckConstraint("CK_raw_export_subject_consent_authorities_DecisionRef_NotBlank", "\"DecisionRef\" IS NULL OR btrim(\"DecisionRef\") <> ''");
 
-                        t.HasCheckConstraint("CK_raw_export_subject_consent_authorities_EventShape", "(\n    \"EventType\" = 'Granted'\n    AND \"TargetRevision\" IS NULL\n    AND \"ValidFromUtc\" IS NOT NULL\n    AND (\"ValidUntilUtc\" IS NULL OR \"ValidUntilUtc\" > \"ValidFromUtc\")\n) OR (\n    \"EventType\" = 'Revoked'\n    AND \"TargetRevision\" IS NOT NULL\n    AND \"ValidFromUtc\" IS NULL\n    AND \"ValidUntilUtc\" IS NULL\n)");
+                            t.HasCheckConstraint("CK_raw_export_subject_consent_authorities_EventShape", "(\n    \"EventType\" = 'Granted'\n    AND \"TargetRevision\" IS NULL\n    AND \"ValidFromUtc\" IS NOT NULL\n    AND (\"ValidUntilUtc\" IS NULL OR \"ValidUntilUtc\" > \"ValidFromUtc\")\n) OR (\n    \"EventType\" = 'Revoked'\n    AND \"TargetRevision\" IS NOT NULL\n    AND \"ValidFromUtc\" IS NULL\n    AND \"ValidUntilUtc\" IS NULL\n)");
 
                             t.HasCheckConstraint("CK_raw_export_subject_consent_authorities_EventType", "\"EventType\" IN ('Granted','Revoked')");
                         });
@@ -1148,7 +1151,7 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
 
                     b.ToTable("raw_export_subject_consent_events", "tagekyc", t =>
                         {
-                            t.HasCheckConstraint("CK_raw_export_subject_consent_events_EventShape", "(\n    \"EventType\" = 'Granted'\n    AND \"TargetRevision\" IS NULL\n    AND \"ConsentTextVersion\" IS NOT NULL AND btrim(\"ConsentTextVersion\") <> ''\n    AND \"ConsentTextContentHash\" IS NOT NULL AND btrim(\"ConsentTextContentHash\") <> ''\n    AND \"ExternalConsentArtifactRef\" IS NOT NULL AND btrim(\"ExternalConsentArtifactRef\") <> ''\n    AND (\"DecisionRef\" IS NULL OR btrim(\"DecisionRef\") <> '')\n    AND \"ValidFromUtc\" IS NOT NULL\n    AND \"CapturedAtUtc\" IS NOT NULL\n    AND \"CapturedByPrincipalId\" IS NOT NULL\n    AND \"WithdrawnByPrincipalId\" IS NULL\n    AND (\"ValidUntilUtc\" IS NULL OR \"ValidUntilUtc\" > \"ValidFromUtc\")\n) OR (\n    \"EventType\" = 'Withdrawn'\n    AND \"TargetRevision\" IS NOT NULL\n    AND (\"DecisionRef\" IS NULL OR btrim(\"DecisionRef\") <> '')\n    AND \"ConsentTextVersion\" IS NULL\n    AND \"ConsentTextContentHash\" IS NULL\n    AND \"ValidFromUtc\" IS NULL\n    AND \"ValidUntilUtc\" IS NULL\n    AND \"CapturedAtUtc\" IS NULL\n    AND \"CapturedByPrincipalId\" IS NULL\n    AND \"WithdrawnByPrincipalId\" IS NOT NULL\n)");
+                            t.HasCheckConstraint("CK_raw_export_subject_consent_events_EventShape", "(\n    \"EventType\" = 'Granted'\n    AND \"TargetRevision\" IS NULL\n    AND \"ConsentTextVersion\" IS NOT NULL AND btrim(\"ConsentTextVersion\") <> ''\n    AND \"ConsentTextContentHash\" IS NOT NULL AND btrim(\"ConsentTextContentHash\") <> ''\n    AND \"ExternalConsentArtifactRef\" IS NOT NULL AND btrim(\"ExternalConsentArtifactRef\") <> ''\n    AND (\"DecisionRef\" IS NULL OR btrim(\"DecisionRef\") <> '')\n    AND \"ValidFromUtc\" IS NOT NULL\n    AND \"CapturedAtUtc\" IS NOT NULL\n    AND \"CapturedByPrincipalId\" IS NOT NULL\n    AND \"WithdrawnByPrincipalId\" IS NULL\n    AND (\"ValidUntilUtc\" IS NULL OR \"ValidUntilUtc\" > \"ValidFromUtc\")\n) OR (\n    \"EventType\" = 'Withdrawn'\n    AND \"TargetRevision\" IS NOT NULL\n    AND \"ConsentTextVersion\" IS NULL\n    AND \"ConsentTextContentHash\" IS NULL\n    AND \"ValidFromUtc\" IS NULL\n    AND \"ValidUntilUtc\" IS NULL\n    AND \"CapturedAtUtc\" IS NULL\n    AND \"CapturedByPrincipalId\" IS NULL\n    AND \"WithdrawnByPrincipalId\" IS NOT NULL\n)");
 
                             t.HasCheckConstraint("CK_raw_export_subject_consent_events_EventType", "\"EventType\" IN ('Granted','Withdrawn')");
 

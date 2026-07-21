@@ -145,7 +145,8 @@ public sealed record AddRawExportPolicyVersionCommand(
     string? ProcessingInfrastructureJurisdiction,
     string? TransferScenarioCode,
     string? TransferLegalBasisCode,
-    IReadOnlySet<RawExportRawClass> AllowedClasses);
+    IReadOnlySet<RawExportRawClass> AllowedClasses,
+    int PermitTtlSeconds);
 
 public sealed record CloseRawExportPolicyVersionCommand(
     Guid PolicyId,

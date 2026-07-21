@@ -1039,10 +1039,10 @@ public sealed class Tip88B2SubjectExportConsentTests(PostgresPersistenceFixture 
         await db.Database.ExecuteSqlRawAsync($"""
             INSERT INTO tagekyc.raw_export_policy_versions
                 ("PolicyId","PolicyVersion","Mode","Purpose","RetentionPurposeCode","ConsentRequirement","ControllerRole","ControllerEntityRef",
-                 "ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","CreatedAt")
+                 "ControllerJurisdiction","RecipientJurisdiction","ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt")
             VALUES
                 ('{policyId}',1,'ExternalExportOnlyNoRetain','purpose','NO_RETAIN','Required',
-                 'Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,transaction_timestamp());
+                 'Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,300,transaction_timestamp());
             """);
         await db.Database.ExecuteSqlRawAsync($"""
             INSERT INTO tagekyc.raw_export_policy_allowed_classes

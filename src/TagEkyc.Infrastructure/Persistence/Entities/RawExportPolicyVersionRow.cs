@@ -38,5 +38,7 @@ public sealed class RawExportPolicyVersionRow
 
     public int RequirementRuleSetVersion { get; set; }
 
+    public int? PermitTtlSeconds { get; set; }
+
     public DateTimeOffset CreatedAt { get; set; }
 }

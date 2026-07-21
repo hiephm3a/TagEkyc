@@ -2,6 +2,7 @@ using Microsoft.Extensions.Options;
 using TagEkyc.Application.Ports;
 using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.RawExport;
 using TagEkyc.Infrastructure.Signing;
 
 namespace TagEkyc.Api;
@@ -188,6 +189,17 @@ public sealed class RawExportSubjectConsentReadinessCheck(RawExportSubjectConsen
         {
             return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
         }
+    }
+}
+
+public sealed class RawExportPermitTtlReadinessCheck(RawExportPermitTtlBoundsState bounds) : IReadinessCheck
+{
+    public Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult<IReadOnlyList<ReadinessIssue>>(bounds.IsValid
+            ? []
+            : [ReadinessEndpoint.DatabaseIssue(RawExportPermitTtlBoundsState.InvalidCode)]);
     }
 }
 
