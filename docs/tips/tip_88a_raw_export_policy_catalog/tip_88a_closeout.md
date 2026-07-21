@@ -57,3 +57,7 @@ Grant of an already-onboarded client identity to a policy; surface `PrincipalId`
 
 - The superseded pointer `docs/tips/tip_88_raw_export_policy_spine/` was left untracked (not committed); the split is documented in the brief. Optional to include in a later commit.
 - One full-suite run hit transient TIP-68 startup-assertion failures that passed in isolation - consistent with the known shared-Postgres parallel-DB test-infra contention, not a TIP-88A regression. The final exact command passed (Contract 13, Arch 44, Unit 180, Integration 144 + 1 skipped).
+
+## Non-normative extension note (TIP-88A-E2, 2026-07-21)
+
+The 88A policy catalog was later extended additively by **TIP-88A-E2 Policy Permit TTL Field** (committed local `09c9359`): `RawExportPolicyVersion` / `raw_export_policy_versions` gained an immutable nullable `PermitTtlSeconds` (raw-SQL `NOT VALID` positive-non-null CHECK; pre-E2 rows stay NULL, no backfill), and the CatalogApproved closure-completeness function gained ONE structural block requiring a stored non-null positive TTL on new CatalogApproved closures (bare RAISE -> P0001; `Down()` restores the byte-identical pre-E2 function). This is a downstream-consumption extension for TIP-88B3's permit-expiry formula; it does NOT change any other 88A eligibility/activation/closure semantics. See `docs/tips/tip_88a_e2_policy_permit_ttl_field/tip_88a_e2_closeout.md`.

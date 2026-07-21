@@ -101,6 +101,18 @@ Production `/readiness` fails closed (HTTP 503) on `PROD_RAW_EXPORT_SUBJECT_CONS
 
 **Operational note on withdrawal:** consent `Granted` requires the verification session to be `Completed`, but consent `Withdrawn` deliberately does NOT — a subject can withdraw after the session reaches `Expired`, `Cancelled` or `TechnicalTerminal`. Do not add any deployment-level guard that blocks withdrawal on session state; doing so would trap consent in a non-revocable state. Tracked as a P1 gate in `docs/phase1_scope_and_debt_registry_v0_1.md`.
 
+## Raw-Export Permit-TTL Bounds Config (TIP-88A-E2)
+
+TIP-88A-E2 (committed local `09c9359`) adds a per-policy-version `PermitTtlSeconds` (the raw-export permit lifetime) plus app-config BOUNDS that constrain what TTL a policy version may declare. The TTL VALUE lives on the approved policy version (immutable, versioned); the BOUNDS are operational config, changeable between deploy/restart (NOT hot-reloaded).
+
+**Config keys** (section `TagEkyc:RawExport`):
+- `TagEkyc:RawExport:PermitTtlMinSeconds`
+- `TagEkyc:RawExport:PermitTtlMaxSeconds`
+
+**Semantics:** both keys absent => default `[60, 900]`; exactly one absent, malformed/non-integer/overflow, `min <= 0`, `max < min`, or `max > 3600` (the absolute maximum) => INVALID. On an INVALID bounds state the process stays up but `/readiness` fails closed (HTTP 503) with `PROD_RAW_EXPORT_PERMIT_TTL_BOUNDS_INVALID`, and all raw-export policy write commands (add-version / catalog-approve) fail closed. Bounds are resolved ONCE at startup into an immutable state; change requires a restart. The readiness payload is sanitized (it does not echo the configured min/max).
+
+**Legacy disposition:** a policy version created before E2 has NULL `PermitTtlSeconds`. Existing `CatalogApproved` NULL rows remain readable but TIP-88B3 will reject them at authorization — publish a new policy version with a valid in-bounds TTL before raw-export use. Legacy `Draft` NULL rows cannot be catalog-approved (closure-completeness rejects); abandon and create a new version. No backfill, no in-place mutation.
+
 ## Retention Policy Declaration
 
 Production requires a declared retention window for regulated evidence at `TagEkyc:Retention:RegulatedEvidenceRetentionDays`. The value is supplied by Legal/DPO under the governing Vietnamese legal basis; this runbook intentionally ships no day-count value. `LocalDevEphemeral` has no production retention window.

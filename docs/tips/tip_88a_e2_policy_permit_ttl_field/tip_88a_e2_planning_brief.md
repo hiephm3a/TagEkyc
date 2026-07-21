@@ -129,7 +129,8 @@ Tier-2. Attacks: (a) other 88A behaviour changed by the column/trigger? (b) rang
 - `tests/TagEkyc.IntegrationTests/Tip88ARawExportPolicyCatalogTests.cs` (field/migration/legacy/negative/immutability tests)
 - `tests/TagEkyc.IntegrationTests/Tip88AE2PolicyPermitTtlConfigTests.cs` (NEW; bounds/config/readiness tests, mirroring `Tip83E3RetentionConfigTests.cs`)
 - `tests/TagEkyc.ArchTests/Tip88APolicyCatalogBoundaryTests.cs` (NEW; contract-not-DTO)
-- Any additional source/test/project file after dispatch = STOP and report.
+- **[Homeowner-authorized expansion 2026-07-20, FIXTURE-ONLY] `tests/TagEkyc.IntegrationTests/Tip88B1RawExportControlPlaneTests.cs` + `tests/TagEkyc.IntegrationTests/Tip88B2SubjectExportConsentTests.cs`** — add a valid in-bounds `PermitTtlSeconds` (e.g. `300`) to each raw-SQL policy-version SEED helper ONLY (`SeedApprovedPolicyAsync` / `SeedPolicyAsync`), so the post-E2 `NOT VALID` CHECK is satisfied. NO change to any B1/B2 production code, migration, assertion logic, or semantics. **Census-gap note:** these seed helpers `INSERT INTO raw_export_policy_versions` via raw SQL, bypassing the domain type, so the type-name consumer inventory above did not surface them; a future schema-column slice census must also grep the TABLE name across tests. The production seed (`EfRawExportPolicyRepository.cs:77`, in-allowlist) is the equivalent raw-SQL path and is updated in this slice.
+- Any additional source/test/project file after this = STOP and report.
 
 ## 8. Landing docs (exact allowlist, on implementation land)
 - Create `docs/tips/tip_88a_e2_policy_permit_ttl_field/tip_88a_e2_closeout.md`.
