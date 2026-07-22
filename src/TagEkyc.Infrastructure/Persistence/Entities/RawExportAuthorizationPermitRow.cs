@@ -1,0 +1,3 @@
+namespace TagEkyc.Infrastructure.Persistence.Entities;
+public sealed class RawExportAuthorizationPermitRow
+{ public Guid PermitId { get; set; } public Guid AuthorizationDecisionId { get; set; } public Guid ResolvedVerificationSessionId { get; set; } public string SubjectRef { get; set; } = string.Empty; public Guid PolicyId { get; set; } public int PolicyVersion { get; set; } public string PurposeCode { get; set; } = string.Empty; public Guid RecipientClientApplicationId { get; set; } public DateTimeOffset DecisionExpiresAtUtc { get; set; } public int SchemaVersion { get; set; } public DateTimeOffset CreatedAt { get; set; } }

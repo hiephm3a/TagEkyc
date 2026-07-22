@@ -215,6 +215,8 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
     builder.Services.AddScoped<IReadinessCheck, RawExportRuntimePrivilegeReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportControlPlaneReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportSubjectConsentReadinessCheck>();
+    builder.Services.AddScoped<RawExportAuthorizationReadinessValidator>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportAuthorizationReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportPermitTtlReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();

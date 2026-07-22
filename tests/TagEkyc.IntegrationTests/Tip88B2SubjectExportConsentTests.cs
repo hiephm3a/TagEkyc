@@ -944,17 +944,44 @@ public sealed class Tip88B2SubjectExportConsentTests(PostgresPersistenceFixture 
     }
 
     [Fact]
-    public async Task Inertness_no_tip88b3_or_raw_byte_surface_exists()
+    public async Task Inertness_no_raw_byte_surface_exists()
     {
         await using var db = postgres.CreateDbContext();
-        var tables = await QueryStringsAsync(db, """
+        var packageTables = await QueryStringsAsync(db, """
             SELECT tablename
             FROM pg_tables
             WHERE schemaname = 'tagekyc'
-              AND (tablename LIKE 'raw_export_authorization%' OR tablename LIKE 'raw_export_permit%' OR tablename LIKE 'raw_export_package%')
+              AND tablename LIKE 'raw_export_package%'
             ORDER BY tablename;
             """);
-        Assert.Empty(tables);
+        Assert.Empty(packageTables);
+
+        var inertB3Tables = await QueryStringsAsync(db, """
+            SELECT tablename
+            FROM pg_tables
+            WHERE schemaname = 'tagekyc'
+              AND (tablename LIKE 'raw_export_authorization%' OR tablename LIKE 'raw_export_permit%' OR tablename LIKE 'raw_export_decision%')
+            ORDER BY tablename;
+            """);
+        Assert.Equal([
+            "raw_export_authorization_decisions",
+            "raw_export_authorization_idempotency",
+            "raw_export_authorization_permits",
+            "raw_export_decision_classes",
+            "raw_export_decision_eligibility_causes",
+            "raw_export_decision_fulfillment_refs",
+            "raw_export_permit_classes",
+        ], inertB3Tables);
+
+        var b3RawByteColumns = await QueryStringsAsync(db, """
+            SELECT table_name || '.' || column_name
+            FROM information_schema.columns
+            WHERE table_schema = 'tagekyc'
+              AND (table_name LIKE 'raw_export_authorization%' OR table_name LIKE 'raw_export_permit%' OR table_name LIKE 'raw_export_decision%')
+              AND (column_name ILIKE '%payload%' OR column_name ILIKE '%bytes%' OR column_name ILIKE '%blob%' OR column_name ILIKE '%content%')
+            ORDER BY table_name, column_name;
+            """);
+        Assert.Empty(b3RawByteColumns);
 
         var b2Columns = await QueryStringsAsync(db, """
             SELECT column_name

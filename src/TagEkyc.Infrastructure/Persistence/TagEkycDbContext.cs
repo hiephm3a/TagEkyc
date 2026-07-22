@@ -49,6 +49,14 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
 
     public DbSet<RawExportSubjectConsentAuthorityRow> RawExportSubjectConsentAuthorities => Set<RawExportSubjectConsentAuthorityRow>();
 
+    public DbSet<RawExportAuthorizationDecisionRow> RawExportAuthorizationDecisions => Set<RawExportAuthorizationDecisionRow>();
+    public DbSet<RawExportAuthorizationIdempotencyRow> RawExportAuthorizationIdempotency => Set<RawExportAuthorizationIdempotencyRow>();
+    public DbSet<RawExportDecisionEligibilityCauseRow> RawExportDecisionEligibilityCauses => Set<RawExportDecisionEligibilityCauseRow>();
+    public DbSet<RawExportDecisionFulfillmentRefRow> RawExportDecisionFulfillmentRefs => Set<RawExportDecisionFulfillmentRefRow>();
+    public DbSet<RawExportDecisionClassRow> RawExportDecisionClasses => Set<RawExportDecisionClassRow>();
+    public DbSet<RawExportAuthorizationPermitRow> RawExportAuthorizationPermits => Set<RawExportAuthorizationPermitRow>();
+    public DbSet<RawExportPermitClassRow> RawExportPermitClasses => Set<RawExportPermitClassRow>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("tagekyc");
@@ -579,6 +587,82 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.DecisionRef).HasMaxLength(256);
             entity.Property(row => row.RecordedByPrincipalId).IsRequired();
             entity.Property(row => row.RecordedAtUtc).IsRequired();
+        });
+
+        ConfigureRawExportAuthorization(modelBuilder);
+    }
+
+    private static void ConfigureRawExportAuthorization(ModelBuilder modelBuilder)
+    {
+        const string rawClassEnum = "'ChipDg1','ChipDg2Portrait','ChipDg13','ChipDg15','ChipSod','AaChallenge','AaResponse','LiveSelfieImage','LivenessMedia','HandSignatureImage'";
+        const string eligibilityEnum = "'GrantMissing','GrantRevoked','PolicyNotActive','PolicyRevoked','PolicySuspended','NotCatalogApproved','StaleRuleSet','MissingOrInvalidFulfillment'";
+
+        modelBuilder.Entity<RawExportAuthorizationDecisionRow>(entity =>
+        {
+            entity.ToTable("raw_export_authorization_decisions", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_row_shape", "(\"Outcome\" = 'Authorized' AND \"PrimaryCause\" IS NULL AND \"ResolvedVerificationSessionId\" IS NOT NULL AND \"SessionOwnerClientApplicationId\" IS NOT NULL AND \"SessionSubjectRef\" IS NOT NULL AND \"SessionState\" IS NOT NULL AND \"BoundRuleSetVersion\" IS NOT NULL AND \"CurrentRuleSetVersion\" IS NOT NULL AND \"EligibilityEvaluatedAtUtc\" IS NOT NULL AND \"GrantPrincipalId\" IS NOT NULL AND \"GrantPolicyId\" IS NOT NULL AND \"GrantPolicyVersion\" IS NOT NULL AND \"GrantRevision\" IS NOT NULL AND \"LifecyclePolicyId\" IS NOT NULL AND \"LifecyclePolicyVersion\" IS NOT NULL AND \"LifecycleRevision\" IS NOT NULL AND \"PurposeCode\" IS NOT NULL AND \"RecipientClientApplicationId\" IS NOT NULL AND \"ConsentScopeHash\" IS NOT NULL AND \"SubjectConsentRecordId\" IS NOT NULL AND \"ConsentRevision\" IS NOT NULL AND \"ConsentValidFromUtc\" IS NOT NULL AND \"ConsentEvaluatedAtUtc\" IS NOT NULL AND \"PolicyPermitTtlSeconds\" IS NOT NULL AND \"DecisionExpiresAtUtc\" IS NOT NULL) OR (\"Outcome\" = 'Denied' AND \"PrimaryCause\" IS NOT NULL AND \"DecisionExpiresAtUtc\" IS NULL)");
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_FingerprintHash_len", "octet_length(\"FingerprintHash\") = 32");
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_ConsentScopeHash_len", "\"ConsentScopeHash\" IS NULL OR octet_length(\"ConsentScopeHash\") = 32");
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_PolicyVersion_range", "\"PolicyVersion\" >= 1");
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_SelectionMode_enum", "\"RawClassSelectionMode\" IN ('DefaultPolicySet','ExplicitSubset')");
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_Outcome_enum", "\"Outcome\" IN ('Authorized','Denied')");
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_PrimaryCause_enum", "\"PrimaryCause\" IS NULL OR \"PrimaryCause\" IN ('SESSION_NOT_FOUND','SESSION_NOT_OWNED','SESSION_NOT_COMPLETED','EXPORT_ELIGIBILITY_INACTIVE','POLICY_PERMIT_TTL_INVALID','REQUESTED_RAW_CLASSES_NOT_ALLOWED','SUBJECT_CONSENT_NOT_EFFECTIVE','SUBJECT_CONSENT_CLASS_COVERAGE_INSUFFICIENT')");
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_SessionState_enum", "\"SessionState\" IS NULL OR \"SessionState\" IN ('Created','InProgress','ReadyToComplete','Completed','Expired','Cancelled','TechnicalTerminal')");
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_EligibilityCause_enum", $"\"EligibilityPrimaryCause\" IS NULL OR \"EligibilityPrimaryCause\" IN ({eligibilityEnum})");
+                table.HasCheckConstraint("CK_raw_export_authorization_decisions_SubjectConsentCause_enum", "\"SubjectConsentCause\" IS NULL OR \"SubjectConsentCause\" IN ('Missing','Withdrawn','Expired')");
+            });
+            entity.HasKey(row => row.ExportDecisionId).HasName("PK_raw_export_authorization_decisions");
+            entity.HasOne<VerificationSessionRow>().WithMany().HasForeignKey(row => row.ResolvedVerificationSessionId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_raw_export_authorization_decisions_session");
+        });
+
+        modelBuilder.Entity<RawExportAuthorizationIdempotencyRow>(entity =>
+        {
+            entity.ToTable("raw_export_authorization_idempotency", table => table.HasCheckConstraint("CK_raw_export_authorization_idempotency_FingerprintHash_len", "octet_length(\"FingerprintHash\") = 32"));
+            entity.HasKey(row => new { row.PrincipalId, row.ClientApplicationId, row.RequestedVerificationSessionId, row.IdempotencyKey }).HasName("PK_raw_export_authorization_idempotency");
+            entity.Property(row => row.IdempotencyKey).HasMaxLength(256);
+            entity.HasAlternateKey(row => row.ExportDecisionId).HasName("UQ_raw_export_authorization_idempotency_ExportDecisionId");
+            entity.HasOne<RawExportAuthorizationDecisionRow>().WithMany().HasForeignKey(row => row.ExportDecisionId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_raw_export_authorization_idempotency_decision");
+        });
+
+        modelBuilder.Entity<RawExportDecisionEligibilityCauseRow>(entity =>
+        {
+            entity.ToTable("raw_export_decision_eligibility_causes", table => { table.HasCheckConstraint("CK_raw_export_decision_eligibility_causes_Ordinal_nonneg", "\"Ordinal\" >= 0"); table.HasCheckConstraint("CK_raw_export_decision_eligibility_causes_Cause_enum", $"\"Cause\" IN ({eligibilityEnum})"); });
+            entity.HasKey(row => new { row.ExportDecisionId, row.Ordinal }).HasName("PK_raw_export_decision_eligibility_causes");
+            entity.HasOne<RawExportAuthorizationDecisionRow>().WithMany().HasForeignKey(row => row.ExportDecisionId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_raw_export_decision_eligibility_causes_decision");
+        });
+
+        modelBuilder.Entity<RawExportDecisionFulfillmentRefRow>(entity =>
+        {
+            entity.ToTable("raw_export_decision_fulfillment_refs", table => { table.HasCheckConstraint("CK_raw_export_decision_fulfillment_refs_Ordinal_nonneg", "\"Ordinal\" >= 0"); table.HasCheckConstraint("CK_raw_export_decision_fulfillment_refs_Revision_pos", "\"Revision\" >= 1"); table.HasCheckConstraint("CK_raw_export_decision_fulfillment_refs_RequirementType_enum", "\"RequirementType\" IN ('LegalApproval','ConsentArtifact','Dpia','CrossBorderAssessment','RetentionSchedule')"); });
+            entity.HasKey(row => new { row.ExportDecisionId, row.RequirementType }).HasName("PK_raw_export_decision_fulfillment_refs");
+            entity.HasAlternateKey(row => new { row.ExportDecisionId, row.Ordinal }).HasName("UQ_raw_export_decision_fulfillment_refs_Ordinal");
+            entity.HasOne<RawExportAuthorizationDecisionRow>().WithMany().HasForeignKey(row => row.ExportDecisionId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_raw_export_decision_fulfillment_refs_decision");
+        });
+
+        modelBuilder.Entity<RawExportDecisionClassRow>(entity =>
+        {
+            entity.ToTable("raw_export_decision_classes", table => { table.HasCheckConstraint("CK_raw_export_decision_classes_Ordinal_nonneg", "\"Ordinal\" >= 0"); table.HasCheckConstraint("CK_raw_export_decision_classes_ClassKind_enum", "\"ClassKind\" IN ('PolicyAllowed','Requested','Effective','Consented','Authorized')"); table.HasCheckConstraint("CK_raw_export_decision_classes_RawClass_enum", $"\"RawClass\" IN ({rawClassEnum})"); });
+            entity.HasKey(row => new { row.ExportDecisionId, row.ClassKind, row.RawClass }).HasName("PK_raw_export_decision_classes");
+            entity.HasAlternateKey(row => new { row.ExportDecisionId, row.ClassKind, row.Ordinal }).HasName("UQ_raw_export_decision_classes_Ordinal");
+            entity.HasOne<RawExportAuthorizationDecisionRow>().WithMany().HasForeignKey(row => row.ExportDecisionId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_raw_export_decision_classes_decision");
+        });
+
+        modelBuilder.Entity<RawExportAuthorizationPermitRow>(entity =>
+        {
+            entity.ToTable("raw_export_authorization_permits", table => { table.HasCheckConstraint("CK_raw_export_authorization_permits_PolicyVersion_range", "\"PolicyVersion\" >= 1"); table.HasCheckConstraint("CK_raw_export_authorization_permits_SchemaVersion_eq1", "\"SchemaVersion\" = 1"); });
+            entity.HasKey(row => row.PermitId).HasName("PK_raw_export_authorization_permits");
+            entity.HasAlternateKey(row => row.AuthorizationDecisionId).HasName("UQ_raw_export_authorization_permits_AuthorizationDecisionId");
+            entity.HasOne<RawExportAuthorizationDecisionRow>().WithMany().HasForeignKey(row => row.AuthorizationDecisionId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_raw_export_authorization_permits_decision");
+            entity.HasOne<VerificationSessionRow>().WithMany().HasForeignKey(row => row.ResolvedVerificationSessionId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_raw_export_authorization_permits_session");
+        });
+
+        modelBuilder.Entity<RawExportPermitClassRow>(entity =>
+        {
+            entity.ToTable("raw_export_permit_classes", table => { table.HasCheckConstraint("CK_raw_export_permit_classes_Ordinal_nonneg", "\"Ordinal\" >= 0"); table.HasCheckConstraint("CK_raw_export_permit_classes_RawClass_enum", $"\"RawClass\" IN ({rawClassEnum})"); });
+            entity.HasKey(row => new { row.PermitId, row.RawClass }).HasName("PK_raw_export_permit_classes");
+            entity.HasAlternateKey(row => new { row.PermitId, row.Ordinal }).HasName("UQ_raw_export_permit_classes_Ordinal");
+            entity.HasOne<RawExportAuthorizationPermitRow>().WithMany().HasForeignKey(row => row.PermitId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_raw_export_permit_classes_permit");
         });
     }
 }

@@ -1487,6 +1487,444 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
                 });
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationDecisionRow", b =>
+                {
+                    b.Property<Guid>("ExportDecisionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ApiKeyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("BoundRuleSetVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("ClientApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("ConsentEvaluatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("ConsentRevision")
+                        .HasColumnType("integer");
+
+                    b.Property<byte[]>("ConsentScopeHash")
+                        .HasColumnType("bytea");
+
+                    b.Property<DateTimeOffset?>("ConsentValidFromUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("ConsentValidUntilUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int?>("CurrentRuleSetVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset>("DecidedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("DecisionExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("EligibilityEvaluatedAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("EligibilityPrimaryCause")
+                        .HasColumnType("text");
+
+                    b.Property<byte[]>("FingerprintHash")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<Guid?>("GrantPolicyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("GrantPolicyVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("GrantPrincipalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("GrantRevision")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid?>("LifecyclePolicyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("LifecyclePolicyVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("LifecycleRevision")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Outcome")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PolicyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int?>("PolicyPermitTtlSeconds")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("PolicyVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PrimaryCause")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("PrincipalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PurposeCode")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RawClassSelectionMode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("RecipientClientApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RequestedVerificationSessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("ResolvedVerificationSessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("SessionOwnerClientApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("SessionState")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SessionSubjectRef")
+                        .HasColumnType("text");
+
+                    b.Property<string>("SubjectConsentCause")
+                        .HasColumnType("text");
+
+                    b.Property<Guid?>("SubjectConsentRecordId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ExportDecisionId")
+                        .HasName("PK_raw_export_authorization_decisions");
+
+                    b.HasIndex("ResolvedVerificationSessionId");
+
+                    b.ToTable("raw_export_authorization_decisions", "tagekyc", t =>
+                        {
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_ConsentScopeHash_len", "\"ConsentScopeHash\" IS NULL OR octet_length(\"ConsentScopeHash\") = 32");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_EligibilityCause_enum", "\"EligibilityPrimaryCause\" IS NULL OR \"EligibilityPrimaryCause\" IN ('GrantMissing','GrantRevoked','PolicyNotActive','PolicyRevoked','PolicySuspended','NotCatalogApproved','StaleRuleSet','MissingOrInvalidFulfillment')");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_FingerprintHash_len", "octet_length(\"FingerprintHash\") = 32");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_Outcome_enum", "\"Outcome\" IN ('Authorized','Denied')");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_PolicyVersion_range", "\"PolicyVersion\" >= 1");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_PrimaryCause_enum", "\"PrimaryCause\" IS NULL OR \"PrimaryCause\" IN ('SESSION_NOT_FOUND','SESSION_NOT_OWNED','SESSION_NOT_COMPLETED','EXPORT_ELIGIBILITY_INACTIVE','POLICY_PERMIT_TTL_INVALID','REQUESTED_RAW_CLASSES_NOT_ALLOWED','SUBJECT_CONSENT_NOT_EFFECTIVE','SUBJECT_CONSENT_CLASS_COVERAGE_INSUFFICIENT')");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_SelectionMode_enum", "\"RawClassSelectionMode\" IN ('DefaultPolicySet','ExplicitSubset')");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_SessionState_enum", "\"SessionState\" IS NULL OR \"SessionState\" IN ('Created','InProgress','ReadyToComplete','Completed','Expired','Cancelled','TechnicalTerminal')");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_SubjectConsentCause_enum", "\"SubjectConsentCause\" IS NULL OR \"SubjectConsentCause\" IN ('Missing','Withdrawn','Expired')");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_decisions_row_shape", "(\"Outcome\" = 'Authorized' AND \"PrimaryCause\" IS NULL AND \"ResolvedVerificationSessionId\" IS NOT NULL AND \"SessionOwnerClientApplicationId\" IS NOT NULL AND \"SessionSubjectRef\" IS NOT NULL AND \"SessionState\" IS NOT NULL AND \"BoundRuleSetVersion\" IS NOT NULL AND \"CurrentRuleSetVersion\" IS NOT NULL AND \"EligibilityEvaluatedAtUtc\" IS NOT NULL AND \"GrantPrincipalId\" IS NOT NULL AND \"GrantPolicyId\" IS NOT NULL AND \"GrantPolicyVersion\" IS NOT NULL AND \"GrantRevision\" IS NOT NULL AND \"LifecyclePolicyId\" IS NOT NULL AND \"LifecyclePolicyVersion\" IS NOT NULL AND \"LifecycleRevision\" IS NOT NULL AND \"PurposeCode\" IS NOT NULL AND \"RecipientClientApplicationId\" IS NOT NULL AND \"ConsentScopeHash\" IS NOT NULL AND \"SubjectConsentRecordId\" IS NOT NULL AND \"ConsentRevision\" IS NOT NULL AND \"ConsentValidFromUtc\" IS NOT NULL AND \"ConsentEvaluatedAtUtc\" IS NOT NULL AND \"PolicyPermitTtlSeconds\" IS NOT NULL AND \"DecisionExpiresAtUtc\" IS NOT NULL) OR (\"Outcome\" = 'Denied' AND \"PrimaryCause\" IS NOT NULL AND \"DecisionExpiresAtUtc\" IS NULL)");
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationIdempotencyRow", b =>
+                {
+                    b.Property<Guid>("PrincipalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RequestedVerificationSessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("IdempotencyKey")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ExportDecisionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte[]>("FingerprintHash")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.HasKey("PrincipalId", "ClientApplicationId", "RequestedVerificationSessionId", "IdempotencyKey")
+                        .HasName("PK_raw_export_authorization_idempotency");
+
+                    b.HasAlternateKey("ExportDecisionId")
+                        .HasName("UQ_raw_export_authorization_idempotency_ExportDecisionId");
+
+                    b.ToTable("raw_export_authorization_idempotency", "tagekyc", t =>
+                        {
+                            t.HasCheckConstraint("CK_raw_export_authorization_idempotency_FingerprintHash_len", "octet_length(\"FingerprintHash\") = 32");
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationPermitRow", b =>
+                {
+                    b.Property<Guid>("PermitId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("AuthorizationDecisionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("DecisionExpiresAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("PolicyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PolicyVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("PurposeCode")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("RecipientClientApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ResolvedVerificationSessionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("SchemaVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("SubjectRef")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("PermitId")
+                        .HasName("PK_raw_export_authorization_permits");
+
+                    b.HasAlternateKey("AuthorizationDecisionId")
+                        .HasName("UQ_raw_export_authorization_permits_AuthorizationDecisionId");
+
+                    b.HasIndex("ResolvedVerificationSessionId");
+
+                    b.ToTable("raw_export_authorization_permits", "tagekyc", t =>
+                        {
+                            t.HasCheckConstraint("CK_raw_export_authorization_permits_PolicyVersion_range", "\"PolicyVersion\" >= 1");
+
+                            t.HasCheckConstraint("CK_raw_export_authorization_permits_SchemaVersion_eq1", "\"SchemaVersion\" = 1");
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportDecisionClassRow", b =>
+                {
+                    b.Property<Guid>("ExportDecisionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ClassKind")
+                        .HasColumnType("text");
+
+                    b.Property<string>("RawClass")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("integer");
+
+                    b.HasKey("ExportDecisionId", "ClassKind", "RawClass")
+                        .HasName("PK_raw_export_decision_classes");
+
+                    b.HasAlternateKey("ExportDecisionId", "ClassKind", "Ordinal")
+                        .HasName("UQ_raw_export_decision_classes_Ordinal");
+
+                    b.ToTable("raw_export_decision_classes", "tagekyc", t =>
+                        {
+                            t.HasCheckConstraint("CK_raw_export_decision_classes_ClassKind_enum", "\"ClassKind\" IN ('PolicyAllowed','Requested','Effective','Consented','Authorized')");
+
+                            t.HasCheckConstraint("CK_raw_export_decision_classes_Ordinal_nonneg", "\"Ordinal\" >= 0");
+
+                            t.HasCheckConstraint("CK_raw_export_decision_classes_RawClass_enum", "\"RawClass\" IN ('ChipDg1','ChipDg2Portrait','ChipDg13','ChipDg15','ChipSod','AaChallenge','AaResponse','LiveSelfieImage','LivenessMedia','HandSignatureImage')");
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportDecisionEligibilityCauseRow", b =>
+                {
+                    b.Property<Guid>("ExportDecisionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Cause")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ExportDecisionId", "Ordinal")
+                        .HasName("PK_raw_export_decision_eligibility_causes");
+
+                    b.ToTable("raw_export_decision_eligibility_causes", "tagekyc", t =>
+                        {
+                            t.HasCheckConstraint("CK_raw_export_decision_eligibility_causes_Cause_enum", "\"Cause\" IN ('GrantMissing','GrantRevoked','PolicyNotActive','PolicyRevoked','PolicySuspended','NotCatalogApproved','StaleRuleSet','MissingOrInvalidFulfillment')");
+
+                            t.HasCheckConstraint("CK_raw_export_decision_eligibility_causes_Ordinal_nonneg", "\"Ordinal\" >= 0");
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportDecisionFulfillmentRefRow", b =>
+                {
+                    b.Property<Guid>("ExportDecisionId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RequirementType")
+                        .HasColumnType("text");
+
+                    b.Property<string>("ArtifactRef")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("ArtifactVersion")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("FulfillmentEventId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Revision")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTimeOffset?>("ValidUntilUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ExportDecisionId", "RequirementType")
+                        .HasName("PK_raw_export_decision_fulfillment_refs");
+
+                    b.HasAlternateKey("ExportDecisionId", "Ordinal")
+                        .HasName("UQ_raw_export_decision_fulfillment_refs_Ordinal");
+
+                    b.ToTable("raw_export_decision_fulfillment_refs", "tagekyc", t =>
+                        {
+                            t.HasCheckConstraint("CK_raw_export_decision_fulfillment_refs_Ordinal_nonneg", "\"Ordinal\" >= 0");
+
+                            t.HasCheckConstraint("CK_raw_export_decision_fulfillment_refs_RequirementType_enum", "\"RequirementType\" IN ('LegalApproval','ConsentArtifact','Dpia','CrossBorderAssessment','RetentionSchedule')");
+
+                            t.HasCheckConstraint("CK_raw_export_decision_fulfillment_refs_Revision_pos", "\"Revision\" >= 1");
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportPermitClassRow", b =>
+                {
+                    b.Property<Guid>("PermitId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("RawClass")
+                        .HasColumnType("text");
+
+                    b.Property<int>("Ordinal")
+                        .HasColumnType("integer");
+
+                    b.HasKey("PermitId", "RawClass")
+                        .HasName("PK_raw_export_permit_classes");
+
+                    b.HasAlternateKey("PermitId", "Ordinal")
+                        .HasName("UQ_raw_export_permit_classes_Ordinal");
+
+                    b.ToTable("raw_export_permit_classes", "tagekyc", t =>
+                        {
+                            t.HasCheckConstraint("CK_raw_export_permit_classes_Ordinal_nonneg", "\"Ordinal\" >= 0");
+
+                            t.HasCheckConstraint("CK_raw_export_permit_classes_RawClass_enum", "\"RawClass\" IN ('ChipDg1','ChipDg2Portrait','ChipDg13','ChipDg15','ChipSod','AaChallenge','AaResponse','LiveSelfieImage','LivenessMedia','HandSignatureImage')");
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationDecisionRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.VerificationSessionRow", null)
+                        .WithMany()
+                        .HasForeignKey("ResolvedVerificationSessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("FK_raw_export_authorization_decisions_session");
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationIdempotencyRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationDecisionRow", null)
+                        .WithMany()
+                        .HasForeignKey("ExportDecisionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_raw_export_authorization_idempotency_decision");
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationPermitRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationDecisionRow", null)
+                        .WithMany()
+                        .HasForeignKey("AuthorizationDecisionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_raw_export_authorization_permits_decision");
+
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.VerificationSessionRow", null)
+                        .WithMany()
+                        .HasForeignKey("ResolvedVerificationSessionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_raw_export_authorization_permits_session");
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportDecisionClassRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationDecisionRow", null)
+                        .WithMany()
+                        .HasForeignKey("ExportDecisionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_raw_export_decision_classes_decision");
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportDecisionEligibilityCauseRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationDecisionRow", null)
+                        .WithMany()
+                        .HasForeignKey("ExportDecisionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_raw_export_decision_eligibility_causes_decision");
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportDecisionFulfillmentRefRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationDecisionRow", null)
+                        .WithMany()
+                        .HasForeignKey("ExportDecisionId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_raw_export_decision_fulfillment_refs_decision");
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportPermitClassRow", b =>
+                {
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationPermitRow", null)
+                        .WithMany()
+                        .HasForeignKey("PermitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired()
+                        .HasConstraintName("FK_raw_export_permit_classes_permit");
+                });
+
 #pragma warning restore 612, 618
         }
     }

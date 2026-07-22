@@ -192,6 +192,22 @@ public sealed class RawExportSubjectConsentReadinessCheck(RawExportSubjectConsen
     }
 }
 
+public sealed class RawExportAuthorizationReadinessCheck(RawExportAuthorizationReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportAuthorizationReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
 public sealed class RawExportPermitTtlReadinessCheck(RawExportPermitTtlBoundsState bounds) : IReadinessCheck
 {
     public Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
