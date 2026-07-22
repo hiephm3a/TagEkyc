@@ -508,6 +508,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                     ) OR (
                         "EventType" = 'Withdrawn'
                         AND "TargetRevision" IS NOT NULL
+                        AND ("DecisionRef" IS NULL OR btrim("DecisionRef") <> '')
                         AND "ConsentTextVersion" IS NULL
                         AND "ConsentTextContentHash" IS NULL
                         AND "ValidFromUtc" IS NULL

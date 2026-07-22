@@ -1,0 +1,2 @@
+# Keep embedded multiline model SQL stable across platforms.
+src/TagEkyc.Infrastructure/Persistence/TagEkycDbContext.cs text eol=lf
