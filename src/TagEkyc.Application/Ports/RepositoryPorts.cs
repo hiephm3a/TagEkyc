@@ -284,6 +284,13 @@ public interface IRawExportSubjectConsentRepository
         CancellationToken cancellationToken = default);
 }
 
+public interface IRawExportAuthorizationRepository
+{
+    Task<RawExportAuthorizationResult> AuthorizeExportAsync(
+        AuthorizeRawExportCommand command,
+        CancellationToken cancellationToken = default);
+}
+
 public sealed record VerificationFinalizationWrite(
     VerificationSession ExpectedSession,
     VerificationSession CompletedSession,
