@@ -156,7 +156,7 @@ public sealed class EfRawExportControlPlaneRepository(TagEkycDbContext db) : IRa
         var causes = new List<RawExportEligibilityCause>();
         if (closure?.ClosureType == RawExportPolicyClosureType.Abandoned.ToString())
         {
-            causes.Add(RawExportEligibilityCause.Abandoned);
+            causes.Add(RawExportEligibilityCause.NotCatalogApproved);
         }
         else if (policy is null || closure?.ClosureType != RawExportPolicyClosureType.CatalogApproved.ToString())
         {
@@ -165,20 +165,24 @@ public sealed class EfRawExportControlPlaneRepository(TagEkycDbContext db) : IRa
 
         if (lifecycle?.EventType == RawExportLifecycleEventType.Revoked.ToString())
         {
-            causes.Add(RawExportEligibilityCause.Revoked);
+            causes.Add(RawExportEligibilityCause.PolicyRevoked);
         }
         else if (lifecycle?.EventType == RawExportLifecycleEventType.Suspended.ToString())
         {
-            causes.Add(RawExportEligibilityCause.Suspended);
+            causes.Add(RawExportEligibilityCause.PolicySuspended);
         }
         else if (lifecycle?.EventType != RawExportLifecycleEventType.Activated.ToString())
         {
-            causes.Add(RawExportEligibilityCause.NotActivated);
+            causes.Add(RawExportEligibilityCause.PolicyNotActive);
         }
 
-        if (grant?.EventType != RawExportGrantEventType.Granted.ToString())
+        if (grant is null)
         {
-            causes.Add(RawExportEligibilityCause.NoGrant);
+            causes.Add(RawExportEligibilityCause.GrantMissing);
+        }
+        else if (grant.EventType == RawExportGrantEventType.Revoked.ToString())
+        {
+            causes.Add(RawExportEligibilityCause.GrantRevoked);
         }
 
         var boundRuleSetVersion = policy?.RequirementRuleSetVersion ?? 0;

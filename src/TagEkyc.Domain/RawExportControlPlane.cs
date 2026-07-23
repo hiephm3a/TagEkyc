@@ -47,12 +47,12 @@ public enum RawExportEligibilityState
 
 public enum RawExportEligibilityCause
 {
-    Abandoned = 0,
-    NotCatalogApproved = 1,
-    Revoked = 2,
-    Suspended = 3,
-    NotActivated = 4,
-    NoGrant = 5,
+    NotCatalogApproved = 0,
+    PolicyRevoked = 1,
+    PolicySuspended = 2,
+    PolicyNotActive = 3,
+    GrantMissing = 4,
+    GrantRevoked = 5,
     StaleRuleSet = 6,
     MissingOrInvalidFulfillment = 7,
 }

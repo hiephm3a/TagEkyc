@@ -375,9 +375,153 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         await transaction.CommitAsync();
 
         Assert.Equal(RawExportEligibilityState.Inactive, snapshot.State);
-        Assert.Equal(RawExportEligibilityCause.NotActivated, snapshot.PrimaryCause);
-        Assert.Contains(RawExportEligibilityCause.NoGrant, snapshot.Causes);
+        Assert.Equal(RawExportEligibilityCause.PolicyNotActive, snapshot.PrimaryCause);
+        Assert.Contains(RawExportEligibilityCause.GrantMissing, snapshot.Causes);
         Assert.True(DateTimeOffset.UtcNow.AddMinutes(-1) < snapshot.EvaluatedAtUtc);
+    }
+
+    [Fact]
+    public async Task E1_policy_with_no_grant_resolves_grant_missing()
+    {
+        await using var db = postgres.CreateDbContext();
+        var policyId = Guid.Parse("88b1e200-0000-5000-8000-000000000001");
+        await SeedApprovedPolicyAsync(db, policyId);
+        await BootstrapRootsAsync(db, AdminPrincipal);
+        var repository = new EfRawExportControlPlaneRepository(db);
+        await repository.GrantControlAuthorityAsync(
+            RecorderAuthority(policyId, RecorderPrincipal, RawExportRequirementType.LegalApproval, 0));
+        await repository.AcceptFulfillmentAsync(
+            Accept(policyId, RawExportRequirementType.LegalApproval, 0, null));
+        await repository.ActivatePolicyAsync(Lifecycle(policyId, 0, "decision:e1-missing-activate"));
+
+        var snapshot = await ResolveForAuthorizationAsync(db, repository, policyId);
+
+        Assert.Equal(RawExportEligibilityCause.GrantMissing, snapshot.PrimaryCause);
+        Assert.Equal([RawExportEligibilityCause.GrantMissing], snapshot.Causes);
+    }
+
+    [Fact]
+    public async Task E1_policy_with_latest_revoked_grant_resolves_grant_revoked()
+    {
+        await using var db = postgres.CreateDbContext();
+        var policyId = Guid.Parse("88b1e200-0000-5000-8000-000000000002");
+        await SeedApprovedPolicyAsync(db, policyId);
+        await BootstrapRootsAsync(db, AdminPrincipal);
+        var repository = new EfRawExportControlPlaneRepository(db);
+        await repository.GrantExportPolicyAsync(Grant(policyId, ConsumerPrincipal, 0));
+        await repository.RevokeExportPolicyGrantAsync(Grant(policyId, ConsumerPrincipal, 1));
+        await repository.GrantControlAuthorityAsync(
+            RecorderAuthority(policyId, RecorderPrincipal, RawExportRequirementType.LegalApproval, 0));
+        await repository.AcceptFulfillmentAsync(
+            Accept(policyId, RawExportRequirementType.LegalApproval, 0, null));
+        await repository.ActivatePolicyAsync(Lifecycle(policyId, 0, "decision:e1-revoked-activate"));
+
+        var snapshot = await ResolveForAuthorizationAsync(db, repository, policyId);
+
+        Assert.Equal(RawExportEligibilityCause.GrantRevoked, snapshot.PrimaryCause);
+        Assert.Equal([RawExportEligibilityCause.GrantRevoked], snapshot.Causes);
+    }
+
+    [Fact]
+    public async Task E2_lifecycle_states_resolve_policy_specific_causes()
+    {
+        await using var db = postgres.CreateDbContext();
+        await BootstrapRootsAsync(db, AdminPrincipal);
+        var repository = new EfRawExportControlPlaneRepository(db);
+        var notActivePolicy = Guid.Parse("88b1e200-0000-5000-8000-000000000003");
+        var suspendedPolicy = Guid.Parse("88b1e200-0000-5000-8000-000000000004");
+        var revokedPolicy = Guid.Parse("88b1e200-0000-5000-8000-000000000005");
+
+        foreach (var policyId in new[] { notActivePolicy, suspendedPolicy, revokedPolicy })
+        {
+            await SeedApprovedPolicyAsync(db, policyId);
+            await repository.GrantExportPolicyAsync(Grant(policyId, ConsumerPrincipal, 0));
+            await repository.GrantControlAuthorityAsync(
+                RecorderAuthority(policyId, RecorderPrincipal, RawExportRequirementType.LegalApproval, 0));
+            await repository.AcceptFulfillmentAsync(
+                Accept(policyId, RawExportRequirementType.LegalApproval, 0, null));
+        }
+        await repository.ActivatePolicyAsync(Lifecycle(suspendedPolicy, 0, "decision:e2-suspend-activate"));
+        await repository.SuspendPolicyAsync(Lifecycle(suspendedPolicy, 1, "decision:e2-suspend"));
+        await repository.ActivatePolicyAsync(Lifecycle(revokedPolicy, 0, "decision:e2-revoke-activate"));
+        await repository.RevokePolicyAsync(Lifecycle(revokedPolicy, 1, "decision:e2-revoke"));
+
+        var notActive = await ResolveForAuthorizationAsync(db, repository, notActivePolicy);
+        var suspended = await ResolveForAuthorizationAsync(db, repository, suspendedPolicy);
+        var revoked = await ResolveForAuthorizationAsync(db, repository, revokedPolicy);
+
+        Assert.Equal([RawExportEligibilityCause.PolicyNotActive], notActive.Causes);
+        Assert.Equal(RawExportEligibilityCause.PolicyNotActive, notActive.PrimaryCause);
+        Assert.Equal([RawExportEligibilityCause.PolicySuspended], suspended.Causes);
+        Assert.Equal(RawExportEligibilityCause.PolicySuspended, suspended.PrimaryCause);
+        Assert.Equal([RawExportEligibilityCause.PolicyRevoked], revoked.Causes);
+        Assert.Equal(RawExportEligibilityCause.PolicyRevoked, revoked.PrimaryCause);
+    }
+
+    [Fact]
+    public async Task E3_abandoned_and_plain_not_approved_both_resolve_not_catalog_approved()
+    {
+        await using var db = postgres.CreateDbContext();
+        var abandonedPolicy = Guid.Parse("88b1e200-0000-5000-8000-000000000006");
+        var draftPolicy = Guid.Parse("88b1e200-0000-5000-8000-000000000007");
+        await SeedDraftPolicyAsync(db, abandonedPolicy);
+        await SeedDraftPolicyAsync(db, draftPolicy);
+        await new EfRawExportPolicyRepository(db).AbandonDraftAsync(new(
+            abandonedPolicy, 1, "principal:e3", "decision:e3-abandon"));
+        var repository = new EfRawExportControlPlaneRepository(db);
+
+        var abandoned = await ResolveForAuthorizationAsync(db, repository, abandonedPolicy);
+        var draft = await ResolveForAuthorizationAsync(db, repository, draftPolicy);
+
+        Assert.Equal(RawExportEligibilityCause.NotCatalogApproved, abandoned.PrimaryCause);
+        Assert.Equal(RawExportEligibilityCause.NotCatalogApproved, draft.PrimaryCause);
+        Assert.Contains(RawExportEligibilityCause.NotCatalogApproved, abandoned.Causes);
+        Assert.Contains(RawExportEligibilityCause.NotCatalogApproved, draft.Causes);
+    }
+
+    [Fact]
+    public async Task E4_multiple_failures_preserve_catalog_lifecycle_grant_ruleset_fulfillment_priority()
+    {
+        await using var db = postgres.CreateDbContext();
+        var policyId = Guid.Parse("88b1e200-0000-5000-8000-000000000008");
+        await SeedDraftPolicyAsync(db, policyId);
+        await PublishRuleSetV2Async(db);
+        var repository = new EfRawExportControlPlaneRepository(db);
+
+        var snapshot = await ResolveForAuthorizationAsync(db, repository, policyId);
+
+        Assert.Equal(RawExportEligibilityCause.NotCatalogApproved, snapshot.PrimaryCause);
+        Assert.Equal(
+            [
+                RawExportEligibilityCause.NotCatalogApproved,
+                RawExportEligibilityCause.PolicyNotActive,
+                RawExportEligibilityCause.GrantMissing,
+                RawExportEligibilityCause.StaleRuleSet,
+                RawExportEligibilityCause.MissingOrInvalidFulfillment,
+            ],
+            snapshot.Causes);
+    }
+
+    [Fact]
+    public void E5_every_b1_eligibility_cause_matches_the_exact_b3_vocabulary()
+    {
+        string[] expected =
+        [
+            "GrantMissing",
+            "GrantRevoked",
+            "PolicyNotActive",
+            "PolicyRevoked",
+            "PolicySuspended",
+            "NotCatalogApproved",
+            "StaleRuleSet",
+            "MissingOrInvalidFulfillment",
+        ];
+
+        Assert.Equal(
+            expected.Order(StringComparer.Ordinal),
+            Enum.GetValues<RawExportEligibilityCause>()
+                .Select(cause => cause.ToString())
+                .Order(StringComparer.Ordinal));
     }
 
     [Fact]
@@ -642,7 +786,7 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         await using var resolverTx = await resolverDb.Database.BeginTransactionAsync();
         var snapshot = await new EfRawExportControlPlaneRepository(resolverDb)
             .ResolveExportEligibilityForAuthorizationAsync(ConsumerPrincipal, policyId, 1);
-        Assert.Contains(RawExportEligibilityCause.NotActivated, snapshot.Causes);
+        Assert.Contains(RawExportEligibilityCause.PolicyNotActive, snapshot.Causes);
 
         var revokeTask = ExecuteGrantFunctionInTransactionAsync(policyId, ConsumerPrincipal, 1, "decision:revoke", "Revoked");
         await Task.Delay(200);
@@ -847,6 +991,35 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
             VALUES
                 ('{policyId}',1,'CatalogApproved',transaction_timestamp(),'principal:catalog','decision:catalog');
             """);
+    }
+
+    private static async Task SeedDraftPolicyAsync(TagEkycDbContext db, Guid policyId)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync();
+        await db.Database.ExecuteSqlRawAsync($"""
+            INSERT INTO tagekyc.raw_export_policy_versions
+                ("PolicyId","PolicyVersion","Mode","Purpose","RetentionPurposeCode","ConsentRequirement",
+                 "ControllerRole","ControllerEntityRef","ControllerJurisdiction","RecipientJurisdiction",
+                 "ProcessingInfrastructureJurisdiction","RequirementRuleSetId","RequirementRuleSetVersion",
+                 "PermitTtlSeconds","CreatedAt")
+            VALUES
+                ('{policyId}',1,'ExternalExportOnlyNoRetain','purpose','NO_RETAIN','NotRequired',
+                 'Processor','controller','VN','VN','VN','RAW_EXPORT_REQUIREMENTS',1,300,
+                 transaction_timestamp());
+            """);
+        await db.Database.ExecuteSqlRawAsync($"""
+            INSERT INTO tagekyc.raw_export_policy_allowed_classes
+                ("PolicyId","PolicyVersion","RawClass","CreatedAt")
+            VALUES
+                ('{policyId}',1,'LiveSelfieImage',transaction_timestamp());
+            """);
+        await db.Database.ExecuteSqlRawAsync($"""
+            INSERT INTO tagekyc.raw_export_policy_requirements
+                ("PolicyId","PolicyVersion","RequirementType","CreatedAt")
+            VALUES
+                ('{policyId}',1,'LegalApproval',transaction_timestamp());
+            """);
+        await transaction.CommitAsync();
     }
 
     private static async Task<RawExportEligibilitySnapshot> ResolveForAuthorizationAsync(
