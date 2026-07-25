@@ -1,13 +1,26 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 1.34
+**Version:** 1.35
 **Status:** Active
-**Date:** 2026-07-01
+**Date:** 2026-07-25
 **Baseline:** Product Brief v0.1.2
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v1.35 - TIP-88B1-E3 resolver runtime read boundary closed
+
+- TIP-88B1-E3 (`tip_88b1e3_resolver_runtime_read_access/`) is **CLOSED**. The
+  implementation adds typed `SECURITY DEFINER` authorization projections and a
+  bounded root-health capability, removes runtime direct table access across the
+  fourteen protected tables, pins the PostgreSQL 16 dedicated-login role
+  topology and grantor-aware ACL/catalog manifests, hardens fulfillment
+  materialization and B2 constraint-mode handling, and proves exact
+  apply/rollback/reapply behavior. Final validation: 580 passed, 0 failed, 1
+  intentional skip; build 0 warnings/0 errors; pending model clean; snapshot
+  unchanged. See
+  [`tip_88b1e3_closeout.md`](tip_88b1e3_resolver_runtime_read_access/tip_88b1e3_closeout.md).
 
 ### v1.34 - TIP-73 built (agent-side Silent-Face liveness + earned method)
 
