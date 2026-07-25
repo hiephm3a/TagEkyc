@@ -259,6 +259,69 @@ public interface IRawExportControlPlaneRepository
         CancellationToken cancellationToken = default);
 }
 
+public sealed record RawExportAuthorizationGrantProjection(
+    Guid PrincipalId,
+    Guid PolicyId,
+    int PolicyVersion,
+    int Revision,
+    RawExportGrantEventType EventType);
+
+public sealed record RawExportAuthorizationLifecycleProjection(
+    Guid PolicyId,
+    int PolicyVersion,
+    int Revision,
+    RawExportLifecycleEventType EventType);
+
+public sealed record RawExportAuthorizationFulfillmentProjection(
+    Guid FulfillmentEventId,
+    int Revision,
+    RawExportFulfillmentEventType EventType,
+    string? ArtifactRef,
+    string? ArtifactVersion,
+    DateTimeOffset? ValidFromUtc,
+    DateTimeOffset? ValidUntilUtc);
+
+public sealed record RawExportAuthorizationRequirementProjection(
+    int Ordinal,
+    RawExportRequirementType RequirementType,
+    RawExportAuthorizationFulfillmentProjection? LatestFulfillment);
+
+public sealed record RawExportAuthorizationEligibilityProjection(
+    Guid PolicyId,
+    int PolicyVersion,
+    DateTimeOffset EvaluatedAtUtc,
+    bool PolicyExists,
+    int? BoundRuleSetVersion,
+    int CurrentRuleSetVersion,
+    RawExportPolicyClosureType? ClosureType,
+    RawExportAuthorizationGrantProjection? Grant,
+    RawExportAuthorizationLifecycleProjection? Lifecycle,
+    IReadOnlyList<RawExportAuthorizationRequirementProjection> Requirements);
+
+public sealed record RawExportAuthorizationPolicyProjection(
+    Guid PolicyId,
+    int PolicyVersion,
+    DateTimeOffset EvaluatedAtUtc,
+    bool PolicyExists,
+    int? PermitTtlSeconds,
+    RawExportPolicyClosureType? ClosureType,
+    IReadOnlySet<RawExportRawClass> AllowedClasses);
+
+public interface IRawExportAuthorizationProjectionReader
+{
+    Task<RawExportAuthorizationEligibilityProjection> ReadEligibilityInputsAsync(
+        Guid principalId,
+        Guid policyId,
+        int policyVersion,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportAuthorizationPolicyProjection> ReadPolicyInputsAsync(
+        Guid principalId,
+        Guid policyId,
+        int policyVersion,
+        CancellationToken cancellationToken = default);
+}
+
 public interface IRawExportSubjectConsentRepository
 {
     Task<int> GrantConsentAuthorityAsync(

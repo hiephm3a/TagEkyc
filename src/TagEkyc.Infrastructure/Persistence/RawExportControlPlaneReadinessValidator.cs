@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Data;
+using System.Security.Cryptography;
+using System.Text;
 using TagEkyc.Domain;
 
 namespace TagEkyc.Infrastructure.Persistence;
@@ -21,6 +23,9 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
 
     public const string DeploymentRoleInvalid = "PROD_RAW_EXPORT_CONTROL_PLANE_DEPLOYMENT_ROLE_INVALID";
 
+    public const string ForbiddenTablePrivilege =
+        "PROD_RAW_EXPORT_CONTROL_PLANE_FORBIDDEN_TABLE_PRIVILEGE";
+
     private static readonly string[] EventTables =
     [
         "raw_export_grants",
@@ -36,11 +41,78 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         "DELETE",
     ];
 
-    private static readonly string[] RequiredRootAuthorities =
+    private static readonly string[] ForbiddenTables =
     [
-        RawExportAuthorityType.GrantAdmin.ToString(),
-        RawExportAuthorityType.RecorderAuthorityAdmin.ToString(),
-        RawExportAuthorityType.ActivationAuthority.ToString(),
+        "raw_export_policy_versions",
+        "raw_export_policy_allowed_classes",
+        "raw_export_policy_requirements",
+        "raw_export_policy_closures",
+        "raw_export_requirement_rule_sets",
+        "raw_export_grants",
+        "raw_export_fulfillments",
+        "raw_export_policy_lifecycle",
+        "verification_sessions",
+        "raw_export_subject_consent_authorities",
+        "raw_export_subject_consent_events",
+        "raw_export_subject_consent_classes",
+        "raw_export_requirement_rules",
+        "raw_export_control_authorities",
+    ];
+
+    private static readonly string[] ForbiddenPrivileges =
+    [
+        "SELECT",
+        "INSERT",
+        "UPDATE",
+        "DELETE",
+        "TRUNCATE",
+        "REFERENCES",
+        "TRIGGER",
+    ];
+
+    private static readonly string[] RequiredCapabilityRoles =
+    [
+        "tagekyc_runtime",
+        "tagekyc_raw_export_deployer",
+        "tagekyc_raw_export_bootstrapper",
+    ];
+
+    private static readonly FunctionBackingReadExpectation[] FunctionBackingReads =
+    [
+        new(
+            "tagekyc.raw_export_read_authorization_eligibility_inputs(principal_id uuid, policy_id uuid, policy_version integer)",
+            [
+                "raw_export_policy_versions",
+                "raw_export_requirement_rule_sets",
+                "raw_export_policy_closures",
+                "raw_export_grants",
+                "raw_export_policy_lifecycle",
+                "raw_export_policy_requirements",
+                "raw_export_fulfillments",
+            ]),
+        new(
+            "tagekyc.raw_export_read_authorization_policy_inputs(principal_id uuid, policy_id uuid, policy_version integer)",
+            [
+                "raw_export_policy_versions",
+                "raw_export_policy_closures",
+                "raw_export_policy_allowed_classes",
+            ]),
+        new(
+            "tagekyc.raw_export_control_plane_root_health()",
+            ["raw_export_control_authorities"]),
+    ];
+
+    private static readonly DeployerTableExpectation[] DeployerTableExpectations =
+    [
+        new("raw_export_control_authorities", true, true),
+        new("raw_export_fulfillments", true, true),
+        new("raw_export_grants", true, true),
+        new("raw_export_policy_allowed_classes", true, false),
+        new("raw_export_policy_closures", true, false),
+        new("raw_export_policy_lifecycle", true, true),
+        new("raw_export_policy_requirements", true, false),
+        new("raw_export_policy_versions", true, false),
+        new("raw_export_requirement_rule_sets", true, false),
     ];
 
     private static readonly FunctionExpectation[] ExpectedFunctions =
@@ -55,49 +127,60 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         new("tagekyc.raw_export_current_actor()", true, false, false),
         new("tagekyc.raw_export_has_current_authority(actor_id uuid, required_authority text, policy_id uuid, requirement_type text)", true, false, false),
         new("tagekyc.raw_export_policy_exists(policy_id uuid)", true, false, false),
+        new(
+            "tagekyc.raw_export_control_plane_root_health()",
+            true,
+            true,
+            false,
+            "TABLE(\"IsHealthy\" boolean, \"StatusCode\" text)",
+            "plpgsql",
+            "364393e456b50ec7127dd32261ee45858b2a29753450e27f914afe9f4b49bf46"),
+        new(
+            "tagekyc.raw_export_read_authorization_eligibility_inputs(principal_id uuid, policy_id uuid, policy_version integer)",
+            true,
+            true,
+            false,
+            "TABLE(\"PolicyId\" uuid, \"PolicyVersion\" integer, \"EvaluatedAtUtc\" timestamp with time zone, \"PolicyExists\" boolean, \"BoundRuleSetVersion\" integer, \"CurrentRuleSetVersion\" integer, \"ClosureType\" text, \"GrantPrincipalId\" uuid, \"GrantPolicyId\" uuid, \"GrantPolicyVersion\" integer, \"GrantRevision\" integer, \"GrantEventType\" text, \"LifecyclePolicyId\" uuid, \"LifecyclePolicyVersion\" integer, \"LifecycleRevision\" integer, \"LifecycleEventType\" text, \"RequirementOrdinal\" integer, \"RequirementType\" text, \"FulfillmentEventId\" uuid, \"FulfillmentRevision\" integer, \"FulfillmentEventType\" text, \"ArtifactRef\" text, \"ArtifactVersion\" text, \"ValidFromUtc\" timestamp with time zone, \"ValidUntilUtc\" timestamp with time zone)",
+            "plpgsql",
+            "b3852ce11556bad68ec4bb6f3ff0b8074fb9eb37e05dda45c2eafcb79c883fcf"),
+        new(
+            "tagekyc.raw_export_read_authorization_policy_inputs(principal_id uuid, policy_id uuid, policy_version integer)",
+            true,
+            true,
+            false,
+            "TABLE(\"PolicyId\" uuid, \"PolicyVersion\" integer, \"EvaluatedAtUtc\" timestamp with time zone, \"PolicyExists\" boolean, \"PermitTtlSeconds\" integer, \"ClosureType\" text, \"ClassOrdinal\" integer, \"RawClass\" text)",
+            "plpgsql",
+            "9476121061bff3df52c7ae522b27f4f7b2878f70c99f5029883d180f47a39712"),
     ];
 
     public async Task ValidateAsync(CancellationToken cancellationToken)
     {
-        foreach (var authorityType in RequiredRootAuthorities)
-        {
-            var latest = await dbContext.RawExportControlAuthorities.AsNoTracking()
-                .Where(row => row.AuthorityType == authorityType &&
-                              row.ScopeType == RawExportAuthorityScopeType.Global.ToString() &&
-                              row.ScopeId == null &&
-                              row.RequirementType == null)
-                .GroupBy(row => new { row.PrincipalId, row.AuthorityType, row.ScopeType, row.ScopeId, row.RequirementType })
-                .Select(group => group.OrderByDescending(row => row.Revision).First())
-                .ToListAsync(cancellationToken);
-            var active = latest
-                .Where(row => row.EventType == RawExportAuthorityEventType.Granted.ToString())
-                .ToArray();
-
-            if (active.Length == 0)
-            {
-                Throw(RootAuthorityMissing);
-            }
-
-            if (active.Any(row => row.PrincipalId == Guid.Empty ||
-                                  row.PrincipalId == RawExportControlPlaneConstants.DeploymentPrincipalId))
-            {
-                Throw(DevDefaultPrincipalForbidden);
-            }
-        }
-
-        foreach (var table in EventTables)
-        {
-            foreach (var privilege in MutationPrivileges)
-            {
-                if (await HasTablePrivilegeAsync(table, privilege, cancellationToken))
-                {
-                    Throw(EventTableMutationPrivilege);
-                }
-            }
-        }
-
-        await ValidateRolesAsync(cancellationToken);
+        var deployment = await ReadDeploymentFoundationAsync(cancellationToken);
         await ValidateFunctionAclAsync(cancellationToken);
+        await ValidateFunctionOwnerBackingReadsAsync(cancellationToken);
+        await ValidateDeployerTableCapabilitiesAsync(cancellationToken);
+        await ValidateBoundaryExecutionAvailableAsync(cancellationToken);
+        await ValidateRootHealthAsync(cancellationToken);
+
+        if (await IsCurrentUserEventTableOwnerOrSuperuserAsync(
+                deployment.CurrentRole,
+                cancellationToken) &&
+            await HasAnyCurrentUserEventMutationPrivilegeAsync(cancellationToken))
+        {
+            Throw(EventTableMutationPrivilege);
+        }
+
+        await ValidateApplicationLoginAsync(deployment, cancellationToken);
+
+        if (await HasAnyForbiddenRuntimeTablePrivilegeAsync(cancellationToken))
+        {
+            Throw(ForbiddenTablePrivilege);
+        }
+
+        if (await HasAnyCurrentUserEventMutationPrivilegeAsync(cancellationToken))
+        {
+            Throw(EventTableMutationPrivilege);
+        }
     }
 
     private static void Throw(string code) => throw new RawExportControlPlaneReadinessException(code);
@@ -129,7 +212,89 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         return await command.ExecuteScalarAsync(cancellationToken) is bool hasPrivilege && hasPrivilege;
     }
 
-    private async Task ValidateRolesAsync(CancellationToken cancellationToken)
+    private async Task<bool> HasAnyCurrentUserEventMutationPrivilegeAsync(
+        CancellationToken cancellationToken)
+    {
+        foreach (var table in EventTables)
+        {
+            foreach (var privilege in MutationPrivileges)
+            {
+                if (await HasTablePrivilegeAsync(table, privilege, cancellationToken))
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    private async Task<bool> IsCurrentUserEventTableOwnerOrSuperuserAsync(
+        RoleInfo currentRole,
+        CancellationToken cancellationToken)
+    {
+        if (currentRole.Superuser)
+        {
+            return true;
+        }
+
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        await using var command = connection.CreateCommand();
+        var tableNames = string.Join(
+            ",",
+            EventTables.Select(table => $"'{table.Replace("'", "''")}'"));
+        command.CommandText = $$"""
+            SELECT EXISTS (
+                SELECT 1
+                FROM pg_class AS relation
+                JOIN pg_namespace AS namespace ON namespace.oid = relation.relnamespace
+                WHERE namespace.nspname = 'tagekyc'
+                  AND relation.relname IN ({{tableNames}})
+                  AND relation.relowner = current_user::regrole::oid);
+            """;
+
+        return await command.ExecuteScalarAsync(cancellationToken) is true;
+    }
+
+    private async Task<bool> HasAnyForbiddenRuntimeTablePrivilegeAsync(
+        CancellationToken cancellationToken)
+    {
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        await using var command = connection.CreateCommand();
+        var values = string.Join(
+            $",{Environment.NewLine}",
+            ForbiddenTables.SelectMany(table =>
+                ForbiddenPrivileges.Select(privilege =>
+                    $"('{table.Replace("'", "''")}','{privilege.Replace("'", "''")}')")));
+        command.CommandText = $$"""
+            SELECT COALESCE(bool_or(
+                has_table_privilege(
+                    'tagekyc_runtime',
+                    'tagekyc.' || matrix.table_name,
+                    matrix.privilege_name)
+                 OR has_table_privilege(
+                    current_user,
+                    'tagekyc.' || matrix.table_name,
+                    matrix.privilege_name)), false)
+            FROM (VALUES
+                {{values}}
+            ) AS matrix(table_name, privilege_name);
+            """;
+
+        return await command.ExecuteScalarAsync(cancellationToken) is true;
+    }
+
+    private async Task ValidateRootHealthAsync(CancellationToken cancellationToken)
     {
         var connection = dbContext.Database.GetDbConnection();
         if (connection.State != ConnectionState.Open)
@@ -139,36 +304,375 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
 
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT rolname, rolcanlogin
-            FROM pg_roles
-            WHERE rolname IN ('tagekyc_runtime','tagekyc_raw_export_deployer','tagekyc_raw_export_bootstrapper');
+            SELECT "IsHealthy", "StatusCode"
+            FROM tagekyc.raw_export_control_plane_root_health();
             """;
 
-        var roles = new Dictionary<string, bool>(StringComparer.Ordinal);
+        bool healthy;
+        string code;
+        await using (var reader = await command.ExecuteReaderAsync(cancellationToken))
         {
-            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
-            while (await reader.ReadAsync(cancellationToken))
+            if (!await reader.ReadAsync(cancellationToken) ||
+                reader.IsDBNull(0) ||
+                reader.IsDBNull(1))
             {
-                roles[reader.GetString(0)] = reader.GetBoolean(1);
+                Throw(FunctionAclInvalid);
+            }
+
+            healthy = reader.GetBoolean(0);
+            code = reader.GetString(1);
+            if (await reader.ReadAsync(cancellationToken))
+            {
+                Throw(FunctionAclInvalid);
             }
         }
 
-        foreach (var role in new[] { "tagekyc_runtime", "tagekyc_raw_export_deployer", "tagekyc_raw_export_bootstrapper" })
+        if (healthy && code == "OK")
         {
-            if (!roles.TryGetValue(role, out var canLogin) || canLogin)
+            return;
+        }
+
+        if (!healthy && (code == RootAuthorityMissing || code == DevDefaultPrincipalForbidden))
+        {
+            Throw(code);
+        }
+
+        Throw(FunctionAclInvalid);
+    }
+
+    private async Task<DeploymentFoundation> ReadDeploymentFoundationAsync(
+        CancellationToken cancellationToken)
+    {
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT current_setting('server_version_num')::integer,
+                   session_user::text,
+                   current_user::text;
+            """;
+
+        int serverVersion;
+        string sessionUser;
+        string currentUser;
+        await using (var reader = await command.ExecuteReaderAsync(cancellationToken))
+        {
+            if (!await reader.ReadAsync(cancellationToken))
+            {
+                Throw(DeploymentRoleInvalid);
+            }
+
+            serverVersion = reader.GetInt32(0);
+            sessionUser = reader.GetString(1);
+            currentUser = reader.GetString(2);
+        }
+
+        if (!string.Equals(sessionUser, currentUser, StringComparison.Ordinal))
+        {
+            Throw(DeploymentRoleInvalid);
+        }
+
+        ValidateServerVersion(serverVersion);
+
+        await using var roleCommand = connection.CreateCommand();
+        roleCommand.CommandText = """
+            SELECT oid, rolname, rolcanlogin, rolinherit, rolsuper, rolcreatedb,
+                   rolcreaterole, rolreplication, rolbypassrls
+            FROM pg_roles
+            WHERE rolname IN (
+                'tagekyc_runtime',
+                'tagekyc_raw_export_deployer',
+                'tagekyc_raw_export_bootstrapper',
+                current_user::text);
+            """;
+
+        var roles = new Dictionary<string, RoleInfo>(StringComparer.Ordinal);
+        {
+            await using var reader = await roleCommand.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                var role = new RoleInfo(
+                    Convert.ToUInt32(reader.GetValue(0)),
+                    reader.GetString(1),
+                    reader.GetBoolean(2),
+                    reader.GetBoolean(3),
+                    reader.GetBoolean(4),
+                    reader.GetBoolean(5),
+                    reader.GetBoolean(6),
+                    reader.GetBoolean(7),
+                    reader.GetBoolean(8));
+                roles[role.Name] = role;
+            }
+        }
+
+        foreach (var roleName in RequiredCapabilityRoles)
+        {
+            if (!roles.TryGetValue(roleName, out var role) ||
+                role.CanLogin ||
+                !role.Inherit ||
+                role.Superuser ||
+                role.CreateDatabase ||
+                role.CreateRole ||
+                role.Replication ||
+                role.BypassRls)
             {
                 Throw(DeploymentRoleInvalid);
             }
         }
 
-        await using var membershipCommand = connection.CreateCommand();
-        membershipCommand.CommandText = """
-            SELECT pg_has_role(current_user, 'tagekyc_raw_export_deployer', 'USAGE')
-                OR pg_has_role(current_user, 'tagekyc_raw_export_bootstrapper', 'USAGE');
-            """;
-        if (await membershipCommand.ExecuteScalarAsync(cancellationToken) is true)
+        if (!roles.TryGetValue(currentUser, out var currentRole))
         {
             Throw(DeploymentRoleInvalid);
+        }
+
+        return new DeploymentFoundation(
+            serverVersion,
+            sessionUser,
+            currentUser,
+            currentRole!,
+            roles["tagekyc_runtime"]);
+    }
+
+    private static void ValidateServerVersion(int serverVersion)
+    {
+        if (serverVersion < 160000)
+        {
+            Throw(DeploymentRoleInvalid);
+        }
+    }
+
+    private async Task ValidateApplicationLoginAsync(
+        DeploymentFoundation deployment,
+        CancellationToken cancellationToken)
+    {
+        var role = deployment.CurrentRole;
+        if (!role.CanLogin ||
+            !role.Inherit ||
+            role.Superuser ||
+            role.CreateDatabase ||
+            role.CreateRole ||
+            role.Replication ||
+            role.BypassRls)
+        {
+            Throw(DeploymentRoleInvalid);
+        }
+
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            WITH RECURSIVE reachable(roleid, path) AS (
+                SELECT membership.roleid,
+                       ARRAY[membership.member, membership.roleid]::oid[]
+                FROM pg_auth_members AS membership
+                WHERE membership.member = CAST(@caller AS oid)
+
+                UNION ALL
+
+                SELECT membership.roleid,
+                       reachable.path || membership.roleid
+                FROM reachable
+                JOIN pg_auth_members AS membership
+                  ON membership.member = reachable.roleid
+                WHERE NOT membership.roleid = ANY(reachable.path)
+            )
+            SELECT
+                COALESCE(
+                    (SELECT array_agg(DISTINCT roleid ORDER BY roleid)
+                     FROM reachable),
+                    ARRAY[]::oid[]),
+                (SELECT count(*)
+                 FROM pg_auth_members
+                 WHERE member = CAST(@caller AS oid)
+                   AND roleid = CAST(@runtime AS oid)),
+                COALESCE(
+                    (SELECT bool_and(
+                        NOT admin_option AND inherit_option AND NOT set_option)
+                     FROM pg_auth_members
+                     WHERE member = CAST(@caller AS oid)
+                       AND roleid = CAST(@runtime AS oid)),
+                    false),
+                (SELECT count(*)
+                 FROM pg_auth_members
+                 WHERE member = CAST(@runtime AS oid));
+            """;
+
+        var callerParameter = command.CreateParameter();
+        callerParameter.ParameterName = "caller";
+        callerParameter.Value = (long)deployment.CurrentRole.Oid;
+        command.Parameters.Add(callerParameter);
+
+        var runtimeParameter = command.CreateParameter();
+        runtimeParameter.ParameterName = "runtime";
+        runtimeParameter.Value = (long)deployment.RuntimeRole.Oid;
+        command.Parameters.Add(runtimeParameter);
+
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        if (!await reader.ReadAsync(cancellationToken))
+        {
+            Throw(DeploymentRoleInvalid);
+        }
+
+        var reachable = reader.GetFieldValue<uint[]>(0);
+        var directRuntimeRows = reader.GetInt64(1);
+        var directRuntimeOptionsSafe = reader.GetBoolean(2);
+        var runtimeOutgoingRows = reader.GetInt64(3);
+
+        if (reachable.Length != 1 ||
+            reachable[0] != deployment.RuntimeRole.Oid ||
+            directRuntimeRows != 1 ||
+            !directRuntimeOptionsSafe ||
+            runtimeOutgoingRows != 0)
+        {
+            Throw(DeploymentRoleInvalid);
+        }
+    }
+
+    private async Task ValidateFunctionOwnerBackingReadsAsync(
+        CancellationToken cancellationToken)
+    {
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        await using var command = connection.CreateCommand();
+        var values = string.Join(
+            $",{Environment.NewLine}",
+            FunctionBackingReads.SelectMany(expectation =>
+                expectation.Tables.Select(table =>
+                    $"('{expectation.Function.Replace("'", "''")}','{table.Replace("'", "''")}')")));
+        command.CommandText = $$"""
+            SELECT COALESCE(bool_and(
+                has_table_privilege(
+                    deployer.oid,
+                    relation.oid,
+                    'SELECT')), false)
+            FROM (VALUES
+                {{values}}
+            ) AS dependency(function_signature, table_name)
+            JOIN pg_namespace AS namespace
+              ON namespace.nspname = 'tagekyc'
+            JOIN pg_class AS relation
+              ON relation.relnamespace = namespace.oid
+             AND relation.relname = dependency.table_name
+            JOIN pg_roles AS deployer
+              ON deployer.rolname = 'tagekyc_raw_export_deployer';
+            """;
+
+        if (await command.ExecuteScalarAsync(cancellationToken) is not true)
+        {
+            Throw(FunctionAclInvalid);
+        }
+    }
+
+    private async Task ValidateBoundaryExecutionAvailableAsync(
+        CancellationToken cancellationToken)
+    {
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT count(*) = 3
+               AND bool_and(has_function_privilege(current_user, function.oid, 'EXECUTE'))
+            FROM pg_proc AS function
+            JOIN pg_namespace AS namespace ON namespace.oid = function.pronamespace
+            WHERE namespace.nspname = 'tagekyc'
+              AND function.proname IN (
+                  'raw_export_read_authorization_eligibility_inputs',
+                  'raw_export_read_authorization_policy_inputs',
+                  'raw_export_control_plane_root_health');
+            """;
+
+        if (await command.ExecuteScalarAsync(cancellationToken) is not true)
+        {
+            Throw(DeploymentRoleInvalid);
+        }
+    }
+
+    private async Task ValidateDeployerTableCapabilitiesAsync(
+        CancellationToken cancellationToken)
+    {
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        await using var command = connection.CreateCommand();
+        var values = string.Join(
+            $",{Environment.NewLine}",
+            DeployerTableExpectations.Select(expectation =>
+                $"('{expectation.Table.Replace("'", "''")}')"));
+        command.CommandText = $$"""
+            WITH expected(table_name) AS (
+                VALUES
+                    {{values}}
+            )
+            SELECT expected.table_name,
+                   owner.rolname,
+                   has_table_privilege(deployer.oid, relation.oid, 'SELECT'),
+                   has_table_privilege(deployer.oid, relation.oid, 'INSERT'),
+                   has_table_privilege(deployer.oid, relation.oid, 'UPDATE'),
+                   has_table_privilege(deployer.oid, relation.oid, 'DELETE'),
+                   has_table_privilege(deployer.oid, relation.oid, 'TRUNCATE'),
+                   has_table_privilege(deployer.oid, relation.oid, 'REFERENCES'),
+                   has_table_privilege(deployer.oid, relation.oid, 'TRIGGER')
+            FROM expected
+            JOIN pg_class AS relation ON relation.relname = expected.table_name
+            JOIN pg_namespace AS namespace
+              ON namespace.oid = relation.relnamespace
+             AND namespace.nspname = 'tagekyc'
+            JOIN pg_roles AS owner ON owner.oid = relation.relowner
+            JOIN pg_roles AS deployer
+              ON deployer.rolname = 'tagekyc_raw_export_deployer'
+            ORDER BY expected.table_name;
+            """;
+
+        var actual = new Dictionary<string, DeployerTableCapability>(StringComparer.Ordinal);
+        await using (var reader = await command.ExecuteReaderAsync(cancellationToken))
+        {
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                actual[reader.GetString(0)] = new DeployerTableCapability(
+                    reader.GetString(1),
+                    reader.GetBoolean(2),
+                    reader.GetBoolean(3),
+                    reader.GetBoolean(4),
+                    reader.GetBoolean(5),
+                    reader.GetBoolean(6),
+                    reader.GetBoolean(7),
+                    reader.GetBoolean(8));
+            }
+        }
+
+        foreach (var expected in DeployerTableExpectations)
+        {
+            if (!actual.TryGetValue(expected.Table, out var capability) ||
+                capability.Owner != "tagekyc" ||
+                capability.Select != expected.Select ||
+                capability.Insert != expected.Insert ||
+                capability.Update ||
+                capability.Delete ||
+                capability.Truncate ||
+                capability.References ||
+                capability.Trigger)
+            {
+                Throw(FunctionAclInvalid);
+            }
         }
     }
 
@@ -196,12 +700,41 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
                        owner.rolname,
                        owner.rolcanlogin,
                        COALESCE(array_to_string(p.proconfig, ','), '') AS config,
+                       pg_catalog.pg_get_function_result(p.oid) AS result,
+                       language.lanname AS language,
+                       p.prosrc,
                        has_function_privilege('public', p.oid, 'EXECUTE') AS public_execute,
                        has_function_privilege('tagekyc_runtime', p.oid, 'EXECUTE') AS runtime_execute,
-                       has_function_privilege('tagekyc_raw_export_bootstrapper', p.oid, 'EXECUTE') AS bootstrapper_execute
+                       has_function_privilege('tagekyc_raw_export_bootstrapper', p.oid, 'EXECUTE') AS bootstrapper_execute,
+                       COALESCE((
+                           SELECT pg_catalog.array_agg(
+                               COALESCE(grantor.rolname, acl.grantor::text) || ':' ||
+                               CASE
+                                   WHEN acl.grantee = 0 THEN 'PUBLIC'
+                                   ELSE COALESCE(grantee.rolname, acl.grantee::text)
+                               END || ':' ||
+                               acl.privilege_type || ':' ||
+                               acl.is_grantable::text
+                               ORDER BY
+                                   COALESCE(grantor.rolname, acl.grantor::text),
+                                   CASE
+                                       WHEN acl.grantee = 0 THEN 'PUBLIC'
+                                       ELSE COALESCE(grantee.rolname, acl.grantee::text)
+                                   END,
+                                   acl.privilege_type,
+                                   acl.is_grantable)
+                           FROM pg_catalog.aclexplode(
+                               COALESCE(
+                                   p.proacl,
+                                   pg_catalog.acldefault('f', p.proowner))) AS acl
+                           LEFT JOIN pg_catalog.pg_roles AS grantor ON grantor.oid = acl.grantor
+                           LEFT JOIN pg_catalog.pg_roles AS grantee ON grantee.oid = acl.grantee
+                           WHERE acl.grantee <> p.proowner
+                       ), ARRAY[]::text[]) AS explicit_non_owner_acl_rows
                 FROM pg_proc p
                 JOIN pg_namespace n ON n.oid = p.pronamespace
                 JOIN pg_roles owner ON owner.oid = p.proowner
+                JOIN pg_language language ON language.oid = p.prolang
                 WHERE n.nspname = 'tagekyc'
             )
             SELECT expected.signature,
@@ -210,9 +743,13 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
                    actual.rolname,
                    actual.rolcanlogin,
                    actual.config,
+                   actual.result,
+                   actual.language,
+                   actual.prosrc,
                    actual.public_execute,
                    actual.runtime_execute,
-                   actual.bootstrapper_execute
+                   actual.bootstrapper_execute,
+                   actual.explicit_non_owner_acl_rows
             FROM expected
             LEFT JOIN actual ON actual.signature = expected.signature
             ORDER BY expected.signature;
@@ -228,9 +765,13 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
                 reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
                 !reader.IsDBNull(4) && reader.GetBoolean(4),
                 reader.IsDBNull(5) ? string.Empty : reader.GetString(5),
-                !reader.IsDBNull(6) && reader.GetBoolean(6),
-                !reader.IsDBNull(7) && reader.GetBoolean(7),
-                !reader.IsDBNull(8) && reader.GetBoolean(8));
+                reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                reader.IsDBNull(7) ? string.Empty : reader.GetString(7),
+                reader.IsDBNull(8) ? string.Empty : HashBody(reader.GetString(8)),
+                !reader.IsDBNull(9) && reader.GetBoolean(9),
+                !reader.IsDBNull(10) && reader.GetBoolean(10),
+                !reader.IsDBNull(11) && reader.GetBoolean(11),
+                reader.IsDBNull(12) ? [] : reader.GetFieldValue<string[]>(12));
         }
 
         if (!rows.Keys.Order(StringComparer.Ordinal).SequenceEqual(
@@ -242,15 +783,34 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
 
         foreach (var expected in ExpectedFunctions)
         {
+            var expectedExplicitNonOwnerAclRows = new List<string>();
+            if (expected.BootstrapperExecute)
+            {
+                expectedExplicitNonOwnerAclRows.Add(
+                    "tagekyc_raw_export_deployer:tagekyc_raw_export_bootstrapper:EXECUTE:false");
+            }
+            if (expected.RuntimeExecute)
+            {
+                expectedExplicitNonOwnerAclRows.Add(
+                    "tagekyc_raw_export_deployer:tagekyc_runtime:EXECUTE:false");
+            }
+            expectedExplicitNonOwnerAclRows.Sort(StringComparer.Ordinal);
+
             if (!rows.TryGetValue(expected.Name, out var actual) ||
                 !actual.Exists ||
                 actual.SecurityDefiner != expected.SecurityDefiner ||
                 actual.Owner != "tagekyc_raw_export_deployer" ||
                 actual.OwnerCanLogin ||
                 actual.Config != "search_path=pg_catalog" ||
+                (expected.Result is not null && actual.Result != expected.Result) ||
+                (expected.Language is not null && actual.Language != expected.Language) ||
+                (expected.BodySha256 is not null && actual.BodySha256 != expected.BodySha256) ||
                 actual.PublicExecute ||
                 actual.RuntimeExecute != expected.RuntimeExecute ||
-                actual.BootstrapperExecute != expected.BootstrapperExecute)
+                actual.BootstrapperExecute != expected.BootstrapperExecute ||
+                !actual.ExplicitNonOwnerAclRows.SequenceEqual(
+                    expectedExplicitNonOwnerAclRows,
+                    StringComparer.Ordinal))
             {
                 Throw(FunctionAclInvalid);
             }
@@ -261,7 +821,10 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         string Name,
         bool SecurityDefiner,
         bool RuntimeExecute,
-        bool BootstrapperExecute);
+        bool BootstrapperExecute,
+        string? Result = null,
+        string? Language = null,
+        string? BodySha256 = null);
 
     private sealed record FunctionInfo(
         bool Exists,
@@ -269,7 +832,51 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         string Owner,
         bool OwnerCanLogin,
         string Config,
+        string Result,
+        string Language,
+        string BodySha256,
         bool PublicExecute,
         bool RuntimeExecute,
-        bool BootstrapperExecute);
+        bool BootstrapperExecute,
+        IReadOnlyList<string> ExplicitNonOwnerAclRows);
+
+    private sealed record FunctionBackingReadExpectation(
+        string Function,
+        IReadOnlyList<string> Tables);
+
+    private sealed record DeployerTableExpectation(
+        string Table,
+        bool Select,
+        bool Insert);
+
+    private sealed record DeployerTableCapability(
+        string Owner,
+        bool Select,
+        bool Insert,
+        bool Update,
+        bool Delete,
+        bool Truncate,
+        bool References,
+        bool Trigger);
+
+    private sealed record RoleInfo(
+        uint Oid,
+        string Name,
+        bool CanLogin,
+        bool Inherit,
+        bool Superuser,
+        bool CreateDatabase,
+        bool CreateRole,
+        bool Replication,
+        bool BypassRls);
+
+    private sealed record DeploymentFoundation(
+        int ServerVersion,
+        string SessionUser,
+        string CurrentUser,
+        RoleInfo CurrentRole,
+        RoleInfo RuntimeRole);
+
+    private static string HashBody(string body) =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(body))).ToLowerInvariant();
 }

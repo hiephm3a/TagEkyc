@@ -340,20 +340,156 @@ public sealed class Tip88B31RawExportAuthorizationSchemaTests(PostgresPersistenc
     {
         await using var db = postgres.CreateDbContext();
         var migrator = db.GetService<IMigrator>();
-        var before = await LandedAclAsync(db);
+        string[] expectedPreE3RuntimeAcl =
+        [
+            "raw_export_subject_consent_authorities|tagekyc|tagekyc_runtime|SELECT|false",
+            "raw_export_subject_consent_classes|tagekyc|tagekyc_runtime|SELECT|false",
+            "raw_export_subject_consent_events|tagekyc|tagekyc_runtime|SELECT|false",
+            "verification_sessions|tagekyc|tagekyc_runtime|SELECT|false",
+        ];
+        async Task<string[]> RuntimeConsentAclAsync() =>
+            await db.Database.SqlQueryRaw<string>(
+                    """
+                    SELECT
+                        relation.relname || '|' ||
+                        COALESCE(grantor.rolname, acl.grantor::text) || '|' ||
+                        COALESCE(grantee.rolname, acl.grantee::text) || '|' ||
+                        acl.privilege_type || '|' ||
+                        acl.is_grantable::text AS "Value"
+                    FROM pg_class AS relation
+                    JOIN pg_namespace AS namespace
+                      ON namespace.oid = relation.relnamespace
+                    CROSS JOIN LATERAL aclexplode(
+                        COALESCE(
+                            relation.relacl,
+                            acldefault('r', relation.relowner))) AS acl
+                    LEFT JOIN pg_roles AS grantor ON grantor.oid = acl.grantor
+                    LEFT JOIN pg_roles AS grantee ON grantee.oid = acl.grantee
+                    WHERE namespace.nspname = 'tagekyc'
+                      AND relation.relname IN (
+                          'verification_sessions',
+                          'raw_export_subject_consent_authorities',
+                          'raw_export_subject_consent_events',
+                          'raw_export_subject_consent_classes')
+                      AND acl.grantee = 'tagekyc_runtime'::regrole::oid
+                    ORDER BY relation.relname, grantor.rolname, acl.privilege_type;
+                    """)
+                .ToArrayAsync();
+
+        var currentAcl = await LandedAclAsync(db);
         var b3Before = await B3AclAsync(db);
-        await migrator.MigrateAsync(PreviousMigration);
-        await using (var connection = await OpenAsync())
+        Assert.Empty(await RuntimeConsentAclAsync());
+        try
         {
-            Assert.Equal(0, Convert.ToInt32(await ScalarAsync(connection, "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='tagekyc' AND c.relname = ANY(@tables);", new NpgsqlParameter("tables", Tables))));
+            await migrator.MigrateAsync(PreviousMigration);
+            Assert.Equal(expectedPreE3RuntimeAcl, await RuntimeConsentAclAsync());
+            var historicalAcl = await LandedAclAsync(db);
+            await using (var connection = await OpenAsync())
+            {
+                Assert.Equal(0, Convert.ToInt32(await ScalarAsync(connection, "SELECT count(*) FROM pg_class c JOIN pg_namespace n ON n.oid=c.relnamespace WHERE n.nspname='tagekyc' AND c.relname = ANY(@tables);", new NpgsqlParameter("tables", Tables))));
+            }
+            await migrator.MigrateAsync(Migration);
+            Assert.Equal(expectedPreE3RuntimeAcl, await RuntimeConsentAclAsync());
+            Assert.Equal(historicalAcl, await LandedAclAsync(db));
+            Assert.Equal(b3Before, await B3AclAsync(db));
+            await migrator.MigrateAsync(PreviousMigration);
+            Assert.Equal(expectedPreE3RuntimeAcl, await RuntimeConsentAclAsync());
+            await migrator.MigrateAsync(Migration);
+            Assert.Equal(expectedPreE3RuntimeAcl, await RuntimeConsentAclAsync());
+            Assert.Equal(historicalAcl, await LandedAclAsync(db));
+            Assert.Equal(b3Before, await B3AclAsync(db));
         }
-        Assert.Equal(before, await LandedAclAsync(db));
-        await migrator.MigrateAsync(Migration);
-        Assert.Equal(before, await LandedAclAsync(db));
-        Assert.Equal(b3Before, await B3AclAsync(db));
-        await migrator.MigrateAsync(PreviousMigration);
-        await migrator.MigrateAsync(Migration);
-        Assert.Equal(b3Before, await B3AclAsync(db));
+        finally
+        {
+            await migrator.MigrateAsync("20260724015546_Tip88B1E3ResolverReadBoundary");
+        }
+        Assert.Empty(await RuntimeConsentAclAsync());
+        Assert.Equal(currentAcl, await LandedAclAsync(db));
+        Assert.Equal(
+            "20260724015546_Tip88B1E3ResolverReadBoundary",
+            await db.Database.SqlQueryRaw<string>(
+                    """
+                    SELECT "MigrationId" AS "Value"
+                    FROM "__EFMigrationsHistory"
+                    ORDER BY "MigrationId" DESC
+                    LIMIT 1
+                    """)
+                .SingleAsync());
+
+        string[] protectedTables =
+        [
+            "raw_export_policy_versions", "raw_export_policy_allowed_classes",
+            "raw_export_policy_requirements", "raw_export_policy_closures",
+            "raw_export_requirement_rule_sets", "raw_export_grants",
+            "raw_export_fulfillments", "raw_export_policy_lifecycle",
+            "verification_sessions", "raw_export_subject_consent_authorities",
+            "raw_export_subject_consent_events", "raw_export_subject_consent_classes",
+            "raw_export_requirement_rules", "raw_export_control_authorities",
+        ];
+        string[] forbiddenPrivileges =
+            ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"];
+        await using var verify = await OpenAsync();
+        Assert.Equal(
+            0,
+            Convert.ToInt32(await ScalarAsync(
+                verify,
+                """
+                SELECT count(*)
+                FROM unnest(@tables) AS t(table_name)
+                CROSS JOIN unnest(@privileges) AS p(privilege_name)
+                WHERE has_table_privilege(
+                    'tagekyc_runtime',
+                    'tagekyc.' || t.table_name,
+                    p.privilege_name);
+                """,
+                new NpgsqlParameter("tables", protectedTables),
+                new NpgsqlParameter("privileges", forbiddenPrivileges))));
+        Assert.Equal(
+            3,
+            Convert.ToInt32(await ScalarAsync(
+                verify,
+                """
+                SELECT count(*)
+                FROM pg_proc AS p
+                JOIN pg_namespace AS n ON n.oid = p.pronamespace
+                JOIN pg_roles AS owner ON owner.oid = p.proowner
+                WHERE n.nspname = 'tagekyc'
+                  AND p.proname = ANY(@functions)
+                  AND p.prosecdef
+                  AND owner.rolname = 'tagekyc_raw_export_deployer'
+                  AND NOT owner.rolcanlogin
+                  AND p.proconfig = ARRAY['search_path=pg_catalog']
+                  AND has_function_privilege('tagekyc_runtime', p.oid, 'EXECUTE')
+                  AND NOT has_function_privilege('public', p.oid, 'EXECUTE')
+                  AND (
+                      SELECT array_agg(
+                          (CASE WHEN acl.grantee = 0 THEN 'PUBLIC' ELSE grantee.rolname END)::text
+                          ORDER BY (CASE WHEN acl.grantee = 0 THEN 'PUBLIC' ELSE grantee.rolname END)::text)
+                      FROM aclexplode(COALESCE(p.proacl, acldefault('f', p.proowner))) AS acl
+                      LEFT JOIN pg_roles AS grantee ON grantee.oid = acl.grantee
+                      WHERE acl.privilege_type = 'EXECUTE'
+                        AND acl.grantee <> p.proowner
+                  ) = ARRAY['tagekyc_runtime'];
+                """,
+                new NpgsqlParameter(
+                    "functions",
+                    new[]
+                    {
+                        "raw_export_read_authorization_eligibility_inputs",
+                        "raw_export_read_authorization_policy_inputs",
+                        "raw_export_control_plane_root_health",
+                    }))));
+        Assert.Equal(
+            "9359b6f264931b77dc3194136fbc5cf2",
+            Convert.ToString(await ScalarAsync(
+                verify,
+                """
+                SELECT md5(p.prosrc)
+                FROM pg_proc AS p
+                JOIN pg_namespace AS n ON n.oid = p.pronamespace
+                WHERE n.nspname = 'tagekyc'
+                  AND p.proname = 'raw_export_append_subject_consent_granted';
+                """)));
     }
 
     [Fact]

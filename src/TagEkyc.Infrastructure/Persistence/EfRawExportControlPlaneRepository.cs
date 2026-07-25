@@ -7,15 +7,23 @@ using TagEkyc.Domain;
 
 namespace TagEkyc.Infrastructure.Persistence;
 
-public sealed class EfRawExportControlPlaneRepository(TagEkycDbContext db) : IRawExportControlPlaneRepository
+public sealed class EfRawExportControlPlaneRepository : IRawExportControlPlaneRepository
 {
-    private static readonly RawExportRequirementType[] PolicyScopedRequirements =
-    [
-        RawExportRequirementType.LegalApproval,
-        RawExportRequirementType.Dpia,
-        RawExportRequirementType.CrossBorderAssessment,
-        RawExportRequirementType.RetentionSchedule,
-    ];
+    private readonly TagEkycDbContext db;
+    private readonly IRawExportAuthorizationProjectionReader projections;
+
+    public EfRawExportControlPlaneRepository(TagEkycDbContext db)
+        : this(db, new EfRawExportAuthorizationProjectionReader(db))
+    {
+    }
+
+    public EfRawExportControlPlaneRepository(
+        TagEkycDbContext db,
+        IRawExportAuthorizationProjectionReader projections)
+    {
+        this.db = db;
+        this.projections = projections;
+    }
 
     public Task<int> GrantExportPolicyAsync(RawExportGrantCommand command, CancellationToken cancellationToken = default) =>
         AppendGrantAsync(command, RawExportGrantEventType.Granted, cancellationToken);
@@ -97,55 +105,27 @@ public sealed class EfRawExportControlPlaneRepository(TagEkycDbContext db) : IRa
             throw new InvalidOperationException("RAW_EXPORT_AUTHORIZATION_REQUIRES_AMBIENT_TRANSACTION");
         }
 
-        await TakeSharedLockAsync(RawExportControlPlaneConstants.RuleSetPublishLockKey, cancellationToken);
-        await TakeSharedLockAsync($"tip88b1:grant:{principalId}:{policyId}:{policyVersion}", cancellationToken);
-        await TakeSharedLockAsync($"tip88b1:lifecycle:{policyId}:{policyVersion}", cancellationToken);
-        foreach (var requirement in PolicyScopedRequirements.OrderBy(requirement => requirement.ToString()))
-        {
-            await TakeSharedLockAsync($"tip88b1:fulfillment:{policyId}:{policyVersion}:{requirement}", cancellationToken);
-        }
-
-        var evaluatedAt = await ScalarDateTimeOffsetAsync("SELECT transaction_timestamp();", cancellationToken);
-        var policy = await db.RawExportPolicyVersions.AsNoTracking()
-            .SingleOrDefaultAsync(row => row.PolicyId == policyId && row.PolicyVersion == policyVersion, cancellationToken);
-        var currentRuleSetVersion = await db.RawExportRequirementRuleSets.AsNoTracking()
-            .Where(row => row.RuleSetId == RawExportPolicyConstants.RequirementRuleSetId)
-            .MaxAsync(row => (int?)row.RuleSetVersion, cancellationToken) ?? 0;
-        var closure = await db.RawExportPolicyClosures.AsNoTracking()
-            .SingleOrDefaultAsync(row => row.PolicyId == policyId && row.PolicyVersion == policyVersion, cancellationToken);
-        var grant = await db.RawExportGrants.AsNoTracking()
-            .Where(row => row.PrincipalId == principalId && row.PolicyId == policyId && row.PolicyVersion == policyVersion)
-            .OrderByDescending(row => row.Revision)
-            .FirstOrDefaultAsync(cancellationToken);
-        var lifecycle = await db.RawExportPolicyLifecycles.AsNoTracking()
-            .Where(row => row.PolicyId == policyId && row.PolicyVersion == policyVersion)
-            .OrderByDescending(row => row.Revision)
-            .FirstOrDefaultAsync(cancellationToken);
-        var declaredRequirements = await db.RawExportPolicyRequirements.AsNoTracking()
-            .Where(row => row.PolicyId == policyId &&
-                          row.PolicyVersion == policyVersion &&
-                          row.RequirementType != RawExportRequirementType.ConsentArtifact.ToString())
-            .Select(row => row.RequirementType)
-            .ToListAsync(cancellationToken);
+        var projection = await projections.ReadEligibilityInputsAsync(
+            principalId,
+            policyId,
+            policyVersion,
+            cancellationToken);
         var fulfillmentRefs = new List<RawExportFulfillmentRef>();
         var missingFulfillment = false;
-        foreach (var requirement in declaredRequirements.Order(StringComparer.Ordinal))
+        foreach (var requirement in projection.Requirements.OrderBy(item => item.Ordinal))
         {
-            var latest = await db.RawExportFulfillments.AsNoTracking()
-                .Where(row => row.PolicyId == policyId && row.PolicyVersion == policyVersion && row.RequirementType == requirement)
-                .OrderByDescending(row => row.Revision)
-                .FirstOrDefaultAsync(cancellationToken);
+            var latest = requirement.LatestFulfillment;
             if (latest is null ||
-                latest.EventType != RawExportFulfillmentEventType.Accepted.ToString() ||
-                latest.ValidFromUtc > evaluatedAt ||
-                (latest.ValidUntilUtc is not null && evaluatedAt >= latest.ValidUntilUtc))
+                latest.EventType != RawExportFulfillmentEventType.Accepted ||
+                latest.ValidFromUtc > projection.EvaluatedAtUtc ||
+                (latest.ValidUntilUtc is not null && projection.EvaluatedAtUtc >= latest.ValidUntilUtc))
             {
                 missingFulfillment = true;
                 continue;
             }
 
             fulfillmentRefs.Add(new RawExportFulfillmentRef(
-                Enum.Parse<RawExportRequirementType>(latest.RequirementType),
+                requirement.RequirementType,
                 latest.FulfillmentEventId,
                 latest.Revision,
                 latest.ArtifactRef ?? string.Empty,
@@ -154,39 +134,41 @@ public sealed class EfRawExportControlPlaneRepository(TagEkycDbContext db) : IRa
         }
 
         var causes = new List<RawExportEligibilityCause>();
-        if (closure?.ClosureType == RawExportPolicyClosureType.Abandoned.ToString())
+        if (projection.ClosureType == RawExportPolicyClosureType.Abandoned)
         {
             causes.Add(RawExportEligibilityCause.NotCatalogApproved);
         }
-        else if (policy is null || closure?.ClosureType != RawExportPolicyClosureType.CatalogApproved.ToString())
+        else if (!projection.PolicyExists ||
+                 projection.ClosureType != RawExportPolicyClosureType.CatalogApproved)
         {
             causes.Add(RawExportEligibilityCause.NotCatalogApproved);
         }
 
-        if (lifecycle?.EventType == RawExportLifecycleEventType.Revoked.ToString())
+        if (projection.Lifecycle?.EventType == RawExportLifecycleEventType.Revoked)
         {
             causes.Add(RawExportEligibilityCause.PolicyRevoked);
         }
-        else if (lifecycle?.EventType == RawExportLifecycleEventType.Suspended.ToString())
+        else if (projection.Lifecycle?.EventType == RawExportLifecycleEventType.Suspended)
         {
             causes.Add(RawExportEligibilityCause.PolicySuspended);
         }
-        else if (lifecycle?.EventType != RawExportLifecycleEventType.Activated.ToString())
+        else if (projection.Lifecycle?.EventType != RawExportLifecycleEventType.Activated)
         {
             causes.Add(RawExportEligibilityCause.PolicyNotActive);
         }
 
-        if (grant is null)
+        if (projection.Grant is null)
         {
             causes.Add(RawExportEligibilityCause.GrantMissing);
         }
-        else if (grant.EventType == RawExportGrantEventType.Revoked.ToString())
+        else if (projection.Grant.EventType == RawExportGrantEventType.Revoked)
         {
             causes.Add(RawExportEligibilityCause.GrantRevoked);
         }
 
-        var boundRuleSetVersion = policy?.RequirementRuleSetVersion ?? 0;
-        if (policy is not null && boundRuleSetVersion != currentRuleSetVersion)
+        var boundRuleSetVersion = projection.BoundRuleSetVersion ?? 0;
+        if (projection.PolicyExists &&
+            boundRuleSetVersion != projection.CurrentRuleSetVersion)
         {
             causes.Add(RawExportEligibilityCause.StaleRuleSet);
         }
@@ -204,11 +186,22 @@ public sealed class EfRawExportControlPlaneRepository(TagEkycDbContext db) : IRa
             orderedCauses.Length == 0 ? RawExportEligibilityState.Active : RawExportEligibilityState.Inactive,
             orderedCauses.Length == 0 ? null : orderedCauses[0],
             orderedCauses,
-            evaluatedAt,
+            projection.EvaluatedAtUtc,
             boundRuleSetVersion,
-            currentRuleSetVersion,
-            grant is null ? null : new RawExportGrantRef(grant.PrincipalId, grant.PolicyId, grant.PolicyVersion, grant.Revision),
-            lifecycle is null ? null : new RawExportLifecycleRef(lifecycle.PolicyId, lifecycle.PolicyVersion, lifecycle.Revision),
+            projection.CurrentRuleSetVersion,
+            projection.Grant is null
+                ? null
+                : new RawExportGrantRef(
+                    projection.Grant.PrincipalId,
+                    projection.Grant.PolicyId,
+                    projection.Grant.PolicyVersion,
+                    projection.Grant.Revision),
+            projection.Lifecycle is null
+                ? null
+                : new RawExportLifecycleRef(
+                    projection.Lifecycle.PolicyId,
+                    projection.Lifecycle.PolicyVersion,
+                    projection.Lifecycle.Revision),
             fulfillmentRefs);
 
         return snapshot;
@@ -294,12 +287,6 @@ public sealed class EfRawExportControlPlaneRepository(TagEkycDbContext db) : IRa
         return transaction;
     }
 
-    private async Task TakeSharedLockAsync(string key, CancellationToken cancellationToken) =>
-        await ScalarIntAsync(
-            "SELECT pg_advisory_xact_lock_shared(hashtext(@key)); SELECT 1;",
-            cancellationToken,
-            Parameter("key", key));
-
     private async Task<int> ScalarIntAsync(
         string sql,
         CancellationToken cancellationToken,
@@ -307,20 +294,6 @@ public sealed class EfRawExportControlPlaneRepository(TagEkycDbContext db) : IRa
     {
         var value = await ScalarAsync(sql, cancellationToken, parameters);
         return Convert.ToInt32(value, System.Globalization.CultureInfo.InvariantCulture);
-    }
-
-    private async Task<DateTimeOffset> ScalarDateTimeOffsetAsync(
-        string sql,
-        CancellationToken cancellationToken,
-        params NpgsqlParameter[] parameters)
-    {
-        var value = await ScalarAsync(sql, cancellationToken, parameters);
-        return value switch
-        {
-            DateTimeOffset dto => dto,
-            DateTime dt => new DateTimeOffset(DateTime.SpecifyKind(dt, DateTimeKind.Utc)),
-            _ => throw new InvalidOperationException("RAW_EXPORT_DB_TIME_INVALID"),
-        };
     }
 
     private async Task<object?> ScalarAsync(

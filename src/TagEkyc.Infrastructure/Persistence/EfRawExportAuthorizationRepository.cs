@@ -24,15 +24,15 @@ public sealed class EfRawExportAuthorizationRepository : IRawExportAuthorization
     private readonly TagEkycDbContext db;
     private readonly IRawExportControlPlaneRepository controlPlane;
     private readonly IRawExportSubjectConsentRepository subjectConsent;
-    private readonly IRawExportPolicyRepository policies;
+    private readonly IRawExportAuthorizationProjectionReader projections;
     private readonly RawExportPermitTtlBoundsState permitTtlBounds;
 
     public EfRawExportAuthorizationRepository(TagEkycDbContext db)
         : this(
             db,
+            new EfRawExportAuthorizationProjectionReader(db),
             new EfRawExportControlPlaneRepository(db),
             new EfRawExportSubjectConsentRepository(db),
-            new EfRawExportPolicyRepository(db),
             RawExportPermitTtlBoundsState.Valid(
                 RawExportPermitTtlOptions.DefaultMinSeconds,
                 RawExportPermitTtlOptions.DefaultMaxSeconds))
@@ -41,15 +41,15 @@ public sealed class EfRawExportAuthorizationRepository : IRawExportAuthorization
 
     public EfRawExportAuthorizationRepository(
         TagEkycDbContext db,
+        IRawExportAuthorizationProjectionReader projections,
         IRawExportControlPlaneRepository controlPlane,
         IRawExportSubjectConsentRepository subjectConsent,
-        IRawExportPolicyRepository policies,
         RawExportPermitTtlBoundsState permitTtlBounds)
     {
         this.db = db;
+        this.projections = projections;
         this.controlPlane = controlPlane;
         this.subjectConsent = subjectConsent;
-        this.policies = policies;
         this.permitTtlBounds = permitTtlBounds;
     }
 
@@ -182,18 +182,26 @@ public sealed class EfRawExportAuthorizationRepository : IRawExportAuthorization
             await RollbackAndThrowAsync(transaction, InvariantFailureCode, cancellationToken);
         }
 
-        evidence.Policy = await policies.GetVersionAsync(
+        var policy = await projections.ReadPolicyInputsAsync(
+            request.Command.Actor.PrincipalId,
             request.Command.PolicyId,
             request.Command.PolicyVersion,
             cancellationToken);
-        if (evidence.Policy is null || evidence.Policy.Status != RawExportPolicyStatus.CatalogApproved)
+        evidence.Policy = policy;
+        if (!policy.PolicyExists ||
+            policy.ClosureType != RawExportPolicyClosureType.CatalogApproved)
         {
             await RollbackAndThrowAsync(transaction, InvariantFailureCode, cancellationToken);
         }
 
-        evidence.PolicyAllowedClasses = CanonicalizeClasses(evidence.Policy!.AllowedClasses);
-        if (evidence.Policy.PermitTtlSeconds is null ||
-            !permitTtlBounds.Allows(evidence.Policy.PermitTtlSeconds.Value))
+        if (policy.EvaluatedAtUtc != evidence.Eligibility.EvaluatedAtUtc)
+        {
+            await RollbackAndThrowAsync(transaction, InvariantFailureCode, cancellationToken);
+        }
+
+        evidence.PolicyAllowedClasses = CanonicalizeClasses(policy.AllowedClasses);
+        if (policy.PermitTtlSeconds is null ||
+            !permitTtlBounds.Allows(policy.PermitTtlSeconds.Value))
         {
             return await PersistLoadAndCommitAsync(
                 transaction,
@@ -210,7 +218,7 @@ public sealed class EfRawExportAuthorizationRepository : IRawExportAuthorization
             request.SelectionMode == RawExportRawClassSelectionMode.DefaultPolicySet
                 ? evidence.PolicyAllowedClasses
                 : request.RequestedRawClasses;
-        if (!evidence.EffectiveRequestedClasses.All(evidence.Policy.AllowedClasses.Contains))
+        if (!evidence.EffectiveRequestedClasses.All(policy.AllowedClasses.Contains))
         {
             return await PersistLoadAndCommitAsync(
                 transaction,
@@ -847,11 +855,12 @@ public sealed class EfRawExportAuthorizationRepository : IRawExportAuthorization
         public LockedSession? Session { get; set; }
         public bool SuppressSessionSubject { get; set; }
         public RawExportEligibilitySnapshot? Eligibility { get; set; }
-        public RawExportPolicyVersion? Policy { get; set; }
+        public RawExportAuthorizationPolicyProjection? Policy { get; set; }
         public IReadOnlyList<RawExportRawClass>? PolicyAllowedClasses { get; set; }
         public IReadOnlyList<RawExportRawClass>? EffectiveRequestedClasses { get; set; }
         public RawExportSubjectConsentSnapshot? Consent { get; set; }
         public IReadOnlyList<RawExportRawClass>? ConsentedClasses { get; set; }
         public DateTimeOffset? DecisionExpiresAtUtc { get; set; }
     }
+
 }

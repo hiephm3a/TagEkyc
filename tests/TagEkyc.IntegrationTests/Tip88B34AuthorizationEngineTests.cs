@@ -14,10 +14,10 @@ public sealed class Tip88B34AuthorizationEngineTests(PostgresPersistenceFixture 
     private static readonly Guid AdminPrincipal = Guid.Parse("88b34000-0000-5000-8000-000000000001");
     private static readonly Guid RecorderPrincipal = Guid.Parse("88b34000-0000-5000-8000-000000000002");
     private static readonly Guid WithdrawerPrincipal = Guid.Parse("88b34000-0000-5000-8000-000000000006");
-    private static readonly Guid ConsumerPrincipal = Guid.Parse("88b34000-0000-5000-8000-000000000003");
-    private static readonly Guid ClientApplicationId = Guid.Parse("88b34000-0000-5000-8000-000000000004");
-    private static readonly Guid ApiKeyId = Guid.Parse("88b34000-0000-5000-8000-000000000005");
-    private static readonly AuthenticatedRawExportActor Actor =
+    internal static readonly Guid ConsumerPrincipal = Guid.Parse("88b34000-0000-5000-8000-000000000003");
+    internal static readonly Guid ClientApplicationId = Guid.Parse("88b34000-0000-5000-8000-000000000004");
+    internal static readonly Guid ApiKeyId = Guid.Parse("88b34000-0000-5000-8000-000000000005");
+    internal static readonly AuthenticatedRawExportActor Actor =
         new(ConsumerPrincipal, ClientApplicationId, ApiKeyId);
 
     public Task InitializeAsync() => postgres.ResetDatabaseAsync();
@@ -658,7 +658,8 @@ public sealed class Tip88B34AuthorizationEngineTests(PostgresPersistenceFixture 
             permitTtlSeconds: 300);
         var repository = CreateRepository(
             db,
-            policies: new MissingVersionPolicyRepository(new EfRawExportPolicyRepository(db)));
+            projections: new MissingPolicyProjectionReader(
+                new EfRawExportAuthorizationProjectionReader(db)));
 
         var exception = await Assert.ThrowsAsync<RawExportAuthorizationException>(
             () => repository.AuthorizeExportAsync(Command(
@@ -1056,7 +1057,7 @@ public sealed class Tip88B34AuthorizationEngineTests(PostgresPersistenceFixture 
                 item => item.RequestedVerificationSessionId == sessionId));
     }
 
-    private static AuthorizeRawExportCommand Command(
+    internal static AuthorizeRawExportCommand Command(
         Guid sessionId,
         Guid policyId,
         string idempotencyKey,
@@ -1070,20 +1071,23 @@ public sealed class Tip88B34AuthorizationEngineTests(PostgresPersistenceFixture 
             requestedClasses,
             idempotencyKey);
 
-    private static EfRawExportAuthorizationRepository CreateRepository(
+    internal static EfRawExportAuthorizationRepository CreateRepository(
         TagEkycDbContext db,
         IRawExportControlPlaneRepository? controlPlane = null,
         IRawExportSubjectConsentRepository? subjectConsent = null,
-        IRawExportPolicyRepository? policies = null,
-        RawExportPermitTtlBoundsState? bounds = null) =>
-        new(
+        IRawExportAuthorizationProjectionReader? projections = null,
+        RawExportPermitTtlBoundsState? bounds = null)
+    {
+        projections ??= new EfRawExportAuthorizationProjectionReader(db);
+        return new(
             db,
-            controlPlane ?? new EfRawExportControlPlaneRepository(db),
+            projections,
+            controlPlane ?? new EfRawExportControlPlaneRepository(db, projections),
             subjectConsent ?? new EfRawExportSubjectConsentRepository(db),
-            policies ?? new EfRawExportPolicyRepository(db),
             bounds ?? RawExportPermitTtlBoundsState.Valid(60, 900));
+    }
 
-    private static async Task<Guid> SeedCompletedSessionAsync(
+    internal static async Task<Guid> SeedCompletedSessionAsync(
         TagEkycDbContext db,
         Guid clientApplicationId,
         string subjectRef,
@@ -1104,7 +1108,7 @@ public sealed class Tip88B34AuthorizationEngineTests(PostgresPersistenceFixture 
         return session.Id;
     }
 
-    private static async Task SeedActivePolicyAsync(
+    internal static async Task SeedActivePolicyAsync(
         TagEkycDbContext db,
         Guid policyId,
         IReadOnlyList<RawExportRawClass> allowedClasses,
@@ -1210,7 +1214,7 @@ public sealed class Tip88B34AuthorizationEngineTests(PostgresPersistenceFixture 
         }
     }
 
-    private static async Task SeedEffectiveConsentAsync(
+    internal static async Task SeedEffectiveConsentAsync(
         TagEkycDbContext db,
         Guid sessionId,
         Guid policyId,
@@ -1445,43 +1449,35 @@ public sealed class Tip88B34AuthorizationEngineTests(PostgresPersistenceFixture 
         }
     }
 
-    private sealed class MissingVersionPolicyRepository(IRawExportPolicyRepository inner)
-        : IRawExportPolicyRepository
+    private sealed class MissingPolicyProjectionReader(IRawExportAuthorizationProjectionReader inner)
+        : IRawExportAuthorizationProjectionReader
     {
-        public Task<RawExportPolicyVersion> AddVersionAsync(
-            AddRawExportPolicyVersionCommand command,
-            CancellationToken cancellationToken = default) =>
-            inner.AddVersionAsync(command, cancellationToken);
-
-        public Task<RawExportPolicyVersion> CatalogApproveAsync(
-            CloseRawExportPolicyVersionCommand command,
-            CancellationToken cancellationToken = default) =>
-            inner.CatalogApproveAsync(command, cancellationToken);
-
-        public Task<RawExportPolicyVersion> AbandonDraftAsync(
-            CloseRawExportPolicyVersionCommand command,
-            CancellationToken cancellationToken = default) =>
-            inner.AbandonDraftAsync(command, cancellationToken);
-
-        public Task<RawExportPolicyVersion?> GetVersionAsync(
+        public Task<RawExportAuthorizationEligibilityProjection> ReadEligibilityInputsAsync(
+            Guid principalId,
             Guid policyId,
             int policyVersion,
             CancellationToken cancellationToken = default) =>
-            Task.FromResult<RawExportPolicyVersion?>(null);
+            inner.ReadEligibilityInputsAsync(principalId, policyId, policyVersion, cancellationToken);
 
-        public Task<RawExportPolicyVersion?> GetLatestVersionAsync(
+        public async Task<RawExportAuthorizationPolicyProjection> ReadPolicyInputsAsync(
+            Guid principalId,
             Guid policyId,
-            CancellationToken cancellationToken = default) =>
-            inner.GetLatestVersionAsync(policyId, cancellationToken);
-
-        public Task<RawExportPolicyVersion?> GetLatestCatalogApprovedVersionAsync(
-            Guid policyId,
-            CancellationToken cancellationToken = default) =>
-            inner.GetLatestCatalogApprovedVersionAsync(policyId, cancellationToken);
-
-        public Task<IReadOnlyList<RawExportPolicyVersion>> ListAsync(
-            CancellationToken cancellationToken = default) =>
-            inner.ListAsync(cancellationToken);
+            int policyVersion,
+            CancellationToken cancellationToken = default)
+        {
+            var projection = await inner.ReadPolicyInputsAsync(
+                principalId,
+                policyId,
+                policyVersion,
+                cancellationToken);
+            return projection with
+            {
+                PolicyExists = false,
+                PermitTtlSeconds = null,
+                ClosureType = null,
+                AllowedClasses = new HashSet<RawExportRawClass>(),
+            };
+        }
     }
 
 }

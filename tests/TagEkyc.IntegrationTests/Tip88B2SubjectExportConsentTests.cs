@@ -1017,8 +1017,6 @@ public sealed class Tip88B2SubjectExportConsentTests(PostgresPersistenceFixture 
         Assert.Contains("table:runtime:verification_sessions:UPDATE:true", b1AclAfter);
 
         await BootstrapB1RootsAsync(db, AdminPrincipal);
-        await ProvisionB1RuntimeReadinessSelectsAsync(db);
-        await ValidateB1ReadinessAsRuntimeAsync();
 
         await migrator.MigrateAsync("20260720022629_Tip88B2SubjectExportConsent");
         await ValidateB2ReadinessAsRuntimeAsync();
@@ -1341,14 +1339,7 @@ public sealed class Tip88B2SubjectExportConsentTests(PostgresPersistenceFixture 
                     connection,
                     null,
                     $"SELECT has_table_privilege(current_user, 'tagekyc.{table}', '{privilege}');") ?? false);
-                if (privilege == "SELECT")
-                {
-                    Assert.True(allowed, $"{table} should grant runtime SELECT.");
-                }
-                else
-                {
-                    Assert.False(allowed, $"{table} should not grant runtime {privilege}.");
-                }
+                Assert.False(allowed, $"{table} should not grant runtime {privilege}.");
             }
         }
     }
@@ -1369,15 +1360,6 @@ public sealed class Tip88B2SubjectExportConsentTests(PostgresPersistenceFixture 
         }
     }
 
-    private async Task ValidateB1ReadinessAsRuntimeAsync()
-    {
-        await using var db = postgres.CreateDbContext();
-        await db.Database.OpenConnectionAsync();
-        await db.Database.ExecuteSqlRawAsync("GRANT tagekyc_runtime TO tagekyc;");
-        await db.Database.ExecuteSqlRawAsync("SET ROLE tagekyc_runtime;");
-        await new RawExportControlPlaneReadinessValidator(db).ValidateAsync(CancellationToken.None);
-    }
-
     private static async Task BootstrapB1RootsAsync(TagEkycDbContext db, Guid principalId)
     {
         foreach (var authority in new[] { "GrantAdmin", "RecorderAuthorityAdmin", "ActivationAuthority" })
@@ -1386,19 +1368,6 @@ public sealed class Tip88B2SubjectExportConsentTests(PostgresPersistenceFixture 
                 SELECT tagekyc.raw_export_bootstrap_global_authority('{principalId}', '{authority}', 'decision:rollback-bootstrap:{authority}');
                 """);
         }
-    }
-
-    private static async Task ProvisionB1RuntimeReadinessSelectsAsync(TagEkycDbContext db)
-    {
-        await db.Database.ExecuteSqlRawAsync("GRANT tagekyc_runtime TO tagekyc;");
-        await db.Database.ExecuteSqlRawAsync("""
-            GRANT SELECT ON
-                tagekyc.raw_export_grants,
-                tagekyc.raw_export_control_authorities,
-                tagekyc.raw_export_fulfillments,
-                tagekyc.raw_export_policy_lifecycle
-            TO tagekyc_runtime;
-            """);
     }
 
     private static async Task<IReadOnlyList<string>> SnapshotB1AclAsync(TagEkycDbContext db)

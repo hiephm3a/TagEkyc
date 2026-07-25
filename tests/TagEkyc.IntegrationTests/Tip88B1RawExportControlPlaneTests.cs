@@ -169,6 +169,7 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         await repository.ActivatePolicyAsync(Lifecycle(policyId, 0, "decision:activate"));
 
         await using var transaction = await db.Database.BeginTransactionAsync();
+        await SetActorContextAsync(db);
         var snapshot = await repository.ResolveExportEligibilityForAuthorizationAsync(ConsumerPrincipal, policyId, 1);
         await transaction.CommitAsync();
 
@@ -371,6 +372,7 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         Assert.Equal("RAW_EXPORT_AUTHORIZATION_REQUIRES_AMBIENT_TRANSACTION", noAmbient.Message);
 
         await using var transaction = await db.Database.BeginTransactionAsync();
+        await SetActorContextAsync(db);
         var snapshot = await repository.ResolveExportEligibilityForAuthorizationAsync(ConsumerPrincipal, policyId, 1);
         await transaction.CommitAsync();
 
@@ -715,7 +717,6 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
     {
         await using var setup = postgres.CreateDbContext();
         await BootstrapRootsAsync(setup, AdminPrincipal);
-        await ProvisionRuntimeReadinessSelectsAsync(setup);
 
         await ValidateB1ReadinessAsRuntimeAsync();
 
@@ -784,6 +785,7 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
 
         await using var resolverDb = postgres.CreateDbContext();
         await using var resolverTx = await resolverDb.Database.BeginTransactionAsync();
+        await SetActorContextAsync(resolverDb);
         var snapshot = await new EfRawExportControlPlaneRepository(resolverDb)
             .ResolveExportEligibilityForAuthorizationAsync(ConsumerPrincipal, policyId, 1);
         Assert.Contains(RawExportEligibilityCause.PolicyNotActive, snapshot.Causes);
@@ -812,6 +814,7 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
 
         await using var resolverDb = postgres.CreateDbContext();
         await using var resolverTx = await resolverDb.Database.BeginTransactionAsync();
+        await SetActorContextAsync(resolverDb);
         await new EfRawExportControlPlaneRepository(resolverDb)
             .ResolveExportEligibilityForAuthorizationAsync(ConsumerPrincipal, policyId, 1);
 
@@ -864,27 +867,47 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         }
     }
 
-    private static async Task ProvisionRuntimeReadinessSelectsAsync(TagEkycDbContext db)
-    {
-        await db.Database.ExecuteSqlRawAsync("GRANT tagekyc_runtime TO tagekyc;");
-        await db.Database.ExecuteSqlRawAsync("""
-            GRANT SELECT ON
-                tagekyc.raw_export_grants,
-                tagekyc.raw_export_control_authorities,
-                tagekyc.raw_export_fulfillments,
-                tagekyc.raw_export_policy_lifecycle
-            TO tagekyc_runtime;
-            """);
-    }
-
     private async Task ValidateB1ReadinessAsRuntimeAsync()
     {
-        await using var db = postgres.CreateDbContext();
-        await db.Database.OpenConnectionAsync();
-        await db.Database.ExecuteSqlRawAsync("GRANT tagekyc_runtime TO tagekyc;");
-        await db.Database.ExecuteSqlRawAsync("SET ROLE tagekyc_runtime;");
+        var role = $"b1_readiness_runtime_{Guid.NewGuid():N}";
+        var password = $"B1_{Guid.NewGuid():N}!";
+        await using var admin = new NpgsqlConnection(postgres.ConnectionString);
+        await admin.OpenAsync();
+        await using var create = new NpgsqlCommand(
+            $"""
+             CREATE ROLE "{role}" LOGIN INHERIT PASSWORD '{password}'
+                 NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+             GRANT tagekyc_runtime TO "{role}"
+                 WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
+             """,
+            admin);
+        await create.ExecuteNonQueryAsync();
 
-        await new RawExportControlPlaneReadinessValidator(db).ValidateAsync(CancellationToken.None);
+        try
+        {
+            var connectionString = new NpgsqlConnectionStringBuilder(postgres.ConnectionString)
+            {
+                Username = role,
+                Password = password,
+                Pooling = false,
+            }.ConnectionString;
+            var options = new DbContextOptionsBuilder<TagEkycDbContext>()
+                .UseNpgsql(connectionString)
+                .Options;
+            await using var runtime = new TagEkycDbContext(options);
+            await new RawExportControlPlaneReadinessValidator(runtime)
+                .ValidateAsync(CancellationToken.None);
+        }
+        finally
+        {
+            await using var cleanup = new NpgsqlCommand(
+                $"""
+                 REVOKE tagekyc_runtime FROM "{role}";
+                 DROP ROLE "{role}";
+                 """,
+                admin);
+            await cleanup.ExecuteNonQueryAsync();
+        }
     }
 
     private async Task AssertB1FunctionDriftAsync(string driftSql, string restoreSql)
@@ -1028,10 +1051,15 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         Guid policyId)
     {
         await using var transaction = await db.Database.BeginTransactionAsync();
+        await SetActorContextAsync(db);
         var snapshot = await repository.ResolveExportEligibilityForAuthorizationAsync(ConsumerPrincipal, policyId, 1);
         await transaction.CommitAsync();
         return snapshot;
     }
+
+    private static Task SetActorContextAsync(TagEkycDbContext db) =>
+        db.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT pg_catalog.set_config('tagekyc.actor_principal_id',{ConsumerPrincipal.ToString()},true);");
 
     private static async Task WaitForDbTimeAtLeastAsync(
         TagEkycDbContext db,
