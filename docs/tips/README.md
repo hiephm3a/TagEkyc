@@ -1,13 +1,32 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 1.35
+**Version:** 1.36
 **Status:** Active
 **Date:** 2026-07-25
 **Baseline:** Product Brief v0.1.2
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v1.36 - TIP-88 Raw BIO data-plane decomposition ratified
+
+- Updated the authoritative
+  [`TIP-88 program spine`](tip_88_raw_export_policy_spine/tip_88_planning_brief.md)
+  after the B3/E3 foundation closed. Minted five sequential implementation slice
+  identifiers: **TIP-88B4** permit-to-job consumption foundation, **TIP-88C1**
+  secure raw source + sealed assembly, **TIP-88C2** recipient encryption +
+  package custody, **TIP-88C3** authenticated delivery surface, and **TIP-88C4**
+  lifecycle/operations + neutral technical E2E. Locked separate Permit and
+  ExportJob aggregates, immutable identity + append-only evidence + mutable CAS
+  operational head, one job per permit, lease fencing, mode-specific custody and
+  retry semantics, secure source establishment, checkpoint revalidation, honest
+  non-exactly-once delivery with `DeliveryOutcomeUnknown`, independent delivery
+  and reconciliation deadlines, isolated raw worker boundaries, final package
+  authenticity, trusted recipient-key lifecycle, and SignFlow neutrality. This
+  entry ratifies only the decomposition, identifiers, and program-wide
+  invariants: it is not a build dispatch and creates no implementation folders,
+  migrations, or raw-byte capability.
 
 ### v1.35 - TIP-88B1-E3 resolver runtime read boundary closed
 
