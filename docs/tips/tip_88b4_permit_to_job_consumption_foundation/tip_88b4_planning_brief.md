@@ -1,10 +1,10 @@
 # TIP-88B4 Permit-to-Job Consumption Foundation — Planning Brief
 
-**Version:** 0.20
+**Version:** 0.21
 
-**Status:** RATIFIED AS AMENDED — SYNCHRONIZATION VERIFIED
+**Status:** RATIFIED AS AMENDED — AMENDMENT D SYNCHRONIZED — IMPLEMENTATION STOPPED
 
-**Date:** 2026-07-26
+**Date:** 2026-07-27
 
 **Grounded baseline:** `bf90d5453f2cf8fb45009ccc2dcdb42c335a4711`
 
@@ -187,14 +187,48 @@ key, enum, worker identity, lease value, or other syntactic command field return
 its existing validation outcome before transaction-ownership/isolation checks.
 Only a preflight-valid command reaches the checks below.
 
-Before acquiring or opening its connection, each B4 repository entry requires
-`Transaction.Current == null`; an ambient transaction fails immediately. The B4
-connection path also suppresses or disables automatic ambient enlistment as
-defense in depth. If a caller-owned or already-active connection transaction is
-detected, the repository fails before projection, lock, or mutation with
-`RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`; it never silently joins that
-transaction. The explicit overload is a ratified source contract even though the
-current Npgsql provider default is also Read Committed.
+For a preflight-valid command, every entry requires all of the following before
+any B4 lookup, lock, mutation, or transition:
+
+- `Transaction.Current == null`;
+- `db.Database.CurrentTransaction == null`;
+- the scoped connection is closed at method entry; and
+- the underlying provider has no active transaction.
+
+Violation maps to `RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`; the repository
+never silently joins caller-owned state. The ambient/current-transaction check is
+repeated immediately before invoking `OpenAsync` or
+`BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken)`. No
+application-level `await`, callback, resolver invocation, or database command may
+occur between that final check and the invocation that opens the connection or
+begins the explicit transaction.
+
+A scoped connection that was previously opened and is now closed at method entry
+is explicitly supported and is the common production topology: B1/B2/B3
+authority work routinely opens and closes the same scoped connection first. A
+connection that is currently open at entry is rejected.
+
+Every method uses the injected scoped `TagEkycDbContext`, its exact
+`DbConnection`, and its fresh explicit Read Committed transaction throughout.
+Where the ordered path requires B1, policy projection, B2, and B4, all those
+operations share those same instances. B4 creates no second DbContext,
+connection, data source, connection factory, service scope, or nested
+transaction.
+
+B4 never assigns the scoped connection string and never changes configured
+persistence options, provider transaction-participation settings, service
+registration, or global pool configuration. This no-assignment guarantee is
+strictly stronger than the superseded byte-restoration design: there is no
+mutation window and no restoration path that can fail. Byte equality of the live
+provider connection-string property is therefore not an invariant; Npgsql may
+redact credential material after an open.
+
+On every exit, including typed failure, provider exception, timeout, and
+cancellation, cleanup disposes the transaction, closes only the connection B4
+opened, and requires `db.Database.CurrentTransaction == null`, no underlying
+provider transaction, and `ConnectionState.Closed`. Cleanup is non-cancellable.
+The explicit transaction overload remains a ratified source contract even though
+the current Npgsql provider default is also Read Committed.
 
 This isolation requirement is load-bearing. B4 relies on a new committed snapshot
 for each statement after a lock wait, both for visibility-safe winner re-read and
@@ -1045,9 +1079,10 @@ and position are part of both function body manifests.
 `raw_export_read_job` and the four mutation entries do not add independent SQL
 isolation guards. On the production path each runs only inside a fresh
 repository-owned transaction that has passed section 3.3 preflight,
-ambient/active-transaction rejection, `Enlist=false` handling, explicit
-`BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken)`,
-reported isolation verification, and transaction-local actor-GUC binding.
+ambient/active-transaction rejection, the final no-gap admission check immediately
+before opening/beginning, explicit
+`BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken)`, reported
+isolation verification, and transaction-local actor-GUC binding.
 
 A normal valid bind that reaches claim is admitted through claim;
 acquire/reclaim is admitted through attempt-lock. The safely identified
@@ -1660,6 +1695,37 @@ sentinel, so the C# mapping cannot silently assume the union branch is non-null.
 
 `M3_direct_claim_rejects_repeatable_read_and_serializable`
 
+`B4_does_not_assign_or_normalize_connection_string`
+
+`B4_does_not_reference_enlist_or_npgsql_connection_string_builder`
+
+The `enlist` token in that test identifier names the superseded mechanism whose
+reintroduction it prohibits; it is not an active configuration requirement.
+
+`B4_uses_same_scoped_dbcontext_connection_and_transaction_for_B1_B2`
+
+`B4_does_not_create_second_dbcontext_connection_or_datasource`
+
+`B4_all_six_methods_preflight_precedes_transaction_admission`
+
+`B4_all_six_methods_reject_ambient_transaction_before_database`
+
+`B4_all_six_methods_reject_existing_ef_transaction_before_database`
+
+`B4_all_six_methods_reject_existing_provider_transaction_before_database`
+
+`B4_all_six_methods_reject_open_connection_before_database`
+
+`B4_all_six_methods_own_fresh_read_committed_transactions`
+
+`B4_all_six_methods_final_admission_is_adjacent_to_each_open_or_begin`
+
+`B4_same_scope_landed_repository_can_reopen_after_B4`
+
+`B4_connection_is_closed_and_transaction_free_after_every_exit`
+
+`B4_global_persistence_options_remain_unchanged`
+
 Two real connections prove winner-commit, winner-rollback, same fingerprint,
 different fingerprint, exactly one identity/head/initial transition, and zero
 partial rows. The replay test binds successfully, simulates response loss, then
@@ -1706,16 +1772,51 @@ supplies an invalid bind command inside the same ambient scope and must return
 `RAW_EXPORT_JOB_REQUEST_VALIDATION_FAILED` before the isolation code.
 
 The source/architecture half asserts the explicit
-`BeginTransactionAsync(IsolationLevel.ReadCommitted, ...)` contract and ambient
-suppression. This is intentionally separate from the runtime positive control:
+`BeginTransactionAsync(IsolationLevel.ReadCommitted, ...)` contract, the
+pre-open ambient/current-transaction gates, and the absence of any B4
+connection-string assignment or normalization. The source-prohibition scan is
+limited exactly to `EfRawExportJobRepository.cs` and the B4 migration pair;
+landed slices elsewhere are not part of that assertion. This is intentionally
+separate from the runtime positive control:
 Npgsql currently defaults `BeginTransactionAsync()` to Read Committed, so merely
 deleting the explicit argument could otherwise leave a runtime test green.
-Scratch-changing the explicit isolation to Repeatable Read, removing ambient
-suppression, removing the architecture assertion's required overload, or
-removing the claim isolation guard must make its corresponding named test red.
-Scratch-bypassing the `Transaction.Current` check or accepting the injected
-already-active connection transaction must independently make the matching
-zero-database-call test red.
+Scratch-changing the explicit isolation to Repeatable Read, removing an ambient
+or current-transaction gate, inserting a connection-string assignment or
+provider-specific builder, removing the architecture assertion's required
+overload, or removing the claim isolation guard must make its corresponding
+named test red. Creating a second context, connection, data source, connection
+factory, or service scope must red the shared-instance test.
+
+Each all-six admission test is data-driven with one independently reported case
+per repository method. The preflight-precedence test supplies an invalid command
+while ambient, EF-current, provider-current, and currently-open states are each
+present; every method must return request validation before observing or
+reporting transaction admission. Moving preflight after any admission check in
+one method must red that method's named case.
+
+The final-admission adjacency test reports each repository method and each
+invocation kind separately. When a method explicitly invokes both `OpenAsync`
+and `BeginTransactionAsync`, it must repeat the final ambient/current check
+immediately before each invocation; the awaited completion of `OpenAsync` is
+followed by a new final check before begin. When one invocation kind is absent,
+that method's named case asserts its absence rather than silently omitting the
+cell. Inserting an application-level await, callback, resolver, or database
+command between either final check and its invocation must red the exact
+method/invocation case.
+
+The cleanup and same-scope-reopen evidence is a complete 24-cell matrix:
+six repository methods multiplied by success, typed failure, provider exception,
+and cancellation. No cell is “where applicable” or may be omitted. Every cell
+asserts transaction disposal, EF/provider transaction absence,
+`ConnectionState.Closed`, and successful landed same-scope reuse after the B4
+exit. A cleanup mutation in any exit class must red that method/exit cell in both
+`B4_connection_is_closed_and_transaction_free_after_every_exit` and
+`B4_same_scope_landed_repository_can_reopen_after_B4`.
+
+The same-scope reopen test must first execute a landed B1/B2/B3 read that opens
+and closes the scoped connection, then execute B4, then call a landed repository
+through that same scope. A fresh never-opened DbContext is not acceptable
+evidence for the supported production topology.
 
 The finite-authority race iterates the B2 consent bound and every finite B1
 fulfillment requirement stream while keeping `PermitExpiresAt` and
@@ -1797,6 +1898,12 @@ actor-scoped read, attempt-lock call, authority lock, head lock, mutation, or
 transition. Scratch-bypassing each early gate must make its own named test red;
 the SQL isolation guard cannot satisfy either test because the ambient/caller
 transaction already has the otherwise-valid isolation.
+
+The attempt path also shares the section-3.3 final admission rule: after its last
+ambient/current-transaction check, no application-level await, callback,
+resolver, or database command may occur before the open/begin invocation.
+Previously-opened-now-closed scoped connections are positive controls; a
+currently open connection remains an early rejection.
 
 ### M6 — Runtime-only role and ACL
 
@@ -2095,6 +2202,15 @@ The independent reviewer must try to prove:
     a pre-wait snapshot, or admits a direct non-Read-Committed opening seam.
 26. a matching-Read-Committed ambient/active transaction reaches database work,
     or isolation failure outranks invalid-command preflight.
+27. B4 assigns or normalizes a connection string, changes provider/global
+    persistence configuration, or relies on restoring provider-redacted
+    credential text.
+28. B4 rejects a previously-opened-now-closed scoped connection, accepts a
+    currently open connection, or creates a second context/connection/data source.
+29. an application-level await, callback, resolver, or database command creates
+    a gap between the final ambient/current-transaction check and the
+    open/begin invocation, or exit cleanup leaves a connection or transaction
+    active.
 
 ## 15. Review record
 
@@ -2445,3 +2561,30 @@ Version 0.20 changes only header metadata and this closeout record. The
 substantive authoritative amended contract remains v0.19. This closeout does not
 authorize implementation, migration, code/test work, commit, push, merge,
 deployment, Raw BIO access, or production activation.
+
+### 16.5 Homeowner-ratified connection-lifecycle Amendment D
+
+On 2026-07-27, the Homeowner adopted Amendment D after the pinned Npgsql 8.0.3
+provider proved that the former per-call connection-string mutation/restoration
+design was not safe for the supported previously-opened-now-closed scoped
+connection topology. Amendment D removes that design and ratifies:
+
+- preflight-first ambient, EF-current, provider-transaction, and currently-open
+  connection rejection;
+- a final no-gap ambient/current-transaction check immediately before the
+  open/begin invocation;
+- one fresh explicit Read Committed transaction per repository method;
+- one unchanged scoped DbContext/connection/transaction across B1, policy, B2,
+  and B4 where required;
+- no B4 connection-string assignment or persistence/provider/global
+  configuration mutation;
+- non-cancellable closed/transaction-free cleanup on every exit; and
+- positive support for a scoped connection that was previously opened and is
+  closed at B4 method entry.
+
+This is a stricter no-mutation contract, not a relaxation of the superseded
+restore-after-mutation design. Version 0.21 synchronizes Amendment D into the
+operative transaction, SQL-entry, M3/M5, mutation, and review-attack surfaces.
+Implementation remains stopped. This docs preparation does not authorize
+implementation resume, migration execution, commit, push, merge, PR, deployment,
+Raw BIO access, or production activation.

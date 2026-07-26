@@ -1,22 +1,24 @@
 # TIP-88B4 — Permit-to-Job Consumption Foundation — Implementation Build Brief
 
-**Version:** 0.17
-**Status:** READY FOR CONTROLLED DOCS-ONLY RATIFICATION COMMIT — NOT DISPATCHED
-**Date:** 2026-07-26
+**Version:** 0.18
+**Status:** HOMEOWNER-RATIFIED AMENDMENT D SYNCHRONIZED — IMPLEMENTATION STOPPED
+**Date:** 2026-07-27
 **Repository:** `D:\Task\Remote Signing\TagEkyc`
 **Candidate source baseline:** `bf90d5453f2cf8fb45009ccc2dcdb42c335a4711`
-**Ratified contract:** `tip_88b4_planning_brief.md` v0.20; substantive amended
-contract v0.19, including coordinated Amendments A–C
-**Authority:** preparation and review of this build brief only
+**Ratified contract:** `tip_88b4_planning_brief.md` v0.21, including coordinated
+Amendments A–D
+**Authority:** docs-only Amendment-D synchronization; implementation resume is
+not authorized
 
-This document is not a build dispatch. It does not authorize implementation,
-migration creation or execution, model/snapshot change, test or production-code
-work, commit, push, merge, deployment, Raw BIO access, package creation,
-encryption, delivery, or production activation.
+This docs-only amendment is not an implementation-resume dispatch. It does not
+authorize migration creation or execution, model/snapshot change, test or
+production-code work, commit, push, merge, deployment, Raw BIO access, package
+creation, encryption, delivery, or production activation.
 
 If this brief conflicts with the ratified planning contract, the planning
-contract wins and implementation must STOP for correction. A later Homeowner
-instruction must separately approve a final version of this brief for build.
+contract wins and implementation must STOP for correction. Implementation may
+resume only under a separate Homeowner instruction after Amendment-D docs
+closeout.
 
 ## 1. TIP Analytical Summary / Intent Ledger
 
@@ -95,13 +97,14 @@ trusted backend.
 
 ### Dispatch Readiness
 
-- **Implementation dispatch allowed now:** No.
-- **Preparation/review allowed now:** This document and the TIP index only.
-- **Candidate implementation surfaces:** section 12, effective only after a
-  separate Homeowner build authorization.
-- **Remaining STOP/RRI gates:** controlled docs-only ratification commit, final
-  baseline minting, exact allowlist acceptance, PostgreSQL-16 fixture
-  availability, and explicit Homeowner build dispatch.
+- **Implementation resume allowed now:** No.
+- **Preparation/review allowed now:** Amendment-D synchronization in the planning
+  brief, this build brief, and the TIP index only.
+- **Candidate implementation surfaces:** section 12 remains frozen until a
+  separate Homeowner resume instruction.
+- **Remaining STOP/RRI gates:** controlled docs-only Amendment-D commit, runtime
+  Task-0 re-anchor, exact allowlist revalidation, PostgreSQL-16 fixture
+  availability, and explicit Homeowner implementation-resume authorization.
 
 ## 2. Binding contract and implementation posture
 
@@ -125,11 +128,12 @@ Private C# helper names may vary only where this brief does not pin a public or
 catalog surface. Such variation must not create another application port,
 repository, transaction owner, readiness validator, or SQL entry.
 
-### 2.1 Ratified coordinated Amendments A–C
+### 2.1 Ratified coordinated Amendments A–D
 
-On 2026-07-26, the Homeowner ratified coordinated Amendments A–C. Their
-authoritative, self-contained wording is incorporated without reinterpretation
-in Planning Brief v0.19:
+On 2026-07-26, the Homeowner ratified coordinated Amendments A–C. On 2026-07-27,
+the Homeowner ratified connection-lifecycle Amendment D. Their authoritative,
+self-contained wording is incorporated without reinterpretation in Planning
+Brief v0.21:
 
 - Amendment A: sections 3.2 and 5.1, covering the typed bind `Terminal` outcome
   and safely identified committed-job `GraphInvalid` race closure;
@@ -138,29 +142,41 @@ in Planning Brief v0.19:
   paths; and
 - Amendment C: sections 10.1 and 10.2, covering bounded acquire/renew lease
   configuration, precedence, and result mapping.
+- Amendment D: sections 3.3, 9.1a, M3, M5, and review attacks, removing per-call
+  connection-string mutation while preserving stricter preflight, final no-gap
+  admission, one fresh explicit Read Committed transaction, same-instance
+  ownership, and closed/transaction-free cleanup.
 
 The builder must implement those planning sections directly. This section is a
 ratification/incorporation record, not a second copy, replacement instruction,
 or reinterpretation of the planning contract. Proposal and review history
 remains in section 18 only.
 
-Ratification authorizes synchronization and continued build-brief preparation
-only. It does not authorize implementation, migration, code/test work, commit,
-push, merge, deployment, Raw BIO access, or production activation.
+This synchronization authority is docs-only. It does not authorize
+implementation resume, migration, code/test work, commit, push, merge,
+deployment, Raw BIO access, or production activation.
 
 ## 3. Task 0 — final re-anchor before any authorized build
 
 The current candidate source anchor is
-`bf90d5453f2cf8fb45009ccc2dcdb42c335a4711`. The later dispatch must replace or
-confirm it with the exact commit that contains the ratified docs while proving
-that `src/` and `tests/` remain byte-equivalent to this candidate source anchor.
+`bf90d5453f2cf8fb45009ccc2dcdb42c335a4711`. At dispatch or resume, the builder
+captures the exact runtime HEAD in `$dispatchedHead`; the brief itself never
+embeds or replaces that value. The gate proves that `src/` and `tests/` remain
+byte-equivalent to this candidate source anchor.
 
 Before editing, the builder must:
 
-1. assert the dispatched full HEAD hash;
-2. replace `<DISPATCHED_HEAD>` below with that exact hash and prove its complete
-   commit delta from the candidate source anchor is exactly the three ratification
-   documents:
+1. capture and assert the dispatched full HEAD hash:
+
+   ```powershell
+   $dispatchedHead = git rev-parse HEAD
+   if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($dispatchedHead)) {
+     throw 'TIP88B4_DISPATCH_HEAD_INVALID'
+   }
+   ```
+
+2. use that runtime variable to prove its complete commit delta from the
+   candidate source anchor is exactly the three ratification documents:
 
    ```powershell
    $expectedRatificationPaths = @(
@@ -170,9 +186,9 @@ Before editing, the builder must:
    )
 
    [string[]] $actualRatificationPaths = @(
-     git diff --no-renames --name-only `
-       bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 `
-       <DISPATCHED_HEAD>
+      git diff --no-renames --name-only `
+        bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 `
+        $dispatchedHead
    )
 
    if ($LASTEXITCODE -ne 0) {
@@ -218,9 +234,9 @@ Before editing, the builder must:
      ':(glob)**/*.targets'
    )
 
-   git diff --exit-code `
-     bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 `
-     <DISPATCHED_HEAD> -- $buildGraphPaths
+    git diff --exit-code `
+      bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 `
+      $dispatchedHead -- $buildGraphPaths
 
    git diff --exit-code -- $buildGraphPaths
    git diff --cached --exit-code -- $buildGraphPaths
@@ -234,9 +250,9 @@ Before editing, the builder must:
 4. prove source/test equivalence by running:
 
    ```powershell
-   git diff --exit-code `
-     bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 `
-     <DISPATCHED_HEAD> -- src tests
+    git diff --exit-code `
+      bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 `
+      $dispatchedHead -- src tests
 
    git diff --exit-code -- src tests
    git diff --cached --exit-code -- src tests
@@ -252,7 +268,7 @@ Before editing, the builder must:
    git ls-tree -r --full-tree `
      bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 -- src tests
 
-   git ls-tree -r --full-tree <DISPATCHED_HEAD> -- src tests
+    git ls-tree -r --full-tree $dispatchedHead -- src tests
    ```
 
    Store both outputs in the builder report and require exact equality;
@@ -914,55 +930,54 @@ transaction orchestration.
 For every repository entry:
 
 1. perform all in-memory command preflight;
-2. require `Transaction.Current == null` before acquiring/opening a connection;
-3. reject an injected/already-active connection transaction;
-4. prevent automatic ambient enlistment;
-5. call the explicit
+2. for a preflight-valid command, require `Transaction.Current == null`;
+3. require `db.Database.CurrentTransaction == null`;
+4. reject a connection that is currently open at method entry or has an
+   underlying active provider transaction;
+5. repeat the ambient/current-transaction check immediately before invoking
+   `OpenAsync` or the explicit transaction-begin call;
+6. permit no application-level `await`, callback, resolver invocation, or
+   database command between that final check and the open/begin invocation;
+7. call the explicit
    `BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken)`
    overload;
-6. verify the opened transaction reports Read Committed; and
-7. preserve one connection/transaction through its actor GUC, reads, locks,
+8. verify the opened transaction reports Read Committed; and
+9. preserve one connection/transaction through its actor GUC, reads, locks,
    resolvers, mutation, commit/rollback, and typed result mapping.
 
 Preflight invalidity outranks transaction isolation. A preflight-valid ambient,
 caller-owned, active, or wrong-isolation transaction maps to
-`RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`. The connection string/path used
-by every entry has `Enlist=false`; an ambient transaction is rejected explicitly
-and is not merely ignored by that setting.
+`RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`. The rejection is explicit and
+occurs before B4 lookup, lock, mutation, or transition.
 
-`Enlist=false` has one exact implementation path:
+The exact connection-lifecycle path is:
 
 1. `EfRawExportJobRepository` uses the existing scoped `TagEkycDbContext`
    injected by production DI;
-2. it does not create another DbContext, service scope, connection factory, or
-   `NpgsqlConnection`;
-3. after preflight and ambient/active-transaction rejection, require
-   `db.Database.GetDbConnection()` to be the scoped closed
-   `NpgsqlConnection`, with `db.Database.CurrentTransaction == null`;
-4. capture the exact original `connection.ConnectionString` before normalization;
-5. while that connection is still closed, construct
-   `NpgsqlConnectionStringBuilder(connection.ConnectionString)`, set only
-   `Enlist = false`, and assign the normalized string back to that same
-   connection instance;
-6. do not mutate the application/global connection-string options or service
-   registration;
-7. inside `try`, open the explicit Read Committed transaction through that same
-   DbContext and execute the complete method;
-8. inside `finally`, after commit/rollback and transaction disposal, close the
-   connection opened by B4 using non-cancellable cleanup, require
-   `CurrentTransaction == null` and `ConnectionState.Closed`, then assign the
-   exact captured original string back to the same connection instance; and
-9. verify with ordinal equality that the restored string is byte-identical to
-   entry before surfacing a typed success or failure.
+2. it uses `db.Database.GetDbConnection()` as that scope's sole connection;
+3. it creates no second DbContext, service scope, connection, data source, or
+   connection factory;
+4. it never assigns or normalizes the connection string and never changes
+   configured persistence options, provider transaction-participation settings,
+   service registration, or global pool configuration;
+5. inside `try`, it opens the fresh explicit Read Committed transaction through
+   that same DbContext and executes the complete method; and
+6. inside `finally`, after commit/rollback and transaction disposal, it closes
+   only the connection opened by B4 using non-cancellable cleanup and requires
+   `db.Database.CurrentTransaction == null`, no underlying provider transaction,
+   and `ConnectionState.Closed`.
 
-The `finally` restoration runs after success, typed failure, exception, timeout,
-and cancellation. A cancellation token cannot cancel restoration. If transaction
-disposal, close, or exact restoration cannot be completed, fail closed with
+Cleanup runs after success, typed failure, provider exception, timeout, and
+cancellation. A cancellation token cannot cancel cleanup. If transaction
+disposal or close cannot be completed, fail closed with
 `RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`; never return a typed result while
-leaving a mutated scoped connection. The builder must prove this lifecycle is
-safe on the pinned Npgsql 8.0.3 provider. If it cannot, STOP/RRI for a
-cross-cutting persistence amendment rather than leaking changed enlistment
-behavior through the rest of the scope.
+leaving active scoped transaction/connection state.
+
+The no-assignment rule is strictly stronger than the superseded
+mutate-and-restore design: there is no mutation window and no restoration path
+that can fail. Byte equality of the provider-owned live connection-string
+property is not an invariant because Npgsql 8.0.3 may redact credential material
+after an open.
 
 The production-scoped B1 control-plane repository, authorization policy
 projection, B2 consent repository, and B4 repository must all hold that same
@@ -971,11 +986,11 @@ same `DbConnection`, `IDbContextTransaction`, and underlying
 `NpgsqlTransaction`; none may begin a nested transaction or switch connection.
 An already-open scoped connection or any active EF/provider transaction at
 method entry fails before a B4 command with
-`RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`. A global `Enlist=false` change is
-outside this slice and requires a separately ratified cross-cutting persistence
-amendment plus full repository regression matrix. After every B4 exit, a landed
-repository invoked through the same DbContext/scope must see the exact original
-connection string and original ambient-enlistment posture.
+`RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`. A scoped connection that was
+previously opened and is now closed is supported and is the common production
+entry topology. Tests must perform a landed B1/B2/B3 read before B4 and a landed
+same-scope repository call after B4; a fresh never-opened DbContext is not
+acceptable evidence.
 
 ### 7.1a Six-method transaction matrix
 
@@ -997,6 +1012,13 @@ rejection, zero B4 command before rejection, explicit-overload use, actor-GUC
 lifetime, and commit/rollback. Read has a dedicated test proving the GUC remains
 set through `raw_export_read_job`; renew/failure/terminalize each prove a fresh
 transaction after acquisition has committed.
+
+For each row, the final ambient/current-transaction check is immediately adjacent
+to the open/begin invocation. No application-level await, callback, resolver, or
+database command may intervene. The six-method matrix covers success, typed
+failure, provider exception, and cancellation for every method: exactly 24
+method/exit cells, with no omitted or not-applicable cell. Every exit must leave
+the scoped connection closed and both EF/provider transaction state absent.
 
 ### 7.2 Bind
 
@@ -1141,13 +1163,20 @@ proof level, but no gate may be folded into a broad green test.
 The amendment tests are also permanent and their exact names are:
 
 ```text
-B4_repository_uses_same_dbcontext_connection_and_transaction_for_B1_B2
-B4_enlist_false_is_scoped_and_does_not_change_global_persistence_options
-B4_does_not_create_second_dbcontext_or_connection
-B4_restores_scoped_connection_string_after_success
-B4_restores_scoped_connection_string_after_exception
-B4_restores_scoped_connection_string_after_cancellation
-B4_same_scope_landed_repository_retains_original_enlistment_posture
+B4_does_not_assign_or_normalize_connection_string
+B4_does_not_reference_enlist_or_npgsql_connection_string_builder
+B4_uses_same_scoped_dbcontext_connection_and_transaction_for_B1_B2
+B4_does_not_create_second_dbcontext_connection_or_datasource
+B4_all_six_methods_preflight_precedes_transaction_admission
+B4_all_six_methods_reject_ambient_transaction_before_database
+B4_all_six_methods_reject_existing_ef_transaction_before_database
+B4_all_six_methods_reject_existing_provider_transaction_before_database
+B4_all_six_methods_reject_open_connection_before_database
+B4_all_six_methods_own_fresh_read_committed_transactions
+B4_all_six_methods_final_admission_is_adjacent_to_each_open_or_begin
+B4_same_scope_landed_repository_can_reopen_after_B4
+B4_connection_is_closed_and_transaction_free_after_every_exit
+B4_global_persistence_options_remain_unchanged
 
 M3_committed_graph_invalid_claimed_terminalizes_and_returns_terminal
 M3_committed_graph_invalid_active_lease_uses_head_first_terminalization
@@ -1155,35 +1184,58 @@ M3_committed_graph_invalid_deadline_crossing_returns_expired
 M3_committed_graph_invalid_already_terminal_returns_exact_result
 M3_committed_graph_invalid_stale_tuple_rolls_back_without_mutation
 
-M3_all_six_repository_methods_own_fresh_read_committed_transactions
-M3_all_six_repository_methods_reject_ambient_and_active_transactions
-
 M7_direct_acquire_invalid_lease_bound_precedes_job_lookup
 M7_direct_renew_invalid_lease_bound_precedes_job_lookup
 M7_invalid_actor_precedes_invalid_lease_bound
 ```
 
-The two “all six” methods are data-driven with one named case per repository
-method; the report must show all six cases, and a mutation to any one method must
-red its own case. They are not allowed to assert only a shared helper or one
-representative entry.
+The `enlist` token in the source-prohibition test identifier names the
+superseded mechanism whose reintroduction it forbids; it is not an active
+configuration requirement. That source test scans only:
+
+```text
+src/TagEkyc.Infrastructure/Persistence/EfRawExportJobRepository.cs
+src/TagEkyc.Infrastructure/Persistence/Migrations/20260726145547_Tip88B4RawExportJobFoundation.cs
+src/TagEkyc.Infrastructure/Persistence/Migrations/20260726145547_Tip88B4RawExportJobFoundation.Designer.cs
+```
+
+It must not scan the whole repository because landed slices legitimately contain
+provider connection-string types and configuration.
+
+The seven all-six admission/ownership/adjacency methods are data-driven with one
+named case per repository method; the report must show all six cases, and a
+mutation to any one method must red its own case. They are not allowed to assert
+only a shared helper or one representative entry. The adjacency method reports
+the `OpenAsync` and `BeginTransactionAsync` invocation kinds separately: if a
+method invokes both, both cells must prove an immediately preceding final check;
+if a kind is absent, its named cell proves absence rather than being omitted.
+
+The cleanup and same-scope-reopen methods each execute the complete 24-cell
+matrix: six repository methods multiplied by success, typed failure, provider
+exception, and cancellation. There are no omitted or “not applicable” cells.
+Every cell proves transaction disposal, EF/provider transaction absence,
+`ConnectionState.Closed`, and landed same-scope reuse.
 
 Exact discriminating mutation map:
 
 | Scratch mutation | Test that must go RED |
 | --- | --- |
-| replace the scoped DbContext/connection on the B4 path | `B4_repository_uses_same_dbcontext_connection_and_transaction_for_B1_B2` and `B4_does_not_create_second_dbcontext_or_connection` |
-| move `Enlist=false` into global persistence options | `B4_enlist_false_is_scoped_and_does_not_change_global_persistence_options` |
-| remove exact connection-string restoration from `finally` | `B4_restores_scoped_connection_string_after_success`, `B4_restores_scoped_connection_string_after_exception`, `B4_restores_scoped_connection_string_after_cancellation`, and `B4_same_scope_landed_repository_retains_original_enlistment_posture` |
-| let cancellation skip close/restoration | `B4_restores_scoped_connection_string_after_cancellation` |
-| restore only in a later DI scope | `B4_same_scope_landed_repository_retains_original_enlistment_posture` |
+| move in-memory preflight after any transaction-admission check in one method | that method's case in `B4_all_six_methods_preflight_precedes_transaction_admission` |
+| remove ambient rejection from any one method | that method's case in `B4_all_six_methods_reject_ambient_transaction_before_database` |
+| remove current EF transaction rejection from any one method | that method's case in `B4_all_six_methods_reject_existing_ef_transaction_before_database` |
+| remove provider-transaction rejection from any one method | that method's case in `B4_all_six_methods_reject_existing_provider_transaction_before_database` |
+| accept a connection that is currently open at entry | that method's case in `B4_all_six_methods_reject_open_connection_before_database` |
+| add a connection-string assignment or provider-specific builder to a B4 implementation file | `B4_does_not_assign_or_normalize_connection_string` and `B4_does_not_reference_enlist_or_npgsql_connection_string_builder` (the latter identifier names the superseded mechanism) |
+| replace the scoped DbContext/connection or create a second context, connection, data source, factory, or scope | `B4_uses_same_scoped_dbcontext_connection_and_transaction_for_B1_B2` and `B4_does_not_create_second_dbcontext_connection_or_datasource` |
+| omit transaction disposal or connection close on success, typed failure, provider exception, or cancellation in one method | that method/exit cell in `B4_connection_is_closed_and_transaction_free_after_every_exit` and `B4_same_scope_landed_repository_can_reopen_after_B4` |
+| mutate configured persistence/provider/global options | `B4_global_persistence_options_remain_unchanged` |
 | delete committed-graph-invalid terminalization from `Claimed` | `M3_committed_graph_invalid_claimed_terminalizes_and_returns_terminal` |
 | pre-call attempt-lock before graph-invalid terminalization | `M3_committed_graph_invalid_active_lease_uses_head_first_terminalization` |
 | remove higher-precedence deadline handling | `M3_committed_graph_invalid_deadline_crossing_returns_expired` |
 | skip the actor-scoped reread for `AlreadyTerminal` | `M3_committed_graph_invalid_already_terminal_returns_exact_result` |
 | weaken revision/fence/attempt/owner CAS on graph-invalid terminalization | `M3_committed_graph_invalid_stale_tuple_rolls_back_without_mutation` |
-| remove explicit fresh Read Committed ownership from any one method | that method's case in `M3_all_six_repository_methods_own_fresh_read_committed_transactions` |
-| remove ambient or active-transaction rejection from any one method | that method's case in `M3_all_six_repository_methods_reject_ambient_and_active_transactions` |
+| remove explicit fresh Read Committed ownership from any one method | that method's case in `B4_all_six_methods_own_fresh_read_committed_transactions` |
+| insert an application-level await/callback/resolver/database command between the final admission check and `OpenAsync` or `BeginTransactionAsync` | the affected method/invocation case in `B4_all_six_methods_final_admission_is_adjacent_to_each_open_or_begin` |
 | move acquire bounds after job lookup | `M7_direct_acquire_invalid_lease_bound_precedes_job_lookup` |
 | move renew bounds after job lookup | `M7_direct_renew_invalid_lease_bound_precedes_job_lookup` |
 | move bounds before actor validation in either lease function | `M7_invalid_actor_precedes_invalid_lease_bound` |
@@ -1235,23 +1287,27 @@ Required mutation families are all those in M1–M12, including identifier
 round-trip, idempotency function/table guards, constraint mode, every row-local
 CHECK, cross-job FKs, fresh AttemptId/fence/revision/head equality, actor context,
 all independent B1/B2/session locks, physical-time placement, explicit isolation,
-ambient/active early gates, ACL/default-ACL/alternate-grantor/column grants,
-append-only/head guards, terminal/expiry precedence, and readiness branches.
+ambient/EF/provider/open-connection early gates, final-check adjacency,
+ACL/default-ACL/alternate-grantor/column grants, append-only/head guards,
+terminal/expiry precedence, and readiness branches.
 They also include duplicate class ordinal, exact non-unique index names/tuples,
 public declaration reflection, all six transaction-owner paths, invalid lease
 state/direct-function bounds, committed-GraphInvalid bind terminal/race mapping,
-terminal lease-result `AttemptId` nullness, same-scope connection-string
-restoration on every exit path, landed same-scope enlistment preservation, root
-build-graph/dispatch-commit scope, and the scratch ninth runtime-granted B4
+terminal lease-result `AttemptId` nullness, source prohibition of connection-
+string assignment/provider-specific builders, same-scope reopen after every exit
+path, closed/transaction-free cleanup, unchanged global persistence options,
+root build-graph/dispatch-commit scope, and the scratch ninth runtime-granted B4
 entry.
 
 A required mutation that stays green is a STOP. Do not weaken the test or mutate
 an unrelated earlier guard to manufacture red.
 
-## 12. Candidate permanent allowlist
+## 12. Frozen implementation allowlist
 
-This allowlist is proposed for later Homeowner build authorization; it is not
-active now.
+This allowlist was activated by the separate controlled implementation dispatch.
+It remains frozen while implementation is stopped: docs-only Amendment-D
+preparation does not authorize adding, removing, or editing an implementation
+surface, and does not authorize implementation resume.
 
 Production:
 
@@ -1396,7 +1452,9 @@ The later builder must report:
 3. domain/application port surface;
 4. five-table schema, constraints, indexes, triggers, and identifier lengths;
 5. eight entry functions plus internal manifest/dependencies/ACLs;
-6. transaction ownership, lock order, and stable precedence mapping;
+6. transaction ownership, final admission-check adjacency, unchanged connection
+   configuration, same-scope reopen/cleanup, lock order, and stable precedence
+   mapping;
 7. M1–M13 to exact test names/results;
 8. every observed-red mutation and post-restore green result;
 9. apply/rollback/reapply and pre/post catalog/ACL equivalence;
@@ -1513,8 +1571,9 @@ The external review returned **APPROVE WITH CORRECTIONS** with 1 HIGH,
 policy projection, B2, and authorization repositories share the scoped
 `TagEkycDbContext`, so v0.8:
 
-- pins instance-local `Enlist=false` normalization on that same closed scoped
-  connection, forbidding a second context/connection and global-option change;
+- **Historical, superseded by Amendment D:** pins instance-local `Enlist=false`
+  normalization on that same closed scoped connection, forbidding a second
+  context/connection and global-option change;
 - extends Amendment B to planning section 3.3;
 - proves Task-0 source/test equivalence across commits plus staged, unstaged, and
   untracked surfaces with complete tree manifests;
@@ -1547,8 +1606,9 @@ The v0.9 review returned **AMENDMENTS A–C: PASS** and
 **BUILD BRIEF: APPROVE WITH CORRECTIONS**, with 1 HIGH, 1 MEDIUM, and 1 LOW.
 Version 0.10:
 
-- restores the exact scoped connection string in non-cancellable `finally`
-  cleanup on every exit and proves landed same-scope enlistment is unchanged;
+- **Historical, superseded by Amendment D:** restores the exact scoped connection
+  string in non-cancellable `finally` cleanup on every exit and proves landed
+  same-scope enlistment is unchanged;
 - pins the complete dispatch commit to the exact three docs-only ratification
   paths and protects the root solution/build/package graph as well as
   `src/tests`; and
@@ -1561,9 +1621,10 @@ ratification readiness until the three corrections pass an independent check.
 
 ### v0.10 correction verification — Task-0 gate fixed in v0.11
 
-The independent correction review accepted connection restoration, root
-build-graph protection, and six-method summary wording, but reproduced one
-MEDIUM false-pass in the exact docs-only commit gate. Empty/failed Git output
+At that historical stage, the independent correction review accepted connection
+restoration (superseded by Amendment D), root build-graph protection, and
+six-method summary wording, but reproduced one MEDIUM false-pass in the exact
+docs-only commit gate. Empty/failed Git output
 could make `Compare-Object` emit only a non-terminating error and leave a
 zero-count delta; rename detection was also implicit.
 
@@ -1666,4 +1727,30 @@ Version 0.17 changes only header metadata, remaining-gate status, and this
 closeout record. It is ready only for a controlled docs-only ratification commit
 of the exact approved documentation paths. It remains **NOT DISPATCHED** and
 does not authorize implementation, migration, code/test work, push, merge,
+deployment, Raw BIO access, or production activation.
+
+### Homeowner-ratified Amendment D — v0.18 synchronization
+
+On 2026-07-27, the Homeowner adopted connection-lifecycle Amendment D after the
+pinned Npgsql 8.0.3 provider reproduced credential redaction on the supported
+previously-opened-now-closed scoped connection topology. Version 0.18:
+
+- removes every active per-call connection-string mutation, normalization, and
+  byte-restoration requirement;
+- makes no assignment/configuration mutation a strictly stronger invariant;
+- pins preflight-first ambient, EF-current, provider-transaction, and
+  currently-open connection rejection;
+- pins the final no-gap admission check immediately before open/begin;
+- retains one fresh explicit Read Committed transaction and one unchanged
+  scoped DbContext/connection/transaction per method;
+- requires same-scope landed-read → B4 → landed-reopen evidence and
+  closed/transaction-free cleanup across success, typed failure, provider
+  exception, and cancellation;
+- replaces the permanent test and mutation manifests accordingly; and
+- changes Task-0 to capture `$dispatchedHead` at runtime without embedding a
+  dispatched hash in either brief.
+
+Historical v0.8/v0.10 descriptions of the former design remain only where marked
+superseded. Implementation remains stopped. This synchronization does not
+authorize implementation resume, migration execution, commit, push, merge, PR,
 deployment, Raw BIO access, or production activation.

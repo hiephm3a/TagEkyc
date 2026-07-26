@@ -1,13 +1,30 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 1.61
+**Version:** 1.62
 **Status:** Active
-**Date:** 2026-07-26
+**Date:** 2026-07-27
 **Baseline:** Product Brief v0.1.2
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v1.62 - TIP-88B4 connection-lifecycle Amendment D synchronized
+
+- Recorded the Homeowner-ratified Option-D correction in
+  [`TIP-88B4 Planning Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  v0.21 and
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  v0.18. B4 no longer mutates or normalizes a scoped connection string per call.
+  It retains preflight-first ambient/EF/provider/open-connection rejection, a
+  final no-gap admission check, one fresh explicit Read Committed transaction,
+  one unchanged scoped DbContext/connection/transaction, and
+  closed/transaction-free cleanup. A previously-opened-now-closed scoped
+  connection is explicitly supported. Named all-six preflight and adjacency
+  gates plus a complete six-method × four-exit cleanup/reopen matrix prevent
+  subset evidence from satisfying the amendment. Implementation remains stopped;
+  this docs-only synchronization authorizes no implementation resume, commit,
+  push, merge, PR, deployment, Raw BIO access, or production activation.
 
 ### v1.61 - TIP-88B4 synchronization verified
 
@@ -124,8 +141,9 @@
   to v0.8 at status
   **DRAFT — EXTERNAL CORRECTIONS PATCHED, VERIFICATION REQUIRED — NOT
   DISPATCHED** after an external review returned 1 HIGH / 4 MEDIUM / 1 LOW.
-  The patch pins same-scoped-DbContext `Enlist=false` handling, extends Amendment
-  B to planning section 3.3, hardens Task 0 against commit/staged/untracked drift,
+  **Historical, superseded by TIP-88B4 Amendment D:** the patch pinned
+  same-scoped-DbContext `Enlist=false` handling, extended Amendment B to planning
+  section 3.3, hardened Task 0 against commit/staged/untracked drift,
   removes governance files from the implementation allowlist, names every
   amendment test/mutation, and corrects the worker-capability non-claim. No
   implementation or release authority is created.
