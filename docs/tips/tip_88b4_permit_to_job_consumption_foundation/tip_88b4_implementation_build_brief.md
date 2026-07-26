@@ -1,0 +1,1669 @@
+# TIP-88B4 — Permit-to-Job Consumption Foundation — Implementation Build Brief
+
+**Version:** 0.17
+**Status:** READY FOR CONTROLLED DOCS-ONLY RATIFICATION COMMIT — NOT DISPATCHED
+**Date:** 2026-07-26
+**Repository:** `D:\Task\Remote Signing\TagEkyc`
+**Candidate source baseline:** `bf90d5453f2cf8fb45009ccc2dcdb42c335a4711`
+**Ratified contract:** `tip_88b4_planning_brief.md` v0.20; substantive amended
+contract v0.19, including coordinated Amendments A–C
+**Authority:** preparation and review of this build brief only
+
+This document is not a build dispatch. It does not authorize implementation,
+migration creation or execution, model/snapshot change, test or production-code
+work, commit, push, merge, deployment, Raw BIO access, package creation,
+encryption, delivery, or production activation.
+
+If this brief conflicts with the ratified planning contract, the planning
+contract wins and implementation must STOP for correction. A later Homeowner
+instruction must separately approve a final version of this brief for build.
+
+## 1. TIP Analytical Summary / Intent Ledger
+
+### Intent
+
+Implement the metadata-only bridge from one immutable B3 authorization permit to
+one logical export job. The slice must prove atomic permit binding, immutable
+identity freeze, idempotent replay, append-only attempt/transition evidence,
+mutable fenced CAS head semantics, current-authority revalidation, crash/reclaim
+behavior, and exact runtime/database privilege boundaries without reading or
+storing raw material.
+
+### Expected Outcome
+
+After a separately authorized build:
+
+- one B3 permit has at most one B4 job identity;
+- a committed equal-fingerprint retry returns that same job;
+- a conflicting retry reveals no job identity;
+- every head mutation has exactly one same-transaction transition;
+- every acquisition/reclaim creates a fresh attempt and monotonically increasing
+  fence;
+- stale workers cannot renew, release, terminalize, or append authoritative
+  evidence;
+- every `IRawExportJobRepository` method owns one fresh explicit Read Committed
+  transaction and observes the committed state required by its command;
+- runtime reaches B4 only through the eight ratified `SECURITY DEFINER`
+  functions and has no table or column privilege;
+- the five B4 tables contain metadata only; and
+- no raw source, package, crypto, delivery, receipt, HTTP, consumer,
+  hosted/background worker, fixture-worker production registration,
+  raw-processing worker, queue consumer, or non-database execution capability
+  exists.
+
+### Accepted Decisions
+
+| Decision | Why accepted | Scope impact | Non-claims |
+| --- | --- | --- | --- |
+| Permit and job remain separate aggregates | B3 permit is immutable authorization evidence | B4 inserts a separate identity with `UNIQUE(PermitId)` | No consumed flag or permit update |
+| Immutable identity + append-only evidence + mutable CAS head | Separates audit truth from operational coordination | Five exact tables | Does not make DB state an external exactly-once guarantee |
+| Every `IRawExportJobRepository` method owns one fresh explicit Read Committed transaction | Post-wait authority, winner visibility, and transaction-local actor context require method-scoped admission | Repository enforces all six methods; claim and attempt-lock retain the two direct-runtime SQL guards | Physical time alone is not visibility |
+| Runtime function boundary | Preserves E3 no-direct-table posture | Eight runtime entries, internal guards, exact ACLs | Not authentication against a compromised backend |
+| B4 enters only `Claimed`, `Assembling`, and terminal states | Later phases belong to C1–C3 | Future state names may exist in CHECK only | No assembly, protection, or delivery |
+| Retry is mode-aware | No-retain and unapproved retained-vault modes cannot claim safe replay | Fixture-positive retry uses `EncryptedExportPacket` | No raw-byte retry authorization |
+
+### Rejected / Deferred Branches
+
+| Branch / option | Disposition | Why | Follow-up debt/gate |
+| --- | --- | --- | --- |
+| Update B3 permit to Consumed | Rejected | Violates immutable permit evidence | None |
+| Generic transition function | Rejected | Would let B4 enter later-slice states | C1–C3 add phase-specific functions |
+| Raw resolver or vault | Deferred | B4 is metadata-only | TIP-88C1 |
+| Package, manifest, signing, encryption | Deferred | Requires secure source and package contract | TIP-88C1/C2 |
+| HTTP status/download API | Deferred | Delivery sees only protected sealed packages | TIP-88C3 |
+| SignFlow transaction/session fields | Rejected from core | SignFlow is a separate consumer | Consumer integration slice |
+| Shared-hospital tenant model | Deferred and out of scope | Current topology is single tenant per deployment | Separate governance/design decision |
+| Exactly-once network delivery | Rejected claim | Indeterminate network outcomes remain possible | C3 owns `DeliveryOutcomeUnknown` |
+
+### Debt / Gap Impact
+
+| Debt/gap | Action | Result | Carry-forward gate |
+| --- | --- | --- | --- |
+| `DEBT-E3-A` compromised-backend actor context | Preserve landed boundary | No widening or false authentication claim | Future actor-authentication architecture |
+| Raw source absent | No action in B4 | Job remains metadata-only | C1 cannot enable resolver without sealed assembly |
+| Recipient key/custody absent | No action in B4 | Frozen recipient only | C2 trusted key lifecycle |
+| Delivery receipt/reconciliation absent | No action in B4 | No Delivered claim | C3/C4 |
+| Retained-vault retry pair unratified | Fail closed | No retry for that mode | Separate mode × controller decision |
+
+### Non-Claims
+
+This TIP does not prove or provide Raw BIO availability, raw-byte access,
+artifact resolution, package completeness, encryption, signature, recipient key
+trust, delivery, receipt, exactly-once external work, production activation,
+legal sufficiency, multi-tenant isolation, or resistance to a fully compromised
+trusted backend.
+
+### Dispatch Readiness
+
+- **Implementation dispatch allowed now:** No.
+- **Preparation/review allowed now:** This document and the TIP index only.
+- **Candidate implementation surfaces:** section 12, effective only after a
+  separate Homeowner build authorization.
+- **Remaining STOP/RRI gates:** controlled docs-only ratification commit, final
+  baseline minting, exact allowlist acceptance, PostgreSQL-16 fixture
+  availability, and explicit Homeowner build dispatch.
+
+## 2. Binding contract and implementation posture
+
+The builder must read the complete ratified planning brief before editing. The
+following sections are incorporated without reinterpretation:
+
+- sections 2–3: B3/E3 grounding, application port, commands, and return surfaces;
+- section 4: five-table schema and constraints;
+- sections 5–8: bind, fingerprint, lease, fencing, revalidation, state ownership;
+- section 9: exact SQL entry manifest, dependency/token map, ACLs, guards, and
+  readiness;
+- section 10: stable outcomes and precedence;
+- section 12: M1–M13 gates; and
+- sections 11/13/14: redlines, build shape, and review attacks.
+
+No builder choice may weaken or rename a ratified database identifier, function
+signature, result column, SQL outcome, stable application code, state/event/code
+token, ACL tuple, guard context, constraint, or named test.
+
+Private C# helper names may vary only where this brief does not pin a public or
+catalog surface. Such variation must not create another application port,
+repository, transaction owner, readiness validator, or SQL entry.
+
+### 2.1 Ratified coordinated Amendments A–C
+
+On 2026-07-26, the Homeowner ratified coordinated Amendments A–C. Their
+authoritative, self-contained wording is incorporated without reinterpretation
+in Planning Brief v0.19:
+
+- Amendment A: sections 3.2 and 5.1, covering the typed bind `Terminal` outcome
+  and safely identified committed-job `GraphInvalid` race closure;
+- Amendment B: sections 3.3 and 9.1a, covering fresh explicit Read Committed
+  ownership for all six repository methods and their exact SQL-entry admission
+  paths; and
+- Amendment C: sections 10.1 and 10.2, covering bounded acquire/renew lease
+  configuration, precedence, and result mapping.
+
+The builder must implement those planning sections directly. This section is a
+ratification/incorporation record, not a second copy, replacement instruction,
+or reinterpretation of the planning contract. Proposal and review history
+remains in section 18 only.
+
+Ratification authorizes synchronization and continued build-brief preparation
+only. It does not authorize implementation, migration, code/test work, commit,
+push, merge, deployment, Raw BIO access, or production activation.
+
+## 3. Task 0 — final re-anchor before any authorized build
+
+The current candidate source anchor is
+`bf90d5453f2cf8fb45009ccc2dcdb42c335a4711`. The later dispatch must replace or
+confirm it with the exact commit that contains the ratified docs while proving
+that `src/` and `tests/` remain byte-equivalent to this candidate source anchor.
+
+Before editing, the builder must:
+
+1. assert the dispatched full HEAD hash;
+2. replace `<DISPATCHED_HEAD>` below with that exact hash and prove its complete
+   commit delta from the candidate source anchor is exactly the three ratification
+   documents:
+
+   ```powershell
+   $expectedRatificationPaths = @(
+     'docs/tips/README.md'
+     'docs/tips/tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md'
+     'docs/tips/tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md'
+   )
+
+   [string[]] $actualRatificationPaths = @(
+     git diff --no-renames --name-only `
+       bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 `
+       <DISPATCHED_HEAD>
+   )
+
+   if ($LASTEXITCODE -ne 0) {
+     throw 'TIP88B4_DISPATCH_COMMIT_DIFF_FAILED'
+   }
+
+   [string[]] $expectedSorted = @(
+     $expectedRatificationPaths | Sort-Object
+   )
+   [string[]] $actualSorted = @(
+     $actualRatificationPaths | Sort-Object
+   )
+
+   if ($actualSorted.Count -ne $expectedSorted.Count) {
+     throw 'TIP88B4_DISPATCH_COMMIT_SCOPE_INVALID'
+   }
+
+   for ($index = 0; $index -lt $expectedSorted.Count; $index++) {
+     if (-not [string]::Equals(
+       $expectedSorted[$index],
+       $actualSorted[$index],
+       [System.StringComparison]::Ordinal)) {
+       throw 'TIP88B4_DISPATCH_COMMIT_SCOPE_INVALID'
+     }
+   }
+   ```
+
+   Any committed path outside this exact docs-only list, or any missing listed
+   path, rename, invalid revision, or failed Git command is a STOP. Do not accept
+   a mixed governance/source/build-graph commit;
+3. prove the root build graph is byte-equivalent across commits and clean in
+   staged, unstaged, and untracked state:
+
+   ```powershell
+   $buildGraphPaths = @(
+     'TagEkyc.sln'
+     'global.json'
+     'Directory.Build.props'
+     'Directory.Build.targets'
+     'Directory.Packages.props'
+     'NuGet.config'
+     ':(glob)**/*.props'
+     ':(glob)**/*.targets'
+   )
+
+   git diff --exit-code `
+     bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 `
+     <DISPATCHED_HEAD> -- $buildGraphPaths
+
+   git diff --exit-code -- $buildGraphPaths
+   git diff --cached --exit-code -- $buildGraphPaths
+   git status --porcelain=v1 --untracked-files=all -- $buildGraphPaths
+   ```
+
+   All diff commands must exit zero and status must emit no output. At the
+   candidate anchor only `TagEkyc.sln` exists among the six named root files;
+   creation of a currently absent named file or any `.props`/`.targets` file is
+   drift and stops dispatch;
+4. prove source/test equivalence by running:
+
+   ```powershell
+   git diff --exit-code `
+     bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 `
+     <DISPATCHED_HEAD> -- src tests
+
+   git diff --exit-code -- src tests
+   git diff --cached --exit-code -- src tests
+   git status --porcelain=v1 --untracked-files=all -- src tests
+   ```
+
+   All three diff commands must exit zero and the status command must emit no
+   output. This proves commit-to-commit, unstaged, staged, and untracked
+   source/test equivalence rather than only comparing the working tree to HEAD;
+5. record the complete source/test blob/path manifests:
+
+   ```powershell
+   git ls-tree -r --full-tree `
+     bf90d5453f2cf8fb45009ccc2dcdb42c335a4711 -- src tests
+
+   git ls-tree -r --full-tree <DISPATCHED_HEAD> -- src tests
+   ```
+
+   Store both outputs in the builder report and require exact equality;
+6. record `git status --short` and classify all unrelated dirty files;
+7. record SHA-256 for:
+   - `TagEkycDbContextModelSnapshot.cs`;
+   - all B3 migrations;
+   - the E3 migration;
+   - `EfRawExportAuthorizationRepository.cs`;
+   - `EfRawExportAuthorizationProjectionReader.cs`;
+   - `RawExportAuthorizationReadinessValidator.cs`;
+8. run `dotnet ef migrations has-pending-model-changes` for
+   `TagEkycDbContext`; it must report no changes;
+9. apply the current full migration chain to a fresh PostgreSQL 16 database;
+10. prove E3 readiness is healthy before B4;
+11. record the complete pre-B4 table/function/trigger/constraint/ACL/role catalog
+   snapshot required by M12; and
+12. verify `160000 <= server_version_num < 170000`.
+
+STOP on commit-scope mismatch, root-build-graph drift, source/test mismatch or
+dirt, pending-model drift, unapplicable migrations, non-PostgreSQL-16 fixture,
+unhealthy E3 readiness, or a catalog state that cannot be captured/restored
+exactly. Do not rebase, revert, regenerate landed migrations, or bless drift.
+
+## 4. Exact C# surface
+
+### 4.1 Domain
+
+Create one file:
+
+`src/TagEkyc.Domain/RawExportJob.cs`
+
+It contains only B4 records, closed enums, commands/results, and
+`RawExportJobException`. It reuses `AuthenticatedRawExportActor`,
+`RawExportRawClass`, and `RawExportMode`; it does not duplicate them.
+
+The public repository-only declarations are exact. The later builder must add
+the following declaration manifest to `RawExportJob.cs`; changing a type name,
+member name/order/type/nullability, enum value, or constructor surface is a
+STOP/RRI rather than a private implementation choice:
+
+```csharp
+public enum RawExportJobState
+{
+    Claimed = 0,
+    Assembling = 1,
+    AssemblySealed = 2,
+    Protecting = 3,
+    PackageSealed = 4,
+    ReadyForDelivery = 5,
+    DeliveryInProgress = 6,
+    DeliveryOutcomeUnknown = 7,
+    Delivered = 8,
+    ReconciliationExpired = 9,
+    TerminalFailed = 10,
+    Cancelled = 11,
+    Expired = 12,
+}
+
+public enum RawExportJobAttemptPhase
+{
+    Assembling = 0,
+}
+
+public enum RawExportJobEventType
+{
+    JobBound = 0,
+    LeaseAcquired = 1,
+    LeaseRenewed = 2,
+    AttemptFailedRetryable = 3,
+    LeaseAcquiredAfterRetryableFailure = 4,
+    LeaseReclaimed = 5,
+    JobTerminalFailed = 6,
+    JobCancelled = 7,
+    JobExpired = 8,
+}
+
+public enum RawExportJobAttemptFailureCode
+{
+    ATTEMPT_EXECUTION_FAILED_RETRYABLE = 0,
+}
+
+public enum RawExportJobTerminalReasonCode
+{
+    AUTHORITY_REVALIDATION_FAILED = 0,
+    ATTEMPT_EXECUTION_FAILED_NON_RETRYABLE = 1,
+    JOB_GRAPH_INVARIANT_FAILURE = 2,
+    MODE_RETRY_NOT_AUTHORIZED = 3,
+    PERMIT_OR_JOB_EXPIRED = 4,
+    REQUEST_CANCELLED = 5,
+}
+
+public enum RawExportJobBindStatus
+{
+    NewJob = 0,
+    ExistingMatch = 1,
+    Terminal = 2,
+}
+
+public enum RawExportJobReadStatus
+{
+    Found = 0,
+    NotFound = 1,
+}
+
+public enum RawExportJobLeaseStatus
+{
+    Acquired = 0,
+    AcquiredAfterRetryableFailure = 1,
+    Reclaimed = 2,
+    NotFound = 3,
+    AlreadyTerminal = 4,
+    TerminalFailed = 5,
+    Expired = 6,
+}
+
+public enum RawExportJobRenewStatus
+{
+    Renewed = 0,
+}
+
+public enum RawExportJobAttemptFailureStatus
+{
+    Recorded = 0,
+    TerminalFailed = 1,
+}
+
+public enum RawExportJobTerminalizeStatus
+{
+    Terminalized = 0,
+    AlreadyTerminal = 1,
+    Expired = 2,
+}
+
+public sealed record BindRawExportJobCommand(
+    AuthenticatedRawExportActor Actor,
+    Guid PermitId,
+    string IdempotencyKey);
+
+public sealed record ReadRawExportJobCommand(
+    AuthenticatedRawExportActor Actor,
+    Guid JobId);
+
+public sealed record AcquireOrReclaimRawExportJobLeaseCommand(
+    AuthenticatedRawExportActor Actor,
+    Guid JobId,
+    long ExpectedRevision,
+    long ExpectedFencingToken,
+    Guid LeaseOwnerId);
+
+public sealed record RenewRawExportJobLeaseCommand(
+    AuthenticatedRawExportActor Actor,
+    Guid JobId,
+    long ExpectedRevision,
+    long ExpectedFencingToken,
+    Guid AttemptId,
+    Guid LeaseOwnerId);
+
+public sealed record RecordRawExportJobAttemptFailureCommand(
+    AuthenticatedRawExportActor Actor,
+    Guid JobId,
+    long ExpectedRevision,
+    long ExpectedFencingToken,
+    Guid AttemptId,
+    Guid LeaseOwnerId,
+    RawExportJobAttemptFailureCode FailureCode);
+
+public sealed record TerminalizeRawExportJobCommand(
+    AuthenticatedRawExportActor Actor,
+    Guid JobId,
+    long ExpectedRevision,
+    long ExpectedFencingToken,
+    Guid? AttemptId,
+    Guid? LeaseOwnerId,
+    RawExportJobState TerminalState,
+    RawExportJobTerminalReasonCode ReasonCode);
+
+public sealed record RawExportJobIdentityView(
+    Guid JobId,
+    Guid PermitId,
+    Guid AuthorizationDecisionId,
+    Guid PrincipalId,
+    Guid ClientApplicationId,
+    Guid CreatedByApiKeyId,
+    Guid VerificationSessionId,
+    string SubjectRef,
+    Guid PolicyId,
+    int PolicyVersion,
+    string PurposeCode,
+    Guid RecipientClientApplicationId,
+    RawExportMode ExportMode,
+    DateTimeOffset PermitExpiresAt,
+    DateTimeOffset JobExpiresAt,
+    int SchemaVersion,
+    DateTimeOffset CreatedAt);
+
+public sealed record RawExportJobClassView(
+    int Ordinal,
+    RawExportRawClass RawClass);
+
+public sealed record RawExportJobOperationalHeadView(
+    RawExportJobState CurrentState,
+    long Revision,
+    Guid? CurrentAttemptId,
+    Guid? LeaseOwnerId,
+    DateTimeOffset? LeaseExpiresAt,
+    long FencingToken);
+
+public sealed record RawExportJobTransitionSummary(
+    RawExportJobEventType LatestEventType,
+    string? LatestFailureCode,
+    DateTimeOffset LatestOccurredAt);
+
+public sealed record RawExportJobView(
+    RawExportJobIdentityView Identity,
+    IReadOnlyList<RawExportJobClassView> Classes,
+    RawExportJobOperationalHeadView Head,
+    RawExportJobTransitionSummary LatestTransition);
+
+public sealed record RawExportJobBindResult(
+    RawExportJobBindStatus Status,
+    Guid JobId,
+    RawExportJobTerminalizeResult? TerminalResult);
+
+public sealed record RawExportJobReadResult(
+    RawExportJobReadStatus Status,
+    RawExportJobView? Job);
+
+public sealed record RawExportJobLeaseResult(
+    RawExportJobLeaseStatus Status,
+    Guid? AttemptId,
+    RawExportJobState? State,
+    long? Revision,
+    long? FencingToken,
+    DateTimeOffset? LeaseExpiresAt,
+    RawExportJobTerminalReasonCode? TerminalReason,
+    string? StableCode);
+
+public sealed record RawExportJobRenewResult(
+    RawExportJobRenewStatus Status,
+    long Revision,
+    long FencingToken,
+    DateTimeOffset LeaseExpiresAt);
+
+public sealed record RawExportJobAttemptFailureResult(
+    RawExportJobAttemptFailureStatus Status,
+    RawExportJobState State,
+    long Revision,
+    long FencingToken,
+    RawExportJobTerminalReasonCode? TerminalReason,
+    string? StableCode);
+
+public sealed record RawExportJobTerminalizeResult(
+    RawExportJobTerminalizeStatus Status,
+    RawExportJobState State,
+    long Revision,
+    long FencingToken,
+    RawExportJobTerminalReasonCode TerminalReason,
+    string? StableCode);
+
+public sealed class RawExportJobException(string code)
+    : InvalidOperationException(code)
+{
+    public string Code { get; } = code;
+}
+```
+
+`RawExportJobBindResult` `NewJob`/`ExistingMatch` require a non-empty `JobId` and
+null `TerminalResult`. `Terminal` is legal only for the safely identified
+committed-job `GraphInvalid` path and requires the same non-empty `JobId` plus a
+non-null exact terminal result. `FingerprintConflict` is the exact stable
+exception and therefore cannot appear as a result with a `JobId`. `NotFound`
+requires `Job = null`; `Found` requires a non-null view and classes in ascending
+unique ordinal order. `LatestFailureCode` is the sanitized closed evidence token
+stored on the latest transition, not raw exception text.
+
+`NotFound` requires every nullable lease-result field to be null and reveals no
+job state. Successful acquire/reclaim outcomes require a non-null fresh
+`AttemptId`, `State = Assembling`, non-null revision/fence/lease expiry, and null
+terminal fields. `AlreadyTerminal` follows the required actor-scoped reread and
+returns the exact current `TerminalFailed`, `Cancelled`, or `Expired` state,
+non-null revision/fence, null lease expiry, the exact latest terminal reason,
+and a stable code only where planning section 10 defines one.
+
+`AttemptId` on `RawExportJobLeaseResult` identifies only an attempt newly
+authorized by this acquire/reclaim result. It is non-null only for `Acquired`,
+`AcquiredAfterRetryableFailure`, and `Reclaimed`; it is null for `NotFound` and
+every terminal status, including `AlreadyTerminal`. A historical
+`CurrentAttemptId` remains available only through actor-scoped job read and must
+not be mistaken for a new work-authorizing lease.
+
+A newly produced `TerminalFailed` requires the exact terminal reason plus its
+pinned stable code. A newly produced `Expired` requires
+`PERMIT_OR_JOB_EXPIRED` and `StableCode = null`; no expiry application exception
+code is invented. Renew is only `Renewed`; all normal conflicts are stable
+exceptions. `Recorded` has null terminal fields; its `TerminalFailed` alternative
+has both terminal fields. Terminalize always returns the exact terminal reason
+and uses `StableCode` only when planning section 10 defines an operational stable
+code for that result.
+
+Every GUID is non-empty; expected revision and fence are non-negative; command
+enum values must be defined; the terminal nullable attempt/owner tuple and
+state/reason pair satisfy planning sections 8 and 10.3. The idempotency grammar
+is exact. These checks run in memory before transaction checks. Repository
+methods have `CancellationToken cancellationToken = default`; command records do
+not contain cancellation tokens. The repository generates the prospective
+UUIDv4 `AttemptId`; `LeaseOwnerId` is an internal server-generated identity.
+No command accepts policy/session/subject/recipient/mode/classes/deadline/current
+state/resulting revision/resulting fence/timestamp/event name from a caller.
+
+Architecture/reflection tests must assert this entire public declaration
+manifest, including constructor parameter order/types/nullability, enum names
+and numeric values, repository signatures, and the exception `Code` surface.
+No additional public B4 Domain/application-port type or member is permitted;
+the separately pinned Infrastructure lease-state type in section 4.3 is not part
+of this Domain manifest.
+
+The C# state/event/failure/reason tokens must serialize with exact ordinal string
+names from the planning contract. No numeric persistence and no tolerant fallback
+for unknown database tokens.
+
+### 4.2 Application port
+
+Modify only `src/TagEkyc.Application/Ports/RepositoryPorts.cs` to add one
+interface:
+
+```text
+IRawExportJobRepository
+```
+
+Its method names and return families are exactly:
+
+```csharp
+Task<RawExportJobBindResult> BindAsync(
+    BindRawExportJobCommand command,
+    CancellationToken cancellationToken = default);
+Task<RawExportJobReadResult> ReadAsync(
+    ReadRawExportJobCommand command,
+    CancellationToken cancellationToken = default);
+Task<RawExportJobLeaseResult> AcquireOrReclaimLeaseAsync(
+    AcquireOrReclaimRawExportJobLeaseCommand command,
+    CancellationToken cancellationToken = default);
+Task<RawExportJobRenewResult> RenewLeaseAsync(
+    RenewRawExportJobLeaseCommand command,
+    CancellationToken cancellationToken = default);
+Task<RawExportJobAttemptFailureResult> RecordAttemptFailureAsync(
+    RecordRawExportJobAttemptFailureCommand command,
+    CancellationToken cancellationToken = default);
+Task<RawExportJobTerminalizeResult> TerminalizeAsync(
+    TerminalizeRawExportJobCommand command,
+    CancellationToken cancellationToken = default);
+```
+
+SQL `FingerprintConflict` maps to the stable
+`RAW_EXPORT_JOB_IDEMPOTENCY_CONFLICT` exception and returns no result/JobId.
+All remaining normal and exceptional mappings are exactly the declaration
+invariants above plus planning section 10.1.
+
+The port is repository only: no API service, endpoint, Contracts DTO, SignFlow
+adapter, queue, hosted worker, or controller is added.
+
+### 4.3 Fingerprint and lease configuration
+
+Create:
+
+- `src/TagEkyc.Infrastructure/RawExport/RawExportJobFingerprintCodec.cs`;
+- `src/TagEkyc.Infrastructure/RawExport/RawExportJobLeaseOptions.cs`.
+
+The codec implements the independent namespace and field order from planning
+section 5.2. It must not call or wrap
+`RawExportAuthorizationFingerprintCodec`. API-key provenance is excluded exactly.
+
+Lease configuration:
+
+```text
+Key: TagEkyc:RawExport:JobLeaseSeconds
+Default: 60
+Valid: 10..300 inclusive
+Invalid readiness code: PROD_RAW_EXPORT_JOB_LEASE_CONFIG_INVALID
+Hot reload: forbidden
+```
+
+Resolution occurs once during application composition and registers one immutable
+state. Missing uses 60; blank/malformed/non-positive/out-of-range is invalid.
+
+The exact state type is:
+
+```csharp
+public sealed record RawExportJobLeaseState(
+    int LeaseSeconds,
+    bool IsValid,
+    string? InvalidCode);
+```
+
+Valid state is exactly `(10..300, true, null)`. Invalid state has
+`IsValid = false` and
+`InvalidCode = "PROD_RAW_EXPORT_JOB_LEASE_CONFIG_INVALID"`; it never silently
+substitutes the default. Acquire/reclaim and renew reject invalid state with that
+exact code before opening a connection or issuing a B4 command.
+
+Direct calls to either lease function with `lease_seconds` outside 10..300 raise
+exact `P0001 / RAW_EXPORT_JOB_LEASE_CONFIG_INVALID`; the repository maps that
+message to `PROD_RAW_EXPORT_JOB_LEASE_CONFIG_INVALID` without exposing database
+text. Dedicated tests prove repository zero-command/zero-residue behavior and
+direct-function rejection at 9 and 301 seconds.
+
+Direct-function precedence is exact: landed actor-context missing/invalid runs
+first, passed-principal mismatch second, `lease_seconds` bounds third and before
+any job lookup/lock, then actor-scoped ownership/internal graph, expected
+revision/fence/attempt/owner, live-lease/deadline/mode, and mutation precedence
+from planning section 10. Thus invalid actor plus invalid seconds returns the
+actor code; valid actor plus invalid seconds returns
+`RAW_EXPORT_JOB_LEASE_CONFIG_INVALID` without revealing job existence; valid
+seconds reaches normal ownership/CAS rules. Overlap tests for both lease
+functions pin these orderings, not only the isolated 9/301 cases.
+
+## 5. EF model and migration
+
+### 5.1 Row files
+
+Create exactly:
+
+- `RawExportJobIdentityRow.cs`;
+- `RawExportJobClassRow.cs`;
+- `RawExportJobAttemptRow.cs`;
+- `RawExportJobTransitionRow.cs`;
+- `RawExportJobOperationalHeadRow.cs`
+
+under `src/TagEkyc.Infrastructure/Persistence/Entities/`.
+
+Modify `TagEkycDbContext.cs` to add the five `DbSet`s and exact EF mappings.
+The table/column/PK/UK/FK/index/CHECK model must equal planning section 4.
+No JSON, payload, content, blob, raw-byte, provider, vault, package, encryption,
+delivery, receipt, tenant, or SignFlow column is permitted.
+
+### 5.2 One migration
+
+Generate exactly one EF migration pair with suffix:
+
+```text
+Tip88B4RawExportJobFoundation
+```
+
+The migration creates only the five B4 tables plus their exact indexes,
+constraints, functions, triggers, guards, ACLs, and migration-time assertions.
+The Designer and `TagEkycDbContextModelSnapshot.cs` may change only for the five
+B4 EF entities. No landed migration may change.
+
+`Down()` drops B4 objects in dependency-safe order and restores the complete
+pre-B4 catalog/ACL state. It does not alter any B1/B2/B3/E3 grant, function,
+trigger, table, or role.
+
+### 5.3 Exact row-local CHECK additions
+
+In addition to the complete planning schema, pin:
+
+```text
+CK_raw_export_job_identities_IdempotencyKey
+  length("IdempotencyKey") BETWEEN 1 AND 256
+  AND "IdempotencyKey" COLLATE "C" ~ '^[A-Za-z0-9._:-]+$'
+
+CK_raw_export_job_attempts_Phase
+  "Phase" = 'Assembling'
+
+CK_raw_export_job_attempts_AttemptOrdinal
+  "AttemptOrdinal" >= 0
+
+CK_raw_export_job_attempts_FencingToken
+  "FencingToken" >= 1
+
+CK_raw_export_job_attempts_LeaseTime
+  "InitialLeaseExpiresAt" > "AcquiredAt"
+```
+
+These checks own only row-local shape. Cross-row contiguity, current-attempt
+equality, fresh AttemptId, monotonic fence, revision contiguity, and head/
+transition equality remain function/lock/FK/guard invariants.
+
+### 5.4 Intended constraint and index names
+
+The static M1 manifest must declare these names before the migration is
+generated. They are not left to provider truncation:
+
+Primary/unique:
+
+```text
+PK_b4_job_identities
+PK_b4_job_classes
+PK_b4_job_attempts
+PK_b4_job_transitions
+PK_b4_job_operational_heads
+UQ_b4_job_identity_permit
+UQ_b4_job_class_ordinal
+UQ_b4_job_attempt_ordinal
+UQ_b4_job_attempt_fence
+UQ_b4_job_transition_revision
+```
+
+Exact unique tuples:
+
+```text
+UQ_b4_job_identity_permit       (PermitId)
+UQ_b4_job_class_ordinal         (JobId, Ordinal)
+UQ_b4_job_attempt_ordinal       (JobId, AttemptOrdinal)
+UQ_b4_job_attempt_fence         (JobId, AttemptId, FencingToken)
+UQ_b4_job_transition_revision   (JobId, ResultingRevision)
+```
+
+Non-unique indexes:
+
+```text
+IX_b4_job_identity_decision          (AuthorizationDecisionId)
+IX_b4_job_identity_session           (VerificationSessionId)
+IX_b4_job_transition_attempt_fence   (JobId, AttemptId, FencingToken)
+IX_b4_job_head_attempt_fence         (JobId, CurrentAttemptId, FencingToken)
+```
+
+Every index is configured explicitly with `HasDatabaseName(...)`; no provider
+default name is accepted. M1 statically declares each name/tuple and round-trips
+it from `pg_class`/`pg_index`. A direct-database negative must prove that a
+duplicate `(JobId, Ordinal)` is rejected independently of bind-function class
+validation.
+
+Foreign keys:
+
+```text
+FK_b4_job_identity_permit
+FK_b4_job_identity_decision
+FK_b4_job_identity_session
+FK_b4_job_class_job
+FK_b4_job_attempt_job
+FK_b4_job_transition_job
+FK_b4_job_head_job
+FK_b4_job_head_attempt
+FK_b4_job_transition_attempt
+```
+
+Row-local CHECKs:
+
+```text
+CK_b4_job_identity_policy_version
+CK_b4_job_identity_schema_version
+CK_b4_job_identity_fingerprint_length
+CK_b4_job_identity_export_mode
+CK_b4_job_identity_deadlines
+CK_raw_export_job_identities_IdempotencyKey
+CK_b4_job_class_ordinal
+CK_b4_job_class_raw_class
+CK_raw_export_job_attempts_Phase
+CK_raw_export_job_attempts_AttemptOrdinal
+CK_raw_export_job_attempts_FencingToken
+CK_raw_export_job_attempts_LeaseTime
+CK_b4_job_transition_revision
+CK_b4_job_transition_event_shape
+CK_b4_job_head_shape
+```
+
+`UQ_b4_job_attempt_fence` is the referenced unique tuple
+`(JobId, AttemptId, FencingToken)`. Every name and every table/column/function/
+trigger identifier must be at most 63 UTF-8 bytes and round-trip verbatim. If EF
+generates a different name, configure the intended name; do not bless the
+provider output after generation.
+
+## 6. Exact SQL surface
+
+Create exactly the eight runtime-callable functions from planning section 9.1:
+
+1. `raw_export_read_job_binding_inputs(uuid,uuid,uuid)`;
+2. `raw_export_claim_or_read_job(uuid,uuid,uuid,uuid,uuid,uuid,uuid,text,uuid,integer,text,uuid,text,timestamptz,timestamptz,text,bytea,text[])`;
+3. `raw_export_read_job(uuid,uuid,uuid)`;
+4. `raw_export_lock_job_for_attempt(uuid,uuid,uuid,bigint,bigint)`;
+5. `raw_export_acquire_or_reclaim_job_lease(uuid,uuid,uuid,bigint,bigint,uuid,uuid,integer)`;
+6. `raw_export_renew_job_lease(uuid,uuid,uuid,bigint,bigint,uuid,uuid,integer)`;
+7. `raw_export_record_job_attempt_failure(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text)`;
+8. `raw_export_terminalize_job(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text,text)`.
+
+Their exact result columns, outcome/nullability shapes, read dependencies,
+mutation-context tokens, actor taxonomy, owner, language, `SECURITY DEFINER`,
+search path, body manifest, and ACLs are the planning section 9 contract.
+
+Internal functions/triggers are B4-specific and never runtime granted. They
+implement:
+
+- identity/class/attempt/transition append-only guards;
+- same-transaction child guards;
+- deferred `tagekyc.tr_b4_job_identity_has_classes` through
+  `tagekyc.enforce_raw_export_job_identity_has_classes()`;
+- command-specific operational-head guard tokens; and
+- transition revision/current-attempt/head-result integrity.
+
+The intended internal function names are exactly:
+
+```text
+enforce_raw_export_job_identity_insert
+enforce_raw_export_job_class_insert
+enforce_raw_export_job_attempt_insert
+enforce_raw_export_job_transition_insert
+enforce_raw_export_job_head_mutation
+enforce_raw_export_job_identity_has_classes
+```
+
+The intended trigger names are exactly:
+
+```text
+tr_b4_job_identity_insert_guard
+tr_b4_job_identity_append_only
+tr_b4_job_class_insert_guard
+tr_b4_job_class_append_only
+tr_b4_job_attempt_insert_guard
+tr_b4_job_attempt_append_only
+tr_b4_job_transition_insert_guard
+tr_b4_job_transition_append_only
+tr_b4_job_head_mutation_guard
+tr_b4_job_identity_has_classes
+```
+
+The first five internal functions may consolidate checks only for the table
+named in the function. One table's context token cannot authorize another
+table. The deferred completeness function remains separate. A different helper
+or trigger count/name is a STOP/RRI because M1 and readiness require a static
+intended manifest before DDL generation.
+
+The claim function must execute only the named constraint sequence:
+
+```text
+DEFERRED at entry
+→ identity/classes/head/initial transition inserts
+→ IMMEDIATE validation
+→ DEFERRED restoration before NewJob return
+```
+
+It must not use `SET CONSTRAINTS ALL`.
+
+Before actor validation or lookup, claim and attempt-lock require:
+
+```sql
+current_setting('transaction_isolation') = 'read committed'
+```
+
+Otherwise they raise exact
+`P0001 / RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID` with no authority/B4
+lookup, lock, mutation, or transition.
+
+Claim validates the idempotency grammar after actor binding but before
+authoritative/B4 lookup and raises exact
+`P0001 / RAW_EXPORT_JOB_REQUEST_VALIDATION_FAILED`.
+
+## 7. Repository implementation
+
+Create:
+
+`src/TagEkyc.Infrastructure/Persistence/EfRawExportJobRepository.cs`
+
+It is the sole `IRawExportJobRepository` implementation and sole owner of B4
+transaction orchestration.
+
+### 7.1 Transaction ownership
+
+For every repository entry:
+
+1. perform all in-memory command preflight;
+2. require `Transaction.Current == null` before acquiring/opening a connection;
+3. reject an injected/already-active connection transaction;
+4. prevent automatic ambient enlistment;
+5. call the explicit
+   `BeginTransactionAsync(IsolationLevel.ReadCommitted, cancellationToken)`
+   overload;
+6. verify the opened transaction reports Read Committed; and
+7. preserve one connection/transaction through its actor GUC, reads, locks,
+   resolvers, mutation, commit/rollback, and typed result mapping.
+
+Preflight invalidity outranks transaction isolation. A preflight-valid ambient,
+caller-owned, active, or wrong-isolation transaction maps to
+`RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`. The connection string/path used
+by every entry has `Enlist=false`; an ambient transaction is rejected explicitly
+and is not merely ignored by that setting.
+
+`Enlist=false` has one exact implementation path:
+
+1. `EfRawExportJobRepository` uses the existing scoped `TagEkycDbContext`
+   injected by production DI;
+2. it does not create another DbContext, service scope, connection factory, or
+   `NpgsqlConnection`;
+3. after preflight and ambient/active-transaction rejection, require
+   `db.Database.GetDbConnection()` to be the scoped closed
+   `NpgsqlConnection`, with `db.Database.CurrentTransaction == null`;
+4. capture the exact original `connection.ConnectionString` before normalization;
+5. while that connection is still closed, construct
+   `NpgsqlConnectionStringBuilder(connection.ConnectionString)`, set only
+   `Enlist = false`, and assign the normalized string back to that same
+   connection instance;
+6. do not mutate the application/global connection-string options or service
+   registration;
+7. inside `try`, open the explicit Read Committed transaction through that same
+   DbContext and execute the complete method;
+8. inside `finally`, after commit/rollback and transaction disposal, close the
+   connection opened by B4 using non-cancellable cleanup, require
+   `CurrentTransaction == null` and `ConnectionState.Closed`, then assign the
+   exact captured original string back to the same connection instance; and
+9. verify with ordinal equality that the restored string is byte-identical to
+   entry before surfacing a typed success or failure.
+
+The `finally` restoration runs after success, typed failure, exception, timeout,
+and cancellation. A cancellation token cannot cancel restoration. If transaction
+disposal, close, or exact restoration cannot be completed, fail closed with
+`RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`; never return a typed result while
+leaving a mutated scoped connection. The builder must prove this lifecycle is
+safe on the pinned Npgsql 8.0.3 provider. If it cannot, STOP/RRI for a
+cross-cutting persistence amendment rather than leaking changed enlistment
+behavior through the rest of the scope.
+
+The production-scoped B1 control-plane repository, authorization policy
+projection, B2 consent repository, and B4 repository must all hold that same
+`TagEkycDbContext` instance. Every B1/policy/B2 call made by B4 must observe the
+same `DbConnection`, `IDbContextTransaction`, and underlying
+`NpgsqlTransaction`; none may begin a nested transaction or switch connection.
+An already-open scoped connection or any active EF/provider transaction at
+method entry fails before a B4 command with
+`RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID`. A global `Enlist=false` change is
+outside this slice and requires a separately ratified cross-cutting persistence
+amendment plus full repository regression matrix. After every B4 exit, a landed
+repository invoked through the same DbContext/scope must see the exact original
+connection string and original ambient-enlistment posture.
+
+### 7.1a Six-method transaction matrix
+
+| Repository method | Owned transaction and actor context | Opening SQL/lock order | Completion |
+| --- | --- | --- | --- |
+| `BindAsync` | After bind preflight and ambient/active rejection, open explicit Read Committed and set `tagekyc.actor_principal_id` transaction-locally | binding-input projection, then the exact section-7.2 session → B1 → policy → B2 → claim order; committed-job `GraphInvalid` actor-reads then calls terminalize directly as the head-first seam | commit `NewJob`/`ExistingMatch` or exact typed `Terminal`; otherwise rollback |
+| `ReadAsync` | After read preflight and ambient/active rejection, open explicit Read Committed and set the actor GUC | call only actor-scoped `raw_export_read_job`; no authority lock or mutation | commit `Found`/`NotFound`; rollback on exception |
+| `AcquireOrReclaimLeaseAsync` | After command and lease-state preflight and ambient/active rejection, open explicit Read Committed and set actor GUC | `raw_export_lock_job_for_attempt`, then exact section-7.3 head → session → B1 → policy → B2 → mutation order | commit typed success/terminal result; rollback every exceptional outcome |
+| `RenewLeaseAsync` | After command and lease-state preflight and ambient/active rejection, open a new explicit Read Committed transaction and set actor GUC; never reuse the acquisition transaction across worker work | call `raw_export_renew_job_lease` directly; that function locks/validates identity, head, and current attempt before mutation; do not call attempt-lock because a live lease would return `LeaseHeld` | commit `Renewed`; rollback every exceptional outcome |
+| `RecordAttemptFailureAsync` | After command preflight and ambient/active rejection, open a new explicit Read Committed transaction and set actor GUC | call `raw_export_record_job_attempt_failure` directly; its internal head lock and live-lease validation are the opening seam | commit `Recorded` or typed `TerminalFailed`; rollback every exceptional outcome |
+| `TerminalizeAsync` | After command preflight and ambient/active rejection, open a new explicit Read Committed transaction and set actor GUC | call `raw_export_terminalize_job` as the head-first lock/mutation seam; do not pre-call attempt-lock or authority resolvers | commit `Terminalized`/`AlreadyTerminal`/`Expired`, including the required actor-scoped reread for `AlreadyTerminal`; rollback every exceptional outcome |
+
+The four mutation functions run only inside these admitted repository-owned
+transactions. Renew/failure/terminalize do not add a second SQL isolation guard;
+claim and attempt-lock retain the two ratified direct-runtime guards. Source and
+behavioral tests cover all six methods: invalid preflight first, matching
+Read-Committed ambient rejection, already-active Read-Committed connection
+rejection, zero B4 command before rejection, explicit-overload use, actor-GUC
+lifetime, and commit/rollback. Read has a dedicated test proving the GUC remains
+set through `raw_export_read_job`; renew/failure/terminalize each prove a fresh
+transaction after acquisition has committed.
+
+### 7.2 Bind
+
+Implement the exact 15-step planning-section-5.1 sequence. Reuse landed:
+
+- `raw_export_lock_verification_session_for_authorization`;
+- `IRawExportControlPlaneRepository.ResolveExportEligibilityForAuthorizationAsync`;
+- exact policy projection through `IRawExportAuthorizationProjectionReader`;
+- `IRawExportSubjectConsentRepository.ResolveSubjectExportConsentForAuthorizationAsync`.
+
+Do not call the general policy repository, duplicate B1/B2 logic, change lock
+order, or add a nested transaction.
+
+Committed equal-fingerprint replay returns before mutable revalidation.
+Conflicting fingerprint returns no `JobId`. A prospective new job revalidates all
+authority and physical time, and `NewJob` performs the fresh post-claim finite
+B1/B2 bound check before commit.
+
+For binding projection `GraphInvalid` with a safely identified committed job,
+actor-read the exact current identity/head and call
+`raw_export_terminalize_job` directly; do not pre-call attempt-lock. Commit and
+return `Terminal(JobId, result)` for `Terminalized`, higher-precedence `Expired`,
+or actor-reread `AlreadyTerminal`. A concurrent revision/fence/attempt/owner
+change rolls back with the existing stable exception. Do not mutate from a stale
+tuple, hide the conflict, or spin/retry internally; a caller retry starts the
+ordered bind transaction again.
+
+### 7.3 Attempt orchestration
+
+Implement planning section 7 exactly:
+
+```text
+B4 head lock
+→ verification session
+→ B1 locks/resolver
+→ immutable policy
+→ B2 consent scope
+→ fresh physical clock
+→ re-entrant B4 mutation
+→ commit
+```
+
+CAS conflict returns before authority locks. No session/B1/B2 lock may be held
+before waiting on the B4 head. No transaction/lock crosses fixture or future
+non-database work.
+
+Renew and record-failure are live-lease worker commands. Authority/deadline/
+cancellation terminalization is head-first repository orchestration, not worker
+authority. Apply the exact planning section 10 precedence.
+
+## 8. Readiness, DI, and API composition
+
+Create:
+
+`src/TagEkyc.Infrastructure/Persistence/RawExportJobReadinessValidator.cs`
+
+It pins:
+
+- all five tables, columns, identifiers, indexes, constraints, triggers;
+- exact CHECK definitions;
+- eight entry functions and every internal helper;
+- signatures/result shapes/dependencies/owner/language/`prosecdef`/search path;
+- normalized grantor-aware function ACLs and body digests;
+- exact table `relacl` and column `pg_attribute.attacl` posture;
+- runtime execute completeness and absence of extra runtime-granted B4 entries;
+- operational-head row shape; and
+- immutable resolved lease configuration.
+
+For absence-of-extra-entry validation, the exact B4 function universe is every
+`tagekyc` function whose `proname` matches either
+`raw_export_%job%` or `enforce_raw_export_job_%`. Readiness requires exact set
+equality against the eight runtime entries and six internal functions in this
+brief, then applies the pinned per-function ACL manifest. This is a deliberately
+slice-local recurrence gate; it does not close the deferred aggregate
+cross-slice raw-export function-manifest debt.
+
+Stable codes are exactly:
+
+```text
+PROD_RAW_EXPORT_JOB_SCHEMA_INVALID
+PROD_RAW_EXPORT_JOB_FUNCTION_ACL_INVALID
+PROD_RAW_EXPORT_JOB_TABLE_PRIVILEGE_INVALID
+PROD_RAW_EXPORT_JOB_LEASE_CONFIG_INVALID
+```
+
+Modify:
+
+- `TagEkycPersistenceServiceCollectionExtensions.cs` to register the repository
+  and validator scoped;
+- `Program.cs` to resolve/register the immutable lease state and production
+  readiness check;
+- `ReadinessEndpoint.cs` to add only
+  `RawExportJobReadinessCheck`.
+
+The readiness check maps the exact code through the existing database-order HTTP
+503 pipeline. No endpoint, request/response DTO, or status route is added.
+
+## 9. ACL and migration-time assertions
+
+All B4 tables have no runtime or PUBLIC table privilege. The normalized explicit
+non-owner table ACL set is empty. All non-dropped user columns have an empty
+explicit non-owner column ACL set through `pg_attribute.attacl`.
+
+Every runtime entry has exactly:
+
+```text
+grantor = tagekyc_raw_export_deployer
+grantee = tagekyc_runtime
+privilege = EXECUTE
+is_grantable = false
+```
+
+Every internal function has no non-owner ACL row. Deployer owns every B4 object.
+
+After object creation/revoke/grant, but before migration history can commit, the
+migration asserts the exact function/table/column ACL manifests:
+
+```text
+TIP88B4_FUNCTION_ACL_INVALID
+TIP88B4_TABLE_ACL_INVALID
+```
+
+Unexpected default/out-of-band drift aborts apply. The migration never repairs
+such drift by revoking the unexpected role.
+
+## 10. Test placement and binding gates
+
+Create:
+
+- `tests/TagEkyc.UnitTests/Tip88B4RawExportJobTests.cs`;
+- `tests/TagEkyc.ArchTests/Tip88B4RawExportJobBoundaryTests.cs`;
+- `tests/TagEkyc.IntegrationTests/Tip88B4RawExportJobFoundationTests.cs`.
+
+Database function/catalog contracts are integration contracts and live in the
+B4 integration file; do not add a TagEkyc.Contracts DTO or project reference
+solely to place them in `TagEkyc.ContractTests`.
+
+Every named M1–M13 test in planning section 12 is permanent and must retain its
+exact method name. Test methods may be distributed across the three files by
+proof level, but no gate may be folded into a broad green test.
+
+The amendment tests are also permanent and their exact names are:
+
+```text
+B4_repository_uses_same_dbcontext_connection_and_transaction_for_B1_B2
+B4_enlist_false_is_scoped_and_does_not_change_global_persistence_options
+B4_does_not_create_second_dbcontext_or_connection
+B4_restores_scoped_connection_string_after_success
+B4_restores_scoped_connection_string_after_exception
+B4_restores_scoped_connection_string_after_cancellation
+B4_same_scope_landed_repository_retains_original_enlistment_posture
+
+M3_committed_graph_invalid_claimed_terminalizes_and_returns_terminal
+M3_committed_graph_invalid_active_lease_uses_head_first_terminalization
+M3_committed_graph_invalid_deadline_crossing_returns_expired
+M3_committed_graph_invalid_already_terminal_returns_exact_result
+M3_committed_graph_invalid_stale_tuple_rolls_back_without_mutation
+
+M3_all_six_repository_methods_own_fresh_read_committed_transactions
+M3_all_six_repository_methods_reject_ambient_and_active_transactions
+
+M7_direct_acquire_invalid_lease_bound_precedes_job_lookup
+M7_direct_renew_invalid_lease_bound_precedes_job_lookup
+M7_invalid_actor_precedes_invalid_lease_bound
+```
+
+The two “all six” methods are data-driven with one named case per repository
+method; the report must show all six cases, and a mutation to any one method must
+red its own case. They are not allowed to assert only a shared helper or one
+representative entry.
+
+Exact discriminating mutation map:
+
+| Scratch mutation | Test that must go RED |
+| --- | --- |
+| replace the scoped DbContext/connection on the B4 path | `B4_repository_uses_same_dbcontext_connection_and_transaction_for_B1_B2` and `B4_does_not_create_second_dbcontext_or_connection` |
+| move `Enlist=false` into global persistence options | `B4_enlist_false_is_scoped_and_does_not_change_global_persistence_options` |
+| remove exact connection-string restoration from `finally` | `B4_restores_scoped_connection_string_after_success`, `B4_restores_scoped_connection_string_after_exception`, `B4_restores_scoped_connection_string_after_cancellation`, and `B4_same_scope_landed_repository_retains_original_enlistment_posture` |
+| let cancellation skip close/restoration | `B4_restores_scoped_connection_string_after_cancellation` |
+| restore only in a later DI scope | `B4_same_scope_landed_repository_retains_original_enlistment_posture` |
+| delete committed-graph-invalid terminalization from `Claimed` | `M3_committed_graph_invalid_claimed_terminalizes_and_returns_terminal` |
+| pre-call attempt-lock before graph-invalid terminalization | `M3_committed_graph_invalid_active_lease_uses_head_first_terminalization` |
+| remove higher-precedence deadline handling | `M3_committed_graph_invalid_deadline_crossing_returns_expired` |
+| skip the actor-scoped reread for `AlreadyTerminal` | `M3_committed_graph_invalid_already_terminal_returns_exact_result` |
+| weaken revision/fence/attempt/owner CAS on graph-invalid terminalization | `M3_committed_graph_invalid_stale_tuple_rolls_back_without_mutation` |
+| remove explicit fresh Read Committed ownership from any one method | that method's case in `M3_all_six_repository_methods_own_fresh_read_committed_transactions` |
+| remove ambient or active-transaction rejection from any one method | that method's case in `M3_all_six_repository_methods_reject_ambient_and_active_transactions` |
+| move acquire bounds after job lookup | `M7_direct_acquire_invalid_lease_bound_precedes_job_lookup` |
+| move renew bounds after job lookup | `M7_direct_renew_invalid_lease_bound_precedes_job_lookup` |
+| move bounds before actor validation in either lease function | `M7_invalid_actor_precedes_invalid_lease_bound` |
+
+Additional binding:
+
+- M3 source/architecture proof must pin the explicit
+  `BeginTransactionAsync(IsolationLevel.ReadCommitted, ...)` overload because
+  Npgsql's parameterless API currently defaults to the same isolation;
+- matching Read Committed ambient/active-connection tests must prove no B4 DB
+  command for every one of the six repository methods;
+- committed-job `GraphInvalid` bind tests cover `Claimed`, actively leased
+  `Assembling`, deadline crossing to `Expired`, `AlreadyTerminal`, and a
+  concurrent revision/fence/attempt/owner change; the last must return the exact
+  stable conflict with no stale mutation and must go red if the CAS predicate is
+  weakened;
+- M4 expected hashes come from an independent test codec, not production output;
+- M6 uses a dedicated LOGIN INHERIT role with only `tagekyc_runtime`,
+  `ADMIN=false`, `INHERIT=true`, `SET=false`, and no `SET ROLE`;
+- M6 includes `M6_extra_runtime_granted_b4_entry_fails_readiness`: create a
+  scratch ninth `tagekyc.raw_export_*job*` function, grant runtime EXECUTE,
+  observe exact `PROD_RAW_EXPORT_JOB_FUNCTION_ACL_INVALID`, remove it, and prove
+  catalog equivalence;
+- M9 fixture assembly/delivery side effect is test-only and never registered;
+- M12 apply mutations use isolated disposable PostgreSQL-16 clusters; and
+- M13 scans database/application/API/Contracts surfaces and preserves the landed
+  B3 inertness assertion.
+
+## 11. Mutation protocol
+
+After all permanent edits and green non-mutation targeted tests, capture
+Baseline B:
+
+- SHA-256 of every allowlisted source/test/doc file;
+- migration/model snapshot hashes;
+- complete B4 plus affected landed catalog/ACL/role state.
+
+Each scratch mutation:
+
+1. has one named green positive control;
+2. proves the mutation is active;
+3. runs only the discriminating named test;
+4. must observe RED for the intended assertion;
+5. restores source byte-identically or catalog-equivalently in `finally`;
+6. reruns the named test GREEN; and
+7. proves Baseline-B restoration.
+
+Required mutation families are all those in M1–M12, including identifier
+round-trip, idempotency function/table guards, constraint mode, every row-local
+CHECK, cross-job FKs, fresh AttemptId/fence/revision/head equality, actor context,
+all independent B1/B2/session locks, physical-time placement, explicit isolation,
+ambient/active early gates, ACL/default-ACL/alternate-grantor/column grants,
+append-only/head guards, terminal/expiry precedence, and readiness branches.
+They also include duplicate class ordinal, exact non-unique index names/tuples,
+public declaration reflection, all six transaction-owner paths, invalid lease
+state/direct-function bounds, committed-GraphInvalid bind terminal/race mapping,
+terminal lease-result `AttemptId` nullness, same-scope connection-string
+restoration on every exit path, landed same-scope enlistment preservation, root
+build-graph/dispatch-commit scope, and the scratch ninth runtime-granted B4
+entry.
+
+A required mutation that stays green is a STOP. Do not weaken the test or mutate
+an unrelated earlier guard to manufacture red.
+
+## 12. Candidate permanent allowlist
+
+This allowlist is proposed for later Homeowner build authorization; it is not
+active now.
+
+Production:
+
+- `src/TagEkyc.Domain/RawExportJob.cs` (new);
+- `src/TagEkyc.Application/Ports/RepositoryPorts.cs`;
+- `src/TagEkyc.Infrastructure/RawExport/RawExportJobFingerprintCodec.cs` (new);
+- `src/TagEkyc.Infrastructure/RawExport/RawExportJobLeaseOptions.cs` (new);
+- `src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobIdentityRow.cs`
+  (new);
+- `src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobClassRow.cs`
+  (new);
+- `src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobAttemptRow.cs`
+  (new);
+- `src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobTransitionRow.cs`
+  (new);
+- `src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobOperationalHeadRow.cs`
+  (new);
+- `src/TagEkyc.Infrastructure/Persistence/TagEkycDbContext.cs`;
+- `src/TagEkyc.Infrastructure/Persistence/EfRawExportJobRepository.cs` (new);
+- `src/TagEkyc.Infrastructure/Persistence/RawExportJobReadinessValidator.cs`
+  (new);
+- `src/TagEkyc.Infrastructure/Persistence/TagEkycPersistenceServiceCollectionExtensions.cs`;
+- one new migration pair with suffix `Tip88B4RawExportJobFoundation`;
+- `src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs`;
+- `src/TagEkyc.Api/Program.cs`;
+- `src/TagEkyc.Api/ReadinessEndpoint.cs`.
+
+Tests:
+
+- the three new files from section 10;
+
+The landed
+`tests/TagEkyc.IntegrationTests/Tip88B2SubjectExportConsentTests.cs`
+`Inertness_no_raw_byte_surface_exists` method remains byte-unchanged. M13 adds
+the B4 `raw_export_job_%` scan in the new B4 integration file; it does not
+repurpose or weaken the landed B2/B3 tripwire.
+
+Implementation documentation:
+
+- `docs/deployment/hospital_trial/postgres_migration_runbook.md` only.
+
+Verify-only and byte-pinned during implementation:
+
+- the ratified B4 planning brief;
+- the final B4 build brief/dispatch;
+- `docs/tips/README.md`; and
+- `docs/tips/tip_88_raw_export_policy_spine/tip_88_planning_brief.md`.
+
+The dispatched Task-0 report records SHA-256 for each verify-only document.
+Their hashes must remain identical through implementation, mutation work, and
+code acceptance. If implementation discovers that any planning/build contract
+must change, STOP/RRI:
+
+```text
+review amendment
+→ docs-only ratification
+→ re-anchor
+→ redispatch
+```
+
+Only after adversarial code acceptance may a separate docs-only closeout
+authorization create the B4 closeout and update the TIP index/status. Those
+governance changes are not part of the implementation allowlist or implementation
+commit.
+
+No other permanent file may change without STOP/RRI and a reviewed allowlist
+extension. In particular, landed B1/B2/B3/E3 production files/migrations,
+authorization/policy/consent repositories, Contracts DTOs, API endpoints,
+SignFlow, tenant models, and unrelated tests are forbidden.
+
+Scratch mutation copies are evidence-only and must not remain modified.
+
+## 13. Runbook delta
+
+Update the hospital PostgreSQL migration runbook with:
+
+- five B4 metadata tables;
+- exact runtime function EXECUTE manifest;
+- zero table/column privilege posture;
+- lease configuration key/default/range and restart-only resolution;
+- readiness codes;
+- migration apply/rollback checks;
+- no raw/package/delivery capability statement; and
+- operational cleanup for scratch roles/default ACLs used only in tests.
+
+The same delta removes the obsolete E3 “working-tree-only / do not deploy” hold
+and replaces it with the landed E3 closeout posture, while preserving all final
+E3 role, ACL, readiness, and rollback requirements. It must not describe E3 as
+pending or reopen E3 design.
+
+Do not claim production activation, raw availability, multi-hospital shared-DB
+support, or resistance to full trusted-backend compromise.
+
+## 14. Validation order for a later authorized build
+
+1. Task 0 and pre-B4 catalog capture.
+2. Unit/architecture tests for domain, codec, port, explicit isolation, inertness.
+3. Non-mutation M1–M13 integration gates individually.
+4. Capture Baseline B.
+5. Every required observed-red mutation and exact restoration.
+6. Targeted B4 unit/architecture/integration suites.
+7. B1/E3, B2, B3-1/2/3/4 regression suites.
+8. Apply/rollback/reapply on fresh PostgreSQL 16.
+9. Pending-model gate.
+10. Full solution build.
+11. Full solution test suite sequentially.
+12. Fresh catalog/readiness/ACL audit.
+13. Final allowlist, scratch-cleanup, Baseline-B, and git-status audit.
+
+No required test may be skipped. The manual migration-generator discovery test
+may retain its existing intentional skip only if it is unrelated and reported
+separately; no B4 gate may be skipped.
+
+## 15. STOP / RRI
+
+STOP rather than improvise if:
+
+- final HEAD/source baseline differs from the dispatched anchor;
+- a required permanent file is outside section 12;
+- a ninth runtime function or generic transition entry appears necessary;
+- JSON/dynamic SQL/caller-supplied authority data is proposed;
+- runtime table/column privilege appears necessary;
+- Read Committed cannot be explicitly owned and verified;
+- an ambient/caller transaction cannot be rejected before B4 commands;
+- landed lock order/resolver semantics would need alteration;
+- a B1/B2/B3/E3 production file or migration would need modification;
+- a raw/provider/vault/package/crypto/delivery/receipt/HTTP/SignFlow/tenant
+  surface appears;
+- ModelSnapshot contains changes outside the five B4 entities;
+- rollback cannot restore pre-B4 catalog/ACL state exactly;
+- a required mutation does not turn its named test red;
+- a test claims a cross-row invariant is enforced by a row-local CHECK;
+- a fixture is proposed for production DI; or
+- full validation has an unexplained failure or B4 skip.
+
+## 16. Builder report format
+
+The later builder must report:
+
+1. dispatched baseline and Task-0 results;
+2. exact permanent files changed and allowlist comparison;
+3. domain/application port surface;
+4. five-table schema, constraints, indexes, triggers, and identifier lengths;
+5. eight entry functions plus internal manifest/dependencies/ACLs;
+6. transaction ownership, lock order, and stable precedence mapping;
+7. M1–M13 to exact test names/results;
+8. every observed-red mutation and post-restore green result;
+9. apply/rollback/reapply and pre/post catalog/ACL equivalence;
+10. ModelSnapshot before/after hashes and five-entity-only delta;
+11. lease config/readiness/HTTP-503 evidence;
+12. targeted and full build/test totals, including every failure/skip;
+13. final scratch-role/default-ACL/container cleanup;
+14. final `git status --short`; and
+15. deviations, workarounds, STOP/RRI, or incomplete work.
+
+No green-summary claim substitutes for code, catalog, mutation, and restoration
+evidence.
+
+## 17. Commit and deployment boundary
+
+This draft authorizes no commit, push, merge, deployment, migration execution,
+Raw BIO access, or production activation. A later build dispatch must separately
+state commit discipline. Until then, do not stage or modify implementation files.
+During a later authorized build, the planning brief, build dispatch, TIP index,
+and TIP-88 spine remain byte-pinned verify-only inputs and may not be included in
+the implementation commit. B4 closeout/status edits require their own
+post-acceptance docs-only authorization and commit scope.
+
+## 18. Review state
+
+### V1 — v0.1 deep bounded review, v0.2 patched
+
+The independent reviewer read the required governance, every available TIP-88
+planning/build/remediation/closeout document, runbook, debt/decision references,
+and the landed B1/B2/B3/E3 source, migrations, readiness, DI, and tests. V1
+returned **NO-GO** with 4 HIGH, 2 MEDIUM, and 1 LOW:
+
+- wrong/missing class ordinal uniqueness;
+- incomplete non-unique index manifest;
+- incomplete public C# declaration manifest;
+- ambiguous transaction ownership for read and post-acquisition commands;
+- unpinned invalid lease operational behavior;
+- undefined extra-B4-entry readiness universe/mutation; and
+- obsolete E3 runbook hold.
+
+Version 0.2 patches all seven without changing the ratified planning contract or
+authorizing implementation. V2 patch verification remains required.
+
+### V2 — v0.2 patch verification, v0.3 correction candidate
+
+V2 returned **NO-GO** with 2 HIGH and 1 MEDIUM. It confirmed class uniqueness,
+all four non-unique indexes, the B4 function universe/ninth-entry mutation,
+runbook correction, and authority wording. It found:
+
+- the new lease result could not represent `NotFound`, `AlreadyTerminal`, or
+  expiry without inventing a stable code;
+- the six-method transaction matrix exposed an impossible sentence in the
+  ratified planning section 9.1a; and
+- direct lease-bound precedence was not discriminated against actor and
+  ownership/CAS failures.
+
+Version 0.3 corrects the result/nullability manifest and pins direct-function
+precedence. It records the exact planning erratum required to reconcile section
+9.1a but does not silently treat that erratum as ratified. V3 free adversarial
+review may assess the complete candidate; dispatch remains blocked until the
+Homeowner ratifies the erratum and a subsequent synchronization review is clean.
+
+### V3 — v0.3 free adversarial review, v0.4 amendment package
+
+V3 returned **NO-GO** with 2 HIGH and 1 MEDIUM. It confirmed the transaction
+replacement is technically sound and the lease result now represents
+`NotFound`, `Cancelled`, and code-less expiry. It found:
+
+- lease-bound precedence is itself an observable planning amendment not covered
+  by the first erratum;
+- planning section 3.2 cannot represent section 5.1's committed-job
+  `GraphInvalid` terminal result or its concurrent head race; and
+- terminal lease results did not pin whether `AttemptId` was historical or newly
+  work-authorizing.
+
+Version 0.4 makes `AttemptId` new-acquisition-only, adds an exact bind terminal
+result/race contract, and replaces the single erratum with coordinated
+Amendments A–C. None is treated as ratified. V4 bounded verification is required
+before the package is safe to present for Homeowner decision.
+
+### V4 — v0.4 bounded verification, v0.5 one-line correction
+
+V4 returned **NO-GO** with one HIGH patch regression. Amendments A and B were
+individually sound but Amendment B's categorical “Bind is admitted through
+claim” contradicted Amendment A's required pre-claim committed-job
+`GraphInvalid` path. V4 confirmed all other V3 findings closed.
+
+Version 0.5 changes Amendment B only to distinguish normal claim-admitted bind
+from repository-admitted committed-`GraphInvalid` direct terminalization. V5 is
+the fifth and final convergence review under the playbook threshold. Any V5
+finding triggers non-convergence analysis and STOP rather than another edit.
+
+### V5 — v0.5 final convergence verification, clean
+
+The independent reviewer read all 57,258 bytes of v0.5 byte-to-EOF and returned
+**PASS — 0 HIGH / 0 MEDIUM / 0 LOW**. It confirmed the V4 admission correction,
+the coordinated Amendments A–C package, exact result/transaction/precedence
+propagation, README authority wording, and unchanged `src/`/`tests/`.
+
+Version 0.6 changed only header status and this V5 closeout record. A metadata
+attestation then found one stale Dispatch Readiness phrase that still named
+review convergence as unfinished. Version 0.7 changes only the version and that
+remaining-gates line to name Homeowner amendment ratification plus subsequent
+synchronization verification instead. The package is safe to present for
+Homeowner ratification of Amendments A–C. It is not a planning amendment
+ratification, implementation dispatch, build authorization, or authority to
+migrate, edit code/tests, commit, push, merge, deploy, access Raw BIO, or
+activate production.
+
+### External review — v0.7 corrected in v0.8
+
+The external review returned **APPROVE WITH CORRECTIONS** with 1 HIGH,
+4 MEDIUM, and 1 LOW. Direct source verification confirmed that production B1,
+policy projection, B2, and authorization repositories share the scoped
+`TagEkycDbContext`, so v0.8:
+
+- pins instance-local `Enlist=false` normalization on that same closed scoped
+  connection, forbidding a second context/connection and global-option change;
+- extends Amendment B to planning section 3.3;
+- proves Task-0 source/test equivalence across commits plus staged, unstaged, and
+  untracked surfaces with complete tree manifests;
+- separates implementation documentation from byte-pinned governance inputs and
+  future docs-only closeout;
+- pins exact amendment test names and mutation-to-red mappings; and
+- corrects the worker non-claim to exclude hosted/background/non-database work,
+  not the B4 lease/fencing orchestration contract.
+
+Version 0.8 is verification-required and does not restore ratification readiness
+until an independent correction check returns clean.
+
+### External-correction verification — v0.8 clean, v0.9 closeout
+
+The independent reviewer read all 66,498 bytes of v0.8 byte-to-EOF, verified the
+six corrections against landed source, Npgsql 8.0.3, planning, and README, and
+returned **PASS — 0 findings**. It confirmed same-scoped-DbContext feasibility,
+Amendment-B synchronization coverage, complete Task-0 drift detection,
+governance/implementation allowlist separation, exact amendment test/mutation
+mapping, and corrected worker wording with no status or authority regression.
+
+Version 0.9 changes only header status and this closeout record. The coordinated
+Amendments A–C package is safe to present for Homeowner ratification. It remains
+unratified and is not an implementation dispatch or authority to migrate, edit
+code/tests, commit, push, merge, deploy, access Raw BIO, or activate production.
+
+### v0.9 review — amendments pass, build-dispatch hardening in v0.10
+
+The v0.9 review returned **AMENDMENTS A–C: PASS** and
+**BUILD BRIEF: APPROVE WITH CORRECTIONS**, with 1 HIGH, 1 MEDIUM, and 1 LOW.
+Version 0.10:
+
+- restores the exact scoped connection string in non-cancellable `finally`
+  cleanup on every exit and proves landed same-scope enlistment is unchanged;
+- pins the complete dispatch commit to the exact three docs-only ratification
+  paths and protects the root solution/build/package graph as well as
+  `src/tests`; and
+- replaces the two stale bind/attempt summary phrases with the six-method
+  transaction contract.
+
+Version 0.10 is verification-required. Amendments A–C remain architecturally
+accepted by the review, but this document does not return to Homeowner
+ratification readiness until the three corrections pass an independent check.
+
+### v0.10 correction verification — Task-0 gate fixed in v0.11
+
+The independent correction review accepted connection restoration, root
+build-graph protection, and six-method summary wording, but reproduced one
+MEDIUM false-pass in the exact docs-only commit gate. Empty/failed Git output
+could make `Compare-Object` emit only a non-terminating error and leave a
+zero-count delta; rename detection was also implicit.
+
+Version 0.11 removes `Compare-Object`, disables rename detection, requires Git
+success, requires the exact path count, and compares every sorted path with
+ordinal equality. The empty-delta case was executed locally and failed closed
+with `TIP88B4_DISPATCH_COMMIT_SCOPE_INVALID`. Independent verification remains
+required before restoring Homeowner ratification readiness.
+
+### v0.11 Task-0 verification — clean, v0.12 closeout
+
+The independent reviewer executed the exact v0.11 PowerShell gate against the
+correct three-path list, reversed order, empty output, invalid revision, extra,
+missing, same-count-wrong, case-changed, and real rename cases. It returned
+**PASS**: the valid set alone passes, every invalid case fails closed, Git errors
+map to `TIP88B4_DISPATCH_COMMIT_DIFF_FAILED`, scope mismatch maps to
+`TIP88B4_DISPATCH_COMMIT_SCOPE_INVALID`, and `--no-renames` exposes both rename
+sides.
+
+Version 0.12 changes only header status and this closeout record. Amendments A–C
+and the hardened build brief are safe to present for Homeowner amendment
+ratification. They remain unratified; this is not an implementation dispatch or
+authority to migrate, edit code/tests, commit, push, merge, deploy, access
+Raw BIO, or activate production.
+
+Required before build authorization:
+
+- controlled docs-only ratification commit of the exact three approved paths;
+- final baseline minting and explicit candidate allowlist acceptance;
+- PostgreSQL-16 fixture availability; and
+- Homeowner approval of the final build brief as an implementation dispatch.
+
+### Homeowner amendment ratification — planning v0.17 synchronization
+
+On 2026-07-26, the Homeowner ratified coordinated planning Amendments A–C.
+Planning Brief v0.17 now contains their self-contained wording in sections 3.2,
+3.3, 5.1, 9.1a, and 10.2. In particular, its section 9.1a refers to the
+section-5.1 contract directly rather than depending on the historical amendment
+label.
+
+Version 0.13 changes only header metadata and this ratification/synchronization
+record. Independent byte/status synchronization verification remains required.
+This is not an implementation dispatch or authority to migrate, edit code/tests,
+commit, push, merge, deploy, access Raw BIO, or activate production.
+
+### Round-1 synchronization review — corrections in v0.14
+
+The first independent byte-to-EOF review returned 2 HIGH and 1 MEDIUM:
+
+- section 2.1 still presented the now-ratified amendments as replacement
+  proposals;
+- planning section 10.1's exhaustive mapping had not carried through every
+  ratified result/transaction/lease-bound effect; and
+- the remaining-gate lists still named completed ratification and synchronization
+  work.
+
+Version 0.14 converts section 2.1 to a ratified incorporation record, synchronizes
+the missing planning mappings in v0.18, and leaves only genuinely open dispatch
+gates. Independent correction verification is required. This is not an
+implementation dispatch or authority to migrate, edit code/tests, commit, push,
+merge, deploy, access Raw BIO, or activate production.
+
+### Round-2 synchronization review — correction in v0.15
+
+The second independent byte-to-EOF review confirmed every Round-1 defect closed
+and found one MEDIUM manifest omission. Planning v0.19 now lists
+`PROD_RAW_EXPORT_JOB_LEASE_CONFIG_INVALID` in section 10's stable-code manifest
+and pins its shared fail-closed application meaning consistently with the exact
+result mapping and readiness contract.
+
+The coordinated Planning v0.19 correction changes the stable-code manifest.
+Build Brief v0.15 advances its header contract pointer to that planning version
+and adds this correction record. Independent correction verification is
+required. This is not an implementation dispatch or authority to migrate, edit
+code/tests, commit, push, merge, deploy, access Raw BIO, or activate production.
+
+### Round-3 synchronization review — version pointer corrected in v0.16
+
+The third independent byte-to-EOF review confirmed the ratified A–C semantics,
+mapping, transaction, precedence, gates, authority, and docs-only scope clean,
+but found one MEDIUM version-sync defect: section 2.1 still pointed at Planning
+v0.18 even though the current ratified contract and Amendment-C manifest
+correction are in v0.19.
+
+Version 0.16 corrects that pointer and corrects the v0.15 change record, which
+could no longer truthfully claim a metadata-only change. Independent correction
+verification is required. This is not an implementation dispatch or authority
+to migrate, edit code/tests, commit, push, merge, deploy, access Raw BIO, or
+activate production.
+
+### Round-4 convergence PASS — v0.17 closeout
+
+The fourth independent byte-to-EOF convergence review returned
+**PASS — 0 HIGH / 0 MEDIUM / 0 LOW**. It confirmed the complete ratified A–C
+contract, exhaustive mappings, stable-code/readiness contract, transaction
+ownership, terminalization, lease precedence, operative/historical wording,
+remaining gates, authority, and docs-only scope are aligned.
+
+Version 0.17 changes only header metadata, remaining-gate status, and this
+closeout record. It is ready only for a controlled docs-only ratification commit
+of the exact approved documentation paths. It remains **NOT DISPATCHED** and
+does not authorize implementation, migration, code/test work, push, merge,
+deployment, Raw BIO access, or production activation.
