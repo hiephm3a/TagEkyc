@@ -159,7 +159,7 @@ public sealed class EfRawExportJobRepository : IRawExportJobRepository
         Require(command.JobId);
         if (command.ExpectedRevision < 0 || command.ExpectedFencingToken < 0 ||
             !Enum.IsDefined(command.TerminalState) || !Enum.IsDefined(command.ReasonCode) ||
-            (command.AttemptId is null) != (command.LeaseOwnerId is null) ||
+            command.LeaseOwnerId is not null && command.AttemptId is null ||
             !ValidTerminalPair(command.TerminalState, command.ReasonCode))
         {
             throw Error(RequestInvalid);

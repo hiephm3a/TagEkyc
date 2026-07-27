@@ -436,7 +436,11 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
               FROM tagekyc.raw_export_lock_verification_session_for_authorization(verification_session_id);
               IF NOT FOUND THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_GRAPH_INVARIANT_FAILURE'; END IF;
               SELECT * INTO p FROM tagekyc.raw_export_authorization_permits WHERE "PermitId"=permit_id FOR UPDATE;
-              SELECT * INTO existing FROM tagekyc.raw_export_job_identities WHERE "PermitId"=permit_id;
+              SELECT * INTO existing
+              FROM tagekyc.raw_export_job_identities
+              WHERE "PermitId"=permit_id
+                AND "PrincipalId"=principal_id
+                AND "ClientApplicationId"=client_application_id;
               IF FOUND THEN
                 IF existing."IdempotencyFingerprintHash"=fingerprint_hash AND existing."IdempotencyKey"=idempotency_key THEN
                   SET CONSTRAINTS tagekyc.tr_b4_job_identity_has_classes DEFERRED;

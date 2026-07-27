@@ -1124,6 +1124,56 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
     }
 
     [Fact]
+    public async Task M7_public_terminalize_accepts_released_assembling_head()
+    {
+        await using var db = postgres.CreateDbContext();
+        var fixture = await CreateAuthorizedPacketPermitAsync(
+            db,
+            [RawExportRawClass.LiveSelfieImage]);
+        var repository = CreateJobRepository(db);
+        var bind = await repository.BindAsync(new(
+            Tip88B34AuthorizationEngineTests.Actor,
+            fixture.PermitId,
+            "b4-m7-terminalize-released"));
+        var owner = Guid.NewGuid();
+        var acquired = await repository.AcquireOrReclaimLeaseAsync(new(
+            Tip88B34AuthorizationEngineTests.Actor,
+            bind.JobId,
+            0,
+            0,
+            owner));
+        var released = await repository.RecordAttemptFailureAsync(new(
+            Tip88B34AuthorizationEngineTests.Actor,
+            bind.JobId,
+            acquired.Revision!.Value,
+            acquired.FencingToken!.Value,
+            acquired.AttemptId!.Value,
+            owner,
+            RawExportJobAttemptFailureCode.ATTEMPT_EXECUTION_FAILED_RETRYABLE));
+
+        var terminal = await repository.TerminalizeAsync(new(
+            Tip88B34AuthorizationEngineTests.Actor,
+            bind.JobId,
+            released.Revision,
+            released.FencingToken,
+            acquired.AttemptId,
+            LeaseOwnerId: null,
+            RawExportJobState.Cancelled,
+            RawExportJobTerminalReasonCode.REQUEST_CANCELLED));
+
+        Assert.Equal(RawExportJobTerminalizeStatus.Terminalized, terminal.Status);
+        Assert.Equal(RawExportJobState.Cancelled, terminal.State);
+        Assert.Equal(released.Revision + 1, terminal.Revision);
+        Assert.Equal(released.FencingToken, terminal.FencingToken);
+        var head = await db.RawExportJobOperationalHeads.SingleAsync(
+            item => item.JobId == bind.JobId);
+        Assert.Equal("Cancelled", head.CurrentState);
+        Assert.Equal(acquired.AttemptId, head.CurrentAttemptId);
+        Assert.Null(head.LeaseOwnerId);
+        Assert.Null(head.LeaseExpiresAt);
+    }
+
+    [Fact]
     public async Task M7_acquire_and_reclaim_cap_lease_at_frozen_deadlines()
     {
         await using var db = postgres.CreateDbContext();
@@ -1792,7 +1842,6 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
             0,
             0,
             Guid.NewGuid()));
-        var externalFixtureSideEffectStarted = true;
         await WaitUntilAfterAsync(first.LeaseExpiresAt!.Value);
         var reclaimed = await repository.AcquireOrReclaimLeaseAsync(new(
             Tip88B34AuthorizationEngineTests.Actor,
@@ -1801,7 +1850,6 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
             first.FencingToken!.Value,
             Guid.NewGuid()));
 
-        Assert.True(externalFixtureSideEffectStarted);
         Assert.Equal(RawExportJobLeaseStatus.Reclaimed, reclaimed.Status);
         Assert.Equal(bind.JobId, (await repository.ReadAsync(new(
             Tip88B34AuthorizationEngineTests.Actor,
@@ -3097,6 +3145,68 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
         Assert.Equal(0, await db.RawExportJobOperationalHeads.CountAsync());
         Assert.Equal(0, await db.RawExportJobTransitions.CountAsync());
         Assert.Equal(0, await db.RawExportJobAttempts.CountAsync());
+    }
+
+    [Fact]
+    public async Task M6_foreign_direct_claim_cannot_use_existing_job_as_existence_oracle()
+    {
+        await using var db = postgres.CreateDbContext();
+        var fixture = await CreateAuthorizedPermitAsync(
+            db,
+            [RawExportRawClass.LiveSelfieImage]);
+        var repository = CreateJobRepository(db);
+        var bind = await repository.BindAsync(new(
+            Tip88B34AuthorizationEngineTests.Actor,
+            fixture.PermitId,
+            "b4-m6-owned-job"));
+        var identity = await db.RawExportJobIdentities.SingleAsync(
+            item => item.JobId == bind.JobId);
+        var classes = await db.RawExportJobClasses
+            .Where(item => item.JobId == bind.JobId)
+            .OrderBy(item => item.Ordinal)
+            .Select(item => item.RawClass)
+            .ToArrayAsync();
+        var foreignPrincipal = Guid.NewGuid();
+        var foreignClient = Guid.NewGuid();
+
+        await using var connection = new NpgsqlConnection(postgres.ConnectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await SetActorAsync(connection, transaction, foreignPrincipal.ToString());
+        await using var command = new NpgsqlCommand(
+            """
+            SELECT * FROM tagekyc.raw_export_claim_or_read_job(
+              @job,@permit,@decision,@principal,@client,@api,@session,@subject,
+              @policy,@version,@purpose,@recipient,@mode,@permit_expiry,@job_expiry,
+              @key,@fingerprint,@classes);
+            """,
+            connection,
+            transaction);
+        command.Parameters.AddWithValue("job", Guid.NewGuid());
+        command.Parameters.AddWithValue("permit", identity.PermitId);
+        command.Parameters.AddWithValue("decision", identity.AuthorizationDecisionId);
+        command.Parameters.AddWithValue("principal", foreignPrincipal);
+        command.Parameters.AddWithValue("client", foreignClient);
+        command.Parameters.AddWithValue("api", Guid.NewGuid());
+        command.Parameters.AddWithValue("session", identity.VerificationSessionId);
+        command.Parameters.AddWithValue("subject", identity.SubjectRef);
+        command.Parameters.AddWithValue("policy", identity.PolicyId);
+        command.Parameters.AddWithValue("version", identity.PolicyVersion);
+        command.Parameters.AddWithValue("purpose", identity.PurposeCode);
+        command.Parameters.AddWithValue("recipient", identity.RecipientClientApplicationId);
+        command.Parameters.AddWithValue("mode", identity.ExportMode);
+        command.Parameters.AddWithValue("permit_expiry", identity.PermitExpiresAt);
+        command.Parameters.AddWithValue("job_expiry", identity.JobExpiresAt);
+        command.Parameters.AddWithValue("key", "b4-m6-foreign-oracle");
+        command.Parameters.AddWithValue("fingerprint", new byte[32]);
+        command.Parameters.AddWithValue("classes", classes);
+
+        var exception = await Assert.ThrowsAsync<PostgresException>(
+            () => command.ExecuteNonQueryAsync());
+
+        Assert.Equal(PostgresErrorCodes.RaiseException, exception.SqlState);
+        Assert.Equal("RAW_EXPORT_JOB_GRAPH_INVARIANT_FAILURE", exception.MessageText);
+        await transaction.RollbackAsync();
     }
 
     [Fact]
@@ -4526,7 +4636,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
                 Assert.Equal(RawExportJobLeaseStatus.NotFound, acquire.Status);
                 break;
             case "Renew":
-                await Assert.ThrowsAsync<RawExportJobException>(
+                var renewException = await Assert.ThrowsAsync<RawExportJobException>(
                     () => repository.RenewLeaseAsync(new(
                         actor,
                         jobId,
@@ -4534,9 +4644,10 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
                         0,
                         Guid.NewGuid(),
                         Guid.NewGuid())));
+                Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", renewException.Code);
                 break;
             case "Failure":
-                await Assert.ThrowsAsync<RawExportJobException>(
+                var failureException = await Assert.ThrowsAsync<RawExportJobException>(
                     () => repository.RecordAttemptFailureAsync(new(
                         actor,
                         jobId,
@@ -4545,9 +4656,10 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
                         Guid.NewGuid(),
                         Guid.NewGuid(),
                         RawExportJobAttemptFailureCode.ATTEMPT_EXECUTION_FAILED_RETRYABLE)));
+                Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", failureException.Code);
                 break;
             case "Terminalize":
-                await Assert.ThrowsAsync<RawExportJobException>(
+                var terminalizeException = await Assert.ThrowsAsync<RawExportJobException>(
                     () => repository.TerminalizeAsync(new(
                         actor,
                         jobId,
@@ -4557,6 +4669,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
                         null,
                         RawExportJobState.Cancelled,
                         RawExportJobTerminalReasonCode.REQUEST_CANCELLED)));
+                Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", terminalizeException.Code);
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(method), method, null);
@@ -4590,6 +4703,18 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
         finally
         {
             await blockerTransaction.RollbackAsync();
+        }
+
+        if (method == "Bind")
+        {
+            Assert.Equal(
+                0,
+                await CountWithSeparateContextAsync(
+                    context => context.RawExportJobOperationalHeads.CountAsync()));
+            Assert.Equal(
+                0,
+                await CountWithSeparateContextAsync(
+                    context => context.RawExportJobTransitions.CountAsync()));
         }
     }
 

@@ -167,7 +167,7 @@ public sealed class Tip88B4RawExportJobBoundaryTests
         Assert.Contains("return ExecuteAsync", body, StringComparison.Ordinal);
         Assert.Contains(
             "BeginTransactionAsync(System.Data.IsolationLevel.ReadCommitted, cancellationToken)",
-            source,
+            ExtractExecuteAsync(source),
             StringComparison.Ordinal);
     }
 
@@ -353,11 +353,24 @@ public sealed class Tip88B4RawExportJobBoundaryTests
     {
         var start = source.IndexOf($" {methodName}(", StringComparison.Ordinal);
         Assert.True(start >= 0, $"{methodName} was not found.");
-        var next = source.IndexOf(
-            "\n    public Task<",
-            start + methodName.Length,
-            StringComparison.Ordinal);
-        return source[start..(next < 0 ? source.Length : next)];
+        var openingBrace = source.IndexOf('{', start);
+        Assert.True(openingBrace >= 0, $"{methodName} has no opening brace.");
+        var depth = 0;
+        for (var index = openingBrace; index < source.Length; index++)
+        {
+            depth += source[index] switch
+            {
+                '{' => 1,
+                '}' => -1,
+                _ => 0,
+            };
+            if (depth == 0)
+            {
+                return source[start..(index + 1)];
+            }
+        }
+
+        throw new Xunit.Sdk.XunitException($"{methodName} has no matching closing brace.");
     }
 
     private static string ExtractExecuteAsync(string source)

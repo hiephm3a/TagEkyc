@@ -21,7 +21,7 @@ public sealed class RawExportJobReadinessValidator(
     private const int ExpectedSchemaRows = 114;
     private const string ExpectedSchemaDigest = "86f383e0770d0c49c887ebcab70151bb";
     private const int ExpectedFunctionCount = 14;
-    private const string ExpectedFunctionDigest = "85aa1d8bff92b72369f3b8fd36a7a567";
+    private const string ExpectedFunctionDigest = "033bbf492b8f6c43a54a51af78bc8f44";
 
     public async Task ValidateAsync(CancellationToken cancellationToken)
     {
