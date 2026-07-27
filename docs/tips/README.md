@@ -1,13 +1,28 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 1.63
+**Version:** 1.64
 **Status:** Active
 **Date:** 2026-07-27
 **Baseline:** Product Brief v0.1.2
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v1.64 - TIP-88B4 closeout prepared
+
+- Added
+  [`TIP-88B4 Closeout`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_closeout.md)
+  against settled baseline `92d64e6`. TIP-88B4 is closed as the metadata-only
+  permit-to-job consumption foundation: five tables, eight runtime entries, six
+  internal guards, ten triggers, the six-method repository, fingerprint/lease
+  contracts, readiness, and exact ACL/transaction evidence are landed. The
+  closeout records the independently rerun 794-pass/0-fail/1-intentional-skip
+  validation, honest post-landing defects, mutation adequacy, D1 accounting,
+  remaining B4/E3 debt, and the no-Raw-BIO/package/encryption/delivery boundary.
+  The closeout document is prepared but its docs-only commit still requires
+  separate Homeowner authorization; no push, merge, deployment, Raw BIO access,
+  or production activation is authorized.
 
 ### v1.63 - TIP-88B4 D1/D2 evidence correction synchronized
 
