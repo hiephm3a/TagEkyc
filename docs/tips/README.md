@@ -1,13 +1,28 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 1.62
+**Version:** 1.63
 **Status:** Active
 **Date:** 2026-07-27
 **Baseline:** Product Brief v0.1.2
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v1.63 - TIP-88B4 D1/D2 evidence correction synchronized
+
+- Synchronized the Homeowner-authorized documentation correction into
+  [`TIP-88B4 Planning Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  v0.22 and
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  v0.19. The mutation matrix now distinguishes behavioral mutation proof,
+  structural/constraint proof, source/static proof, and non-constructible states;
+  it preserves all executed tests without overstating distinct cells. The
+  `ExistingMatch` wording now matches landed idempotency: immutable validated
+  replay returns early, `ExportMode` remains fingerprint-bound, and prospective
+  `NewJob` mode/closure validation remains mandatory. Implementation is landed;
+  this docs-only amendment does not authorize commit, closeout, push, merge, PR,
+  deployment, Raw BIO access, or production activation.
 
 ### v1.62 - TIP-88B4 connection-lifecycle Amendment D synchronized
 

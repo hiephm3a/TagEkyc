@@ -1,24 +1,24 @@
 # TIP-88B4 — Permit-to-Job Consumption Foundation — Implementation Build Brief
 
-**Version:** 0.18
-**Status:** HOMEOWNER-RATIFIED AMENDMENT D SYNCHRONIZED — IMPLEMENTATION STOPPED
+**Version:** 0.19
+**Status:** IMPLEMENTED — D1/D2 EVIDENCE CORRECTION SYNCHRONIZED — DOCS-ONLY COMMIT PENDING
 **Date:** 2026-07-27
 **Repository:** `D:\Task\Remote Signing\TagEkyc`
 **Candidate source baseline:** `bf90d5453f2cf8fb45009ccc2dcdb42c335a4711`
-**Ratified contract:** `tip_88b4_planning_brief.md` v0.21, including coordinated
-Amendments A–D
-**Authority:** docs-only Amendment-D synchronization; implementation resume is
-not authorized
+**D1/D2 docs-amendment baseline:** `d09929df3d5f5eacf1968480c9fcbb6c5b13a200`
+**Ratified contract:** `tip_88b4_planning_brief.md` v0.22, including coordinated
+Amendments A–D and the D1/D2 evidence correction
+**Authority:** docs-only D1/D2 evidence correction; implementation is settled;
+commit and closeout are not authorized
 
-This docs-only amendment is not an implementation-resume dispatch. It does not
-authorize migration creation or execution, model/snapshot change, test or
-production-code work, commit, push, merge, deployment, Raw BIO access, package
-creation, encryption, delivery, or production activation.
+This docs-only amendment does not authorize migration creation or execution,
+model/snapshot change, test or production-code work, commit, push, merge,
+deployment, Raw BIO access, package creation, encryption, delivery, or production
+activation.
 
 If this brief conflicts with the ratified planning contract, the planning
-contract wins and implementation must STOP for correction. Implementation may
-resume only under a separate Homeowner instruction after Amendment-D docs
-closeout.
+contract wins. The implementation is already landed; the docs-only amendment
+commit and B4 closeout require separate Homeowner instructions.
 
 ## 1. TIP Analytical Summary / Intent Ledger
 
@@ -95,16 +95,15 @@ trust, delivery, receipt, exactly-once external work, production activation,
 legal sufficiency, multi-tenant isolation, or resistance to a fully compromised
 trusted backend.
 
-### Dispatch Readiness
+### Implementation disposition
 
-- **Implementation resume allowed now:** No.
-- **Preparation/review allowed now:** Amendment-D synchronization in the planning
-  brief, this build brief, and the TIP index only.
-- **Candidate implementation surfaces:** section 12 remains frozen until a
-  separate Homeowner resume instruction.
-- **Remaining STOP/RRI gates:** controlled docs-only Amendment-D commit, runtime
-  Task-0 re-anchor, exact allowlist revalidation, PostgreSQL-16 fixture
-  availability, and explicit Homeowner implementation-resume authorization.
+- **Implementation state:** Landed at
+  `d09929df3d5f5eacf1968480c9fcbb6c5b13a200`.
+- **Current authority:** D1/D2 documentation correction in the planning brief,
+  this build brief, and the TIP index only.
+- **Implementation surfaces:** Frozen and verify-only for this amendment.
+- **Remaining gates:** controlled docs-only D1/D2 commit, followed by separately
+  authorized B4 closeout.
 
 ## 2. Binding contract and implementation posture
 
@@ -133,7 +132,7 @@ repository, transaction owner, readiness validator, or SQL entry.
 On 2026-07-26, the Homeowner ratified coordinated Amendments A–C. On 2026-07-27,
 the Homeowner ratified connection-lifecycle Amendment D. Their authoritative,
 self-contained wording is incorporated without reinterpretation in Planning
-Brief v0.21:
+Brief v0.22:
 
 - Amendment A: sections 3.2 and 5.1, covering the typed bind `Terminal` outcome
   and safely identified committed-job `GraphInvalid` race closure;
@@ -146,15 +145,17 @@ Brief v0.21:
   connection-string mutation while preserving stricter preflight, final no-gap
   admission, one fresh explicit Read Committed transaction, same-instance
   ownership, and closed/transaction-free cleanup.
+- D1/D2 evidence correction: M3 evidence accounting and claim replay wording,
+  without changing runtime semantics.
 
 The builder must implement those planning sections directly. This section is a
 ratification/incorporation record, not a second copy, replacement instruction,
 or reinterpretation of the planning contract. Proposal and review history
 remains in section 18 only.
 
-This synchronization authority is docs-only. It does not authorize
-implementation resume, migration, code/test work, commit, push, merge,
-deployment, Raw BIO access, or production activation.
+The current synchronization authority is docs-only. It does not authorize
+migration or code/test work, commit, push, merge, deployment, Raw BIO access, or
+production activation.
 
 ## 3. Task 0 — final re-anchor before any authorized build
 
@@ -1032,10 +1033,13 @@ Implement the exact 15-step planning-section-5.1 sequence. Reuse landed:
 Do not call the general policy repository, duplicate B1/B2 logic, change lock
 order, or add a nested transaction.
 
-Committed equal-fingerprint replay returns before mutable revalidation.
-Conflicting fingerprint returns no `JobId`. A prospective new job revalidates all
-authority and physical time, and `NewJob` performs the fresh post-claim finite
-B1/B2 bound check before commit.
+Committed equal-fingerprint replay returns the immutable result validated and
+persisted by the first claim. `ExportMode` is part of the semantic fingerprint,
+so the same idempotency key with a different mode is `FingerprintConflict`, not
+`ExistingMatch`. Replay therefore does not re-run mode/closure business
+evaluation. On the prospective `NewJob` path, exact mode/closure validation
+remains mandatory before insert, all mutable authority and physical time are
+revalidated, and the fresh post-claim finite B1/B2 bound check runs before commit.
 
 For binding projection `GraphInvalid` with a safely identified committed job,
 actor-read the exact current identity/head and call
@@ -1202,43 +1206,45 @@ src/TagEkyc.Infrastructure/Persistence/Migrations/20260726145547_Tip88B4RawExpor
 It must not scan the whole repository because landed slices legitimately contain
 provider connection-string types and configuration.
 
-The seven all-six admission/ownership/adjacency methods are data-driven with one
-named case per repository method; the report must show all six cases, and a
-mutation to any one method must red its own case. They are not allowed to assert
-only a shared helper or one representative entry. The adjacency method reports
-the `OpenAsync` and `BeginTransactionAsync` invocation kinds separately: if a
-method invokes both, both cells must prove an immediately preceding final check;
-if a kind is absent, its named cell proves absence rather than being omitted.
+The seven all-six admission/ownership/adjacency methods remain data-driven and
+retain all executed cases. Their proof mechanisms are not interchangeable:
+behavioral cases require an observed-red behavioral mutation; bounded source
+assertions are source-grep/static proof; and an unsupported state is explicitly
+non-constructible/not applicable rather than advertised as a green mutation cell.
 
 The cleanup and same-scope-reopen methods each execute the complete 24-cell
 matrix: six repository methods multiplied by success, typed failure, provider
-exception, and cancellation. There are no omitted or “not applicable” cells.
-Every cell proves transaction disposal, EF/provider transaction absence,
-`ConnectionState.Closed`, and landed same-scope reuse.
+exception, and cancellation. There are no omitted executed cells. Both methods
+currently call the same shared assertion helper, which already includes the
+landed same-scope reuse assertion; the second 24 executions are therefore
+byte-identical reruns, not 24 additional behaviorally distinct proofs.
 
-Exact discriminating mutation map:
+Exact evidence classification and mutation map:
 
-| Scratch mutation | Test that must go RED |
-| --- | --- |
-| move in-memory preflight after any transaction-admission check in one method | that method's case in `B4_all_six_methods_preflight_precedes_transaction_admission` |
-| remove ambient rejection from any one method | that method's case in `B4_all_six_methods_reject_ambient_transaction_before_database` |
-| remove current EF transaction rejection from any one method | that method's case in `B4_all_six_methods_reject_existing_ef_transaction_before_database` |
-| remove provider-transaction rejection from any one method | that method's case in `B4_all_six_methods_reject_existing_provider_transaction_before_database` |
-| accept a connection that is currently open at entry | that method's case in `B4_all_six_methods_reject_open_connection_before_database` |
-| add a connection-string assignment or provider-specific builder to a B4 implementation file | `B4_does_not_assign_or_normalize_connection_string` and `B4_does_not_reference_enlist_or_npgsql_connection_string_builder` (the latter identifier names the superseded mechanism) |
-| replace the scoped DbContext/connection or create a second context, connection, data source, factory, or scope | `B4_uses_same_scoped_dbcontext_connection_and_transaction_for_B1_B2` and `B4_does_not_create_second_dbcontext_connection_or_datasource` |
-| omit transaction disposal or connection close on success, typed failure, provider exception, or cancellation in one method | that method/exit cell in `B4_connection_is_closed_and_transaction_free_after_every_exit` and `B4_same_scope_landed_repository_can_reopen_after_B4` |
-| mutate configured persistence/provider/global options | `B4_global_persistence_options_remain_unchanged` |
-| delete committed-graph-invalid terminalization from `Claimed` | `M3_committed_graph_invalid_claimed_terminalizes_and_returns_terminal` |
-| pre-call attempt-lock before graph-invalid terminalization | `M3_committed_graph_invalid_active_lease_uses_head_first_terminalization` |
-| remove higher-precedence deadline handling | `M3_committed_graph_invalid_deadline_crossing_returns_expired` |
-| skip the actor-scoped reread for `AlreadyTerminal` | `M3_committed_graph_invalid_already_terminal_returns_exact_result` |
-| weaken revision/fence/attempt/owner CAS on graph-invalid terminalization | `M3_committed_graph_invalid_stale_tuple_rolls_back_without_mutation` |
-| remove explicit fresh Read Committed ownership from any one method | that method's case in `B4_all_six_methods_own_fresh_read_committed_transactions` |
-| insert an application-level await/callback/resolver/database command between the final admission check and `OpenAsync` or `BeginTransactionAsync` | the affected method/invocation case in `B4_all_six_methods_final_admission_is_adjacent_to_each_open_or_begin` |
-| move acquire bounds after job lookup | `M7_direct_acquire_invalid_lease_bound_precedes_job_lookup` |
-| move renew bounds after job lookup | `M7_direct_renew_invalid_lease_bound_precedes_job_lookup` |
-| move bounds before actor validation in either lease function | `M7_invalid_actor_precedes_invalid_lease_bound` |
+| Evidence cell or group | Count | Category | Named evidence and accurate mutation claim |
+| --- | ---: | --- | --- |
+| ambient transaction rejection | 6 | behavioral, mutation-proven | removing `Transaction.Current` rejection makes each method case in `B4_all_six_methods_reject_ambient_transaction_before_database` red |
+| currently-open connection rejection | 6 | behavioral, mutation-proven | removing `connection.State != Closed` makes each method case in `B4_all_six_methods_reject_open_connection_before_database` red |
+| provider-current transaction rejection | 6 | behavioral, mutation-proven | `B4_all_six_methods_reject_existing_provider_transaction_before_database`; the same connection-state mutation drives this and the open row, so these are not six additional distinct guard behaviors |
+| EF-current transaction independent of an open connection | 6 | non-constructible / not applicable | EF `BeginTransactionAsync` opens the connection; `CurrentTransaction != null` with a closed connection cannot be produced on a supported path, so no independent mutation-red claim is made |
+| preflight-precedence topology fan-out | 24 | behavioral, mutation-proven | moving preflight after admission makes `B4_all_six_methods_preflight_precedes_transaction_admission` red, but invalid actor validation otherwise exits before `ExecuteAsync`; the 24 executed cells collapse to six equivalence classes, one per method, because the topology dimension has no influence on this test |
+| explicit fresh Read Committed ownership | 6 | behavioral, mutation-proven | changing the owned isolation makes each method case in `B4_all_six_methods_own_fresh_read_committed_transactions` red |
+| final `BeginTransactionAsync` adjacency | 6 | source-grep/static proof | bounded public-method and `ExecuteAsync` scans in `B4_all_six_methods_final_admission_is_adjacent_to_each_open_or_begin`; no behavioral mutation-red claim |
+| explicit B4 `OpenAsync`/`OpenConnectionAsync` adjacency | 6 | non-constructible / not applicable | supported B4 code has no explicit open invocation; `B4_explicit_open_adjacency_cells_are_not_applicable` and method-bounded absence assertions record that fact |
+| cleanup matrix | 24 | behavioral, mutation-proven | canonical mutation 7b—B4 owns the open and the complete `finally` cleanup path is removed—makes `B4_connection_is_closed_and_transaction_free_after_every_exit` red; deleting only the conditional close is vacuous because EF closes an EF-opened connection |
+| same-scope reopen matrix | 24 | behavioral, mutation-proven | `B4_same_scope_landed_repository_can_reopen_after_B4` repeats the same helper and canonical mutation evidence; it is not 24 additional distinct cells |
+| connection-string assignment/provider-builder prohibition | implementation manifest | source-grep/static proof | `B4_does_not_assign_or_normalize_connection_string` and `B4_does_not_reference_enlist_or_npgsql_connection_string_builder`; source mutation is detected statically, not claimed as behavioral evidence |
+| one scoped DbContext/connection/transaction and no second source | implementation manifest | source-grep/static proof | `B4_uses_same_scoped_dbcontext_connection_and_transaction_for_B1_B2` and `B4_does_not_create_second_dbcontext_connection_or_datasource` |
+| unchanged persistence/provider/global options | implementation manifest | source-grep/static proof | `B4_global_persistence_options_remain_unchanged` |
+| committed graph-invalid `Claimed` terminalization | 1 | behavioral, mutation-proven | deletion makes `M3_committed_graph_invalid_claimed_terminalizes_and_returns_terminal` red |
+| graph-invalid active-lease head-first path | 1 | behavioral, mutation-proven | pre-calling attempt-lock makes `M3_committed_graph_invalid_active_lease_uses_head_first_terminalization` red |
+| graph-invalid deadline precedence | 1 | behavioral, mutation-proven | removing higher-precedence deadline handling makes `M3_committed_graph_invalid_deadline_crossing_returns_expired` red |
+| actor-scoped `AlreadyTerminal` reread | 1 | behavioral, mutation-proven | skipping the reread makes `M3_committed_graph_invalid_already_terminal_returns_exact_result` red |
+| graph-invalid revision/fence/attempt/owner CAS | 1 | behavioral, mutation-proven | weakening the tuple makes `M3_committed_graph_invalid_stale_tuple_rolls_back_without_mutation` red |
+| acquire bound before lookup | 1 | behavioral, mutation-proven | moving the bound makes `M7_direct_acquire_invalid_lease_bound_precedes_job_lookup` red |
+| renew bound before lookup | 1 | behavioral, mutation-proven | moving the bound makes `M7_direct_renew_invalid_lease_bound_precedes_job_lookup` red |
+| actor validation before lease bounds | 2 functions | behavioral, mutation-proven | moving bounds first makes `M7_invalid_actor_precedes_invalid_lease_bound` red |
+| named B4 CHECK/trigger invariants in M1/M10 | manifest-defined | structural/constraint-proven | database constraints and triggers prevent invalid persisted shapes; their dedicated mechanism mutations remain in the M1/M10 gates |
 
 Additional binding:
 
@@ -1305,9 +1311,9 @@ an unrelated earlier guard to manufacture red.
 ## 12. Frozen implementation allowlist
 
 This allowlist was activated by the separate controlled implementation dispatch.
-It remains frozen while implementation is stopped: docs-only Amendment-D
-preparation does not authorize adding, removing, or editing an implementation
-surface, and does not authorize implementation resume.
+The implementation has landed and the allowlist remains frozen and verify-only:
+the docs-only D1/D2 amendment does not authorize adding, removing, or editing an
+implementation surface.
 
 Production:
 
@@ -1470,13 +1476,11 @@ evidence.
 
 ## 17. Commit and deployment boundary
 
-This draft authorizes no commit, push, merge, deployment, migration execution,
-Raw BIO access, or production activation. A later build dispatch must separately
-state commit discipline. Until then, do not stage or modify implementation files.
-During a later authorized build, the planning brief, build dispatch, TIP index,
-and TIP-88 spine remain byte-pinned verify-only inputs and may not be included in
-the implementation commit. B4 closeout/status edits require their own
-post-acceptance docs-only authorization and commit scope.
+This D1/D2 amendment authorizes no commit, push, merge, deployment, migration
+execution, Raw BIO access, or production activation. Do not stage or modify
+implementation files. The amendment's three documentation files require a
+separate controlled docs-only commit instruction, and B4 closeout/status edits
+require their own later authorization and commit scope.
 
 ## 18. Review state
 
@@ -1751,6 +1755,28 @@ previously-opened-now-closed scoped connection topology. Version 0.18:
   dispatched hash in either brief.
 
 Historical v0.8/v0.10 descriptions of the former design remain only where marked
-superseded. Implementation remains stopped. This synchronization does not
-authorize implementation resume, migration execution, commit, push, merge, PR,
+superseded. At v0.18, implementation remained stopped; that historical status is
+superseded by the v0.19 disposition below. The v0.18 synchronization authorized
+no implementation resume, migration execution, commit, push, merge, PR,
 deployment, Raw BIO access, or production activation.
+
+### Homeowner-authorized D1/D2 evidence correction — v0.19
+
+After implementation and the final closeout-review fixes landed at
+`d09929df3d5f5eacf1968480c9fcbb6c5b13a200`, three independent adversarial
+reviewers identified two documentation-only divergences. Version 0.19:
+
+- preserves every permanent test and executed matrix cell while replacing false
+  distinct-cell and mutation-red claims with the exact behavioral,
+  structural/constraint, source/static, and non-constructible classifications;
+- records that the 24 preflight executions reduce to six equivalence classes,
+  one per method, because the topology dimension has no influence, and that the
+  second 24 cleanup/reopen executions repeat the same helper;
+- preserves the landed early `ExistingMatch` return because the immutable first
+  claim was validated and `ExportMode` is fingerprint-bound; and
+- keeps mode/closure validation mandatory on the prospective `NewJob` path.
+
+This is a docs-only evidence correction. It does not alter or authorize code,
+tests, migrations, commit, push, merge, PR, deployment, Raw BIO access, or
+production activation. A separate instruction is required for the docs-only
+commit and for B4 closeout.

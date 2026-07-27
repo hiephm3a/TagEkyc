@@ -1,12 +1,14 @@
 # TIP-88B4 Permit-to-Job Consumption Foundation — Planning Brief
 
-**Version:** 0.21
+**Version:** 0.22
 
-**Status:** RATIFIED AS AMENDED — AMENDMENT D SYNCHRONIZED — IMPLEMENTATION STOPPED
+**Status:** RATIFIED AS AMENDED — D1/D2 EVIDENCE CORRECTION SYNCHRONIZED — IMPLEMENTATION LANDED
 
 **Date:** 2026-07-27
 
 **Grounded baseline:** `bf90d5453f2cf8fb45009ccc2dcdb42c335a4711`
+
+**D1/D2 docs-amendment baseline:** `d09929df3d5f5eacf1968480c9fcbb6c5b13a200`
 
 **Parent contract:** `docs/tips/tip_88_raw_export_policy_spine/tip_88_planning_brief.md`
 
@@ -1190,11 +1192,19 @@ longer than 256 characters raises
 `P0001 / RAW_EXPORT_JOB_REQUEST_VALIDATION_FAILED` and leaves zero B4 rows. The
 table CHECK remains an independent backstop for every insert path.
 
-The claim function itself reads the exact
+On the prospective `NewJob` path, the claim function itself reads the exact
 `raw_export_policy_versions` and `raw_export_policy_closures` rows, requires
 `CatalogApproved`, and requires caller-supplied `export_mode` to byte-equal the
-stored `Mode` before either inserting or returning `ExistingMatch`. The
-application projection is a read seam, not an unforgeable capability token.
+stored `Mode` before insert. The application projection is a read seam, not an
+unforgeable capability token.
+
+An `ExistingMatch` replay returns the immutable job result that was validated and
+persisted by the first successful claim. `ExportMode` is part of the canonical
+semantic fingerprint in section 5.2, so reuse of the same idempotency key with a
+different mode is `FingerprintConflict`, never `ExistingMatch`. A committed
+equal-fingerprint replay therefore does not re-run mode/closure business
+evaluation; its early `ExistingMatch` return is the required idempotent behavior,
+not a validation bypass.
 
 For a prospective `NewJob`, `AuthorityNotEffective` is returned when the
 function's fresh `v_now`, captured only after its authoritative landed session
@@ -1787,31 +1797,56 @@ overload, or removing the claim isolation guard must make its corresponding
 named test red. Creating a second context, connection, data source, connection
 factory, or service scope must red the shared-instance test.
 
-Each all-six admission test is data-driven with one independently reported case
-per repository method. The preflight-precedence test supplies an invalid command
-while ambient, EF-current, provider-current, and currently-open states are each
-present; every method must return request validation before observing or
-reporting transaction admission. Moving preflight after any admission check in
-one method must red that method's named case.
+Each all-six admission test remains data-driven with one reported case per
+repository method. The preflight-precedence test still executes all 24
+method/topology cells: six methods multiplied by ambient, EF-current,
+provider-current, and currently-open fixtures. Those are not 24 behaviorally
+distinct mutation cells. The invalid actor exits before `ExecuteAsync`, so the
+topology dimension does not influence the observed preflight result. The
+independently discriminating admission behaviors are approximately 12 cells:
+six ambient-transaction cells and six open-connection cells. EF-created and
+provider-created transactions also imply an open connection and therefore share
+the same `connection.State != Closed` predicate; an EF current transaction with a
+closed connection is not constructible on a supported EF path. The retained
+source assertion pins the separate `db.Database.CurrentTransaction` clause, but
+it is source/static proof rather than an observed-red behavioral mutation.
+Moving a method's preflight after admission still makes its preflight test cases
+red, but those 24 executions collapse to six per-method equivalence classes
+rather than proving 24 distinct behaviors.
 
-The final-admission adjacency test reports each repository method and each
-invocation kind separately. When a method explicitly invokes both `OpenAsync`
-and `BeginTransactionAsync`, it must repeat the final ambient/current check
-immediately before each invocation; the awaited completion of `OpenAsync` is
-followed by a new final check before begin. When one invocation kind is absent,
-that method's named case asserts its absence rather than silently omitting the
-cell. Inserting an application-level await, callback, resolver, or database
-command between either final check and its invocation must red the exact
-method/invocation case.
+The final-admission adjacency test remains a source/static proof. It bounds every
+public method and the shared `ExecuteAsync` helper, proves the final check is
+adjacent to `BeginTransactionAsync`, and proves no supported B4 method explicitly
+invokes `OpenAsync` or `OpenConnectionAsync`. The six explicit-open cells are
+therefore non-constructible/not applicable, not mutation-red coverage. The gates
+remain because they accurately prevent a future explicit-open path or
+intervening source operation from landing unnoticed.
 
-The cleanup and same-scope-reopen evidence is a complete 24-cell matrix:
-six repository methods multiplied by success, typed failure, provider exception,
-and cancellation. No cell is “where applicable” or may be omitted. Every cell
-asserts transaction disposal, EF/provider transaction absence,
-`ConnectionState.Closed`, and successful landed same-scope reuse after the B4
-exit. A cleanup mutation in any exit class must red that method/exit cell in both
-`B4_connection_is_closed_and_transaction_free_after_every_exit` and
-`B4_same_scope_landed_repository_can_reopen_after_B4`.
+The cleanup and same-scope-reopen names each continue to execute the complete
+24-cell matrix: six repository methods multiplied by success, typed failure,
+provider exception, and cancellation. No executed cell is removed. Both names
+currently call the same shared assertion helper, including the landed same-scope
+reopen assertion, so the second 24 executions are byte-identical reruns rather
+than 24 additional distinct proofs. Canonical cleanup mutation 7b—B4 explicitly
+owns the open connection while the entire `finally` cleanup path is removed—is
+the behavioral mutation proof; deleting only the conditional close is
+non-discriminating because EF closes connections that EF opened.
+
+The D1 evidence accounting is:
+
+| Evidence cell or group | Executed cells | Classification | Truthful scope |
+| --- | ---: | --- | --- |
+| ambient transaction rejection | 6 | behavioral, mutation-proven | removing the ambient predicate makes the six named method cases red |
+| currently-open connection rejection | 6 | behavioral, mutation-proven | removing `connection.State != Closed` makes the six named method cases red |
+| provider-current transaction rejection | 6 | behavioral, mutation-proven | uses the same open-connection predicate and mutation as the preceding row; not six additional distinct guards |
+| EF-current transaction as an independent closed-connection state | 6 | non-constructible / not applicable | EF `BeginTransactionAsync` also opens the connection; the independent state cannot be produced |
+| preflight-precedence topology fan-out | 24 | behavioral, mutation-proven | moving preflight after admission makes the named cases red, but the 24 executed cells collapse to six equivalence classes, one per method, because invalid actor validation exits before `ExecuteAsync` and the topology dimension has no influence |
+| explicit fresh Read Committed ownership | 6 | behavioral, mutation-proven | changing the repository-owned isolation makes each named method case red |
+| final Begin adjacency | 6 | source-grep/static proof | bounded source inspection proves adjacency |
+| explicit Open adjacency | 6 | non-constructible / not applicable | supported B4 code has no explicit open invocation |
+| cleanup matrix | 24 | behavioral, mutation-proven | canonical owned-open/no-finally mutation makes the exit cells red |
+| same-scope reopen matrix | 24 | behavioral, mutation-proven | repeats the same helper and mutation evidence; it is not 24 additional distinct cells |
+| named B4 CHECK/trigger invariants in M1/M10 | manifest-defined | structural/constraint-proven | PostgreSQL constraints/triggers make invalid persisted shapes impossible; their separate mutation gates prove those mechanisms |
 
 The same-scope reopen test must first execute a landed B1/B2/B3 read that opens
 and closes the scoped connection, then execute B4, then call a landed repository
@@ -2585,6 +2620,27 @@ connection topology. Amendment D removes that design and ratifies:
 This is a stricter no-mutation contract, not a relaxation of the superseded
 restore-after-mutation design. Version 0.21 synchronizes Amendment D into the
 operative transaction, SQL-entry, M3/M5, mutation, and review-attack surfaces.
-Implementation remains stopped. This docs preparation does not authorize
-implementation resume, migration execution, commit, push, merge, PR, deployment,
-Raw BIO access, or production activation.
+At v0.21, implementation remained stopped; that historical status is superseded
+by section 16.6. The v0.21 docs preparation authorized no implementation resume,
+migration execution, commit, push, merge, PR, deployment, Raw BIO access, or
+production activation.
+
+### 16.6 Homeowner-authorized D1/D2 evidence correction
+
+On 2026-07-27, after the TIP-88B4 implementation and closeout-review fixes landed
+at `d09929df3d5f5eacf1968480c9fcbb6c5b13a200`, the Homeowner authorized a
+docs-only correction of two evidence divergences:
+
+- D1 preserves every permanent test and every executed cell but reclassifies the
+  admission, adjacency, cleanup, and same-scope matrices by their actual proof
+  mechanism. It removes the false claim that all fan-out cells are independent
+  behavioral mutation proofs.
+- D2 preserves the landed claim SQL. `ExistingMatch` returns the immutable result
+  validated by the first claim; `ExportMode` is fingerprint-bound, while
+  mode/closure evaluation remains mandatory before a prospective `NewJob` insert.
+
+Version 0.22 synchronizes those corrections without changing the ratified runtime
+semantics or implementation. TIP-88B4 implementation is landed, but the docs-only
+amendment commit and B4 closeout remain separately authorized future actions. This
+amendment authorizes no code/test/migration edit, commit, push, merge, PR,
+deployment, Raw BIO access, or production activation.
