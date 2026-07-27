@@ -219,6 +219,29 @@ public sealed class RawExportPermitTtlReadinessCheck(RawExportPermitTtlBoundsSta
     }
 }
 
+public sealed class RawExportJobReadinessCheck(
+    RawExportJobReadinessValidator validator,
+    RawExportJobLeaseState leaseState) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        if (!leaseState.IsValid)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(RawExportJobLeaseOptions.InvalidCode)];
+        }
+
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportJobReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
 public sealed class ApiKeyStoreReadinessCheck(ApiKeyStoreProductionReadinessValidator validator) : IReadinessCheck
 {
     public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)

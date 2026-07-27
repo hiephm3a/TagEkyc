@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using TagEkyc.Application.Ports;
+using TagEkyc.Infrastructure.RawExport;
 
 namespace TagEkyc.Infrastructure.Persistence;
 
@@ -16,6 +18,7 @@ public static class TagEkycPersistenceServiceCollectionExtensions
         }
 
         services.AddDbContext<TagEkycDbContext>(options => options.UseNpgsql(connectionString));
+        services.TryAddSingleton(RawExportJobLeaseOptions.Resolve(null));
         services.AddScoped<IVerificationSessionRepository, EfVerificationSessionRepository>();
         services.AddScoped<ICaptureArtifactRepository, EfCaptureArtifactRepository>();
         services.AddScoped<IEvidenceResultRepository, EfEvidenceResultRepository>();
@@ -28,9 +31,11 @@ public static class TagEkycPersistenceServiceCollectionExtensions
         services.AddScoped<IRawExportControlPlaneRepository, EfRawExportControlPlaneRepository>();
         services.AddScoped<IRawExportSubjectConsentRepository, EfRawExportSubjectConsentRepository>();
         services.AddScoped<IRawExportAuthorizationRepository, EfRawExportAuthorizationRepository>();
+        services.AddScoped<IRawExportJobRepository, EfRawExportJobRepository>();
         services.AddScoped<RawExportRuntimePrivilegeValidator>();
         services.AddScoped<RawExportControlPlaneReadinessValidator>();
         services.AddScoped<RawExportSubjectConsentReadinessValidator>();
+        services.AddScoped<RawExportJobReadinessValidator>();
         services.AddScoped<IVerificationFinalizationBoundary, EfVerificationFinalizationBoundary>();
         services.AddScoped<EfAppendIdempotencyBoundary>();
         services.AddScoped<IAppendIdempotencyRepository>(sp => sp.GetRequiredService<EfAppendIdempotencyBoundary>());

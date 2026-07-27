@@ -101,12 +101,10 @@ Production `/readiness` fails closed (HTTP 503) on `PROD_RAW_EXPORT_SUBJECT_CONS
 
 ## Resolver Runtime Read Boundary (TIP-88B1-E3)
 
-**Deployment hold (2026-07-24):** the E3 implementation is present only in the
-working tree and is undergoing the post-build remediation recorded in
-`docs/tips/tip_88b1e3_resolver_runtime_read_access/tip_88b1e3_remediation_plan_v3.md`.
-Do not deploy or close out E3 until that document's identity, transitive-role,
-backing-read, deterministic-ACL, fulfillment-materialization, role-precedence,
-and B2 constraint-mode gates are implemented and green.
+TIP-88B1-E3 and its remediation are landed. Preserve the closed E3 identity,
+transitive-role, backing-read, deterministic-ACL, fulfillment-materialization,
+role-precedence, and B2 constraint-mode posture during every later migration.
+Do not restore any pre-E3 direct runtime table read.
 
 TIP-88B1-E3 supersedes the older SELECT-only guidance above. Authorization and readiness are capability-only: `tagekyc_runtime` must have zero of `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, and `TRIGGER` on all fourteen protected tables (the four policy-catalog tables, both requirement-rule tables, four B1 event tables, `verification_sessions`, and the three B2 consent tables).
 
@@ -163,6 +161,72 @@ not proof of the originally authenticated identity against a malicious
 superuser using `SET SESSION AUTHORIZATION`. The production application login is
 `NOSUPERUSER`. Superuser connectivity is operationally forbidden except through
 an audited break-glass procedure.
+
+## Permit-to-Job Consumption Foundation (TIP-88B4)
+
+TIP-88B4 adds metadata orchestration only:
+
+```text
+tagekyc.raw_export_job_identities
+tagekyc.raw_export_job_classes
+tagekyc.raw_export_job_attempts
+tagekyc.raw_export_job_transitions
+tagekyc.raw_export_job_operational_heads
+```
+
+`tagekyc_runtime` receives `EXECUTE` on exactly these eight entry functions:
+
+```text
+raw_export_read_job_binding_inputs(uuid,uuid,uuid)
+raw_export_claim_or_read_job(uuid,uuid,uuid,uuid,uuid,uuid,uuid,text,uuid,integer,text,uuid,text,timestamptz,timestamptz,text,bytea,text[])
+raw_export_read_job(uuid,uuid,uuid)
+raw_export_lock_job_for_attempt(uuid,uuid,uuid,bigint,bigint)
+raw_export_acquire_or_reclaim_job_lease(uuid,uuid,uuid,bigint,bigint,uuid,uuid,integer)
+raw_export_renew_job_lease(uuid,uuid,uuid,bigint,bigint,uuid,uuid,integer)
+raw_export_record_job_attempt_failure(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text)
+raw_export_terminalize_job(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text,text)
+```
+
+The grantor is `tagekyc_raw_export_deployer`, every grant is non-grantable, and
+the six `enforce_raw_export_job_*` functions have no non-owner ACL row. Runtime
+and every other non-owner have zero table-level and zero column-level privilege
+on all five B4 tables. Do not compensate for an entry-function failure by
+granting table or column access.
+
+`TagEkyc:RawExport:JobLeaseSeconds` is resolved once at process startup. Absent
+means `60`; valid values are integers from `10` through `300`, inclusive.
+Blank, malformed, under-range, and over-range values leave the process running
+but make readiness fail closed with
+`PROD_RAW_EXPORT_JOB_LEASE_CONFIG_INVALID`. A configuration change requires an
+application restart.
+
+Other B4 readiness failures are:
+
+```text
+PROD_RAW_EXPORT_JOB_SCHEMA_INVALID
+PROD_RAW_EXPORT_JOB_FUNCTION_ACL_INVALID
+PROD_RAW_EXPORT_JOB_TABLE_PRIVILEGE_INVALID
+```
+
+Before migration, capture the current E3 catalog, function ACL, table/column
+ACL, role-membership edge, and readiness result. Apply the B4 migration on
+PostgreSQL 16, verify all five tables and the exact function/ACL manifests
+above, then require healthy E3 and B4 readiness. For rollback rehearsal, migrate
+back to `20260724015546_Tip88B1E3ResolverReadBoundary`, prove the complete
+pre-B4 catalog/ACL snapshot is identical, and reapply
+`20260726145547_Tip88B4RawExportJobFoundation`. Migration apply must abort on
+`TIP88B4_FUNCTION_ACL_INVALID` or `TIP88B4_TABLE_ACL_INVALID`; do not repair
+unexpected ACLs by broadening the accepted manifest.
+
+Test-only roles, role memberships, default ACLs, explicit grants, and alternate
+grantors used for migration/readiness drills must be removed in `finally` and
+verified absent after the drill. Never leave a scratch login or default ACL in
+the hospital database.
+
+B4 does not read or persist Raw BIO bytes, assemble a package, encrypt content,
+create delivery handles, expose an HTTP export endpoint, or activate production
+raw export. It does not add shared-database multi-hospital support or claim
+resistance to compromise of a trusted backend/database-owner credential.
 
 ## Raw-Export Permit-TTL Bounds Config (TIP-88A-E2)
 

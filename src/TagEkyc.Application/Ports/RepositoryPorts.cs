@@ -354,6 +354,33 @@ public interface IRawExportAuthorizationRepository
         CancellationToken cancellationToken = default);
 }
 
+public interface IRawExportJobRepository
+{
+    Task<RawExportJobBindResult> BindAsync(
+        BindRawExportJobCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobReadResult> ReadAsync(
+        ReadRawExportJobCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobLeaseResult> AcquireOrReclaimLeaseAsync(
+        AcquireOrReclaimRawExportJobLeaseCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobRenewResult> RenewLeaseAsync(
+        RenewRawExportJobLeaseCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobAttemptFailureResult> RecordAttemptFailureAsync(
+        RecordRawExportJobAttemptFailureCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobTerminalizeResult> TerminalizeAsync(
+        TerminalizeRawExportJobCommand command,
+        CancellationToken cancellationToken = default);
+}
+
 public sealed record VerificationFinalizationWrite(
     VerificationSession ExpectedSession,
     VerificationSession CompletedSession,

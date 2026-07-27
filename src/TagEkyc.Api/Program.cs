@@ -34,6 +34,7 @@ builder.Services
     .Bind(builder.Configuration.GetSection(ApiKeyStoreOptions.SectionName));
 ConfigureEvidenceSigning(builder);
 ConfigureRawExportPermitTtl(builder);
+ConfigureRawExportJobLease(builder);
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
 ConfigureRetention(builder);
@@ -218,6 +219,7 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
     builder.Services.AddScoped<RawExportAuthorizationReadinessValidator>();
     builder.Services.AddScoped<IReadinessCheck, RawExportAuthorizationReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportPermitTtlReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportJobReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
 }
@@ -228,6 +230,12 @@ static void ConfigureRawExportPermitTtl(WebApplicationBuilder builder)
         builder.Configuration[$"{RawExportPermitTtlOptions.SectionName}:{RawExportPermitTtlOptions.PermitTtlMinSecondsKey}"],
         builder.Configuration[$"{RawExportPermitTtlOptions.SectionName}:{RawExportPermitTtlOptions.PermitTtlMaxSecondsKey}"]);
     builder.Services.AddSingleton(bounds);
+}
+
+static void ConfigureRawExportJobLease(WebApplicationBuilder builder)
+{
+    builder.Services.AddSingleton(
+        RawExportJobLeaseOptions.Resolve(builder.Configuration[RawExportJobLeaseOptions.Key]));
 }
 
 static void ConfigureRetention(WebApplicationBuilder builder)

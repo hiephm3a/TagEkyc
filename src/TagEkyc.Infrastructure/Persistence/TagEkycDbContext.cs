@@ -56,6 +56,11 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportDecisionClassRow> RawExportDecisionClasses => Set<RawExportDecisionClassRow>();
     public DbSet<RawExportAuthorizationPermitRow> RawExportAuthorizationPermits => Set<RawExportAuthorizationPermitRow>();
     public DbSet<RawExportPermitClassRow> RawExportPermitClasses => Set<RawExportPermitClassRow>();
+    public DbSet<RawExportJobIdentityRow> RawExportJobIdentities => Set<RawExportJobIdentityRow>();
+    public DbSet<RawExportJobClassRow> RawExportJobClasses => Set<RawExportJobClassRow>();
+    public DbSet<RawExportJobAttemptRow> RawExportJobAttempts => Set<RawExportJobAttemptRow>();
+    public DbSet<RawExportJobTransitionRow> RawExportJobTransitions => Set<RawExportJobTransitionRow>();
+    public DbSet<RawExportJobOperationalHeadRow> RawExportJobOperationalHeads => Set<RawExportJobOperationalHeadRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -591,6 +596,105 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         });
 
         ConfigureRawExportAuthorization(modelBuilder);
+        ConfigureRawExportJobs(modelBuilder);
+    }
+
+    private static void ConfigureRawExportJobs(ModelBuilder modelBuilder)
+    {
+        const string rawClasses = "'ChipDg1','ChipDg2Portrait','ChipDg13','ChipDg15','ChipSod','AaChallenge','AaResponse','LiveSelfieImage','LivenessMedia','HandSignatureImage'";
+        const string states = "'Claimed','Assembling','AssemblySealed','Protecting','PackageSealed','ReadyForDelivery','DeliveryInProgress','DeliveryOutcomeUnknown','Delivered','ReconciliationExpired','TerminalFailed','Cancelled','Expired'";
+
+        modelBuilder.Entity<RawExportJobIdentityRow>(entity =>
+        {
+            entity.ToTable("raw_export_job_identities", table =>
+            {
+                table.HasCheckConstraint("CK_b4_job_identity_policy_version", "\"PolicyVersion\" >= 1");
+                table.HasCheckConstraint("CK_b4_job_identity_schema_version", "\"SchemaVersion\" = 1");
+                table.HasCheckConstraint("CK_b4_job_identity_fingerprint_length", "octet_length(\"IdempotencyFingerprintHash\") = 32");
+                table.HasCheckConstraint("CK_b4_job_identity_export_mode", "\"ExportMode\" IN ('ExternalExportOnlyNoRetain','EncryptedExportPacket','EncryptedRawVaultRetained')");
+                table.HasCheckConstraint("CK_b4_job_identity_deadlines", "\"JobExpiresAt\" = \"PermitExpiresAt\"");
+                table.HasCheckConstraint("CK_raw_export_job_identities_IdempotencyKey", "length(\"IdempotencyKey\") BETWEEN 1 AND 256 AND \"IdempotencyKey\" COLLATE \"C\" ~ '^[A-Za-z0-9._:-]+$'");
+            });
+            entity.HasKey(row => row.JobId).HasName("PK_b4_job_identities");
+            entity.HasAlternateKey(row => row.PermitId).HasName("UQ_b4_job_identity_permit");
+            entity.Property(row => row.IdempotencyKey).HasMaxLength(256).IsRequired();
+            entity.Property(row => row.IdempotencyFingerprintHash).HasColumnType("bytea").IsRequired();
+            entity.Property(row => row.SubjectRef).IsRequired();
+            entity.Property(row => row.PurposeCode).IsRequired();
+            entity.Property(row => row.ExportMode).IsRequired();
+            entity.HasIndex(row => row.AuthorizationDecisionId).HasDatabaseName("IX_b4_job_identity_decision");
+            entity.HasIndex(row => row.VerificationSessionId).HasDatabaseName("IX_b4_job_identity_session");
+            entity.HasOne<RawExportAuthorizationPermitRow>().WithMany().HasForeignKey(row => row.PermitId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_b4_job_identity_permit");
+            entity.HasOne<RawExportAuthorizationDecisionRow>().WithMany().HasForeignKey(row => row.AuthorizationDecisionId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_b4_job_identity_decision");
+            entity.HasOne<VerificationSessionRow>().WithMany().HasForeignKey(row => row.VerificationSessionId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_b4_job_identity_session");
+        });
+
+        modelBuilder.Entity<RawExportJobClassRow>(entity =>
+        {
+            entity.ToTable("raw_export_job_classes", table =>
+            {
+                table.HasCheckConstraint("CK_b4_job_class_ordinal", "\"Ordinal\" >= 0");
+                table.HasCheckConstraint("CK_b4_job_class_raw_class", $"\"RawClass\" IN ({rawClasses})");
+            });
+            entity.HasKey(row => new { row.JobId, row.RawClass }).HasName("PK_b4_job_classes");
+            entity.HasAlternateKey(row => new { row.JobId, row.Ordinal }).HasName("UQ_b4_job_class_ordinal");
+            entity.HasOne<RawExportJobIdentityRow>().WithMany().HasForeignKey(row => row.JobId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_b4_job_class_job");
+        });
+
+        modelBuilder.Entity<RawExportJobAttemptRow>(entity =>
+        {
+            entity.ToTable("raw_export_job_attempts", table =>
+            {
+                table.HasCheckConstraint("CK_raw_export_job_attempts_Phase", "\"Phase\" = 'Assembling'");
+                table.HasCheckConstraint("CK_raw_export_job_attempts_AttemptOrdinal", "\"AttemptOrdinal\" >= 0");
+                table.HasCheckConstraint("CK_raw_export_job_attempts_FencingToken", "\"FencingToken\" >= 1");
+                table.HasCheckConstraint("CK_raw_export_job_attempts_LeaseTime", "\"InitialLeaseExpiresAt\" > \"AcquiredAt\"");
+            });
+            entity.HasKey(row => row.AttemptId).HasName("PK_b4_job_attempts");
+            entity.HasAlternateKey(row => new { row.JobId, row.AttemptOrdinal }).HasName("UQ_b4_job_attempt_ordinal");
+            entity.HasAlternateKey(row => new { row.JobId, row.AttemptId, row.FencingToken }).HasName("UQ_b4_job_attempt_fence");
+            entity.HasOne<RawExportJobIdentityRow>().WithMany().HasForeignKey(row => row.JobId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_b4_job_attempt_job");
+        });
+
+        modelBuilder.Entity<RawExportJobTransitionRow>(entity =>
+        {
+            entity.ToTable("raw_export_job_transitions", table =>
+            {
+                table.HasCheckConstraint("CK_b4_job_transition_revision", "\"ResultingRevision\" >= 0 AND \"FencingToken\" >= 0");
+                table.HasCheckConstraint("CK_b4_job_transition_event_shape",
+                    "(\"EventType\" = 'JobBound' AND \"FromState\" IS NULL AND \"ToState\" = 'Claimed' AND \"AttemptId\" IS NULL AND \"FencingToken\" = 0 AND \"ResultingLeaseOwnerId\" IS NULL AND \"ResultingLeaseExpiresAt\" IS NULL AND \"FailureCode\" IS NULL) OR " +
+                    "(\"EventType\" = 'LeaseAcquired' AND \"FromState\" = 'Claimed' AND \"ToState\" = 'Assembling' AND \"AttemptId\" IS NOT NULL AND \"FencingToken\" >= 1 AND \"ResultingLeaseOwnerId\" IS NOT NULL AND \"ResultingLeaseExpiresAt\" IS NOT NULL AND \"FailureCode\" IS NULL) OR " +
+                    "(\"EventType\" IN ('LeaseRenewed','LeaseAcquiredAfterRetryableFailure','LeaseReclaimed') AND \"FromState\" = 'Assembling' AND \"ToState\" = 'Assembling' AND \"AttemptId\" IS NOT NULL AND \"FencingToken\" >= 1 AND \"ResultingLeaseOwnerId\" IS NOT NULL AND \"ResultingLeaseExpiresAt\" IS NOT NULL AND \"FailureCode\" IS NULL) OR " +
+                    "(\"EventType\" = 'AttemptFailedRetryable' AND \"FromState\" = 'Assembling' AND \"ToState\" = 'Assembling' AND \"AttemptId\" IS NOT NULL AND \"FencingToken\" >= 1 AND \"ResultingLeaseOwnerId\" IS NULL AND \"ResultingLeaseExpiresAt\" IS NULL AND \"FailureCode\" = 'ATTEMPT_EXECUTION_FAILED_RETRYABLE') OR " +
+                    "(\"EventType\" = 'JobTerminalFailed' AND ((\"FromState\" = 'Claimed' AND \"AttemptId\" IS NULL AND \"FencingToken\" = 0) OR (\"FromState\" = 'Assembling' AND \"AttemptId\" IS NOT NULL AND \"FencingToken\" >= 1)) AND \"ToState\" = 'TerminalFailed' AND \"ResultingLeaseOwnerId\" IS NULL AND \"ResultingLeaseExpiresAt\" IS NULL AND \"FailureCode\" IN ('AUTHORITY_REVALIDATION_FAILED','ATTEMPT_EXECUTION_FAILED_NON_RETRYABLE','JOB_GRAPH_INVARIANT_FAILURE','MODE_RETRY_NOT_AUTHORIZED')) OR " +
+                    "(\"EventType\" = 'JobCancelled' AND ((\"FromState\" = 'Claimed' AND \"AttemptId\" IS NULL AND \"FencingToken\" = 0) OR (\"FromState\" = 'Assembling' AND \"AttemptId\" IS NOT NULL AND \"FencingToken\" >= 1)) AND \"ToState\" = 'Cancelled' AND \"ResultingLeaseOwnerId\" IS NULL AND \"ResultingLeaseExpiresAt\" IS NULL AND \"FailureCode\" = 'REQUEST_CANCELLED') OR " +
+                    "(\"EventType\" = 'JobExpired' AND ((\"FromState\" = 'Claimed' AND \"AttemptId\" IS NULL AND \"FencingToken\" = 0) OR (\"FromState\" = 'Assembling' AND \"AttemptId\" IS NOT NULL AND \"FencingToken\" >= 1)) AND \"ToState\" = 'Expired' AND \"ResultingLeaseOwnerId\" IS NULL AND \"ResultingLeaseExpiresAt\" IS NULL AND \"FailureCode\" = 'PERMIT_OR_JOB_EXPIRED')");
+            });
+            entity.HasKey(row => row.TransitionId).HasName("PK_b4_job_transitions");
+            entity.HasAlternateKey(row => new { row.JobId, row.ResultingRevision }).HasName("UQ_b4_job_transition_revision");
+            entity.HasIndex(row => new { row.JobId, row.AttemptId, row.FencingToken }).HasDatabaseName("IX_b4_job_transition_attempt_fence");
+            entity.HasOne<RawExportJobIdentityRow>().WithMany().HasForeignKey(row => row.JobId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_b4_job_transition_job");
+            entity.HasOne<RawExportJobAttemptRow>().WithMany().HasForeignKey(row => new { row.JobId, row.AttemptId, row.FencingToken }).HasPrincipalKey(row => new { row.JobId, row.AttemptId, row.FencingToken }).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_b4_job_transition_attempt");
+        });
+
+        modelBuilder.Entity<RawExportJobOperationalHeadRow>(entity =>
+        {
+            entity.ToTable("raw_export_job_operational_heads", table =>
+            {
+                table.HasCheckConstraint("CK_b4_job_head_shape",
+                    $"\"CurrentState\" IN ({states}) AND \"Revision\" >= 0 AND \"FencingToken\" >= 0 AND " +
+                    "((\"CurrentAttemptId\" IS NULL AND \"FencingToken\" = 0) OR (\"CurrentAttemptId\" IS NOT NULL AND \"FencingToken\" >= 1)) AND " +
+                    "((\"LeaseOwnerId\" IS NULL AND \"LeaseExpiresAt\" IS NULL) OR (\"LeaseOwnerId\" IS NOT NULL AND \"LeaseExpiresAt\" IS NOT NULL)) AND " +
+                    "((\"CurrentState\" = 'Claimed' AND \"Revision\" = 0 AND \"CurrentAttemptId\" IS NULL AND \"LeaseOwnerId\" IS NULL) OR " +
+                    "(\"CurrentState\" = 'Assembling' AND \"CurrentAttemptId\" IS NOT NULL) OR " +
+                    "(\"CurrentState\" IN ('AssemblySealed','Protecting','PackageSealed','ReadyForDelivery','DeliveryInProgress','DeliveryOutcomeUnknown','Delivered','ReconciliationExpired') AND \"CurrentAttemptId\" IS NOT NULL) OR " +
+                    "(\"CurrentState\" IN ('TerminalFailed','Cancelled','Expired') AND \"LeaseOwnerId\" IS NULL))");
+            });
+            entity.HasKey(row => row.JobId).HasName("PK_b4_job_operational_heads");
+            entity.HasIndex(row => new { row.JobId, row.CurrentAttemptId, row.FencingToken }).HasDatabaseName("IX_b4_job_head_attempt_fence");
+            entity.HasOne<RawExportJobIdentityRow>().WithOne().HasForeignKey<RawExportJobOperationalHeadRow>(row => row.JobId).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_b4_job_head_job");
+            entity.HasOne<RawExportJobAttemptRow>().WithMany().HasForeignKey(row => new { row.JobId, row.CurrentAttemptId, row.FencingToken }).HasPrincipalKey(row => new { row.JobId, row.AttemptId, row.FencingToken }).OnDelete(DeleteBehavior.Restrict).HasConstraintName("FK_b4_job_head_attempt");
+        });
     }
 
     private static void ConfigureRawExportAuthorization(ModelBuilder modelBuilder)
