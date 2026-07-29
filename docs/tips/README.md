@@ -1,13 +1,326 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 1.64
+**Version:** 1.82
 **Status:** Active
-**Date:** 2026-07-27
+**Date:** 2026-07-29
 **Baseline:** Product Brief v0.1.2
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v1.82 - TIP-88C1 v0.17 final planning correction
+
+- Updated the Planning Brief to v0.17 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Split configuration readiness, CaptureAgent pre-wait and custody post-wait
+  projections; corrected late token/backoff expired-owner sums to be
+  sequential after the shared lease/minimum-age owner-CAS anchor.
+- Removed the duplicate per-claim attempt limit. The 91-symbol register retains
+  three independently binding source/key/object limits.
+- Transferred retry-count accounting and all nine open questions to
+  `C1-BB-RETRY-COUNT-ACCOUNTING-GATE`, which blocks Build-Brief dispatch.
+- Synchronized HLD v0.13, LLD v1.9 and Debt Registry v0.14. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.81 - TIP-88C1 v0.16 self-auditing planning closure
+
+- Updated the Planning Brief to v0.16 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Replaced hand-written readiness groups with the exhaustive 15-path
+  state × preceding-wait derivation and the combined evaluation-wait plus
+  expired-owner-reclaim negative.
+- Published the 92-symbol population/register diff; closed five finite
+  attempt/key/object/retry limits, one common busy backoff,
+  `AdmissionProtocolRejected` and the non-resettable disposition clock.
+- Split pending/ready same-owner and expired-owner states; exact-fence
+  `Terminated` and P4 `TerminatedBeforeStart` both settle prior R2.
+- Synchronized HLD v0.12, LLD v1.8 and Debt Registry v0.13. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.80 - TIP-88C1 v0.15 symbol and retry correction
+
+- Updated the Planning Brief to v0.15 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Added one normative-symbol register, the three-case continuation projection
+  and the expired-owner reclaim-term mutation.
+- Made temporary unavailability retryable but non-terminal/non-replay-stable,
+  and made P4/P5 depend only on server-observable write/flush and reader/writer
+  facts.
+- Planning section 10.0 remains the sole phase/residue/retry/body/admission
+  contract; each invocation uses one external operation shape and a same-UUID
+  retry invokes that shape again.
+- Synchronized HLD v0.11, LLD v1.7 and Debt Registry v0.12. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.79 - TIP-88C1 v0.14 phase-table and termination-budget correction
+
+- Updated the Planning Brief to v0.14 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Made Planning section 10.0 the single exhaustive P0–P7 outcome contract and
+  split metadata-only finalization from body-required progression.
+- Added exact P4 post-R1/pre-admission attempt terminalization while retaining
+  Bound alias/idempotency evidence.
+- Added four bounded no-default prior-R2 termination budgets, conditional
+  runtime projections and discriminating time-bound tests.
+- Synchronized HLD v0.10, LLD v1.6 and Debt Registry v0.11. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.78 - TIP-88C1 v0.13 admission and re-entry correction
+
+- Updated the Planning Brief to v0.13 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Added one-operation metadata/R1/admission/body phase gating, a bounded
+  memory-only kernel/TLS residual and exact no-proxy/no-disk-buffer posture.
+- Split internal claim progression from the only agent-visible final union.
+- Added same-owner fenced re-entry after durable prior-R2 termination.
+- Removed agent-capacity attestation; local exhaustion stays local and server
+  capacity outcomes are custody-only.
+- Synchronized HLD v0.9, LLD v1.5 and Debt Registry v0.10. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.77 - TIP-88C1 v0.12 physical-capacity correction
+
+- Updated the Planning Brief to v0.12 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Chose Model A and split the eight-key capacity manifest between CaptureAgent
+  retained-buffer admission and custody stream/window admission; removed the
+  aggregate-subsuming product relation and required independently reachable
+  slot/aggregate mutations.
+- Classified incomplete transport as retryable temporary unavailability and
+  clean-EOF content mismatch as terminal, with exact same-UUID behavior.
+- Replaced stale three-class commitment evidence with two supported positives
+  plus the unsupported `LivenessMedia` negative, and pinned pre-begin versus
+  post-R2 declaration correction.
+- Synchronized HLD v0.8, LLD v1.4 and Debt Registry v0.9. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.76 - TIP-88C1 v0.11 transport and bounded-capacity correction
+
+- Updated the Planning Brief to v0.11 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Pinned one external no-resume metadata+bounded-stream operation shape per
+  invocation; the complete
+  begin/broker/complete/R1–R6 ceremony remains internal to TagEkyc.
+- Added exact per-class size, per-operation/aggregate plaintext-memory and
+  per-producer/deployment concurrency bounds and failure contracts.
+- Added one token TTL to the lost-response retention relation and separated a
+  live current evaluation from lookup-lock contention with exact
+  `RetryNotBeforeUtc`.
+- Ratified D2 for `ChipDg2Portrait` and `LiveSelfieImage`; deferred
+  `LivenessMedia` to a separate resumable-transport slice.
+- Synchronized HLD v0.7, LLD v1.3 and Debt Registry v0.8. No Build Brief,
+  implementation, Raw BIO/provider operation, commit, push, merge or deployment
+  is authorized.
+
+### v1.75 - TIP-88C1 v0.10 lifecycle and privacy correction
+
+- Updated the Planning Brief to v0.10 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Ratified content-free producer-envelope v2, leaving content confirmation only
+  behind the keyed commitment and R3 verification boundary.
+- Closed token reissue/current-slot CAS and cleanup semantics, effective
+  server-cap admission, exact timeout/configuration bounds, response shape and
+  C1-only `C1HashCanonical` framing without changing landed JCS
+  `HashCanonical`.
+- Synchronized HLD v0.6, LLD v1.2 and Debt Registry v0.7. No Build Brief,
+  implementation, Raw BIO/provider operation, commit, push, merge or deployment
+  is authorized.
+
+### v1.74 - TIP-88C1 v0.9 external-review correction
+
+- Updated the TIP-88C1 Planning Brief to v0.9 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Bound tokens to a server-canonical producer-claim envelope, expanded the
+  broker-internal normalized result, and required broker-owned `complete` to
+  recompute admission before R1.
+- Defined evaluation expiry, closed retry lineage and token-result semantics,
+  split capability/lifetime residue, and added reconciliation plaintext
+  hygiene plus custody-host readiness.
+- Synchronized HLD v0.5, LLD v1.1 and Debt Registry v0.6. External CC/GPT
+  re-review is required; no Build Brief, implementation, provider/key
+  operation, Raw BIO handling, commit, push, merge or deployment is authorized.
+
+### v1.73 - TIP-88C1 consolidated v0.8 planning patch
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.8 at status **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED —
+  IMPLEMENTATION BLOCKED**.
+- Added capture-time ingress idempotency, keyed commitment/subject-token
+  privacy, complete R1 recovery context, fenced producer/reconciler ownership,
+  authority snapshots/checkpoints, accepted-session source freeze, exact C2
+  disposition CAS, monotonic renewal, plaintext/host posture and historic-key
+  lifecycle/DR planning.
+- Closed V1 review gaps with a rotation-safe begin/broker-complete claim and
+  instance-independent artifact edge, server-authored acceptance
+  event/selection dependency, source/attempt/staged fingerprint split,
+  idempotent R1 key reference, exact complete-provisional recovery,
+  deterministic C2 `Preparing` pre-registration plus in-Seal disposition CAS,
+  and an exact least-privilege capability graph.
+- Closed the V3 atomicity finding: the NewCandidate `complete` branch is R1 and
+  returns a source only after its full recovery context commits; New post-begin
+  residue is an Evaluating alias plus bounded non-source shell, while an
+  Existing alternate preserves its alias plus unchanged canonical claim.
+- Closed V4 follow-on gaps with distinct New/Existing token semantics,
+  in-place monotonic shell reclaim, fresh authority revalidation inside
+  `complete`, and named atomicity/authority/reclaim mutation tests.
+- Applied the v0.8-V5 checkpoint corrections: durable alternate-key aliases/
+  tombstones, stateful token-bound HMAC brokerage, typed dependency results
+  routed through `complete`, closed token outcomes and cycle-qualified rounds.
+- Applied the final v0.8-V6 patches for broker-owned completion, a mandatory
+  1–300-second DB-issued token TTL, exact alias/canonical residue and the closed
+  token-variant/result matrix. Per Homeowner direction there is no internal V7;
+  these patches require external CC/GPT verification and do not claim PASS.
+- Synchronized HLD v0.4, LLD v1.0 and Debt Registry v0.5. Controller/legal/
+  retention/purge/hold/provider/key choices, D2–D9, the additive
+  acceptance-surface/producer and every real-artifact/production gate remain
+  open.
+- This docs-only candidate authorizes no Build Brief, source/test/migration,
+  provider/key operation, Raw BIO handling, build, commit, push, merge,
+  deployment or production activation.
+
+### v1.72 - TIP-88C1 consolidated v0.7 review candidate
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.7 after GPT, CC, and Codex adjudication.
+- Recorded the Homeowner-ratified `EncryptedRawVaultRetained` mode direction,
+  with controller/legal/retention/purge/hold/access/B4/delivery sub-decisions
+  still requiring Homeowner ratification.
+- Closed the circular reservation fingerprint, source-selection ambiguity,
+  committed replay/admission conflict, sealed-state reclaim, unknown-seal abort
+  race, timestamp round-trip, crash nondeterminism, observability, credential
+  topology, and ingress-response specification gaps.
+- Synchronized HLD v0.3, LLD v0.9, and Debt Registry v0.4 while preserving
+  separate ART persistence/readability/completeness gates and complete fixture
+  non-claims.
+- v0.7 is only a candidate for independent review. It authorizes no Build
+  Brief, implementation, provider execution/evidence, raw persistence/reuse,
+  commit, push, merge, deployment, or production activation.
+
+### v1.71 - TIP-88C1 round-5 root-cause and GUID correction
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.6 after V5 found one HIGH `PATCH_REGRESSION`: v0.5 used GUID `D`
+  strings while the authoritative LLD and landed hash call sites use `N`.
+- Recorded the mandatory round-5 root-cause checkpoint, corrected every C1
+  preimage to lowercase GUID `N`, and required a complete independent
+  cross-language scalar/hash/id golden vector.
+- Updated the LLD to v0.8 and debt registry to v0.3. Scope, provider posture,
+  D1–D9 decisions, GOV/ART gates, and all non-authorization boundaries remain
+  unchanged.
+- This entry authorizes no implementation, provider evidence collection,
+  raw-data handling, commit, push, merge, deployment, or real-patient
+  activation.
+
+### v1.70 - TIP-88C1 V4 governance, retry, and lease corrections
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.5 after V4 found one HIGH and three MEDIUM actionable gaps.
+- Synchronized the C1 planning amendment into the HLD, LLD, and debt registry;
+  required complete fixture lifecycle dispositions; split job-stable assembly
+  values from attempt-scoped manifest/C2 values; and added landed B4
+  lease-renewal supervision with latest-revision propagation.
+- Updated the feasibility spike to v0.3 only to label its v0.1 planning status
+  as historical rather than current.
+- Added exact cross-attempt and longer-than-one-lease proof requirements. The
+  initial mode/class/key/provider decisions remain unratified, and no
+  implementation dispatch has been issued.
+- This entry authorizes no implementation, provider evidence collection,
+  raw-data handling, commit, push, merge, deployment, or real-patient
+  activation.
+
+### v1.69 - TIP-88C1 V3 lifecycle and key-boundary corrections
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.4 after V3 found three HIGH and one MEDIUM contract gaps.
+- Required exact equality between sealed items and the immutable B4 ordered
+  job-class set, made the committed seal the authority point for finalizing its
+  exact C2 preparation, and separated source-encryption keys from assembly
+  signing and C2 verification.
+- Added D9 to carry `GOV-001` and `ART-001` through `ART-009`, including the
+  provider-fixture evidence packet, real-artifact, HLD/LLD, and debt-registry
+  gates. Provider-neutral storage direction, mode/class recommendations, scope,
+  and non-authorization remain unchanged.
+- This entry authorizes no implementation, raw-data handling, provider
+  production use, commit, push, merge, deployment, or real-patient activation.
+
+### v1.68 - TIP-88C1 V2 seal replay and outcome synchronization
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.3 after V2 found two HIGH and two MEDIUM patch-local defects.
+- Completed the seal command with every persisted assembly field, made exact
+  replay reachable from `AssemblySealed`, pinned stale admission before fresh
+  authority for a new seal, and synchronized binding/integrity outcome tokens.
+- Added discriminating response-loss replay and simultaneous
+  stale-plus-withdrawal proofs. Provider-neutral storage direction, mode/class
+  recommendations, scope, and non-authorization remain unchanged.
+- This entry authorizes no implementation, raw-data handling, provider
+  production use, commit, push, merge, deployment, or real-patient activation.
+
+### v1.67 - TIP-88C1 round-1 distributed-boundary corrections
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.2 after independent High-risk review found five HIGH and two MEDIUM
+  planning defects.
+- Added the C1-owned B4 `Assembling → AssemblySealed` transaction, the
+  provider/metadata provisional-object crash protocol, fresh pre-seal authority
+  revalidation, credential/session-challenge producer binding, the C2
+  prepare/finalize/abort boundary, and a distinct DG2 artifact identity.
+- Split custody-ingress and assembly-worker precedence matrices and added exact
+  consumer mappings. The accepted provider-neutral/S3-reference direction and
+  all implementation/non-production boundaries remain unchanged.
+- Corrected the feasibility spike wording so production-provider qualification,
+  rather than the already accepted reference-adapter direction, remains a
+  Homeowner decision.
+- This entry authorizes no implementation, raw-data handling, provider
+  production use, commit, push, merge, deployment, or real-patient activation.
+
+### v1.66 - TIP-88C1 planning opened with provider-neutral storage direction
+
+- Added
+  [`TIP-88C1 Planning Brief v0.1`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  under the active PI-TAG-001 High-risk pilot.
+- Recorded the Homeowner-selected provider-neutral raw-artifact storage
+  boundary, an S3-compatible first reference adapter tested against a pinned
+  MinIO version/digest, and an encrypted-filesystem provider as a separately
+  qualified single-node alternative rather than parallel mandatory scope.
+- Kept MinIO production approval, the initial mode/class set, cryptographic/key
+  boundary, pre-capture retention authority, and CaptureAgent cross-repository
+  allowlist behind explicit gates. The draft recommends
+  `EncryptedExportPacket` with `ChipDg2Portrait`, `LiveSelfieImage`, and
+  `LivenessMedia`, but does not ratify or dispatch those choices.
+- Refreshed the
+  [`TIP-88C1 Feasibility Spike`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_feasibility_spike.md)
+  to v0.2 so its storage-provider wording matches the accepted direction.
+- This entry authorizes no implementation, raw-data handling, provider
+  production use, commit, push, merge, deployment, or real-patient activation.
+
+### v1.65 - TIP-88C1 feasibility characterized
+
+- Added
+  [`TIP-88C1 Feasibility Spike`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_feasibility_spike.md)
+  against TagEkyc `33b478c` and a read-only inspection of CaptureAgent
+  `b193f63`. The spike confirms that TagEkyc has metadata/hashes but no raw
+  source/provider/resolver, while CaptureAgent keeps only transient
+  zero-on-dispose buffers and rejects `RawVault` configuration. C1 planning may
+  proceed under the now-active PI-TAG-001 High-risk pilot, but implementation is
+  blocked until the initial mode, supported class subset, source/handoff
+  topology, provider/key boundary, and cross-repository scope are ratified.
+  This entry authorizes no raw access, implementation, provider selection,
+  commit, push, merge, deployment, or production activation.
 
 ### v1.64 - TIP-88B4 closeout prepared
 

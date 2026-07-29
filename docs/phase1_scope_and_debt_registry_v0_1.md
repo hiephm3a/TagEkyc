@@ -1,4 +1,156 @@
-# Phase 1 Scope and Debt Registry v0.1
+# Phase 1 Scope and Debt Registry v0.14
+
+**Version:** 0.14
+**Status:** Active — S1 debt registry with TIP-88C1 v0.17 planning amendment
+**Date:** 2026-07-29
+
+## Changelog
+
+### v0.14 — TIP-88C1 v0.17 final projection-clock correction
+
+- Registered distinct readiness, CaptureAgent pre-wait and custody post-wait
+  clocks and the corrected sequential late-token/backoff expired-owner sums.
+- Removed the duplicate per-claim attempt limit.
+- Added `C1-BB-RETRY-COUNT-ACCOUNTING-GATE` with all nine mandatory
+  Build-Brief questions; no durable retry-count enforcement is claimed.
+
+### v0.13 — TIP-88C1 v0.16 self-auditing planning closure
+
+- Registered the 15-path readiness derivation and combined evaluation-wait plus
+  expired-owner-reclaim negative.
+- Registered the 92-symbol population/register diff, finite resource/retry
+  limits, common busy backoff and persisted non-resettable disposition clock.
+- Registered pending/ready re-entry/reclaim separation and the exact two-value
+  prior-R2 settling set. Independent review remains required.
+
+### v0.12 — TIP-88C1 v0.15 symbol and retry correction
+
+- Deferred every C1 phase/residue/retry/body/admission summary to Planning
+  section 10.0 and registered exact symbol ownership in section 15.1.
+- Registered the exact three-case continuation projection, including
+  expired-owner `ReclaimExecutionBudget`.
+- Registered temporary unavailability as retryable but
+  non-terminal/non-replay-stable and P4/P5 as server-observable.
+
+### v0.11 — TIP-88C1 v0.14 phase-table and termination-budget correction
+
+- Registered Planning section 10.0 as the single P0–P7 outcome source,
+  metadata-only finalization and body-required progression.
+- Registered exact P4 terminalization with retained Bound alias/idempotency
+  evidence.
+- Registered four bounded no-default prior-R2 termination budgets and
+  conditional runtime projections.
+
+### v0.10 — TIP-88C1 v0.13 admission and re-entry correction
+
+- Registered metadata-first admission signaling, bounded memory-only transport
+  residual and no proxy/disk prebuffering.
+- Split internal claim progression from the final CaptureAgent response.
+- Registered same-owner fenced re-entry only after durable prior-R2
+  termination.
+- Removed agent-capacity attestation; local exhaustion is local and server
+  capacity outcomes are custody-only.
+
+### v0.9 — TIP-88C1 v0.12 physical-capacity correction
+
+- Split producer-buffer and custody-window capacity by physical host and made
+  every slot/aggregate admission branch independently reachable.
+- Registered the retryable incomplete-transport versus terminal clean-content-
+  mismatch classification and phase-specific declaration correction.
+- Replaced stale three-class commitment evidence with two supported positives
+  and the `LivenessMedia` unsupported negative; added the standing
+  mutation-reachability sweep.
+
+### v0.8 — TIP-88C1 v0.11 transport and bounded-capacity correction
+
+- Registered one external no-resume ingress operation shape per invocation with
+  internal claim/R1–R6
+  ceremony.
+- Registered exact artifact-size, plaintext-memory and concurrency bounds plus
+  fail-closed readiness/runtime outcomes.
+- Registered the lost-response TTL retention term and distinct live-evaluation
+  retry boundary.
+- Ratified D2 for DG2 portrait and live selfie; deferred LivenessMedia to a
+  separately ratified resumable transport slice.
+
+### v0.7 — TIP-88C1 v0.10 lifecycle and privacy correction
+
+- Registered Homeowner option (b): content-free producer-envelope v2, with the
+  claimed digest protected only by keyed commitment and verified at R3.
+- Registered executable token reissue/current-slot CAS semantics, finite
+  latest-issued cleanup horizon, server-cap-aware R1 admission and exact
+  configuration bounds.
+- Registered the closed response union and length-prefixed
+  `C1HashCanonical`, distinct from landed JCS `HashCanonical`; retained every
+  implementation/provider/raw/production gate.
+
+### v0.6 — TIP-88C1 v0.9 external-review correction
+
+- Registered producer-claim envelope binding, broker-owned normalized
+  admission recomputation, exact evaluation/token expiry and full retry
+  lineage.
+- Registered phase-conditioned capability/lifetime residue, variant-based
+  active/historic key failure and reconciliation plaintext hygiene/readiness.
+- Kept every implementation, provider, legal, raw-artifact and production gate
+  open pending independent review and Homeowner ratification.
+
+### v0.5 — TIP-88C1 v0.8 review-required planning patch
+
+- Registered executable capture-time ingress idempotency, private keyed content
+  commitment, complete R1 recovery context, fenced producer/reconciler
+  ownership and honest graceful/abrupt plaintext-lifetime semantics.
+- Registered authority snapshots/checkpoints, accepted-session source
+  selection, C2 disposition CAS, monotonic renewal, historic-key/DR and
+  CaptureAgent host-posture gates.
+- Preserved every legal/controller/provider/real-artifact/implementation/
+  production gate and the distinct GOV/ART phase boundaries.
+- Registered the V1 corrections: additive server-authored capture acceptance,
+  rotation-safe begin/complete ingress, source/attempt/staged fingerprint
+  separation, idempotent key-reference recovery, exact provisional recovery,
+  deterministic C2 pre-registration/in-Seal disposition CAS, and fail-closed
+  capability-graph equality.
+- Registered the V3 correction that makes NewCandidate `complete` and R1 one
+  atomic source/context commit; a bounded evaluation shell is not a source.
+- Registered V4 token-lineage, fresh-authority and test-bite corrections:
+  distinct New/Existing tokens, in-place monotonic shell reclaim, and
+  in-`complete` authority revalidation before disclosure or R1.
+- Registered the v0.8-V5 checkpoint corrections: durable alternate-key aliases/
+  tombstones, stateful opaque token brokerage, typed key results routed through
+  `complete`, exact token outcomes and cycle-qualified review evidence.
+- Registered the final v0.8-V6 corrections: broker-owned validator/derivation/
+  `complete`, no provisional-result or selector crossing to ingress, mandatory
+  bounded DB-issued token TTL, exact alias/canonical residue, and the complete
+  token-variant/result matrix. These are patched but not internally re-reviewed;
+  implementation remains blocked pending external review and ratification.
+
+### v0.4 — TIP-88C1 v0.7 retained-custody candidate
+
+- Recorded the ratified `EncryptedRawVaultRetained` mode direction and kept its
+  controller/legal/retention/purge/hold/access sub-decisions open.
+- Registered the split source fingerprints, immutable per-job source mapping,
+  B4 sealed-state amendment, unknown-seal recovery, microsecond replay, process
+  isolation, and prohibited-observability gates.
+- Preserved every real-artifact, provider, legal, security, readiness,
+  implementation, and production non-claim.
+
+### v0.3 — TIP-88C1 round-5 canonicalization correction
+
+- Synchronized the registered C1 planning version to v0.6 after the GUID
+  canonicalization patch regression was corrected.
+- No debt disposition, gate, scope, or authorization changed.
+
+### v0.2 — TIP-88C1 secure raw-source planning amendment
+
+- Registered C1's planned custody/assembly ownership and the unresolved
+  `GOV-001`/`ART-001` through `ART-009` gates.
+- Distinguished generated pinned-provider fixture evidence from real-artifact
+  and production approval.
+- Kept raw biometric protection and capture-artifact retention open until
+  reviewed lifecycle, authority, provider, and operational evidence closes.
+
+### v0.1 — Initial Phase 1 scope and debt registry
+
+- Established S1 scope, deferred debt, exit criteria, and risk registry.
 
 ## S1 In-Scope
 
@@ -40,9 +192,39 @@
 
 ## Deferred Debts
 
+TIP-88C1 v0.17 preserves the broker boundary and content-free envelope,
+ratifies only the two D2 still-image classes, and bounds artifact size,
+plaintext memory and concurrency separately on the CaptureAgent and custody
+hosts. Planning section 10.0 is the single phase/residue/retry/body/admission
+source for every C1 summary in this registry; section 15.1 is the single
+normative-symbol source. Each invocation uses one external admission-gated
+no-resume operation shape, and same-UUID retry invokes that same shape again.
+The exact 15-path readiness enumeration crosses five pending/ready state cases
+with no wait, evaluation wait or busy backoff; both expired-owner cases add
+reclaim cost. Lease and reconciler minimum age share the owner-CAS anchor;
+later token/backoff waits are sequential. CaptureAgent evaluates future wait
+before sleeping, while the custody server evaluates only future operation cost
+from post-wait DB time. Temporary unavailability is retryable but
+non-terminal/non-replay-stable; the next invocation chooses busy, ready
+same-owner progression or recapture from durable settlement, budget and buffer
+evidence. The 91-symbol audit owns three finite source/key/object limits, one
+common busy backoff and one persisted non-resettable disposition clock.
+Retry-count accounting is unpinned and blocks Build-Brief dispatch at
+`C1-BB-RETRY-COUNT-ACCOUNTING-GATE`.
+TIP-88C1 v0.10 made the Homeowner-ratified
+producer-envelope v2 content-free; keyed commitment/R3 owns digest binding and
+no database-plus-candidate unkeyed membership verifier is allowed. It also
+closes CAS current-evaluation reissue/response-loss/concurrency and finite
+cleanup, effective server-cap R1 admission, exact configuration bounds, closed
+response shape and length-prefixed canonical hashing.
+These patches are pending external CC/GPT verification and authorize no
+implementation.
+
 | Priority | Debt | Description | Exit Trigger |
 | --- | --- | --- | --- |
 | P0 | Raw biometric protection | Define encryption, access, retention, and deletion controls before real biometric data is stored. | Before pilot with real users |
+| P0 | TIP-88C1 raw-source custody and sealed-assembly governance | **Status: OPEN / PLANNING v0.17 PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED.** `EncryptedRawVaultRetained` remains a mode direction only; controller/legal basis/retention/purge/hold/access/B4/delivery and D3–D9 remain open. D2 is ratified only for `ChipDg2Portrait` and `LiveSelfieImage`; `LivenessMedia` requires a separate resumable-transport slice. Planning section 10.0 solely owns phase, residue, retry, body and admission behavior; section 15.1 solely owns the 91-symbol population/register, 15-path readiness derivation, distinct readiness/client-pre-wait/server-post-wait clocks, three finite source/key/object limits, exact common busy backoff and persisted non-resettable disposition clock. Pending and ready same-owner/expired-owner cases are separate; exact-fence `Terminated` and P4 `TerminatedBeforeStart` both settle prior R2. Each invocation has one external operation shape; a retry invokes the same shape with the same UUID. Retry-count accounting remains Build-Brief blocked. All other C1 invariants, GOV/ART gates, fixture-only MinIO posture and non-authorization boundaries remain unchanged. No Build Brief, implementation, provider operation, raw persistence/reuse, production, legal, audit, security, readiness, or capability claim exists. | Independent review re-runs P1–P4 population/path/mutation checks; `C1-BB-RETRY-COUNT-ACCOUNTING-GATE`, all pending D1/D3–D9, acceptance/schema, symbol/alias/token/broker/transport/capacity contracts and cross-repo/B4 allowlists require ratification before dispatch; real artifacts require D5, both host/key/DR readiness surfaces and exact ART resolutions |
+| P0 | TIP-88C1 retry-count accounting Build-Brief gate | **`C1-BB-RETRY-COUNT-ACCOUNTING-GATE` is OPEN and blocks Build-Brief dispatch/readiness.** The Build Brief must answer exactly: (1) whether the first invocation counts; (2) whether `ClaimEvaluationInProgress` and each busy outcome increment; (3) whether transport disconnect increments; (4) whether metadata-only finals such as `AlreadyAvailable` increment; (5) whether scope is UUID, alias, canonical claim or source; (6) which durable row owns the count when pre-R1 retries precede any source row and the alias has no counter; (7) what resets on terminal/cleanup; (8) how CaptureAgent restart recovers monotonic count; and (9) how agent/server disagreement resolves. `MaximumRetryCountPerIngress` is only an unpinned proposed bound; it is not durable cross-process enforcement. | Ratified Build Brief pins all nine answers, exact storage/ownership/recovery/failure semantics and a discriminating gate test before implementation dispatch |
 | P0 | Stable DG2 artifact-hash RRI | Status: OPEN / PARTIALLY-MITIGATED-B1. Current HN212 production capture computes `NfcArtifactHash = SHA256(DG2)` over raw DG2 bytes. This is a stable per-card biometric-derived identifier, proof-bound into append-only evidence history, present in ordinary evidence-table backups, and historically returned to authorized BusinessConsumers through evidence-ledger / evidence-package summary APIs. TIP-87 closed the BusinessConsumer DTO egress path by removing `ArtifactHash`/`PayloadHash`, but the internal append-only, backup, and signed-proof copy remains, so this RRI is not closed. It is not raw image retention, but it is not erasable by crypto-shred or ordinary row deletion. Access control prevents one consumer from reading another consumer's sessions, but does not prevent cross-consumer correlation if the same globally stable value is shared/compared. DPO/Homeowner must explicitly choose a disposition before real-patient hospital-trial reliance: acknowledge/ratify, keep the B1 egress mitigation, or open a proof-contract mitigation TIP (keyed/domain-separated/session-varying binding, with blast-radius to TIP-67G/golden vectors, SignFlow/consumer verification, and Agent hash computation/keying). | Before hospital trial with real patients |
 | P0 | Capture artifact retention policy | Define retention, deletion, legal hold, vault lifecycle, and recapture handling for raw capture artifacts. | Before real user artifacts are stored |
 | P0 | Capture agent trust/scoping model | Define which agents, SDKs, gateways, and adapters may submit artifacts or evidence results. Business clients must not submit arbitrary `PASSED` evidence. | Before pilot with real capture devices |

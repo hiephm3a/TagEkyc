@@ -1,13 +1,159 @@
 # Logical Data Model
 
 **File:** `docs/lld_01_data_model_v0_1.md`
-**Version:** 0.6
-**Status:** Active - S1 data-model, evidence-integrity, and TIP-67B neutral proof consolidation
-**Date:** 2026-06-23
+**Version:** 1.9
+**Status:** Active - S1 data-model, evidence-integrity, neutral proof, and TIP-88C1 v0.17 planning amendment
+**Date:** 2026-07-29
 **Baseline:** `a98f278`
 **Purpose:** Authoritative S1 logical data model and as-built evidence-integrity contract for TagEkyc. This document is not a SQL migration and does not prescribe database technology.
 
 ## Changelog
+
+### v1.9 - TIP-88C1 v0.17 final projection-clock correction
+
+- Split configuration readiness, CaptureAgent pre-wait and custody post-wait
+  projections; elapsed waits never enter the server decision formula.
+- Re-derived expired-owner token/backoff waits sequentially after the shared
+  lease/minimum-age owner-CAS anchor.
+- Removed the duplicate per-claim attempt limit and transferred retry-count
+  ownership/recovery semantics to a mandatory Build-Brief gate.
+
+### v1.8 - TIP-88C1 v0.16 self-auditing planning closure
+
+- Synchronized the 15-path continuation/readiness derivation and split pending
+  prior-R2 settlement from ready same-owner/expired-owner progression.
+- Synchronized the 92-symbol register audit, finite attempt/key/object/retry
+  limits, common busy backoff and persisted non-resettable disposition clock.
+- Made exact-fence `Terminated` and P4 `TerminatedBeforeStart` the closed
+  settling set. Schema and implementation remain Build-Brief blocked.
+
+### v1.7 - TIP-88C1 v0.15 symbol and retry correction
+
+- Deferred every C1 phase/residue/retry/body/admission statement to Planning
+  section 10.0 and registered exact symbol ownership in Planning section 15.1.
+- Added the expired-owner reclaim term to the exact three-case continuation
+  projection.
+- Made temporary unavailability retryable but non-terminal/non-replay-stable
+  and replaced client-observation language with server-observable P4/P5 facts.
+
+### v1.6 - TIP-88C1 v0.14 phase-table and termination-budget correction
+
+- Referenced Planning section 10.0 as the single P0–P7 transport source and
+  separated metadata-only outcomes from body-required progression.
+- Added P4 post-R1/pre-admission attempt terminalization without deleting Bound
+  alias/idempotency evidence.
+- Added the four-component conditional prior-R2 termination budget contract.
+
+### v1.5 - TIP-88C1 v0.13 admission and re-entry correction
+
+- Added metadata/R1/admission/body phase boundaries and a no-prebuffer/no-disk
+  transport posture.
+- Split internal claim results from the only CaptureAgent-visible final union.
+- Added exact same-owner re-entry with durable prior-R2 termination.
+- Removed dynamic agent-capacity attestation and made server capacity
+  custody-only.
+
+### v1.4 - TIP-88C1 v0.12 physical-capacity correction
+
+- Replaced the conflated capacity admission with an eight-key manifest split
+  between CaptureAgent retained buffers and custody active-stream plaintext
+  windows; each slot and aggregate branch is independently reachable.
+- Split transport abort/cancellation/incomplete-body retry from terminal
+  clean-EOF content mismatch and pinned their residue/retry behavior.
+- Synchronized the exact two positive commitment vectors, unsupported
+  `LivenessMedia` negative, and pre-begin versus post-R2 declaration correction.
+
+### v1.3 - TIP-88C1 v0.11 transport and bounded-capacity correction
+
+- Pinned one external no-resume custody-ingress operation shape per invocation
+  while keeping
+  begin/broker/complete/R1–R6 internal.
+- Added exact size/memory/concurrency configuration and runtime admission/
+  release semantics.
+- Added one claim-token TTL to the lost-response retention relation and split
+  live evaluation wait from lookup-lock contention with `RetryNotBeforeUtc`.
+- Ratified D2 for DG2 portrait and live selfie; deferred LivenessMedia.
+
+### v1.2 - TIP-88C1 v0.10 lifecycle and privacy correction
+
+- Replaced producer-envelope v1 with content-free v2 and kept the claimed
+  digest exclusively behind the keyed commitment/R3 verification path.
+- Modeled a stable alias plus CAS-replaceable current evaluation issuance,
+  monotonic latest-token horizon and exact reissue/concurrency semantics.
+- Added effective-deadline R1 admission, bounded token/continuation
+  configuration, the closed ingress result union and length-prefixed
+  C1-only `C1HashCanonical`; the landed Evidence-Integrity `HashCanonical` JCS
+  codec is unchanged.
+- No schema or implementation is authorized.
+
+### v1.1 - TIP-88C1 v0.9 external-review correction
+
+- Added the planned server-canonical producer-claim envelope binding, complete
+  normalized broker result and broker-owned admission recomputation.
+- Made evaluation and token expiry identical; closed retry lineage,
+  capability/lifetime residue, variant-based key-failure classification and
+  the historic-key SQL outcome.
+- Added bounded reconciliation plaintext handling and custody-host readiness;
+  no schema or implementation is authorized.
+
+### v1.0 - TIP-88C1 v0.8 capture-time custody model
+
+- Added capture-time ingress claim/idempotency, versioned keyed content
+  commitment and subject token, immutable authority snapshots, fenced
+  encryption attempts, and complete recoverable R1 cryptographic context.
+- Added Available-only accepted-session source selection, exact preparation
+  disposition arbitration, monotonic renewal, plaintext-lifetime/host posture,
+  historic-key/DR lifecycle, and structural unreachable-case proofs.
+- Advanced source reservation and assembly fingerprint planning codecs to v2;
+  retained no bare Raw BIO digest or unrestricted locator surface.
+- Closed V1 model gaps with server-authored capture acceptance/selection,
+  two-edge begin/complete ingress, separate source/attempt/staged fingerprints,
+  idempotent R1 key reference, complete-provisional recovery, deterministic C2
+  `Preparing` pre-registration, in-Seal disposition CAS, and exact capability
+  ownership.
+- Made the NewCandidate `complete` branch the atomic R1 source/context commit;
+  a pre-R1 `ClaimEvaluating` shell has no source identity or recovery state.
+- Added distinct New/Existing evaluation-token semantics, fresh authority
+  revalidation inside `complete`, and immutable monotonic shell-reclaim fields.
+- Applied the v0.8-V5 checkpoint corrections: a durable alternate-key alias/
+  tombstone family, stateful opaque token broker, typed dependency inputs
+  re-entering `complete`, and exact token failure states.
+- Applied the final v0.8-V6 planning corrections: broker-owned `complete`,
+  mandatory 1–300-second DB-issued token TTL, exact alias/canonical residue and
+  the closed token-variant/result transition matrix. External review remains
+  required; no schema or implementation is authorized.
+
+### v0.9 - TIP-88C1 retained-custody candidate synchronization
+
+- Replaced the circular source fingerprint with separate pre-encryption
+  reservation and post-encryption staged-ciphertext identities.
+- Added the planned C1-owned immutable per-job source-binding family, exact
+  retained-source reuse semantics, committed-seal replay/finalize-wins rules,
+  and required B4 sealed-state compatibility.
+- Normalized persisted C1 timestamps to truncated UTC microseconds and
+  synchronized canonical authentication names, assembly stream/digest, and C2
+  preparation identity.
+- Recorded the ratified D1 retained-mode direction, pending durable-custody
+  decisions, isolated credential topology, prohibited observability, and
+  unchanged non-authorization boundaries.
+
+### v0.8 - TIP-88C1 GUID canonicalization synchronization
+
+- Pinned lowercase GUID `N` strings for every C1 hash/id preimage, matching the
+  authoritative landed evidence-hash convention and call sites.
+- Required an independent cross-language vector for all stable and
+  attempt-scoped C1 derivations.
+- Recorded this as the round-5 patch-regression correction; no runtime or
+  authorization scope changed.
+
+### v0.7 - TIP-88C1 secure raw-source planning amendment
+
+- Added the planned metadata-only source descriptor and sealed-assembly
+  boundaries for C1 without defining or authorizing a migration.
+- Recorded provider-neutral/S3-reference posture, application encryption,
+  immutable class/source binding, and B4/C2 handoff responsibilities.
+- Carried `GOV-001` and `ART-001` through `ART-009` into exact fixture and
+  real-artifact gates; no implementation or raw persistence is authorized.
 
 ### v0.6 - TIP-67B neutral verifiable proof
 
@@ -93,6 +239,383 @@ Existing sequence, API, and adapter LLD wording that mentions vault, storage, pa
 
 `GOV-001` branch/deferred-scope traceability and `ART-001` through `ART-009` must be carried until later reviewed TIPs resolve them beyond planning/design requirements.
 
+### TIP-88C1 planned logical source and assembly model
+
+TIP-88C1 plans capture-time retained-source metadata independently of later
+B3/B4 export. Exact schema remains Build-Brief blocked.
+
+Every phase/residue/retry/body/admission statement in this C1 subsection is a
+non-normative projection of Planning section 10.0; if wording differs, section
+10.0 wins. Each CaptureAgent invocation uses one external authenticated
+operation shape per artifact; a retry invokes the same shape again with the
+same UUID, with no external begin/upload-part/complete sub-protocol.
+Metadata-only outcomes finalize without `AdmissionAccepted`, body or a new
+R1/attempt/key/object. Only committed New/same-owner/reclaim progression emits
+admission and receives one bounded body. The claim token,
+begin/broker/complete/R1–R6 ceremony, `InternalClaimResult` and all intermediate
+rows are internal; there is no upload-session, part, receipt, resume,
+public-complete or agent-held provider capability. Pre-admission body
+transmission/prebuffer is protocol-invalid; every proxy disables request/disk
+buffering. Kernel/TLS residual bytes are bounded, memory-only and never claimed
+as zero.
+
+| Family | Planned identity/state | Forbidden durable content |
+| --- | --- | --- |
+| Capture acceptance | Server-authored append-only acceptance event plus immutable session/class selection with exact acceptance id, artifact id and positive revision | CaptureAgent/public caller selection; landed `QualityState` treated as final authority |
+| CaptureAgent buffer admission | Exact per-class declared size; one local retained-buffer slot; exact declared-byte reservation against the host aggregate; local readiness only | Dynamic server attestation/assertion; server claim to enforce agent memory; unbounded process-local buffer; implicit default; leaked retained buffer after exit |
+| Custody stream admission | One producer/deployment stream slot plus exact configured plaintext-window reservation against the deployment aggregate; every server-owned admission has bounded release/expiry | Artifact-size inference from the window; unchecked/unbounded allocation; worst-case product relation that subsumes aggregate admission; leaked admission after terminal exit |
+| Ingress transport admission | Planning section 10.0 P0–P7 branch; metadata-only final or committed R1/re-entry CAS then transport admission; bounded memory-only pre-admission network residual | Body/admission/new R1 on metadata-only final; body transmitted/read/prebuffered before admission; proxy/request buffering; disk spill; second application call |
+| Ingress claim alias | One durable row per authenticated client/producer/instance/UUID key; state Evaluating/Bound/ConflictTombstone; attempted exact-artifact identity; nullable canonical-claim FK; immutable content-free v2 `ProducerClaimEnvelopeFingerprint`; one CAS-replaceable current evaluation id/owner/disposition/issue/expiry/token schema/variant/audience/digest; monotonic non-reused revision/fence and latest-issued expiry | Raw token, SourceArtifactId, plaintext, bare digest/content-derived envelope value, locator, credentials; replacement of a live slot; counter/horizon reset; deletion/rebinding while prior token may live |
+| Canonical ingress claim | One instance-independent exact-artifact row and one source; NewCandidate complete atomically performs R1; alternate exact replay binds alias to this row; conflict burns alias while canonical row remains unchanged | Second canonical source for exact artifact; alias key stored as the sole canonical identity; conflict disclosure |
+| Source reservation/attempt | Source-stable reservation fingerprint; per-attempt fingerprint/row; subject token; keyed commitment; authority snapshot; owner/revision/fence; monotonic `R2TerminationDisposition ∈ {TerminatedBeforeStart, Terminated}` and termination time; first disposition-required CAS timestamp plus derived non-resettable expiry; complete suite/framing/nonce/provisional-object/idempotent-key-reference context; effective lifetime | Plaintext, unwrapped DEK, KEK/provider credential, bare digest; retry/reclaim/rotation reset of disposition clock |
+| P4 rejected reservation generation | Bound alias + canonical idempotency identity; `AdmissionProtocolRejected`; `R2TerminationDisposition = TerminatedBeforeStart`; monotonic reservation/attempt/fence lineage; exact non-arming, cleanup/capacity and disposition-clock evidence | Alias deletion/rebinding; zero-R1 claim; retained provisional object/key; body acceptance; reuse by different owner; failure to count P4 as a settled prior R2 |
+| Internal claim result | NewReservation, ExistingMatch, ReservationReclaimed or exact internal claim outcome | Serialization/public DTO; CaptureAgent egress; final-result reuse |
+| CaptureAgent final result | Available, AlreadyAvailable, ClaimEvaluationInProgress with exact RetryNotBeforeUtc, or closed OutcomeOnly code | New/Existing/Reclaimed, owner/lease/revision/fence/token, inferred fields |
+| Staged/Available source | Exact staged ciphertext fingerprint, restricted locator/envelope/key metadata and append-only lifecycle evidence | Raw/plaintext/ciphertext object bytes in PostgreSQL; locator outside restricted repository |
+| C1 job-source binding | Immutable `(JobId, Ordinal, RawClass, CaptureAcceptanceId, CaptureArtifactId, CaptureRevision, SourceArtifactId)` from exact session selection | Mutable/first/latest replacement, inherited authority |
+| Sealed assembly | Job-stable v2 identity/items; attempt manifest/authentication; exact C2 preparation | Plaintext package, bare item digest, locator/delivery handle |
+| Preparation disposition | Deterministic id registered `Preparing` before C2 I/O; exact `(AssemblyId,C2PreparationId)` monotonic pending/seal/finalize or abort states | Unregistered orphan, scan-only/direct delete, cross-preparation finalize |
+
+The current claim-evaluation disposition is the exact monotonic set
+`Active | Completed | Expired | Reclaimed | Conflict`, with only `Active`
+non-terminal. Canonical source `CurrentDisposition` is exactly
+`ClaimEvaluating | Reserved | Encrypting | Staged | Available |
+RecaptureRequired | ContentCommitmentMismatch | SourceEncryptionFailed |
+Quarantined | Deleted`. C2 preparation is exactly
+`Preparing | Pending | SealCommitted | AbortAuthorized | Finalized | Aborted`.
+Unknown/default values fail closed. The B4 operational head retains its landed
+13-value closed set and C1 may publish only `AssemblySealed`.
+
+Ingress identity is server-known and distinct from producer claims. CaptureAgent
+claims digest/length/media/capture time and buffer lifetime; custody persists
+only a dedicated versioned HMAC content commitment plus schema/key version.
+Before `begin`, a trusted server canonicalizer binds normalized identity,
+length, media, capture and retention claims to content-free envelope v2 and
+persists only its session-scoped fingerprint on the alias. The digest is
+excluded; keyed commitment at `complete` and actual R3 verification own content
+binding. A v1 record remains v1-only with no silent reinterpretation.
+No persisted ingress/descriptor artifact may be recomputable from database
+values plus candidate plaintext into a membership answer without a protected
+key; putting digest/content back into v2 is a required RED mutation.
+`begin` freezes the active/historic key selector in durable internal state and
+first claims the unique alias key. The selector is not returned to ingress. A
+NewCandidate receives an opaque single-use token bound to alias/
+shell identity; an ExistingCandidate receives a bounded idempotently replayable
+token bound to alias/canonical identity. Token bytes are 32-byte CSPRNG material;
+only SHA-256 digest plus schema, variant, audience, DB-issued UTC-microsecond
+issue/expiry, alias identity, producer-envelope fingerprint and one current
+evaluation slot persist. A live slot is never replaced: concurrent/repeated
+begin after an internally lost result returns
+`RAW_EXPORT_SOURCE_CLAIM_EVALUATION_IN_PROGRESS` with exact
+`RetryNotBeforeUtc = CurrentTokenExpiresAtUtc`, while lookup timeout alone is
+`RAW_EXPORT_SOURCE_IDEMPOTENCY_BUSY`. Expired/terminal/reclaim-eligible or
+expired Bound-alias reissue CASes a fresh non-reused evaluation/token/owner/
+times/digest, strictly increases revision/fence and advances the monotonic
+latest-issued expiry. A separate claim-
+comparison broker validates that stateful token, internally derives exactly one
+typed `DerivedAdmission` containing the recomputed envelope fingerprint,
+commitment tuple and normalized length/media/capture/retention fields, or an
+active-key-unavailable/historic-key-unavailable/token-invalid result and invokes
+`complete` itself. It supplies no trusted final `AdmissionFingerprint`; broker-
+owned `complete` checks envelope equality and recomputes the canonical admission
+from persisted identity and normalized claims. The result never crosses to
+ingress; ingress cannot call the validator/`complete`, choose a selector or
+access the commitment-key registry directly.
+The presented capability includes opaque token bytes plus non-secret evaluation
+id/revision/fence/variant/expiry metadata; stale lineage is distinguishable as
+restart without persisting an old raw token or digest history.
+
+Broker-owned `complete` checks the exact token/alias/row/revision/fence and freshly
+revalidates current actor/client/session/acceptance/retention authority before
+mapping the typed broker result, comparison, disclosure or allocation. For
+NewCandidate, that same `complete` transaction CAS-consumes the shell token,
+binds the alias and performs R1. Existing exact match atomically binds the alias
+to the unchanged canonical claim; mismatch burns `ConflictTombstone`. Therefore
+A(K1) New → A(K2) Existing → B(K2) Conflict creates no B shell/source. New
+post-begin residue is one Evaluating alias plus one non-source canonical shell;
+Existing-alternate post-begin residue is one Evaluating alias plus the unchanged
+canonical claim; pre-begin residue is zero alias/shell. Reclaim
+CAS-replaces the current slot on the same alias/shell with a fresh evaluation,
+strictly increases revision/fence/latest-expiry and never deletes/reinserts it
+while a token could remain valid. A committed
+`ClaimEvaluating` shell has no
+`SourceArtifactId`, reservation, attempt, object, or key reservation. Timeout
+preserves the applicable alias/canonical residue. R2 independently verifies
+actual content.
+Rotation, authority change, stale-token reclaim and instance restart cannot
+create or disclose a second source; a missing historic key creates no new
+source. Tampered/wrong-bound tokens fail
+`RAW_EXPORT_SOURCE_CLAIM_TOKEN_INVALID`; expired/stale/reclaimed tokens fail
+`RAW_EXPORT_SOURCE_CLAIM_RESTART_REQUIRED`. For valid tokens, fresh authority
+precedes active/historic key-unavailable outcomes. Result type is selected by
+token variant, not current registry status: Existing produces
+`RAW_EXPORT_SOURCE_HISTORIC_COMMITMENT_KEY_UNAVAILABLE`, including when its
+stored version equals the active version. New content-free v2 envelope/lineage mismatch is
+token invalid; only a correctly bound Existing comparison can produce business
+fingerprint conflict. The mandatory
+`RawExportSourceClaimEvaluationTokenTtlSeconds` is an integer in 1–300 with no
+default. DB `statement_timestamp()` truncated to UTC microseconds issues the
+token; evaluation issue/expiry equals token issue/expiry exactly, the complete
+timeout budget must be strictly smaller than TTL, and unbound cleanup waits
+beyond monotonic latest-issued expiry plus a mandatory 1–300-second margin.
+Claim lock/comparison/complete/safety/tombstone configs are mandatory,
+no-default, bounded and checked; latest-issuance cleanup is at most 600 seconds
+after that issuance. Same-token retry additionally requires unchanged alias/
+evaluation/owner/revision/fence lineage.
+One lost-result path is readiness-valid only when one full token TTL plus
+idempotency-lock, comparison, complete, encryption-attempt and safety budgets
+fit strictly inside maximum producer plaintext retention. CaptureAgent waits
+to the retry boundary only while the same remaining-budget projection holds;
+otherwise it zeroizes and requires recapture.
+
+Atomic NewCandidate `complete`/R1 persists every essential recovery reference
+before provider/key/object I/O:
+attempt revision/fence, provisional identity, suite/framing/nonce context and
+an idempotent `AttemptKeyReservationId`; no key-provider I/O occurs under the
+DB transaction. The attempt row round-trips
+`SourceEncryptionProfileId/Version`, suite/framing,
+`NonceStrategyId`, recoverable seed reference/wrapped seed, seed commitment,
+`ChunkSize`, `FramingParametersDigest`, provisional identity and key reference;
+a fingerprint digest never substitutes for those recovery inputs. Exact
+provisional inspect/read plus an authenticated completion
+record lets a fenced reconciler recover complete ciphertext, bounded-decrypt to
+recompute length/commitment and execute R3 without restarting R2. R3 persists
+only actual post-encryption results and the staged ciphertext fingerprint.
+Provider visibility remains provisional → staged → committed → metadata `Available`.
+Only `Available` descriptors are resolver-readable after `ART-002`; PostgreSQL
+stores metadata, never raw/plaintext/ciphertext object bytes.
+
+The current conceptual `vault_objects` entity is not promoted, reused, or
+treated as the C1 source-of-truth by this planning amendment. A future reviewed
+Build Brief must either create the v0.8 restricted C1 families or explicitly
+supersede the v0.8 restricted families under Homeowner authority; generic `vaultRef` or
+`storageUri` fields are not C1 capability.
+
+Source identity, encryption attempts and staged ciphertext are distinct:
+`SourceReservationFingerprint` is source-stable,
+`EncryptionAttemptFingerprint` rotates with attempt/fence/key/object context,
+and `StagedCiphertextFingerprint` binds that exact attempt plus actual output.
+Assembly identity/content and attempt metadata are distinct. `AssemblyId`,
+`AssemblyFingerprint`, `AssemblyDigest`, and the exact ordered item content are
+job-stable for unchanged immutable sources. `AttemptId`, fence, attempt
+timestamp, `ManifestDigest`, authentication value, C2 idempotency fingerprint,
+and deterministic `C2PreparationId` are attempt-scoped. The id is registered
+`Preparing` before external I/O; same C2 fingerprint returns exact
+created/existing match and exact-id lookup resolves lost responses. A distinct
+fingerprint yields a distinct preparation id. The exact source-reservation/
+encryption-attempt/staged/assembly-fingerprint preimages,
+historic codec registry, keyed commitment/subject-token vectors, and
+golden vectors are owned by the TIP-88C1 Planning/Build Brief and must use the
+landed RFC-8785 JCS/SHA-256 evidence-canonicalization conventions. Only the C2
+preparation referenced by the committed seal can finalize.
+The C1 keyed-commitment runtime manifest has exactly two positive vectors,
+`ChipDg2Portrait` and `LiveSelfieImage`; `LivenessMedia` is an unsupported-class
+negative, not a third positive vector.
+Attempt timestamp and `AssemblyAuthenticationValue` are created once and reused exactly
+for retry of that attempt; an ambiguous authentication-provider result fails
+the attempt closed instead of being recomputed under the same attempt identity.
+Every GUID entering a C1 hash/id preimage is a lowercase `N` string. Timestamps
+are converted to UTC, truncated to whole microseconds before hashing and
+persistence, and formatted with exactly six fractional digits plus `Z`.
+Every free-text scalar is valid Unicode normalized exactly once to NFC before
+UTF-8; invalid Unicode is rejected. Integers are invariant decimal strings,
+enums use exact names, hashes use
+lowercase `sha256:<hex>`, arrays preserve declared order, and canonical
+authentication names are `AssemblyAuthenticationKeyId`,
+`AssemblyAuthenticationKeyVersion`, and `AssemblyAuthenticationValue`. An
+independent implementation must reproduce ingress/admission identity, keyed
+content commitment and subject token with public fixture-only HMAC keys, all
+three source/attempt/staged fingerprints, the
+deterministic assembly id, stable fingerprint, non-self-referential canonical
+assembly stream/digest, attempt manifest, and C2-idempotency vector through
+database readback.
+
+The planned worker uses single-flight landed B4 renewal during external I/O,
+stops/joins periodic renewal, rejects stale/lower responses, and may issue at
+most one synchronous final renewal before Seal. No database lock spans external
+I/O. Pre-Prepare and in-Seal authority checks are distinct. Exact
+`Pending → SealCommitted` preparation-disposition CAS occurs inside the same
+transaction as assembly identity/items, B4 head and transition; never a
+scan/deadline alone selects finalization or abort.
+
+Only `Available` descriptors can freeze into a B4 mapping. Landed
+`capture_artifacts`/`QualityState` is not authoritative. A required additive
+server-authored acceptance-event family and immutable session/class selection
+provides exact `CaptureAcceptanceId + CaptureArtifactId + CaptureRevision`;
+same-source concurrent freeze existing-matches and different-source freeze
+conflicts. That surface/producer must be ratified before Build Brief.
+Pre-publication ingress outcomes therefore have a structurally unreachable
+frozen-B4 case. Later loss of an Available frozen source is
+`RAW_EXPORT_SOURCE_UNAVAILABLE`.
+
+Every source/evidence row references a versioned immutable authority snapshot.
+Loss before `Available` blocks publication; later loss blocks read/reuse/
+delivery. Physical purge versus legal hold remains policy-gated.
+
+CaptureAgent owns its monotonic plaintext deadline; server effective expiry is
+the minimum of the producer projection and configured continuation cap.
+After token/envelope/lineage and fresh-authority checks, `complete` requires the
+effective producer/server-capped expiry to remain strictly later than its DB
+statement timestamp by more than
+`EncryptionAttemptDeadline + SafetyMargin`; equality fails closed
+without consuming the token or creating provider/key/object residue. Token TTL
+and its already-contained comparison/complete budgets are not added again to
+that remaining-lifetime formula.
+Healthy producer ownership excludes reconciliation. Graceful terminal paths
+execute zeroization; abrupt loss makes no erasure claim. A reconciler may
+bounded-decrypt complete ciphertext but never reconstructs the producer buffer:
+it holds at most one configured plaintext chunk and one unwrapped attempt key,
+zeroizes/disposes both on every graceful exit, and is governed by separate
+custody-reconciliation host-posture readiness with exact code
+`RAW_EXPORT_CUSTODY_RECONCILIATION_HOST_POSTURE_INVALID`. Historic
+content-commitment/subject-token keys require HA, escrow/backup, DR, capacity,
+retirement and referenced-version readiness. Production host posture is a
+fail-closed readiness gate.
+
+A dead external call retains its owner marker. Same-owner re-entry requires the
+exact authenticated ingress owner/identity, a CAS match on the current
+reservation revision/fence, fresh authority/time predicates and durable
+`PreviousFencedR2Terminated`: request reader exited, provider writer quiesced,
+exact provider attempt terminally acknowledged/inspected and the old fence CAS
+recorded `Terminated`, or P4 proves neither reader nor writer armed and records
+`TerminatedBeforeStart`. `SameOwnerRetryPendingTermination` cannot create a new
+attempt; `SameOwnerReentryReady` can. Expired-owner reclaim has the same
+pending/ready split. Different owner, stale CAS or unproven settlement remains
+reservation busy or recapture when the full continuation path cannot fit.
+Four mandatory Int32-second no-default `[1,3600]` settings budget reader
+quiescence, provider-writer quiescence, provider abort-or-inspection and
+termination CAS. Their checked sum is `PreviousR2TerminationBudget`. Runtime
+uses the Planning section 15.1 five-state × three-preceding-wait path
+enumeration. Pending cases include prior termination and cannot replace the
+attempt; ready cases omit it. Both expired-owner cases include
+`ReclaimExecutionBudget`. P4 `TerminatedBeforeStart` and armed-R2 `Terminated`
+make `PreviousFencedR2Terminated` durable. Lease and reconciler minimum age
+share the exact owner-CAS reservation/attempt timestamp; a token or busy
+backoff can start later and is sequential in readiness. CaptureAgent includes
+the future wait before sleeping; custody uses DB time after waiting and its
+post-wait projection contains no wait term.
+
+Three mandatory no-default limits bind active attempts/source, key-material
+records/source and provisional objects/source independently. One mandatory
+common busy backoff governs capacity-unavailable, idempotency-busy and
+reservation-busy. `MaximumRetryCountPerIngress` remains an unpinned proposed
+bound behind `C1-BB-RETRY-COUNT-ACCOUNTING-GATE`; no schema/counter or durable
+cross-process semantics are implied until the Build Brief answers all nine
+accounting questions. The first disposition-required CAS
+persists `DispositionStartedAtUtc` and
+`DispositionExpiresAtUtc = DispositionStartedAtUtc + DispositionEnvelope`;
+retry, reclaim, restart and rotation cannot reset them. Exact schema remains a
+future Build-Brief responsibility.
+
+The continuation cap comes only from mandatory integer
+`RawExportSourceMaximumRemainingContinuationWindowSeconds` in `[1,3600]`, with
+no default. It must strictly contain claim lock/comparison/complete,
+conditional `PreviousR2TerminationBudget`, attempt deadline and safety, and be
+no greater than maximum plaintext-retention budget. Every
+`C1HashCanonical` value uses LP domain/scalars and LP-counted ordered arrays.
+This is a new planning compatibility profile and does not reinterpret the
+as-built Evidence-Integrity `HashCanonical` JCS contract below.
+Planning D4.3 has separate closed unions. `InternalClaimResult` never crosses
+custody ingress. `CaptureAgentFinalResult` contains only
+Available/AlreadyAvailable, ClaimEvaluationInProgress with exact
+`RetryNotBeforeUtc`, or one enumerated OutcomeOnly code. NewReservation,
+ExistingMatch, ReservationReclaimed, owner/revision/fence and internal outcomes
+cannot egress.
+Planning section 10.0, not this LLD, owns their exact phase, body/admission,
+residue and retry mapping.
+
+The ratified D2 class set is exactly `ChipDg2Portrait` and `LiveSelfieImage`.
+`LivenessMedia` is deferred to a separately ratified resumable multipart
+transport and AEAD `ChunkSize` is never a transport part. Eight mandatory,
+no-default integer settings split capacity by physical host: two class ceilings,
+CaptureAgent retained-buffer slots and aggregate declared bytes, and custody
+plaintext window, producer/deployment stream slots and aggregate window bytes.
+Each class ceiling fits the agent aggregate; the custody window fits the
+custody aggregate; producer streams do not exceed deployment streams. There is
+no product-cover readiness relation, so an exact aggregate reservation can bind
+while an adjacent slot remains. CaptureAgent local exhaustion never starts the
+external operation. Server code directly enforces custody capacity and only
+refuses oversized declarations; it receives no agent capacity assertion/
+attestation and does not enforce CaptureAgent process memory. Declared oversize or
+unavailable capacity fails before begin/provider/key I/O. R2 independently
+counts bytes and aborts at the first excess byte; no oversize source can become
+Available. Invalid configuration is
+`RAW_EXPORT_SOURCE_CAPACITY_CONFIGURATION_INVALID`; runtime outcomes are
+`RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED` and
+`RAW_EXPORT_SOURCE_CAPACITY_UNAVAILABLE`.
+
+P4 exists only before successful `AdmissionAccepted` write/flush with reader
+and writer unarmed; successful write/flush or reader arming is P5, without any
+client-observation predicate. P4/P5 transport abort/cancellation/incomplete body
+is non-terminal, non-replay-stable
+`RAW_EXPORT_SOURCE_TEMPORARILY_UNAVAILABLE` and cleans the exact fenced R2
+residue. The next same-UUID invocation returns reservation-busy while
+termination is not durable, re-enters when durable and the exact case budget
+fits, or requires recapture when budget is insufficient or the buffer is lost.
+P4 uses `TerminatedBeforeStart`; P5 proves
+all four durable termination conditions. Clean EOF with a shorter length or other authenticated
+claim mismatch is terminal `CONTENT_COMMITMENT_MISMATCH` and refuses same-UUID
+retry. A declaration can be corrected on the same UUID only after pre-begin
+zero-residue rejection. After R2 begins it is frozen: class-valid
+actual-over-declared bytes require a new accepted capture/revision and UUID;
+actual-over-class bytes have no correction path.
+
+Mandatory `RawExportIngressMaximumPreAdmissionBufferedBytes` and qualified
+proxy/middleware posture bound the honest kernel/TLS memory-only residual.
+Missing phase preservation, enabled prebuffer/disk spill or an invalid bound
+fails readiness as `RAW_EXPORT_INGRESS_TRANSPORT_POSTURE_INVALID`; runtime early
+body returns `RAW_EXPORT_SOURCE_TRANSPORT_PROTOCOL_INVALID`.
+Planning section 10.0 distinguishes P0–P3 zero committed-R1 residue from P4
+Bound alias/canonical preservation and exact attempt/object/key/capacity
+cleanup; no blanket zero-residue rule spans both.
+
+Landed B4 predates `AssemblySealed` lease finality and needs a separately
+reviewed additive early exclusion. Implementation ownership remains pending.
+
+The Homeowner-ratified mode direction is `EncryptedRawVaultRetained`; it permits
+multiple independently authorized jobs to bind the same retained source but
+does not authorize capture, persistence, reuse, build, or production. Its exact
+controller/legal/retention/purge/hold/access/B4/delivery sub-decisions remain
+pending, and D3–D9 remain unratified. D2 is ratified only for
+`ChipDg2Portrait` and `LiveSelfieImage`; `LivenessMedia` remains deferred. The
+reference adapter is S3-compatible and may use only an
+exact pinned MinIO version/digest for reviewed generated, non-patient fixtures.
+It is not a production provider approval. Encrypted filesystem remains a
+separately qualified optional topology.
+
+Before fixture evidence, a reviewed composite authorization must carry
+`GOV-001` and every `ART-001` through `ART-009` row and the applicable
+TIP-38-through-TIP-46 storage, resolution, orphan, retention/expiry,
+purge/cleanup, hold-conflict, access/audit/security, and raw-payload fields.
+Fixture-only dispositions do not close real-artifact gates. Before real capture
+persistence, `ART-001`, `ART-004`, `ART-005`, `ART-006`, `ART-007`,
+`ART-008`, and `ART-009` require reviewed resolution; `ART-002` gates source
+availability reliance and `ART-003` remains C2 package-completeness scope.
+
+No provider credential or source KEK authority may exist in the public/general
+API process. Ingress owns begin/provisional write but no validator, `complete`
+or commitment-key-registry edge. The claim-comparison broker owns stateful token
+validation, exact token-bound active/historic derive and broker-only `complete`;
+it accepts no caller-selected selector and cannot enumerate/export keys.
+Reconciliation owns
+exact-provisional inspect/read plus historic verify/unwrap; assembly owns
+committed-`Available` read plus historic verify/unwrap; lifecycle owns
+delete/hold without read/HMAC/unwrap. Missing or extra capability edges fail
+readiness. Alias/function ACLs, token CSPRNG/digest/audience/TTL and the broker
+validator/derive/complete edges are part of exact readiness. Locator/key/credential/raw/subject content is default-deny on
+manifests, results, errors, logs, traces, metrics, audit payloads, diagnostics,
+crash dumps, dead letters, and public surfaces, subject only to the narrow
+restricted repository/adapter/key-record exceptions in the Planning Brief.
+Fixture evidence cannot be represented as real-artifact, production,
+legal/compliance, audit, security, readiness, performance, retention-policy,
+or production-provider qualification.
+
+Status is `PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION
+BLOCKED`. This subsection is planning synchronization only. It is not a schema,
+migration, runtime port, provider selection, packet approval, raw-payload
+authorization, evidence-availability proof, package-completeness proof, or
+production/readiness claim.
+
 ## Evidence-Integrity
 
 This section describes the as-built S1 evidence-integrity behavior in `VerificationCompletionApplicationService`, the domain records, and the internal manifest/BusinessConsumer contracts. Code wins over older TIP wording. This section is persistence-agnostic except for naming the integrity metadata that TIP-65 persists on package/manifest rows; it does not define append-only triggers, durability behavior, provider-specific storage behavior, or raw artifact lifecycle behavior.
@@ -110,7 +633,14 @@ The returned hash format is `sha256:<lowercase-hex>`, enforced by `HashRef`.
 
 JCS canonicalization sorts object member names by ordinal UTF-16 code unit order, emits minimal JSON whitespace, and uses RFC 8785 string/number rules. Property declaration order is no longer part of the canonical hash contract; tests assert field names and canonical output.
 
-Timestamps are converted to UTC before canonicalization and formatted as `yyyy-MM-ddTHH:mm:ss.fffffffZ` using invariant culture and exactly seven fractional digits. Guids are formatted consistently with the `N` format where they enter hash/id inputs as strings.
+Existing as-built S1 evidence timestamps are converted to UTC before
+canonicalization and formatted as `yyyy-MM-ddTHH:mm:ss.fffffffZ` using invariant
+culture and exactly seven fractional digits. The planned C1 persisted/replayed
+identity contract is an explicit compatibility profile: convert to UTC,
+truncate ticks to a whole microsecond before hashing/persistence, and format
+`yyyy-MM-ddTHH:mm:ss.ffffffZ`. It does not alter existing evidence hashes.
+Guids are formatted consistently with the `N` format where they enter hash/id
+inputs as strings.
 
 For `rfc8785-jcs-v1`, hashed evidence graphs do not use raw JSON numbers. Numeric values that enter any hash/id evidence seed MUST be encoded as strings before canonicalization: integer values use `ToString(CultureInfo.InvariantCulture)`, and fractional/score values use `decimal` formatted as `F6` with invariant culture. Scale 6 is part of `rfc8785-jcs-v1`. The as-built S1 hashed evidence objects are string/bool/null/object/array only; tests parse every actual hash/id seed and fail if a `JsonValueKind.Number` appears. The canonicalizer's number formatting remains defensive general-purpose code and rejects NaN/Infinity, but S1 evidence is not allowed to rely on it.
 
