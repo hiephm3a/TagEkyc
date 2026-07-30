@@ -61,6 +61,8 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         "raw_export_control_authorities",
         "raw_export_capture_acceptance_events",
         "raw_export_session_capture_selections",
+        "raw_export_source_ingress_claims",
+        "raw_export_source_ingress_claim_aliases",
     ];
 
     private static readonly string[] ForbiddenPrivileges =
@@ -113,6 +115,21 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         new(
             "tagekyc.raw_export_select_session_capture_acceptance(verification_session_id uuid, raw_class text, capture_acceptance_id uuid)",
             ["raw_export_capture_acceptance_events"]),
+        new(
+            "tagekyc.begin_raw_export_source_ingress_claim(p_authenticated_principal_id uuid, p_client_application_id uuid, p_producer_id text, p_capture_agent_instance_id text, p_ingress_idempotency_key text, p_verification_session_id uuid, p_capture_acceptance_id uuid, p_capture_artifact_id uuid, p_capture_revision integer, p_raw_class text, p_session_challenge_hash text, p_authority_snapshot_id text, p_claimed_plaintext_length bigint, p_media_type text, p_captured_at_utc timestamp with time zone, p_plaintext_retention_started_at_utc timestamp with time zone, p_plaintext_retention_expires_at_utc timestamp with time zone, p_plaintext_retention_budget_seconds integer, p_commitment_key_selector_id text, p_commitment_key_selector_version integer, p_claim_evaluation_owner_id uuid, p_claim_evaluation_token_ttl_seconds integer, p_idempotency_lock_timeout_milliseconds integer)",
+            [
+                "verification_sessions",
+                "capture_artifacts",
+                "raw_export_capture_acceptance_events",
+                "raw_export_source_ingress_claims",
+                "raw_export_source_ingress_claim_aliases",
+            ]),
+        new(
+            "tagekyc.validate_raw_export_claim_evaluation_token(p_client_application_id uuid, p_producer_id text, p_capture_agent_instance_id text, p_ingress_idempotency_key text, p_claim_evaluation_id uuid, p_claim_evaluation_revision bigint, p_claim_evaluation_fence bigint, p_token_variant text, p_token_expires_at_utc timestamp with time zone, p_claim_evaluation_token text)",
+            [
+                "raw_export_source_ingress_claims",
+                "raw_export_source_ingress_claim_aliases",
+            ]),
     ];
 
     private static readonly DeployerTableExpectation[] DeployerTableExpectations =
@@ -129,6 +146,8 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         new("capture_artifacts", true, false),
         new("raw_export_capture_acceptance_events", true, true),
         new("raw_export_session_capture_selections", true, true),
+        new("raw_export_source_ingress_claims", true, true, true),
+        new("raw_export_source_ingress_claim_aliases", true, true, true),
     ];
 
     private static readonly FunctionExpectation[] ExpectedFunctions =
@@ -157,6 +176,27 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
             true,
             false,
             "uuid",
+            "plpgsql"),
+        new(
+            "tagekyc.enforce_raw_export_source_ingress_write()",
+            false,
+            false,
+            false,
+            "trigger",
+            "plpgsql"),
+        new(
+            "tagekyc.begin_raw_export_source_ingress_claim(p_authenticated_principal_id uuid, p_client_application_id uuid, p_producer_id text, p_capture_agent_instance_id text, p_ingress_idempotency_key text, p_verification_session_id uuid, p_capture_acceptance_id uuid, p_capture_artifact_id uuid, p_capture_revision integer, p_raw_class text, p_session_challenge_hash text, p_authority_snapshot_id text, p_claimed_plaintext_length bigint, p_media_type text, p_captured_at_utc timestamp with time zone, p_plaintext_retention_started_at_utc timestamp with time zone, p_plaintext_retention_expires_at_utc timestamp with time zone, p_plaintext_retention_budget_seconds integer, p_commitment_key_selector_id text, p_commitment_key_selector_version integer, p_claim_evaluation_owner_id uuid, p_claim_evaluation_token_ttl_seconds integer, p_idempotency_lock_timeout_milliseconds integer)",
+            true,
+            true,
+            false,
+            "TABLE(outcome_code text, claim_evaluation_token text, token_variant text, token_expires_at_utc timestamp with time zone, claim_evaluation_id uuid, claim_evaluation_revision bigint, claim_evaluation_fence bigint, retry_not_before_utc timestamp with time zone)",
+            "plpgsql"),
+        new(
+            "tagekyc.validate_raw_export_claim_evaluation_token(p_client_application_id uuid, p_producer_id text, p_capture_agent_instance_id text, p_ingress_idempotency_key text, p_claim_evaluation_id uuid, p_claim_evaluation_revision bigint, p_claim_evaluation_fence bigint, p_token_variant text, p_token_expires_at_utc timestamp with time zone, p_claim_evaluation_token text)",
+            true,
+            true,
+            false,
+            "boolean",
             "plpgsql"),
         new(
             "tagekyc.raw_export_control_plane_root_health()",
@@ -190,6 +230,7 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         await ValidateFunctionAclAsync(cancellationToken);
         await ValidateFunctionOwnerBackingReadsAsync(cancellationToken);
         await ValidateDeployerTableCapabilitiesAsync(cancellationToken);
+        await ValidateIngressClaimTableAclAsync(cancellationToken);
         await ValidateBoundaryExecutionAvailableAsync(cancellationToken);
         await ValidateRootHealthAsync(cancellationToken);
 
@@ -696,7 +737,7 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
                 capability.Owner != "tagekyc" ||
                 capability.Select != expected.Select ||
                 capability.Insert != expected.Insert ||
-                capability.Update ||
+                capability.Update != expected.Update ||
                 capability.Delete ||
                 capability.Truncate ||
                 capability.References ||
@@ -704,6 +745,92 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
             {
                 Throw(FunctionAclInvalid);
             }
+        }
+    }
+
+    private async Task ValidateIngressClaimTableAclAsync(
+        CancellationToken cancellationToken)
+    {
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+        {
+            await connection.OpenAsync(cancellationToken);
+        }
+
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT relation.relname,
+                   owner.rolname,
+                   COALESCE((
+                       SELECT pg_catalog.array_agg(
+                           COALESCE(grantor.rolname, acl.grantor::text) || ':' ||
+                           CASE
+                               WHEN acl.grantee = 0 THEN 'PUBLIC'
+                               ELSE COALESCE(grantee.rolname, acl.grantee::text)
+                           END || ':' ||
+                           acl.privilege_type || ':' ||
+                           acl.is_grantable::text
+                           ORDER BY
+                               COALESCE(grantor.rolname, acl.grantor::text),
+                               CASE
+                                   WHEN acl.grantee = 0 THEN 'PUBLIC'
+                                   ELSE COALESCE(grantee.rolname, acl.grantee::text)
+                               END,
+                               acl.privilege_type,
+                               acl.is_grantable)
+                       FROM pg_catalog.aclexplode(
+                           COALESCE(
+                               relation.relacl,
+                               pg_catalog.acldefault('r', relation.relowner))) AS acl
+                       LEFT JOIN pg_catalog.pg_roles AS grantor
+                         ON grantor.oid = acl.grantor
+                       LEFT JOIN pg_catalog.pg_roles AS grantee
+                         ON grantee.oid = acl.grantee
+                       WHERE acl.grantee <> relation.relowner
+                   ), ARRAY[]::text[]) AS explicit_non_owner_acl_rows,
+                   NOT EXISTS (
+                       SELECT 1
+                       FROM pg_catalog.pg_attribute AS attribute
+                       WHERE attribute.attrelid = relation.oid
+                         AND attribute.attnum > 0
+                         AND NOT attribute.attisdropped
+                         AND attribute.attacl IS NOT NULL)
+            FROM pg_catalog.pg_class AS relation
+            JOIN pg_catalog.pg_namespace AS namespace
+              ON namespace.oid = relation.relnamespace
+            JOIN pg_catalog.pg_roles AS owner ON owner.oid = relation.relowner
+            WHERE namespace.nspname = 'tagekyc'
+              AND relation.relname IN (
+                  'raw_export_source_ingress_claims',
+                  'raw_export_source_ingress_claim_aliases')
+            ORDER BY relation.relname;
+            """;
+
+        var expectedAclRows = new[]
+        {
+            "tagekyc:tagekyc_raw_export_deployer:INSERT:false",
+            "tagekyc:tagekyc_raw_export_deployer:SELECT:false",
+            "tagekyc:tagekyc_raw_export_deployer:UPDATE:false",
+        };
+        var rowCount = 0;
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            rowCount++;
+            var owner = reader.GetString(1);
+            var aclRows = reader.GetFieldValue<string[]>(2);
+            var columnAclEmpty = reader.GetBoolean(3);
+            if (owner != "tagekyc" ||
+                !aclRows.SequenceEqual(expectedAclRows, StringComparer.Ordinal) ||
+                !columnAclEmpty)
+            {
+                Throw(FunctionAclInvalid);
+            }
+        }
+
+        if (rowCount != 2)
+        {
+            Throw(FunctionAclInvalid);
         }
     }
 
@@ -878,7 +1005,8 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
     private sealed record DeployerTableExpectation(
         string Table,
         bool Select,
-        bool Insert);
+        bool Insert,
+        bool Update = false);
 
     private sealed record DeployerTableCapability(
         string Owner,

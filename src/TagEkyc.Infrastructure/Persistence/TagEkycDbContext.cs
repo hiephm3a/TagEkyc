@@ -63,6 +63,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportJobOperationalHeadRow> RawExportJobOperationalHeads => Set<RawExportJobOperationalHeadRow>();
     public DbSet<RawExportCaptureAcceptanceEventRow> RawExportCaptureAcceptanceEvents => Set<RawExportCaptureAcceptanceEventRow>();
     public DbSet<RawExportSessionCaptureSelectionRow> RawExportSessionCaptureSelections => Set<RawExportSessionCaptureSelectionRow>();
+    public DbSet<RawExportSourceIngressClaimRow> RawExportSourceIngressClaims => Set<RawExportSourceIngressClaimRow>();
+    public DbSet<RawExportSourceIngressClaimAliasRow> RawExportSourceIngressClaimAliases => Set<RawExportSourceIngressClaimAliasRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -600,6 +602,128 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         ConfigureRawExportAuthorization(modelBuilder);
         ConfigureRawExportJobs(modelBuilder);
         ConfigureRawExportCaptureAcceptance(modelBuilder);
+        ConfigureRawExportSourceIngressClaims(modelBuilder);
+    }
+
+    private static void ConfigureRawExportSourceIngressClaims(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<RawExportSourceIngressClaimRow>(entity =>
+        {
+            entity.ToTable("raw_export_source_ingress_claims", table =>
+            {
+                table.HasCheckConstraint(
+                    "ck_raw_export_source_ingress_state",
+                    """
+                    "ClaimState" = 'ClaimEvaluating'
+                    AND "CaptureRevision" >= 1
+                    AND "CommitmentKeySelectorVersion" >= 1
+                    AND octet_length("IngressIdentityFingerprint") = 32
+                    """);
+            });
+            entity.HasKey(row => row.IngressClaimId)
+                .HasName("pk_raw_export_source_ingress_claims");
+            entity.HasAlternateKey(row => new
+                {
+                    row.ClientApplicationId,
+                    row.ProducerId,
+                    row.VerificationSessionId,
+                    row.CaptureArtifactId,
+                    row.CaptureRevision,
+                    row.RawClass,
+                })
+                .HasName("uq_raw_export_source_ingress_exact_artifact");
+            entity.Property(row => row.ProducerId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.CaptureAgentInstanceId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.RawClass).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.SessionChallengeHash).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.AuthoritySnapshotId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.IngressIdentityFingerprint)
+                .HasColumnType("bytea")
+                .IsRequired();
+            entity.Property(row => row.ClaimState).HasMaxLength(32).IsRequired();
+            entity.Property(row => row.CommitmentKeySelectorId).HasMaxLength(128).IsRequired();
+            entity.HasOne<VerificationSessionRow>()
+                .WithMany()
+                .HasForeignKey(row => row.VerificationSessionId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_ingress_claims_session");
+            entity.HasOne<RawExportCaptureAcceptanceEventRow>()
+                .WithMany()
+                .HasForeignKey(row => row.CaptureAcceptanceId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_ingress_claims_acceptance");
+            entity.HasOne<CaptureArtifactRow>()
+                .WithMany()
+                .HasForeignKey(row => row.CaptureArtifactId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_ingress_claims_capture_artifact");
+            entity.HasIndex(row => row.VerificationSessionId)
+                .HasDatabaseName("IX_raw_export_source_ingress_claims_session");
+            entity.HasIndex(row => row.CaptureAcceptanceId)
+                .HasDatabaseName("IX_raw_export_source_ingress_claims_acceptance");
+            entity.HasIndex(row => row.CaptureArtifactId)
+                .HasDatabaseName("IX_raw_export_source_ingress_claims_artifact");
+        });
+
+        modelBuilder.Entity<RawExportSourceIngressClaimAliasRow>(entity =>
+        {
+            entity.ToTable("raw_export_source_ingress_claim_aliases", table =>
+            {
+                table.HasCheckConstraint(
+                    "ck_raw_export_source_ingress_alias_state",
+                    """
+                    "AliasState" IN ('Evaluating','Bound','ConflictTombstone')
+                    AND "CurrentClaimEvaluationDisposition"
+                        IN ('Active','Completed','Expired','Reclaimed','Conflict')
+                    AND "CurrentClaimEvaluationRevision" >= 1
+                    AND "CurrentClaimEvaluationFence" >= 1
+                    AND "CurrentTokenSchemaVersion" = 1
+                    AND "CurrentTokenVariant"
+                        IN ('NewClaimEvaluationToken','ExistingClaimComparisonToken')
+                    AND "CurrentTokenAudience" =
+                        'tagekyc.raw-export-source-ingress-claim-comparison'
+                    AND octet_length("AttemptedIngressIdentityFingerprint") = 32
+                    AND octet_length("ProducerClaimEnvelopeFingerprint") = 32
+                    AND octet_length("CurrentTokenDigest") = 32
+                    AND "CurrentTokenExpiresAtUtc" > "CurrentTokenIssuedAtUtc"
+                    AND "LatestIssuedTokenExpiresAtUtc" >= "CurrentTokenExpiresAtUtc"
+                    """);
+            });
+            entity.HasKey(row => row.IngressClaimAliasId)
+                .HasName("pk_raw_export_source_ingress_claim_aliases");
+            entity.HasAlternateKey(row => new
+                {
+                    row.ClientApplicationId,
+                    row.ProducerId,
+                    row.CaptureAgentInstanceId,
+                    row.IngressIdempotencyKey,
+                })
+                .HasName("uq_raw_export_source_ingress_alias_key");
+            entity.Property(row => row.ProducerId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.CaptureAgentInstanceId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.AttemptedIngressIdentityFingerprint)
+                .HasColumnType("bytea")
+                .IsRequired();
+            entity.Property(row => row.ProducerClaimEnvelopeFingerprint)
+                .HasColumnType("bytea")
+                .IsRequired();
+            entity.Property(row => row.AliasState).HasMaxLength(32).IsRequired();
+            entity.Property(row => row.CurrentClaimEvaluationDisposition)
+                .HasMaxLength(32)
+                .IsRequired();
+            entity.Property(row => row.CurrentTokenVariant).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.CurrentTokenAudience).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.CurrentTokenDigest)
+                .HasColumnType("bytea")
+                .IsRequired();
+            entity.HasOne<RawExportSourceIngressClaimRow>()
+                .WithMany()
+                .HasForeignKey(row => row.IngressClaimId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_ingress_alias_claim");
+            entity.HasIndex(row => row.IngressClaimId)
+                .HasDatabaseName("IX_raw_export_source_ingress_aliases_claim");
+        });
     }
 
     private static void ConfigureRawExportCaptureAcceptance(ModelBuilder modelBuilder)
