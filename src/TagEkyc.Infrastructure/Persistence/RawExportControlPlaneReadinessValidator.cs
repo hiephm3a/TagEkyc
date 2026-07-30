@@ -32,6 +32,8 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         "raw_export_control_authorities",
         "raw_export_fulfillments",
         "raw_export_policy_lifecycle",
+        "raw_export_capture_acceptance_events",
+        "raw_export_session_capture_selections",
     ];
 
     private static readonly string[] MutationPrivileges =
@@ -57,6 +59,8 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         "raw_export_subject_consent_classes",
         "raw_export_requirement_rules",
         "raw_export_control_authorities",
+        "raw_export_capture_acceptance_events",
+        "raw_export_session_capture_selections",
     ];
 
     private static readonly string[] ForbiddenPrivileges =
@@ -100,6 +104,15 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         new(
             "tagekyc.raw_export_control_plane_root_health()",
             ["raw_export_control_authorities"]),
+        new(
+            "tagekyc.raw_export_append_capture_acceptance(verification_session_id uuid, client_application_id uuid, raw_class text, capture_artifact_id uuid, capture_revision integer, session_challenge_hash text, accepted_evidence_ref text, acceptance_policy_id text, acceptance_policy_version integer)",
+            [
+                "capture_artifacts",
+                "raw_export_capture_acceptance_events",
+            ]),
+        new(
+            "tagekyc.raw_export_select_session_capture_acceptance(verification_session_id uuid, raw_class text, capture_acceptance_id uuid)",
+            ["raw_export_capture_acceptance_events"]),
     ];
 
     private static readonly DeployerTableExpectation[] DeployerTableExpectations =
@@ -113,6 +126,9 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         new("raw_export_policy_requirements", true, false),
         new("raw_export_policy_versions", true, false),
         new("raw_export_requirement_rule_sets", true, false),
+        new("capture_artifacts", true, false),
+        new("raw_export_capture_acceptance_events", true, true),
+        new("raw_export_session_capture_selections", true, true),
     ];
 
     private static readonly FunctionExpectation[] ExpectedFunctions =
@@ -127,6 +143,21 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         new("tagekyc.raw_export_current_actor()", true, false, false),
         new("tagekyc.raw_export_has_current_authority(actor_id uuid, required_authority text, policy_id uuid, requirement_type text)", true, false, false),
         new("tagekyc.raw_export_policy_exists(policy_id uuid)", true, false, false),
+        new("tagekyc.enforce_raw_export_capture_acceptance_insert()", false, false, false),
+        new(
+            "tagekyc.raw_export_append_capture_acceptance(verification_session_id uuid, client_application_id uuid, raw_class text, capture_artifact_id uuid, capture_revision integer, session_challenge_hash text, accepted_evidence_ref text, acceptance_policy_id text, acceptance_policy_version integer)",
+            true,
+            true,
+            false,
+            "uuid",
+            "plpgsql"),
+        new(
+            "tagekyc.raw_export_select_session_capture_acceptance(verification_session_id uuid, raw_class text, capture_acceptance_id uuid)",
+            true,
+            true,
+            false,
+            "uuid",
+            "plpgsql"),
         new(
             "tagekyc.raw_export_control_plane_root_health()",
             true,

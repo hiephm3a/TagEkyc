@@ -61,6 +61,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportJobAttemptRow> RawExportJobAttempts => Set<RawExportJobAttemptRow>();
     public DbSet<RawExportJobTransitionRow> RawExportJobTransitions => Set<RawExportJobTransitionRow>();
     public DbSet<RawExportJobOperationalHeadRow> RawExportJobOperationalHeads => Set<RawExportJobOperationalHeadRow>();
+    public DbSet<RawExportCaptureAcceptanceEventRow> RawExportCaptureAcceptanceEvents => Set<RawExportCaptureAcceptanceEventRow>();
+    public DbSet<RawExportSessionCaptureSelectionRow> RawExportSessionCaptureSelections => Set<RawExportSessionCaptureSelectionRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -597,6 +599,61 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
 
         ConfigureRawExportAuthorization(modelBuilder);
         ConfigureRawExportJobs(modelBuilder);
+        ConfigureRawExportCaptureAcceptance(modelBuilder);
+    }
+
+    private static void ConfigureRawExportCaptureAcceptance(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<RawExportCaptureAcceptanceEventRow>(entity =>
+        {
+            entity.ToTable("raw_export_capture_acceptance_events");
+            entity.HasKey(row => row.CaptureAcceptanceId)
+                .HasName("pk_raw_export_capture_acceptance_events");
+            entity.HasAlternateKey(row => new
+                {
+                    row.VerificationSessionId,
+                    row.RawClass,
+                    row.CaptureRevision,
+                })
+                .HasName("uq_raw_export_capture_acceptance_revision");
+            entity.HasAlternateKey(row => new
+                {
+                    row.VerificationSessionId,
+                    row.RawClass,
+                    row.CaptureArtifactId,
+                    row.CaptureRevision,
+                })
+                .HasName("uq_raw_export_capture_acceptance_artifact");
+            entity.Property(row => row.RawClass).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.SessionChallengeHash).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.AcceptedEvidenceRef).HasMaxLength(512).IsRequired();
+            entity.Property(row => row.AcceptancePolicyId).HasMaxLength(128).IsRequired();
+            entity.HasOne<VerificationSessionRow>()
+                .WithMany()
+                .HasForeignKey(row => row.VerificationSessionId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_capture_acceptance_session");
+            entity.HasOne<CaptureArtifactRow>()
+                .WithMany()
+                .HasForeignKey(row => row.CaptureArtifactId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_capture_acceptance_artifact");
+        });
+
+        modelBuilder.Entity<RawExportSessionCaptureSelectionRow>(entity =>
+        {
+            entity.ToTable("raw_export_session_capture_selections");
+            entity.HasKey(row => row.SessionCaptureSelectionId)
+                .HasName("pk_raw_export_session_capture_selections");
+            entity.HasAlternateKey(row => new { row.VerificationSessionId, row.RawClass })
+                .HasName("uq_raw_export_session_capture_selection_class");
+            entity.Property(row => row.RawClass).HasMaxLength(64).IsRequired();
+            entity.HasOne<RawExportCaptureAcceptanceEventRow>()
+                .WithMany()
+                .HasForeignKey(row => row.CaptureAcceptanceId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_session_selection_acceptance");
+        });
     }
 
     private static void ConfigureRawExportJobs(ModelBuilder modelBuilder)
