@@ -210,6 +210,24 @@ public sealed class RawExportAuthoritySnapshotReadinessCheck(
     }
 }
 
+internal sealed class RawExportCustodyProfileReadinessCheck(
+    RawExportCustodyProfileReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportCustodyProfileReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
 public sealed class RawExportAuthorizationReadinessCheck(RawExportAuthorizationReadinessValidator validator) : IReadinessCheck
 {
     public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)

@@ -35,6 +35,7 @@ builder.Services
 ConfigureEvidenceSigning(builder);
 ConfigureRawExportPermitTtl(builder);
 ConfigureRawExportJobLease(builder);
+builder.Services.AddTagEkycCustodyProfiles(builder.Configuration);
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
 ConfigureRetention(builder);
@@ -206,6 +207,13 @@ static void ConfigureApiKeyStore(WebApplicationBuilder builder)
 
 static void ConfigureReadiness(WebApplicationBuilder builder)
 {
+    builder.Services.AddSingleton(
+        new RawExportCustodyProfileReadinessValidator(
+            builder.Configuration,
+            builder.Environment.IsProduction()));
+    builder.Services.AddScoped<
+        IReadinessCheck,
+        RawExportCustodyProfileReadinessCheck>();
     builder.Services.AddSingleton(
         RawExportAuthoritySnapshotProfileState.Resolve(
             builder.Configuration,
