@@ -165,19 +165,6 @@ public sealed class Tip88C1B1IngressClaimTests(PostgresPersistenceFixture postgr
             ],
             runtimeExecutables);
 
-        Assert.False(await ScalarAsync<bool>(
-            connection,
-            """
-            SELECT EXISTS (
-                SELECT 1
-                FROM pg_catalog.pg_proc AS function_row
-                JOIN pg_catalog.pg_namespace AS namespace
-                  ON namespace.oid = function_row.pronamespace
-                WHERE namespace.nspname = 'tagekyc'
-                  AND function_row.proname =
-                        'complete_raw_export_source_ingress_claim');
-            """));
-
         foreach (var table in Tables)
         {
             foreach (var privilege in new[]

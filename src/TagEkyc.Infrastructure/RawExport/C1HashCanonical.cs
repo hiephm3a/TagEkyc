@@ -124,6 +124,40 @@ public static class C1HashCanonical
             new Scalar(plaintextRetentionBudgetSeconds.ToString(CultureInfo.InvariantCulture)));
     }
 
+    public static byte[] EncodeLengthPrefixedPayload(
+        string domain,
+        params string[] fields)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(domain);
+        ArgumentNullException.ThrowIfNull(fields);
+        using var stream = new MemoryStream();
+        WriteLengthPrefixedText(stream, domain);
+        foreach (var field in fields)
+        {
+            WriteLengthPrefixedText(stream, field);
+        }
+
+        return stream.ToArray();
+    }
+
+    public static byte[] ComputeNonceSeedCommitment(string nonceStrategyId) =>
+        Compute(
+            "tip-88c1-nonce-seed-commitment-v1",
+            new Scalar(RequiredText(nonceStrategyId, nameof(nonceStrategyId))),
+            new Scalar("none"));
+
+    public static byte[] ComputeFramingParametersDigest(
+        string encryptionSuiteId,
+        int encryptionFramingVersion,
+        int chunkSize,
+        string nonceStrategyId) =>
+        Compute(
+            "tip-88c1-framing-parameters-v1",
+            new Scalar(RequiredText(encryptionSuiteId, nameof(encryptionSuiteId))),
+            new Scalar(encryptionFramingVersion.ToString(CultureInfo.InvariantCulture)),
+            new Scalar(chunkSize.ToString(CultureInfo.InvariantCulture)),
+            new Scalar(RequiredText(nonceStrategyId, nameof(nonceStrategyId))));
+
     public static string CanonicalTimestamp(DateTimeOffset value)
     {
         var utcTicks = value.UtcTicks;

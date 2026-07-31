@@ -25,6 +25,8 @@ public sealed class RawExportAuthoritySnapshotRow
     public string? StableDataScopeId { get; set; }
     public string? RetentionPolicyId { get; set; }
     public int? RetentionPolicyVersion { get; set; }
+    public Guid? ConsentPolicyId { get; set; }
+    public int? ConsentPolicyVersion { get; set; }
     public string? RetentionClass { get; set; }
     public string? RetentionStartEvent { get; set; }
     public DateTimeOffset? AbsoluteSourceExpiresAtUtc { get; set; }

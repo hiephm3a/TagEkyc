@@ -66,6 +66,9 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportSourceIngressClaimRow> RawExportSourceIngressClaims => Set<RawExportSourceIngressClaimRow>();
     public DbSet<RawExportSourceIngressClaimAliasRow> RawExportSourceIngressClaimAliases => Set<RawExportSourceIngressClaimAliasRow>();
     public DbSet<RawExportAuthoritySnapshotRow> RawExportAuthoritySnapshots => Set<RawExportAuthoritySnapshotRow>();
+    public DbSet<RawExportSourceReservationRow> RawExportSourceReservations => Set<RawExportSourceReservationRow>();
+    public DbSet<RawExportSourceEncryptionAttemptRow> RawExportSourceEncryptionAttempts => Set<RawExportSourceEncryptionAttemptRow>();
+    public DbSet<RawExportSourceHeadRow> RawExportSourceHeads => Set<RawExportSourceHeadRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -605,6 +608,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         ConfigureRawExportCaptureAcceptance(modelBuilder);
         ConfigureRawExportSourceIngressClaims(modelBuilder);
         ConfigureRawExportAuthoritySnapshots(modelBuilder);
+        ConfigureRawExportSourceReservations(modelBuilder);
     }
 
     private static void ConfigureRawExportAuthoritySnapshots(ModelBuilder modelBuilder)
@@ -628,6 +632,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                     AND ("AuthoritySnapshotSchemaVersion" IS NULL OR "AuthoritySnapshotSchemaVersion" = 1)
                     AND ("AuthorityArtifactVersion" IS NULL OR "AuthorityArtifactVersion" >= 1)
                     AND ("RetentionPolicyVersion" IS NULL OR "RetentionPolicyVersion" >= 1)
+                    AND ("ConsentPolicyVersion" IS NULL OR "ConsentPolicyVersion" >= 1)
                     AND ("AuthoritySnapshotId" IS NULL OR "AuthoritySnapshotId" <> '00000000-0000-0000-0000-000000000000'::uuid)
                     AND ("AuthorityArtifactId" IS NULL OR "AuthorityArtifactId" <> '00000000-0000-0000-0000-000000000000'::uuid)
                     AND ("ControllerIdentity" IS NULL OR btrim("ControllerIdentity") <> '')
@@ -664,6 +669,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                         AND "StableDataScopeId" IS NOT NULL
                         AND "RetentionPolicyId" IS NOT NULL
                         AND "RetentionPolicyVersion" IS NOT NULL
+                        AND "ConsentPolicyId" IS NOT NULL
+                        AND "ConsentPolicyVersion" IS NOT NULL
                         AND "RetentionClass" IS NOT NULL
                         AND "RetentionStartEvent" IS NOT NULL
                         AND "AbsoluteSourceExpiresAtUtc" IS NOT NULL
@@ -690,6 +697,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                         AND "StableDataScopeId" IS NULL
                         AND "RetentionPolicyId" IS NULL
                         AND "RetentionPolicyVersion" IS NULL
+                        AND "ConsentPolicyId" IS NULL
+                        AND "ConsentPolicyVersion" IS NULL
                         AND "RetentionClass" IS NULL
                         AND "RetentionStartEvent" IS NULL
                         AND "AbsoluteSourceExpiresAtUtc" IS NULL
@@ -716,6 +725,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                         AND "StableDataScopeId" IS NULL
                         AND "RetentionPolicyId" IS NULL
                         AND "RetentionPolicyVersion" IS NULL
+                        AND "ConsentPolicyId" IS NULL
+                        AND "ConsentPolicyVersion" IS NULL
                         AND "RetentionClass" IS NULL
                         AND "RetentionStartEvent" IS NULL
                         AND "AbsoluteSourceExpiresAtUtc" IS NULL
@@ -765,6 +776,172 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                 .HasForeignKey(row => row.CaptureAcceptanceId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_raw_export_authority_snapshot_acceptance");
+            entity.HasOne<RawExportPolicyVersionRow>()
+                .WithMany()
+                .HasForeignKey(row => new
+                {
+                    row.ConsentPolicyId,
+                    row.ConsentPolicyVersion,
+                })
+                .HasPrincipalKey(row => new
+                {
+                    row.PolicyId,
+                    row.PolicyVersion,
+                })
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_authority_snapshot_consent_policy");
+            entity.HasIndex(row => new
+                {
+                    row.ConsentPolicyId,
+                    row.ConsentPolicyVersion,
+                })
+                .HasDatabaseName("ix_raw_export_authority_consent_policy");
+        });
+    }
+
+    private static void ConfigureRawExportSourceReservations(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<RawExportSourceReservationRow>(entity =>
+        {
+            entity.ToTable("raw_export_source_reservations", table =>
+            {
+                table.HasCheckConstraint(
+                    "ck_raw_export_source_reservation_values",
+                    """
+                    "SchemaVersion" = 1
+                    AND "AuthoritySnapshotSchemaVersion" = 1
+                    AND "SubjectRefTokenSchemaVersion" = 1
+                    AND "ContentCommitmentSchemaVersion" = 1
+                    AND "SubjectRefTokenKeyVersion" >= 1
+                    AND "ContentCommitmentKeyVersion" >= 1
+                    AND "SourceEncryptionProfileVersion" >= 1
+                    AND "ConsentPolicyVersion" >= 1
+                    AND "ClaimedPlaintextLength" >= 0
+                    AND "PlaintextRetentionBudgetSeconds" >= 1
+                    AND octet_length("SubjectRefToken") = 32
+                    AND octet_length("ContentCommitment") = 32
+                    AND octet_length("AdmissionFingerprint") = 32
+                    AND octet_length("SourceReservationFingerprint") = 32
+                    AND "PlaintextRetentionExpiresAtUtc" > "PlaintextRetentionStartedAtUtc"
+                    AND "EffectivePlaintextRetentionExpiresAtUtc" <= "PlaintextRetentionExpiresAtUtc"
+                    AND "ReservationExpiresAtUtc" <= "EffectivePlaintextRetentionExpiresAtUtc"
+                    AND "ReservationExpiresAtUtc" <= "AbsoluteSourceExpiresAtUtc"
+                    """);
+            });
+            entity.HasKey(row => row.SourceArtifactId)
+                .HasName("pk_raw_export_source_reservations");
+            entity.HasAlternateKey(row => row.IngressClaimId)
+                .HasName("uq_raw_export_source_ingress_source");
+            entity.Property(row => row.SubjectRefToken).HasColumnType("bytea").IsRequired();
+            entity.Property(row => row.ContentCommitment).HasColumnType("bytea").IsRequired();
+            entity.Property(row => row.AdmissionFingerprint).HasColumnType("bytea").IsRequired();
+            entity.Property(row => row.SourceReservationFingerprint).HasColumnType("bytea").IsRequired();
+            entity.Property(row => row.SubjectRefTokenKeyId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.ContentCommitmentKeyId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.StorageProfileId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.SourceEncryptionProfileId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.MediaType).HasMaxLength(256).IsRequired();
+            entity.Property(row => row.ControllerIdentity).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.StableDataScopeId).HasMaxLength(128).IsRequired();
+            entity.HasOne<RawExportSourceIngressClaimRow>()
+                .WithOne()
+                .HasForeignKey<RawExportSourceReservationRow>(row => row.IngressClaimId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_reservation_claim");
+            entity.HasOne<RawExportPolicyVersionRow>()
+                .WithMany()
+                .HasForeignKey(row => new { row.ConsentPolicyId, row.ConsentPolicyVersion })
+                .HasPrincipalKey(row => new { row.PolicyId, row.PolicyVersion })
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_reservation_consent_policy");
+            entity.HasIndex(row => new
+                {
+                    row.ConsentPolicyId,
+                    row.ConsentPolicyVersion,
+                })
+                .HasDatabaseName("ix_raw_export_source_reservation_consent");
+        });
+
+        modelBuilder.Entity<RawExportSourceEncryptionAttemptRow>(entity =>
+        {
+            entity.ToTable("raw_export_source_encryption_attempts", table =>
+            {
+                table.HasCheckConstraint(
+                    "ck_raw_export_source_attempt_values",
+                    """
+                    "SchemaVersion" = 1
+                    AND "EncryptionAttemptRevision" >= 1
+                    AND "Fence" >= 1
+                    AND "KekVersion" >= 1
+                    AND "EncryptionFramingVersion" >= 1
+                    AND "ChunkSize" >= 1
+                    AND octet_length("NonceDerivationSeedCommitment") = 32
+                    AND octet_length("FramingParametersDigest") = 32
+                    AND octet_length("EncryptionAttemptFingerprint") = 32
+                    AND "R2TerminationDisposition" IS NULL
+                    """);
+            });
+            entity.HasKey(row => row.AttemptId)
+                .HasName("pk_raw_export_source_encryption_attempts");
+            entity.HasAlternateKey(row => new { row.SourceArtifactId, row.EncryptionAttemptRevision })
+                .HasName("uq_raw_export_source_attempt_revision");
+            entity.HasAlternateKey(row => new { row.SourceArtifactId, row.AttemptId, row.Fence })
+                .HasName("uq_raw_export_source_attempt_fence");
+            entity.Property(row => row.NonceDerivationSeedCommitment).HasColumnType("bytea").IsRequired();
+            entity.Property(row => row.FramingParametersDigest).HasColumnType("bytea").IsRequired();
+            entity.Property(row => row.EncryptionAttemptFingerprint).HasColumnType("bytea").IsRequired();
+            entity.Property(row => row.KeyProviderId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.KekId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.KekFingerprint).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.EncryptionSuiteId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.NonceStrategyId).HasMaxLength(128).IsRequired();
+            entity.Property(row => row.NonceDerivationSeedReferenceOrWrappedSeed).HasMaxLength(256).IsRequired();
+            entity.Property(row => row.R2TerminationDisposition).HasMaxLength(64);
+            entity.HasOne<RawExportSourceReservationRow>()
+                .WithMany()
+                .HasForeignKey(row => row.SourceArtifactId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_attempt_reservation");
+        });
+
+        modelBuilder.Entity<RawExportSourceHeadRow>(entity =>
+        {
+            entity.ToTable("raw_export_source_head", table =>
+            {
+                table.HasCheckConstraint(
+                    "ck_raw_export_source_head_values",
+                    "\"CustodyState\" = 'Reserved' AND \"ReservationRevision\" >= 1 AND \"Fence\" >= 1");
+            });
+            entity.HasKey(row => row.SourceArtifactId)
+                .HasName("pk_raw_export_source_head");
+            entity.HasOne<RawExportSourceReservationRow>()
+                .WithOne()
+                .HasForeignKey<RawExportSourceHeadRow>(row => row.SourceArtifactId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_head_reservation");
+            entity.HasOne<RawExportSourceEncryptionAttemptRow>()
+                .WithMany()
+                .HasForeignKey(row => new
+                {
+                    row.SourceArtifactId,
+                    row.CurrentEncryptionAttemptId,
+                    row.Fence,
+                })
+                .HasPrincipalKey(row => new
+                {
+                    row.SourceArtifactId,
+                    row.AttemptId,
+                    row.Fence,
+                })
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_head_attempt");
+            entity.HasIndex(row => new
+                {
+                    row.SourceArtifactId,
+                    row.CurrentEncryptionAttemptId,
+                    row.Fence,
+                })
+                .HasDatabaseName("ix_raw_export_source_head_attempt");
         });
     }
 
@@ -777,7 +954,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                 table.HasCheckConstraint(
                     "ck_raw_export_source_ingress_state",
                     """
-                    "ClaimState" = 'ClaimEvaluating'
+                    "ClaimState" IN ('ClaimEvaluating','Reserved')
                     AND "CaptureRevision" >= 1
                     AND "CommitmentKeySelectorVersion" >= 1
                     AND octet_length("IngressIdentityFingerprint") = 32

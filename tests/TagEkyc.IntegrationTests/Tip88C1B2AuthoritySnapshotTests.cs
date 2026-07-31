@@ -1,6 +1,8 @@
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
+using TagEkyc.Application.Ports;
+using TagEkyc.Domain;
 using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.Persistence.Entities;
 
@@ -57,6 +59,8 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         "CaptureAcceptanceId",
         "ClientApplicationId",
         "ControllerIdentity",
+        "ConsentPolicyId",
+        "ConsentPolicyVersion",
         "EvaluatedAtUtc",
         "EventType",
         "ExtensionDisposition",
@@ -199,7 +203,7 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         Assert.False(await HasFunctionPrivilegeAsync(
             connection,
             "tagekyc_runtime",
-            "tagekyc.raw_export_append_authority_snapshot(uuid,uuid,uuid,text,uuid,integer,text,text,text,integer,text,text,timestamptz,text,text,text,timestamptz,timestamptz)",
+            "tagekyc.raw_export_append_authority_snapshot(uuid,uuid,uuid,text,uuid,integer,text,text,text,integer,uuid,integer,text,text,timestamptz,text,text,text,timestamptz,timestamptz)",
             "EXECUTE"));
         Assert.False(await HasFunctionPrivilegeAsync(
             connection,
@@ -268,6 +272,23 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
             evaluatedAt.AddMinutes(1)));
         Assert.Null(await ResolveAsync(fixture, evaluatedAt.AddHours(-1)));
         Assert.Null(await ResolveAsync(fixture, validUntil));
+    }
+
+    [Fact]
+    public async Task C1B2_grant_rejects_unknown_consent_policy_version_binding()
+    {
+        var fixture = await SeedScopeAsync();
+        var exception = await Assert.ThrowsAsync<PostgresException>(
+            () => AppendGrantAsync(
+                fixture,
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow.AddHours(2),
+                DateTimeOffset.UtcNow.AddHours(1),
+                consentPolicyIdOverride: Guid.NewGuid()));
+        Assert.Equal(PostgresErrorCodes.ForeignKeyViolation, exception.SqlState);
+        Assert.Equal(
+            "fk_raw_export_authority_snapshot_consent_policy",
+            exception.ConstraintName);
     }
 
     [Fact]
@@ -605,8 +626,11 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         DateTimeOffset evaluatedAt,
         DateTimeOffset absoluteSourceExpiresAt,
         DateTimeOffset? validUntil,
-        bool setActor = true)
+        bool setActor = true,
+        Guid? consentPolicyIdOverride = null)
     {
+        var consentPolicyId =
+            consentPolicyIdOverride ?? await SeedCoreConsentPolicyAsync();
         await using var connection = await OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         if (setActor)
@@ -628,6 +652,8 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
                 'scope:fixture',
                 'retention-policy:fixture',
                 1,
+                @consentPolicyId,
+                1,
                 'RawBiometric',
                 'CaptureAccepted',
                 @absoluteSourceExpiresAt,
@@ -646,6 +672,7 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         command.Parameters.AddWithValue("acceptanceId", scope.AcceptanceId);
         command.Parameters.AddWithValue("rawClass", scope.RawClass);
         command.Parameters.AddWithValue("authorityArtifactId", Guid.NewGuid());
+        command.Parameters.AddWithValue("consentPolicyId", consentPolicyId);
         command.Parameters.AddWithValue(
             "absoluteSourceExpiresAt",
             absoluteSourceExpiresAt);
@@ -723,6 +750,8 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
                 "ControllerIdentity",
                 "ApprovedPurpose",
                 "StableDataScopeId",
+                "ConsentPolicyId",
+                "ConsentPolicyVersion",
                 "AbsoluteSourceExpiresAtUtc",
                 "ReuseDisposition",
                 "ExtensionDisposition"
@@ -756,9 +785,11 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
             reader.GetString(2),
             reader.GetString(3),
             reader.GetString(4),
-            reader.GetFieldValue<DateTimeOffset>(5),
-            reader.GetString(6),
-            reader.GetString(7));
+            reader.GetGuid(5),
+            reader.GetInt32(6),
+            reader.GetFieldValue<DateTimeOffset>(7),
+            reader.GetString(8),
+            reader.GetString(9));
         await reader.CloseAsync();
         await transaction.RollbackAsync();
         return result;
@@ -769,6 +800,7 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         string eventType,
         string mutation)
     {
+        var consentPolicyId = await SeedCoreConsentPolicyAsync();
         await using var connection = await OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await ExecuteAsync(
@@ -784,7 +816,8 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
                 scope,
                 Guid.NewGuid(),
                 Guid.NewGuid(),
-                1)
+                1,
+                consentPolicyId)
             : SparseEventInsertSql(
                 scope,
                 eventType,
@@ -842,7 +875,8 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         AuthorityScope scope,
         Guid eventId,
         Guid snapshotId,
-        long revision) =>
+        long revision,
+        Guid? consentPolicyId = null) =>
         $"""
         INSERT INTO tagekyc.raw_export_authority_snapshots
             ("AuthoritySnapshotEventId","EventType","Revision",
@@ -852,7 +886,8 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
              "AuthoritySnapshotSchemaVersion","AuthoritySnapshotId",
              "AuthorityArtifactId","AuthorityArtifactVersion",
              "ControllerIdentity","ApprovedPurpose","StableDataScopeId",
-             "RetentionPolicyId","RetentionPolicyVersion","RetentionClass",
+             "RetentionPolicyId","RetentionPolicyVersion",
+             "ConsentPolicyId","ConsentPolicyVersion","RetentionClass",
              "RetentionStartEvent","AbsoluteSourceExpiresAtUtc",
              "ReuseDisposition","ExtensionDisposition",
              "RevocationPolicyId","PurgePolicyId","LegalHoldPolicyId",
@@ -866,7 +901,8 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
              1,'{snapshotId}',
              '{Guid.NewGuid()}',1,
              'controller:fixture','SubjectRawBiometricExport','scope:fixture',
-             'retention-policy:fixture',1,'RawBiometric',
+             'retention-policy:fixture',1,
+             '{consentPolicyId ?? Guid.NewGuid()}',1,'RawBiometric',
              'CaptureAccepted',pg_catalog.transaction_timestamp() + interval '2 hours',
              'FreshAuthorityRequired','Forbidden',
              'revocation-policy:fixture','purge-policy:fixture',
@@ -948,6 +984,43 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         var connection = new NpgsqlConnection(postgres.ConnectionString);
         await connection.OpenAsync();
         return connection;
+    }
+
+    private async Task<Guid> SeedCoreConsentPolicyAsync()
+    {
+        var policyId = Guid.NewGuid();
+        await using var db = postgres.CreateDbContext();
+        var repository = new EfRawExportPolicyRepository(db);
+        var policy = await repository.AddVersionAsync(
+            new AddRawExportPolicyVersionCommand(
+                policyId,
+                0,
+                RawExportMode.EncryptedRawVaultRetained,
+                "SubjectRawBiometricExport",
+                "fixture-c1-retained-v1",
+                "SubjectRawBiometricExport",
+                RawExportConsentRequirement.Required,
+                null,
+                null,
+                "Controller",
+                "controller:fixture",
+                "VN",
+                "VN",
+                "VN",
+                null,
+                null,
+                new HashSet<RawExportRawClass>
+                {
+                    RawExportRawClass.ChipDg2Portrait,
+                    RawExportRawClass.LiveSelfieImage,
+                },
+                300));
+        Assert.Equal(1, policy.PolicyVersion);
+        Assert.Equal(
+            RawExportPolicyConstants.RequirementRuleSetId,
+            policy.RequirementRuleSetId);
+        Assert.Equal(1, policy.RequirementRuleSetVersion);
+        return policyId;
     }
 
     private static async Task ExecuteAsync(
@@ -1050,6 +1123,8 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         string ControllerIdentity,
         string ApprovedPurpose,
         string StableDataScopeId,
+        Guid ConsentPolicyId,
+        int ConsentPolicyVersion,
         DateTimeOffset AbsoluteSourceExpiresAtUtc,
         string ReuseDisposition,
         string ExtensionDisposition);
