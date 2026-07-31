@@ -63,3 +63,13 @@ before it can compute an authoritative commitment.
 Per-project test isolation green; codec golden vectors + token constant-time
 compare + direct-DML guard mutation-proven. ModelSnapshot →
 `8EC86A3565AAFEFA4CBEAA6F256BBDB4D38AF60617389184D27BE33036BE7243`.
+
+## Supersession note — C1-B2-BETA
+
+The B1 `begin_raw_export_source_ingress_claim` body was superseded by the
+C1-B2-BETA migration. B1 compared the full `IngressIdentityFingerprint`,
+which includes `IngressIdempotencyKey`, making the documented Existing token
+branch unreachable for an alternate alias. BETA preserves the canonical claim
+and fingerprint, permits only the idempotency key to differ, and compares every
+other immutable identity field explicitly. See
+`tip_88c1_b2_beta_as_built.md` for lifecycle and validation evidence.

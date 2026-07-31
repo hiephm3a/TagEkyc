@@ -26,6 +26,9 @@ public sealed record RawExportSourceClaimComparisonCommand(
 public enum RawExportSourceClaimComparisonOutcome
 {
     NewReservation,
+    ExistingMatch,
+    FingerprintConflict,
+    HistoricCommitmentKeyUnavailable,
     SourceRetentionNotAuthorized,
     ClaimTokenInvalid,
     PlaintextRetentionInvalid,
@@ -38,6 +41,10 @@ public sealed record RawExportSourceClaimComparisonResult(
 public interface IRawExportSourceClaimComparisonBroker
 {
     Task<RawExportSourceClaimComparisonResult> CompleteNewCandidateAsync(
+        RawExportSourceClaimComparisonCommand command,
+        CancellationToken cancellationToken);
+
+    Task<RawExportSourceClaimComparisonResult> CompleteExistingCandidateAsync(
         RawExportSourceClaimComparisonCommand command,
         CancellationToken cancellationToken);
 }

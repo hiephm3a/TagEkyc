@@ -1,6 +1,7 @@
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using NpgsqlTypes;
 using TagEkyc.Contracts.RawExport;
 using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.ProtectedValues;
@@ -16,10 +17,34 @@ internal sealed class RawExportSourceClaimComparisonBroker(
 {
     public async Task<RawExportSourceClaimComparisonResult> CompleteNewCandidateAsync(
         RawExportSourceClaimComparisonCommand command,
+        CancellationToken cancellationToken) =>
+        await CompleteCandidateAsync(
+            command,
+            "NewClaimEvaluationToken",
+            cancellationToken);
+
+    public async Task<RawExportSourceClaimComparisonResult> CompleteExistingCandidateAsync(
+        RawExportSourceClaimComparisonCommand command,
+        CancellationToken cancellationToken) =>
+        await CompleteCandidateAsync(
+            command,
+            "ExistingClaimComparisonToken",
+            cancellationToken);
+
+    private async Task<RawExportSourceClaimComparisonResult> CompleteCandidateAsync(
+        RawExportSourceClaimComparisonCommand command,
+        string expectedTokenVariant,
         CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(command);
         ValidateCommand(command);
+        if (!string.Equals(
+                command.Token.Variant,
+                expectedTokenVariant,
+                StringComparison.Ordinal))
+        {
+            return Failed(RawExportSourceClaimComparisonOutcome.ClaimTokenInvalid);
+        }
 
         var preflight = await ReadPreflightAsync(command, cancellationToken);
         if (preflight is null)
@@ -28,7 +53,7 @@ internal sealed class RawExportSourceClaimComparisonBroker(
         }
 
         var suppliedEnvelope = C1HashCanonical.ComputeProducerClaimEnvelopeFingerprint(
-            preflight.IngressIdentityFingerprint,
+            preflight.AttemptedIngressIdentityFingerprint,
             command.ClaimedPlaintextLength,
             command.MediaType,
             command.CapturedAtUtc,
@@ -62,25 +87,37 @@ internal sealed class RawExportSourceClaimComparisonBroker(
                 preflight.CommitmentKeySelectorVersion),
             commitmentPayload,
             cancellationToken);
-        if (!commitment.IsSuccess)
+        var historicCommitmentUnavailable = !commitment.IsSuccess
+            && expectedTokenVariant == "ExistingClaimComparisonToken";
+        if (!commitment.IsSuccess && !historicCommitmentUnavailable)
         {
             throw new InvalidOperationException("RAW_EXPORT_CONTENT_COMMITMENT_PROVIDER_FAILURE");
         }
 
-        var subjectPayload = C1HashCanonical.EncodeLengthPrefixedPayload(
-            "TAG-EKYC:RAW-EXPORT:SUBJECT-TOKEN:C1:V1",
-            preflight.StableDataScopeId,
-            preflight.ControllerIdentity,
-            preflight.SubjectRef.Normalize());
-        var subjectToken = await subjectTokens.ComputeAsync(
-            new SubjectTokenKeySelector(
-                FixtureSubjectTokenCatalog.FixtureKeyId,
-                FixtureSubjectTokenCatalog.FixtureKeyVersion),
-            subjectPayload,
-            cancellationToken);
-        if (!subjectToken.IsSuccess)
+        byte[] subjectTokenBytes;
+        if (historicCommitmentUnavailable)
         {
-            throw new InvalidOperationException("RAW_EXPORT_SUBJECT_TOKEN_PROVIDER_FAILURE");
+            subjectTokenBytes = new byte[32];
+        }
+        else
+        {
+            var subjectPayload = C1HashCanonical.EncodeLengthPrefixedPayload(
+                "TAG-EKYC:RAW-EXPORT:SUBJECT-TOKEN:C1:V1",
+                preflight.StableDataScopeId,
+                preflight.ControllerIdentity,
+                preflight.SubjectRef.Normalize());
+            var subjectToken = await subjectTokens.ComputeAsync(
+                new SubjectTokenKeySelector(
+                    FixtureSubjectTokenCatalog.FixtureKeyId,
+                    FixtureSubjectTokenCatalog.FixtureKeyVersion),
+                subjectPayload,
+                cancellationToken);
+            if (!subjectToken.IsSuccess)
+            {
+                throw new InvalidOperationException("RAW_EXPORT_SUBJECT_TOKEN_PROVIDER_FAILURE");
+            }
+
+            subjectTokenBytes = subjectToken.Token.ToArray();
         }
 
         var profile = custodyProfiles.ActiveSourceEncryptionProfile;
@@ -136,11 +173,14 @@ internal sealed class RawExportSourceClaimComparisonBroker(
             Add(sql, "commitmentSchema", 1);
             Add(sql, "commitmentKey", preflight.CommitmentKeySelectorId);
             Add(sql, "commitmentVersion", preflight.CommitmentKeySelectorVersion);
-            Add(sql, "commitment", commitment.Mac.ToArray());
+            AddNullableBytea(
+                sql,
+                "commitment",
+                commitment.IsSuccess ? commitment.Mac.ToArray() : null);
             Add(sql, "subjectSchema", 1);
             Add(sql, "subjectKey", FixtureSubjectTokenCatalog.FixtureKeyId);
             Add(sql, "subjectVersion", FixtureSubjectTokenCatalog.FixtureKeyVersion);
-            Add(sql, "subjectToken", subjectToken.Token.ToArray());
+            Add(sql, "subjectToken", subjectTokenBytes);
             Add(sql, "length", command.ClaimedPlaintextLength);
             Add(sql, "media", command.MediaType);
             Add(sql, "captured", command.CapturedAtUtc);
@@ -180,6 +220,14 @@ internal sealed class RawExportSourceClaimComparisonBroker(
                 "NewReservation" => new(
                     RawExportSourceClaimComparisonOutcome.NewReservation,
                     sourceId),
+                "ExistingMatch" => new(
+                    RawExportSourceClaimComparisonOutcome.ExistingMatch,
+                    sourceId),
+                "RAW_EXPORT_SOURCE_FINGERPRINT_CONFLICT" => Failed(
+                    RawExportSourceClaimComparisonOutcome.FingerprintConflict),
+                "RAW_EXPORT_SOURCE_HISTORIC_COMMITMENT_KEY_UNAVAILABLE" => Failed(
+                    RawExportSourceClaimComparisonOutcome
+                        .HistoricCommitmentKeyUnavailable),
                 "SOURCE_RETENTION_NOT_AUTHORIZED" => Failed(
                     RawExportSourceClaimComparisonOutcome.SourceRetentionNotAuthorized),
                 "CLAIM_TOKEN_INVALID" => Failed(
@@ -218,8 +266,9 @@ internal sealed class RawExportSourceClaimComparisonBroker(
                         @client,@producer,@agent,@ingress,@evaluation,@revision,@fence,
                         @variant,@expires,@token) AS valid
                 )
-                SELECT claim."IngressIdentityFingerprint",
+                SELECT alias."AttemptedIngressIdentityFingerprint",
                        alias."ProducerClaimEnvelopeFingerprint",
+                       claim."IngressIdentityFingerprint",
                        claim."VerificationSessionId",claim."CaptureArtifactId",
                        claim."CaptureRevision",claim."RawClass",
                        claim."CommitmentKeySelectorId",claim."CommitmentKeySelectorVersion",
@@ -263,22 +312,23 @@ internal sealed class RawExportSourceClaimComparisonBroker(
             var result = new Preflight(
                 (byte[])reader[0],
                 (byte[])reader[1],
-                reader.GetGuid(2),
+                (byte[])reader[2],
                 reader.GetGuid(3),
-                reader.GetInt32(4),
-                reader.GetString(5),
+                reader.GetGuid(4),
+                reader.GetInt32(5),
                 reader.GetString(6),
-                reader.GetInt32(7),
-                reader.IsDBNull(8) ? string.Empty : reader.GetString(8),
+                reader.GetString(7),
+                reader.GetInt32(8),
                 reader.IsDBNull(9) ? string.Empty : reader.GetString(9),
-                reader.IsDBNull(10) ? Guid.Empty : reader.GetGuid(10),
-                reader.IsDBNull(11) ? 0 : reader.GetInt32(11),
-                reader.IsDBNull(12) ? string.Empty : reader.GetString(12),
-                reader.IsDBNull(13) ? Guid.Empty : reader.GetGuid(13),
-                reader.IsDBNull(14) ? 0 : reader.GetInt32(14),
-                reader.IsDBNull(15) ? default : reader.GetFieldValue<DateTimeOffset>(15),
-                reader.GetBoolean(16),
-                reader.GetBoolean(17));
+                reader.IsDBNull(10) ? string.Empty : reader.GetString(10),
+                reader.IsDBNull(11) ? Guid.Empty : reader.GetGuid(11),
+                reader.IsDBNull(12) ? 0 : reader.GetInt32(12),
+                reader.IsDBNull(13) ? string.Empty : reader.GetString(13),
+                reader.IsDBNull(14) ? Guid.Empty : reader.GetGuid(14),
+                reader.IsDBNull(15) ? 0 : reader.GetInt32(15),
+                reader.IsDBNull(16) ? default : reader.GetFieldValue<DateTimeOffset>(16),
+                reader.GetBoolean(17),
+                reader.GetBoolean(18));
             await reader.CloseAsync();
             await transaction.RollbackAsync(cancellationToken);
             return result;
@@ -309,6 +359,16 @@ internal sealed class RawExportSourceClaimComparisonBroker(
 
     private static void Add(NpgsqlCommand command, string name, object value) =>
         command.Parameters.AddWithValue(name, value);
+
+    private static void AddNullableBytea(
+        NpgsqlCommand command,
+        string name,
+        byte[]? value) =>
+        command.Parameters.Add(
+            new NpgsqlParameter(name, NpgsqlDbType.Bytea)
+            {
+                Value = value is null ? DBNull.Value : value,
+            });
 
     private static void AddTokenParameters(
         NpgsqlCommand sql,
@@ -341,8 +401,9 @@ internal sealed class RawExportSourceClaimComparisonBroker(
     }
 
     private sealed record Preflight(
-        byte[] IngressIdentityFingerprint,
+        byte[] AttemptedIngressIdentityFingerprint,
         byte[] ProducerEnvelopeFingerprint,
+        byte[] CanonicalIngressIdentityFingerprint,
         Guid VerificationSessionId,
         Guid CaptureArtifactId,
         int CaptureRevision,
