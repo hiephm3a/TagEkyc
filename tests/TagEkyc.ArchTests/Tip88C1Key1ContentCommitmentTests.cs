@@ -1,4 +1,5 @@
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -155,6 +156,15 @@ public sealed class Tip88C1Key1ContentCommitmentTests
             ExpectedMacHex,
             Convert.ToHexString(result.Mac.Span));
         Assert.Equal(ContentCommitmentResult.MacLength, result.Mac.Length);
+        var exposedMac = result.Mac;
+        Assert.True(
+            MemoryMarshal.TryGetArray(
+                exposedMac,
+                out ArraySegment<byte> exposedSegment));
+        exposedSegment.Array![exposedSegment.Offset] ^= 1;
+        Assert.Equal(
+            ExpectedMacHex,
+            Convert.ToHexString(result.Mac.Span));
         Assert.DoesNotContain(
             Encoding.UTF8.GetString(Convert.FromHexString(FixtureKeyHex)),
             result.ToString(),

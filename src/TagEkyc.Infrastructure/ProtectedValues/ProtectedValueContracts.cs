@@ -36,6 +36,9 @@ internal sealed class ProtectedValuePurpose :
     internal static ProtectedValuePurpose ContentCommitmentHmac { get; } =
         new("raw-export.content-commitment.hmac");
 
+    internal static ProtectedValuePurpose SubjectRefTokenHmac { get; } =
+        new("raw-export.subject-ref-token.hmac");
+
     private ProtectedValuePurpose(string code)
     {
         Code = code;
