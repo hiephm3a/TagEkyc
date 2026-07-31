@@ -206,6 +206,13 @@ static void ConfigureApiKeyStore(WebApplicationBuilder builder)
 
 static void ConfigureReadiness(WebApplicationBuilder builder)
 {
+    builder.Services.AddSingleton(
+        RawExportAuthoritySnapshotProfileState.Resolve(
+            builder.Configuration,
+            builder.Environment.IsProduction()));
+    builder.Services.AddScoped<
+        RawExportAuthoritySnapshotReadinessValidator>();
+
     if (!builder.Environment.IsProduction())
     {
         return;
@@ -216,6 +223,9 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
     builder.Services.AddScoped<IReadinessCheck, RawExportRuntimePrivilegeReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportControlPlaneReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportSubjectConsentReadinessCheck>();
+    builder.Services.AddScoped<
+        IReadinessCheck,
+        RawExportAuthoritySnapshotReadinessCheck>();
     builder.Services.AddScoped<RawExportAuthorizationReadinessValidator>();
     builder.Services.AddScoped<IReadinessCheck, RawExportAuthorizationReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportPermitTtlReadinessCheck>();

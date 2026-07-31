@@ -65,6 +65,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportSessionCaptureSelectionRow> RawExportSessionCaptureSelections => Set<RawExportSessionCaptureSelectionRow>();
     public DbSet<RawExportSourceIngressClaimRow> RawExportSourceIngressClaims => Set<RawExportSourceIngressClaimRow>();
     public DbSet<RawExportSourceIngressClaimAliasRow> RawExportSourceIngressClaimAliases => Set<RawExportSourceIngressClaimAliasRow>();
+    public DbSet<RawExportAuthoritySnapshotRow> RawExportAuthoritySnapshots => Set<RawExportAuthoritySnapshotRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -603,6 +604,168 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         ConfigureRawExportJobs(modelBuilder);
         ConfigureRawExportCaptureAcceptance(modelBuilder);
         ConfigureRawExportSourceIngressClaims(modelBuilder);
+        ConfigureRawExportAuthoritySnapshots(modelBuilder);
+    }
+
+    private static void ConfigureRawExportAuthoritySnapshots(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<RawExportAuthoritySnapshotRow>(entity =>
+        {
+            entity.ToTable("raw_export_authority_snapshots", table =>
+            {
+                table.HasCheckConstraint(
+                    "ck_raw_export_authority_snapshot_event_type",
+                    "\"EventType\" IN ('Granted','Withdrawn','Revoked')");
+                table.HasCheckConstraint(
+                    "ck_raw_export_authority_snapshot_values",
+                    """
+                    "Revision" >= 1
+                    AND ("TargetRevision" IS NULL OR "TargetRevision" >= 1)
+                    AND "ClientApplicationId" <> '00000000-0000-0000-0000-000000000000'::uuid
+                    AND "VerificationSessionId" <> '00000000-0000-0000-0000-000000000000'::uuid
+                    AND "CaptureAcceptanceId" <> '00000000-0000-0000-0000-000000000000'::uuid
+                    AND btrim("RawClass") <> ''
+                    AND ("AuthoritySnapshotSchemaVersion" IS NULL OR "AuthoritySnapshotSchemaVersion" = 1)
+                    AND ("AuthorityArtifactVersion" IS NULL OR "AuthorityArtifactVersion" >= 1)
+                    AND ("RetentionPolicyVersion" IS NULL OR "RetentionPolicyVersion" >= 1)
+                    AND ("AuthoritySnapshotId" IS NULL OR "AuthoritySnapshotId" <> '00000000-0000-0000-0000-000000000000'::uuid)
+                    AND ("AuthorityArtifactId" IS NULL OR "AuthorityArtifactId" <> '00000000-0000-0000-0000-000000000000'::uuid)
+                    AND ("ControllerIdentity" IS NULL OR btrim("ControllerIdentity") <> '')
+                    AND ("ApprovedPurpose" IS NULL OR "ApprovedPurpose" = 'SubjectRawBiometricExport')
+                    AND ("StableDataScopeId" IS NULL OR btrim("StableDataScopeId") <> '')
+                    AND ("RetentionPolicyId" IS NULL OR btrim("RetentionPolicyId") <> '')
+                    AND ("RetentionClass" IS NULL OR btrim("RetentionClass") <> '')
+                    AND ("RetentionStartEvent" IS NULL OR btrim("RetentionStartEvent") <> '')
+                    AND ("ReuseDisposition" IS NULL OR "ReuseDisposition" = 'FreshAuthorityRequired')
+                    AND ("ExtensionDisposition" IS NULL OR "ExtensionDisposition" = 'Forbidden')
+                    AND ("RevocationPolicyId" IS NULL OR btrim("RevocationPolicyId") <> '')
+                    AND ("PurgePolicyId" IS NULL OR btrim("PurgePolicyId") <> '')
+                    AND ("LegalHoldPolicyId" IS NULL OR btrim("LegalHoldPolicyId") <> '')
+                    AND (
+                        "AbsoluteSourceExpiresAtUtc" IS NULL
+                        OR "EvaluatedAtUtc" IS NULL
+                        OR "AbsoluteSourceExpiresAtUtc" > "EvaluatedAtUtc"
+                    )
+                    """);
+                table.HasCheckConstraint(
+                    "ck_raw_export_authority_snapshot_event_shape",
+                    """
+                    (
+                        "EventType" = 'Granted'
+                        AND "TargetRevision" IS NULL
+                        AND "ValidFromUtc" IS NOT NULL
+                        AND ("ValidUntilUtc" IS NULL OR "ValidUntilUtc" > "ValidFromUtc")
+                        AND "AuthoritySnapshotSchemaVersion" IS NOT NULL
+                        AND "AuthoritySnapshotId" IS NOT NULL
+                        AND "AuthorityArtifactId" IS NOT NULL
+                        AND "AuthorityArtifactVersion" IS NOT NULL
+                        AND "ControllerIdentity" IS NOT NULL
+                        AND "ApprovedPurpose" IS NOT NULL
+                        AND "StableDataScopeId" IS NOT NULL
+                        AND "RetentionPolicyId" IS NOT NULL
+                        AND "RetentionPolicyVersion" IS NOT NULL
+                        AND "RetentionClass" IS NOT NULL
+                        AND "RetentionStartEvent" IS NOT NULL
+                        AND "AbsoluteSourceExpiresAtUtc" IS NOT NULL
+                        AND "ReuseDisposition" IS NOT NULL
+                        AND "ExtensionDisposition" IS NOT NULL
+                        AND "RevocationPolicyId" IS NOT NULL
+                        AND "PurgePolicyId" IS NOT NULL
+                        AND "LegalHoldPolicyId" IS NOT NULL
+                        AND "EvaluatedAtUtc" IS NOT NULL
+                        AND "CapturedByPrincipalId" IS NOT NULL
+                        AND "WithdrawnByPrincipalId" IS NULL
+                        AND "RevokedByPrincipalId" IS NULL
+                    ) OR (
+                        "EventType" = 'Withdrawn'
+                        AND "TargetRevision" IS NOT NULL
+                        AND "ValidFromUtc" IS NULL
+                        AND "ValidUntilUtc" IS NULL
+                        AND "AuthoritySnapshotSchemaVersion" IS NULL
+                        AND "AuthoritySnapshotId" IS NULL
+                        AND "AuthorityArtifactId" IS NULL
+                        AND "AuthorityArtifactVersion" IS NULL
+                        AND "ControllerIdentity" IS NULL
+                        AND "ApprovedPurpose" IS NULL
+                        AND "StableDataScopeId" IS NULL
+                        AND "RetentionPolicyId" IS NULL
+                        AND "RetentionPolicyVersion" IS NULL
+                        AND "RetentionClass" IS NULL
+                        AND "RetentionStartEvent" IS NULL
+                        AND "AbsoluteSourceExpiresAtUtc" IS NULL
+                        AND "ReuseDisposition" IS NULL
+                        AND "ExtensionDisposition" IS NULL
+                        AND "RevocationPolicyId" IS NULL
+                        AND "PurgePolicyId" IS NULL
+                        AND "LegalHoldPolicyId" IS NULL
+                        AND "EvaluatedAtUtc" IS NULL
+                        AND "CapturedByPrincipalId" IS NULL
+                        AND "WithdrawnByPrincipalId" IS NOT NULL
+                        AND "RevokedByPrincipalId" IS NULL
+                    ) OR (
+                        "EventType" = 'Revoked'
+                        AND "TargetRevision" IS NOT NULL
+                        AND "ValidFromUtc" IS NULL
+                        AND "ValidUntilUtc" IS NULL
+                        AND "AuthoritySnapshotSchemaVersion" IS NULL
+                        AND "AuthoritySnapshotId" IS NULL
+                        AND "AuthorityArtifactId" IS NULL
+                        AND "AuthorityArtifactVersion" IS NULL
+                        AND "ControllerIdentity" IS NULL
+                        AND "ApprovedPurpose" IS NULL
+                        AND "StableDataScopeId" IS NULL
+                        AND "RetentionPolicyId" IS NULL
+                        AND "RetentionPolicyVersion" IS NULL
+                        AND "RetentionClass" IS NULL
+                        AND "RetentionStartEvent" IS NULL
+                        AND "AbsoluteSourceExpiresAtUtc" IS NULL
+                        AND "ReuseDisposition" IS NULL
+                        AND "ExtensionDisposition" IS NULL
+                        AND "RevocationPolicyId" IS NULL
+                        AND "PurgePolicyId" IS NULL
+                        AND "LegalHoldPolicyId" IS NULL
+                        AND "EvaluatedAtUtc" IS NULL
+                        AND "CapturedByPrincipalId" IS NULL
+                        AND "WithdrawnByPrincipalId" IS NULL
+                        AND "RevokedByPrincipalId" IS NOT NULL
+                    )
+                    """);
+            });
+            entity.HasKey(row => row.AuthoritySnapshotEventId)
+                .HasName("pk_raw_export_authority_snapshots");
+            entity.HasAlternateKey(row => new
+                {
+                    row.ClientApplicationId,
+                    row.VerificationSessionId,
+                    row.CaptureAcceptanceId,
+                    row.RawClass,
+                    row.Revision,
+                })
+                .HasName("uq_raw_export_authority_snapshot_scope_revision");
+            entity.Property(row => row.EventType).HasMaxLength(32).IsRequired();
+            entity.Property(row => row.RawClass).HasMaxLength(64).IsRequired();
+            entity.Property(row => row.ControllerIdentity).HasMaxLength(128);
+            entity.Property(row => row.ApprovedPurpose).HasMaxLength(64);
+            entity.Property(row => row.StableDataScopeId).HasMaxLength(128);
+            entity.Property(row => row.RetentionPolicyId).HasMaxLength(128);
+            entity.Property(row => row.RetentionClass).HasMaxLength(64);
+            entity.Property(row => row.RetentionStartEvent).HasMaxLength(64);
+            entity.Property(row => row.ReuseDisposition).HasMaxLength(64);
+            entity.Property(row => row.ExtensionDisposition).HasMaxLength(64);
+            entity.Property(row => row.RevocationPolicyId).HasMaxLength(128);
+            entity.Property(row => row.PurgePolicyId).HasMaxLength(128);
+            entity.Property(row => row.LegalHoldPolicyId).HasMaxLength(128);
+            entity.HasOne<VerificationSessionRow>()
+                .WithMany()
+                .HasForeignKey(row => row.VerificationSessionId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_authority_snapshot_session");
+            entity.HasOne<RawExportCaptureAcceptanceEventRow>()
+                .WithMany()
+                .HasForeignKey(row => row.CaptureAcceptanceId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_authority_snapshot_acceptance");
+        });
     }
 
     private static void ConfigureRawExportSourceIngressClaims(ModelBuilder modelBuilder)
