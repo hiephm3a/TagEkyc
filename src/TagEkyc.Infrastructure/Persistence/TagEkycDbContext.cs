@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using TagEkyc.Infrastructure.Persistence.Configurations;
 using TagEkyc.Infrastructure.Persistence.Entities;
 
 namespace TagEkyc.Infrastructure.Persistence;
@@ -69,10 +70,16 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportSourceReservationRow> RawExportSourceReservations => Set<RawExportSourceReservationRow>();
     public DbSet<RawExportSourceEncryptionAttemptRow> RawExportSourceEncryptionAttempts => Set<RawExportSourceEncryptionAttemptRow>();
     public DbSet<RawExportSourceHeadRow> RawExportSourceHeads => Set<RawExportSourceHeadRow>();
+    public DbSet<RawExportAttemptKeyReservationRow> RawExportAttemptKeyReservations => Set<RawExportAttemptKeyReservationRow>();
+    public DbSet<RawExportKeyProviderOperationRow> RawExportKeyProviderOperations => Set<RawExportKeyProviderOperationRow>();
+    public DbSet<RawExportAttemptKeyPreparationEventRow> RawExportAttemptKeyPreparationEvents => Set<RawExportAttemptKeyPreparationEventRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("tagekyc");
+        modelBuilder.ApplyConfiguration(new RawExportAttemptKeyReservationConfig());
+        modelBuilder.ApplyConfiguration(new RawExportKeyProviderOperationConfig());
+        modelBuilder.ApplyConfiguration(new RawExportAttemptKeyPreparationEventConfig());
 
         modelBuilder.Entity<VerificationSessionRow>(entity =>
         {
@@ -887,6 +894,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                 .HasName("uq_raw_export_source_attempt_revision");
             entity.HasAlternateKey(row => new { row.SourceArtifactId, row.AttemptId, row.Fence })
                 .HasName("uq_raw_export_source_attempt_fence");
+            entity.HasAlternateKey(row => new { row.AttemptId, row.AttemptKeyReservationId })
+                .HasName("uq_raw_export_enc_attempt_attemptid_keyresvid");
             entity.Property(row => row.NonceDerivationSeedCommitment).HasColumnType("bytea").IsRequired();
             entity.Property(row => row.FramingParametersDigest).HasColumnType("bytea").IsRequired();
             entity.Property(row => row.EncryptionAttemptFingerprint).HasColumnType("bytea").IsRequired();

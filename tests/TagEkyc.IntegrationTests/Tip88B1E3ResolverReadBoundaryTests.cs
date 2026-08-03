@@ -28,7 +28,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
     private const string Migration = "20260724015546_Tip88B1E3ResolverReadBoundary";
     private const string PreviousMigration = "20260723052003_Tip88B33RawExportAuthorizationPersistFunction";
     private const string ExpectedModelSnapshotSha256 =
-        "7BD13A5CC701D7E50A81AF4FD522BDA42E0749F491D81279F1A876E4ED6EAEE9";
+        "093ECDC86828ECE7D7EC2739A50A7FFB01ED6099564D2D5EDCA6129BD8AA4E4B";
     private const string EligibilityFunction =
         "tagekyc.raw_export_read_authorization_eligibility_inputs(uuid,uuid,integer)";
     private const string PolicyFunction =
@@ -2681,6 +2681,152 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
                     "Isolated PostgreSQL did not sustain a stable SQL connection.");
                 var isolated = new IsolatedPostgres(containerName, connectionString);
                 await using var db = CreateDbContext(connectionString);
+                var migrator = db.GetService<IMigrator>();
+                await migrator.MigrateAsync("20260731130919_Tip88C1B2BetaExistingCandidates");
+
+                await using (var bootstrap = new NpgsqlConnection(connectionString))
+                {
+                    await bootstrap.OpenAsync();
+                    await using var transaction = await bootstrap.BeginTransactionAsync();
+                    await using var command = bootstrap.CreateCommand();
+                    command.Transaction = transaction;
+                    command.CommandText = """
+                        DO $bootstrap_roles$
+                        DECLARE login_name text;
+                        BEGIN
+                            IF NOT EXISTS (
+                                SELECT 1 FROM pg_catalog.pg_roles
+                                WHERE rolname = 'tagekyc_raw_export_deployer') THEN
+                                RAISE EXCEPTION 'DK-PROD disposable bootstrap requires landed deployer role';
+                            END IF;
+
+                            FOREACH login_name IN ARRAY ARRAY[
+                                'tagekyc_raw_export_encryptor_login',
+                                'tagekyc_raw_export_reconciler_login',
+                                'tagekyc_raw_export_lifecycle_login']
+                            LOOP
+                                IF EXISTS (
+                                    SELECT 1 FROM pg_catalog.pg_roles
+                                    WHERE rolname = login_name) THEN
+                                    IF EXISTS (
+                                        SELECT 1 FROM pg_catalog.pg_roles
+                                        WHERE rolname = login_name
+                                          AND (NOT rolcanlogin OR NOT rolinherit
+                                            OR rolsuper OR rolcreatedb OR rolcreaterole
+                                            OR rolreplication OR rolbypassrls)) THEN
+                                        RAISE EXCEPTION 'DK-PROD disposable LOGIN role attributes invalid: %', login_name;
+                                    END IF;
+                                ELSE
+                                    EXECUTE pg_catalog.format(
+                                        'CREATE ROLE %I LOGIN INHERIT NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS PASSWORD NULL',
+                                        login_name);
+                                END IF;
+                            END LOOP;
+                        END
+                        $bootstrap_roles$;
+
+                        CREATE SCHEMA tagekyc_extensions;
+                        CREATE EXTENSION pgcrypto WITH SCHEMA tagekyc_extensions;
+                        REVOKE ALL ON SCHEMA tagekyc_extensions FROM PUBLIC;
+                        REVOKE ALL ON FUNCTION tagekyc_extensions.gen_random_bytes(integer) FROM PUBLIC;
+                        GRANT USAGE ON SCHEMA tagekyc_extensions TO tagekyc_raw_export_deployer;
+                        GRANT EXECUTE ON FUNCTION tagekyc_extensions.gen_random_bytes(integer)
+                            TO tagekyc_raw_export_deployer;
+                        """;
+                    await command.ExecuteNonQueryAsync();
+
+                    command.CommandText = """
+                        SELECT
+                            (SELECT count(*) = 1
+                             FROM pg_catalog.pg_extension e
+                             JOIN pg_catalog.pg_namespace n ON n.oid = e.extnamespace
+                             WHERE e.extname = 'pgcrypto'
+                               AND n.nspname = 'tagekyc_extensions'
+                               AND e.extowner = (SELECT oid FROM pg_catalog.pg_roles WHERE rolname = current_user))
+                        AND (SELECT n.nspowner = (SELECT oid FROM pg_catalog.pg_roles WHERE rolname = current_user)
+                             FROM pg_catalog.pg_namespace n
+                             WHERE n.nspname = 'tagekyc_extensions')
+                        AND (SELECT count(*) = 1
+                             FROM pg_catalog.pg_proc p
+                             JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+                             WHERE n.nspname = 'tagekyc_extensions'
+                               AND p.proname = 'gen_random_bytes'
+                               AND p.pronargs = 1
+                               AND p.oid = 'tagekyc_extensions.gen_random_bytes(integer)'::pg_catalog.regprocedure
+                               AND pg_catalog.pg_get_function_result(p.oid) = 'bytea'
+                               AND p.proowner = (SELECT oid FROM pg_catalog.pg_roles WHERE rolname = current_user))
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM pg_catalog.pg_proc p
+                            CROSS JOIN LATERAL pg_catalog.aclexplode(p.proacl) acl
+                            WHERE p.oid = 'tagekyc_extensions.gen_random_bytes(integer)'::pg_catalog.regprocedure
+                              AND acl.grantee = 0
+                              AND acl.privilege_type = 'EXECUTE')
+                        AND pg_catalog.has_schema_privilege(
+                            'tagekyc_raw_export_deployer', 'tagekyc_extensions', 'USAGE')
+                        AND pg_catalog.has_function_privilege(
+                            'tagekyc_raw_export_deployer',
+                            'tagekyc_extensions.gen_random_bytes(integer)', 'EXECUTE')
+                        AND (SELECT count(*) = 3 AND pg_catalog.bool_and(
+                                   rolcanlogin AND rolinherit
+                                   AND NOT rolsuper AND NOT rolcreatedb AND NOT rolcreaterole
+                                   AND NOT rolreplication AND NOT rolbypassrls)
+                             FROM pg_catalog.pg_roles
+                             WHERE rolname IN (
+                                'tagekyc_raw_export_encryptor_login',
+                                'tagekyc_raw_export_reconciler_login',
+                                'tagekyc_raw_export_lifecycle_login'))
+                        AND NOT EXISTS (
+                            SELECT 1 FROM pg_catalog.pg_roles
+                            WHERE rolname IN (
+                                'tagekyc_raw_export_custody_encryptor',
+                                'tagekyc_raw_export_reconciler',
+                                'tagekyc_raw_export_lifecycle'))
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM pg_catalog.pg_auth_members membership
+                            JOIN pg_catalog.pg_roles member_role ON member_role.oid = membership.member
+                            WHERE member_role.rolname IN (
+                                'tagekyc_raw_export_encryptor_login',
+                                'tagekyc_raw_export_reconciler_login',
+                                'tagekyc_raw_export_lifecycle_login'))
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM pg_catalog.pg_namespace namespace
+                            CROSS JOIN LATERAL pg_catalog.aclexplode(namespace.nspacl) acl
+                            JOIN pg_catalog.pg_roles grantee ON grantee.oid = acl.grantee
+                            WHERE grantee.rolname IN (
+                                'tagekyc_raw_export_encryptor_login',
+                                'tagekyc_raw_export_reconciler_login',
+                                'tagekyc_raw_export_lifecycle_login'))
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM pg_catalog.pg_proc function
+                            CROSS JOIN LATERAL pg_catalog.aclexplode(function.proacl) acl
+                            JOIN pg_catalog.pg_roles grantee ON grantee.oid = acl.grantee
+                            WHERE grantee.rolname IN (
+                                'tagekyc_raw_export_encryptor_login',
+                                'tagekyc_raw_export_reconciler_login',
+                                'tagekyc_raw_export_lifecycle_login'))
+                        AND NOT EXISTS (
+                            SELECT 1
+                            FROM pg_catalog.pg_class relation
+                            CROSS JOIN LATERAL pg_catalog.aclexplode(relation.relacl) acl
+                            JOIN pg_catalog.pg_roles grantee ON grantee.oid = acl.grantee
+                            WHERE grantee.rolname IN (
+                                'tagekyc_raw_export_encryptor_login',
+                                'tagekyc_raw_export_reconciler_login',
+                                'tagekyc_raw_export_lifecycle_login'))
+                        AND pg_catalog.octet_length(
+                            tagekyc_extensions.gen_random_bytes(32)) = 32;
+                        """;
+                    var topologyReady = (bool)(await command.ExecuteScalarAsync() ?? false);
+                    Assert.True(
+                        topologyReady,
+                        "Disposable DK-PROD prerequisite catalog topology was not exact.");
+                    await transaction.CommitAsync();
+                }
+
                 await db.Database.MigrateAsync();
                 return isolated;
             }

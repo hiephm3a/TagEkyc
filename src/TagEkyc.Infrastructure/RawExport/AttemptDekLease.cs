@@ -5,7 +5,7 @@ using TagEkyc.Contracts.RawExport;
 namespace TagEkyc.Infrastructure.RawExport;
 
 [DebuggerDisplay("AttemptDekLease: <redacted>")]
-internal sealed class AttemptDekLease : IAttemptDekLease
+internal sealed class AttemptDekLease : IAttemptDekLease, IAttemptDekCandidate
 {
     private byte[]? buffer;
 

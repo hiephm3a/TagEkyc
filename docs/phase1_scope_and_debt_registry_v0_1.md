@@ -1,10 +1,17 @@
-# Phase 1 Scope and Debt Registry v0.14
+# Phase 1 Scope and Debt Registry v0.15
 
-**Version:** 0.14
-**Status:** Active — S1 debt registry with TIP-88C1 v0.17 planning amendment
-**Date:** 2026-07-29
+**Version:** 0.15
+**Status:** Active — S1 debt registry with DK-PROD fixed-profile future gate
+**Date:** 2026-08-02
 
 ## Changelog
+
+### v0.15 — DK-PROD fixed-profile future gate
+
+- Registered `DK-PROD-DURABLE-CONFIG-SNAPSHOT-V1` for any future activation of a positive
+  `ResolutionMaxAttemptCount` or other non-fixed durable-key timing value.
+- Preserved the deadline-only current profile, with `FUTURE_GATE T34a/T34b` and `FUTURE_GATE #26` outside the active
+  46-edge/78-test contract.
 
 ### v0.14 — TIP-88C1 v0.17 final projection-clock correction
 
@@ -222,6 +229,7 @@ implementation.
 
 | Priority | Debt | Description | Exit Trigger |
 | --- | --- | --- | --- |
+| P0 | DK-PROD-DURABLE-CONFIG-SNAPSHOT-V1 | **OPEN — future-gated by the DK-PROD fixed current profile.** Current DurableKey timing is immutable: preparation lease 15m; resolution retry 30s ×2 capped 30m with 24h deadline and `ResolutionMaxAttemptCount=0`; cleanup retry 1m ×2 capped 1h with 7d deadline; bounded AEAD operation 30s. Configuration is conformance input only and cannot alter operational timing. Count-based resolution terminalization is not active: `FUTURE_GATE T34a/T34b`, `FUTURE_GATE MaxAttemptExceeded` and `FUTURE_GATE #26` remain reserved. `ResolutionAttemptCount` remains persisted and increments for evidence, observability and backoff. No new readiness code is created for this gate. | Before any non-fixed timing value or positive `ResolutionMaxAttemptCount` is enabled, prove an immutable profile version and canonical snapshot digest; persist version/digest per preparation generation; prove SQL/C# snapshot equivalence, restart reproducibility and absence of hot-reload drift; define migration/backfill/rollback compatibility; add readiness and mutation evidence; then explicitly activate `FUTURE_GATE T34` and `FUTURE_GATE #26` without renumbering later identifiers. |
 | P0 | Raw biometric protection | Define encryption, access, retention, and deletion controls before real biometric data is stored. | Before pilot with real users |
 | P0 | TIP-88C1 raw-source custody and sealed-assembly governance | **Status: OPEN / PLANNING v0.17 PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED.** `EncryptedRawVaultRetained` remains a mode direction only; controller/legal basis/retention/purge/hold/access/B4/delivery and D3–D9 remain open. D2 is ratified only for `ChipDg2Portrait` and `LiveSelfieImage`; `LivenessMedia` requires a separate resumable-transport slice. Planning section 10.0 solely owns phase, residue, retry, body and admission behavior; section 15.1 solely owns the 91-symbol population/register, 15-path readiness derivation, distinct readiness/client-pre-wait/server-post-wait clocks, three finite source/key/object limits, exact common busy backoff and persisted non-resettable disposition clock. Pending and ready same-owner/expired-owner cases are separate; exact-fence `Terminated` and P4 `TerminatedBeforeStart` both settle prior R2. Each invocation has one external operation shape; a retry invokes the same shape with the same UUID. Retry-count accounting remains Build-Brief blocked. All other C1 invariants, GOV/ART gates, fixture-only MinIO posture and non-authorization boundaries remain unchanged. No Build Brief, implementation, provider operation, raw persistence/reuse, production, legal, audit, security, readiness, or capability claim exists. | Independent review re-runs P1–P4 population/path/mutation checks; `C1-BB-RETRY-COUNT-ACCOUNTING-GATE`, all pending D1/D3–D9, acceptance/schema, symbol/alias/token/broker/transport/capacity contracts and cross-repo/B4 allowlists require ratification before dispatch; real artifacts require D5, both host/key/DR readiness surfaces and exact ART resolutions |
 | P0 | C1-A-CLASS-PROVENANCE-GATE | **OPEN.** C1-A's as-built authority boundary is deliberately split. PostgreSQL enforces the verification-session FK, capture-artifact FK, positive monotonic `CaptureRevision`, append-only tables, one immutable selection per `(VerificationSessionId, RawClass)`, the existing-`CaptureAcceptanceId` reference, and the fail-closed actor GUC. The caller supplies, and SQL does **not** prove, `SessionChallengeHash` computed in C# with `HashCanonical("tip-69-capture-session-challenge", ...)`; for NFC-derived classes the caller also asserts `RawClass` because landed `capture_artifacts.ArtifactType = NfcReadArtifact` does not distinguish DG1/DG2/DG13/DG15/SOD/AA material. Brief §6.1's component-level ownership/challenge and class-specific identity validation therefore remains application-layer responsibility for those fields. | Close only when the capture layer records independently verifiable class-specific artifact identity for NFC-derived classes and the C1 acceptance producer verifies it. Brief §7/D2 additionally requires a class-specific digest for `ChipDg2Portrait`. `LiveSelfieImage` is not blocked by this provenance gap. |

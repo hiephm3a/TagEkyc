@@ -296,6 +296,42 @@ public sealed class RawExportJobReadinessCheck(
     }
 }
 
+public sealed class DurableKeyCustodyReadinessCheck(
+    DurableKeyTopologyOptions topology,
+    IEnumerable<IDurableKeyReadinessValidator> validators) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        if (topology.Topology == DurableKeyTopology.Invalid)
+        {
+            return
+            [
+                ReadinessEndpoint.DatabaseIssue(
+                    DurableKeyProviderReadinessValidator.Codes[0]),
+            ];
+        }
+
+        if (topology.Topology != DurableKeyTopology.DurableKey)
+        {
+            return [];
+        }
+
+        try
+        {
+            foreach (var validator in validators)
+            {
+                await validator.ValidateAsync(cancellationToken);
+            }
+
+            return [];
+        }
+        catch (DurableKeyReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
 public sealed class ApiKeyStoreReadinessCheck(ApiKeyStoreProductionReadinessValidator validator) : IReadinessCheck
 {
     public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)

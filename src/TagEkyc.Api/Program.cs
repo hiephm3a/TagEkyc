@@ -36,7 +36,12 @@ ConfigureEvidenceSigning(builder);
 ConfigureRawExportPermitTtl(builder);
 ConfigureRawExportJobLease(builder);
 builder.Services.AddTagEkycCustodyProfiles(builder.Configuration);
-builder.Services.AddTagEkycAttemptKeyProvider(builder.Configuration);
+if (DurableKeyTopologyOptions.Resolve(builder.Configuration).Topology
+    == DurableKeyTopology.ProcessLocalFixture)
+{
+    builder.Services.AddTagEkycAttemptKeyProvider(builder.Configuration);
+}
+builder.Services.AddTagEkycDurableKeyCustody(builder.Configuration);
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
 ConfigureRetention(builder);
@@ -208,13 +213,17 @@ static void ConfigureApiKeyStore(WebApplicationBuilder builder)
 
 static void ConfigureReadiness(WebApplicationBuilder builder)
 {
-    builder.Services.AddSingleton(
-        new RawExportAttemptKeyReadinessValidator(
-            builder.Configuration,
-            builder.Environment.IsProduction()));
-    builder.Services.AddScoped<
-        IReadinessCheck,
-        RawExportAttemptKeyReadinessCheck>();
+    if (DurableKeyTopologyOptions.Resolve(builder.Configuration).Topology
+        == DurableKeyTopology.ProcessLocalFixture)
+    {
+        builder.Services.AddSingleton(
+            new RawExportAttemptKeyReadinessValidator(
+                builder.Configuration,
+                builder.Environment.IsProduction()));
+        builder.Services.AddScoped<
+            IReadinessCheck,
+            RawExportAttemptKeyReadinessCheck>();
+    }
     builder.Services.AddSingleton(
         new RawExportCustodyProfileReadinessValidator(
             builder.Configuration,
@@ -246,6 +255,7 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
     builder.Services.AddScoped<IReadinessCheck, RawExportAuthorizationReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportPermitTtlReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportJobReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, DurableKeyCustodyReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
 }
