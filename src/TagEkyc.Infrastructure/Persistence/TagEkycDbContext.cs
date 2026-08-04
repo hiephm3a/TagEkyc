@@ -73,6 +73,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportAttemptKeyReservationRow> RawExportAttemptKeyReservations => Set<RawExportAttemptKeyReservationRow>();
     public DbSet<RawExportKeyProviderOperationRow> RawExportKeyProviderOperations => Set<RawExportKeyProviderOperationRow>();
     public DbSet<RawExportAttemptKeyPreparationEventRow> RawExportAttemptKeyPreparationEvents => Set<RawExportAttemptKeyPreparationEventRow>();
+    public DbSet<RawExportFixtureKekWrapJournalRow> RawExportFixtureKekWrapJournal => Set<RawExportFixtureKekWrapJournalRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -80,6 +81,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         modelBuilder.ApplyConfiguration(new RawExportAttemptKeyReservationConfig());
         modelBuilder.ApplyConfiguration(new RawExportKeyProviderOperationConfig());
         modelBuilder.ApplyConfiguration(new RawExportAttemptKeyPreparationEventConfig());
+        modelBuilder.ApplyConfiguration(new RawExportFixtureKekWrapJournalConfig());
 
         modelBuilder.Entity<VerificationSessionRow>(entity =>
         {

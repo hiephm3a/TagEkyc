@@ -28,7 +28,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
     private const string Migration = "20260724015546_Tip88B1E3ResolverReadBoundary";
     private const string PreviousMigration = "20260723052003_Tip88B33RawExportAuthorizationPersistFunction";
     private const string ExpectedModelSnapshotSha256 =
-        "093ECDC86828ECE7D7EC2739A50A7FFB01ED6099564D2D5EDCA6129BD8AA4E4B";
+        "E71FCC9A473EBA48A8242B146A76AD5AEB7B9CE3561B4EBA6EDFD894E343C941";
     private const string EligibilityFunction =
         "tagekyc.raw_export_read_authorization_eligibility_inputs(uuid,uuid,integer)";
     private const string PolicyFunction =
