@@ -42,6 +42,8 @@ if (DurableKeyTopologyOptions.Resolve(builder.Configuration).Topology
     builder.Services.AddTagEkycAttemptKeyProvider(builder.Configuration);
 }
 builder.Services.AddTagEkycDurableKeyCustody(builder.Configuration);
+if (builder.Environment.IsProduction())
+    builder.Services.AddTagEkycProvisionalObjectCustody(builder.Configuration);
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
 ConfigureRetention(builder);
@@ -256,6 +258,9 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
     builder.Services.AddScoped<IReadinessCheck, RawExportPermitTtlReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportJobReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, DurableKeyCustodyReadinessCheck>();
+    if (builder.Services.Any(descriptor =>
+            descriptor.ServiceType == typeof(ProvisionalObjectCustodyReadinessValidator)))
+        builder.Services.AddScoped<IReadinessCheck, ProvisionalObjectCustodyReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
 }

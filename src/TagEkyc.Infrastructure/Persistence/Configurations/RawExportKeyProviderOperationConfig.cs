@@ -26,7 +26,7 @@ public sealed class RawExportKeyProviderOperationConfig
                 AND ("ProviderCleanupReference" IS NULL OR ("ProviderCleanupReference"=btrim("ProviderCleanupReference") AND "ProviderCleanupReference"=normalize("ProviderCleanupReference",NFC) AND octet_length("ProviderCleanupReference") BETWEEN 1 AND 512 AND "ProviderCleanupReference" !~ '[\x00-\x1f\x7f]'))
                 AND ("ProviderCleanupReceipt" IS NULL OR ("ProviderCleanupReceipt"=btrim("ProviderCleanupReceipt") AND "ProviderCleanupReceipt"=normalize("ProviderCleanupReceipt",NFC) AND octet_length("ProviderCleanupReceipt") BETWEEN 1 AND 512 AND "ProviderCleanupReceipt" !~ '[\x00-\x1f\x7f]'))
                 AND ("ProviderAbsenceProofReceipt" IS NULL OR ("ProviderAbsenceProofReceipt"=btrim("ProviderAbsenceProofReceipt") AND "ProviderAbsenceProofReceipt"=normalize("ProviderAbsenceProofReceipt",NFC) AND octet_length("ProviderAbsenceProofReceipt") BETWEEN 1 AND 512 AND "ProviderAbsenceProofReceipt" !~ '[\x00-\x1f\x7f]'))
-                """);
+                """.ReplaceLineEndings("\r\n"));
             table.HasCheckConstraint("ck_raw_export_key_provider_operation_sparse", """
                 CASE "ProviderOperationState"
                   WHEN 'Issued' THEN "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL

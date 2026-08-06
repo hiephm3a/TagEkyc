@@ -423,8 +423,8 @@ public sealed class Tip88C1B1IngressClaimTests(PostgresPersistenceFixture postgr
         var issued = await BeginAsync(request);
         Assert.True(await ValidateAsync(request, issued));
 
-        var tamperedToken = issued.Token![..^1]
-            + (issued.Token[^1] == 'A' ? "B" : "A");
+        var tamperedToken = (issued.Token![0] == 'A' ? "B" : "A")
+            + issued.Token[1..];
         Assert.False(await ValidateAsync(
             request,
             issued with { Token = tamperedToken }));

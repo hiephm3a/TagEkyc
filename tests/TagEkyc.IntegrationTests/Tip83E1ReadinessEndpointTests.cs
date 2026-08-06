@@ -11,6 +11,7 @@ using TagEkyc.Application.Ports;
 using TagEkyc.Domain;
 using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.RawExport;
 using TagEkyc.Infrastructure.Signing;
 
 namespace TagEkyc.IntegrationTests;
@@ -153,6 +154,54 @@ public sealed class Tip83E1ReadinessEndpointTests
         Assert.Equal([new ReadinessIssue(SignerOrder, "JWKS_PUBLIC_KEY_INVALID")], knownIssues);
     }
 
+    [Fact]
+    public async Task Production_object_custody_host_matrix_is_fail_closed_without_removing_real_checks()
+    {
+        using (var disabled = ProductionObjectCustodyFactory("Disabled"))
+        using (var client = disabled.CreateClient())
+        {
+            Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/health")).StatusCode);
+            Assert.False(disabled.Services.GetRequiredService<ObjectCustodyRegistrationSnapshot>()
+                .HasReadinessWrapper);
+            Assert.Null(disabled.Services.GetService<ProvisionalObjectCustodyReadinessValidator>());
+        }
+
+        foreach (var topology in new string?[] { null, "UnknownTopology" })
+        {
+            using var invalid = ProductionObjectCustodyFactory(topology);
+            using var client = invalid.CreateClient();
+            Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/health")).StatusCode);
+            using var scope = invalid.Services.CreateScope();
+            Assert.True(invalid.Services.GetRequiredService<ObjectCustodyRegistrationSnapshot>()
+                .HasReadinessWrapper);
+            var validator = scope.ServiceProvider
+                .GetRequiredService<ProvisionalObjectCustodyReadinessValidator>();
+            var wrapper = new ProvisionalObjectCustodyReadinessCheck(validator);
+            var issues = await wrapper.CheckAsync(CancellationToken.None);
+            Assert.Equal([new ReadinessIssue(DatabaseOrder,
+                "PROD_RAW_EXPORT_OBJECT_TOPOLOGY_INVALID")], issues);
+            Assert.Null(scope.ServiceProvider.GetService<ProvisionalObjectCustodyRepository>());
+        }
+
+        using (var durable = ProductionObjectCustodyFactory("S3CompatibleDurable", durable: true))
+        using (var client = durable.CreateClient())
+        {
+            Assert.Equal(HttpStatusCode.OK, (await client.GetAsync("/health")).StatusCode);
+            using var scope = durable.Services.CreateScope();
+            Assert.True(durable.Services.GetRequiredService<ObjectCustodyRegistrationSnapshot>()
+                .HasReadinessWrapper);
+            var validator = scope.ServiceProvider
+                .GetRequiredService<ProvisionalObjectCustodyReadinessValidator>();
+            var wrapper = new ProvisionalObjectCustodyReadinessCheck(validator);
+            Assert.NotNull(scope.ServiceProvider.GetRequiredService<ProvisionalObjectCustodyRepository>());
+            Assert.NotNull(scope.ServiceProvider.GetRequiredService<IProvisionalObjectPostureProbe>());
+            Assert.Null(scope.ServiceProvider.GetService<IProvisionalObjectWriter>());
+            Assert.Null(scope.ServiceProvider.GetService<IProvisionalObjectReconciler>());
+            Assert.Null(scope.ServiceProvider.GetService<IProvisionalObjectLifecycle>());
+            await Assert.ThrowsAnyAsync<Exception>(() => wrapper.CheckAsync(CancellationToken.None));
+        }
+    }
+
     private static WebApplicationFactory<Program> ProductionReadinessFactory(params IReadinessCheck[] checks) =>
         new WebApplicationFactory<Program>()
             .WithWebHostBuilder(builder =>
@@ -176,6 +225,48 @@ public sealed class Tip83E1ReadinessEndpointTests
                     }
                 });
             });
+
+    private static WebApplicationFactory<Program> ProductionObjectCustodyFactory(
+        string? topology,
+        bool durable = false) =>
+        new WebApplicationFactory<Program>()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.UseSetting("environment", "Production");
+                builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
+                builder.UseSetting("TagEkyc:Persistence:ConnectionStringSecretRef", SecretRef(
+                    "Host=127.0.0.1;Port=1;Database=unused;Username=unused;Password=db-secret;Timeout=1"));
+                builder.UseSetting("TagEkyc:ApiKeyStore:Backend", ApiKeyStoreBackends.Postgres);
+                builder.UseSetting("TagEkyc:ApiKeyStore:PepperSecretRef", Tip84BTestSupport.PepperSecretRef());
+                builder.UseSetting("TagEkyc:EvidenceSigning:Backend", EvidenceSigningBackends.ProductionTrialP12);
+                builder.UseSetting("TagEkyc:Retention:RegulatedEvidenceRetentionDays", "30");
+                builder.UseSetting("TagEkyc:DecisionThresholds:FaceMatch", "0.80");
+                builder.UseSetting("TagEkyc:DecisionThresholds:Liveness", "0.80");
+                if (topology is not null)
+                    builder.UseSetting("TagEkyc:RawExport:ObjectCustody:Topology", topology);
+                if (durable)
+                {
+                    builder.UseSetting("TagEkyc:RawExport:ObjectCustody:Capability", "PostureProbe");
+                    builder.UseSetting("TagEkyc:RawExport:ObjectCustody:ServiceUrl", "https://object-store.invalid");
+                    builder.UseSetting("TagEkyc:RawExport:ObjectCustody:BucketName", "tagekyc-raw-export");
+                    builder.UseSetting("TagEkyc:RawExport:ObjectCustody:AccessKeyId", "fixture-access");
+                    builder.UseSetting("TagEkyc:RawExport:ObjectCustody:SecretAccessKey", "fixture-secret");
+                    builder.UseSetting("TagEkyc:RawExport:ObjectCustody:AllowLoopbackHttp", "false");
+                    builder.UseSetting("TagEkyc:RawExport:ObjectCustody:MaximumSinglePartCiphertextBytes", "134217728");
+                    builder.UseSetting("TagEkyc:RawExport:ObjectCustody:OperationTimeoutSeconds", "300");
+                }
+                builder.ConfigureTestServices(services =>
+                {
+                    var hasReadinessWrapper = services.Any(descriptor =>
+                        descriptor.ServiceType == typeof(IReadinessCheck)
+                        && descriptor.ImplementationType
+                            == typeof(ProvisionalObjectCustodyReadinessCheck));
+                    RemoveReadinessHostedServices(services);
+                    services.AddSingleton(new ObjectCustodyRegistrationSnapshot(hasReadinessWrapper));
+                });
+            });
+
+    private sealed record ObjectCustodyRegistrationSnapshot(bool HasReadinessWrapper);
 
     private static void RemoveReadinessHostedServices(IServiceCollection services)
     {

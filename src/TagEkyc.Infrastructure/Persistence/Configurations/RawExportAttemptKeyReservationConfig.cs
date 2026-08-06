@@ -38,7 +38,7 @@ public sealed class RawExportAttemptKeyReservationConfig
                 AND ("RevocationReasonCode" IS NULL OR (
                   "RevocationReasonCode"=btrim("RevocationReasonCode") AND "RevocationReasonCode"=normalize("RevocationReasonCode",NFC)
                   AND octet_length("RevocationReasonCode") BETWEEN 1 AND 512 AND "RevocationReasonCode" !~ '[\x00-\x1f\x7f]'))
-                """);
+                """.ReplaceLineEndings("\r\n"));
             table.HasCheckConstraint("ck_raw_export_attempt_key_reservation_sparse", """
                 CASE
                   WHEN "PreparationDisposition" = 'PreparingLive'

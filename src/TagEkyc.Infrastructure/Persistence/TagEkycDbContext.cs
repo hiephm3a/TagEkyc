@@ -74,6 +74,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportKeyProviderOperationRow> RawExportKeyProviderOperations => Set<RawExportKeyProviderOperationRow>();
     public DbSet<RawExportAttemptKeyPreparationEventRow> RawExportAttemptKeyPreparationEvents => Set<RawExportAttemptKeyPreparationEventRow>();
     public DbSet<RawExportFixtureKekWrapJournalRow> RawExportFixtureKekWrapJournal => Set<RawExportFixtureKekWrapJournalRow>();
+    public DbSet<RawExportProvisionalObjectRow> RawExportProvisionalObjects => Set<RawExportProvisionalObjectRow>();
+    public DbSet<RawExportProvisionalObjectEventRow> RawExportProvisionalObjectEvents => Set<RawExportProvisionalObjectEventRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -82,6 +84,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         modelBuilder.ApplyConfiguration(new RawExportKeyProviderOperationConfig());
         modelBuilder.ApplyConfiguration(new RawExportAttemptKeyPreparationEventConfig());
         modelBuilder.ApplyConfiguration(new RawExportFixtureKekWrapJournalConfig());
+        modelBuilder.ApplyConfiguration(new RawExportProvisionalObjectConfig());
+        modelBuilder.ApplyConfiguration(new RawExportProvisionalObjectEventConfig());
 
         modelBuilder.Entity<VerificationSessionRow>(entity =>
         {
@@ -898,6 +902,14 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                 .HasName("uq_raw_export_source_attempt_fence");
             entity.HasAlternateKey(row => new { row.AttemptId, row.AttemptKeyReservationId })
                 .HasName("uq_raw_export_enc_attempt_attemptid_keyresvid");
+            entity.HasAlternateKey(row => new
+                {
+                    row.AttemptId,
+                    row.AttemptKeyReservationId,
+                    row.SourceArtifactId,
+                    row.ProvisionalObjectIdentity,
+                })
+                .HasName("uq_raw_export_source_attempt_object_binding");
             entity.Property(row => row.NonceDerivationSeedCommitment).HasColumnType("bytea").IsRequired();
             entity.Property(row => row.FramingParametersDigest).HasColumnType("bytea").IsRequired();
             entity.Property(row => row.EncryptionAttemptFingerprint).HasColumnType("bytea").IsRequired();

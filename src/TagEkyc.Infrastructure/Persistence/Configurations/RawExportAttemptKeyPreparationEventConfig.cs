@@ -45,7 +45,7 @@ public sealed class RawExportAttemptKeyPreparationEventConfig
                 AND ("OperatorReasonCode" IS NULL OR ("OperatorReasonCode"=btrim("OperatorReasonCode") AND "OperatorReasonCode"=normalize("OperatorReasonCode",NFC) AND octet_length("OperatorReasonCode") BETWEEN 1 AND 512 AND "OperatorReasonCode" !~ '[\x00-\x1f\x7f]'))
                 AND ("RequestingActorEvidence" IS NULL OR ("RequestingActorEvidence"=btrim("RequestingActorEvidence") AND "RequestingActorEvidence"=normalize("RequestingActorEvidence",NFC) AND octet_length("RequestingActorEvidence") BETWEEN 1 AND 512 AND "RequestingActorEvidence" !~ '[\x00-\x1f\x7f]'))
                 AND ("FinalizingActorEvidence" IS NULL OR ("FinalizingActorEvidence"=btrim("FinalizingActorEvidence") AND "FinalizingActorEvidence"=normalize("FinalizingActorEvidence",NFC) AND octet_length("FinalizingActorEvidence") BETWEEN 1 AND 512 AND "FinalizingActorEvidence" !~ '[\x00-\x1f\x7f]'))
-                """);
+                """.ReplaceLineEndings("\r\n"));
         });
         entity.HasKey(x => x.PreparationEventId).HasName("pk_raw_export_attempt_key_preparation_events");
         entity.Property(x => x.PreparationEventId).ValueGeneratedNever();
