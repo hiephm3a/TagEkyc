@@ -47,7 +47,7 @@ internal sealed class AttemptAeadVerificationOperationService(
     IKekOperationProvider provider,
     DurableKeyCustodyOptions options) : IAttemptAeadVerificationOperation
 {
-    public async Task<byte[]> DecryptAndVerifyBoundedChunkAsync(
+    public async Task<AttemptAeadVerificationResult> DecryptAndVerifyBoundedChunkAsync(
         AttemptAeadChunkRequest request,
         ReadOnlyMemory<byte> authenticationTag,
         CancellationToken cancellationToken)
@@ -59,29 +59,71 @@ internal sealed class AttemptAeadVerificationOperationService(
 
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(options.BoundedAeadOperationDuration);
-        var envelope = await ReadEnvelopeAsync(request.AttemptKeyReservationId, timeout.Token)
-            ?? throw new InvalidOperationException("RAW_EXPORT_KEY_NOT_ACTIVE");
-        using var lease = await provider.UnwrapDekAsync(
-            envelope.Reference,
-            envelope.Wrapped,
-            envelope.ContextFingerprint,
-            timeout.Token);
+        ActiveEnvelope? envelope;
+        try
+        {
+            envelope = await ReadEnvelopeAsync(
+                request.AttemptKeyReservationId,
+                timeout.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch
+        {
+            return AttemptAeadVerificationResult.KeyAccessIndeterminate();
+        }
+
+        if (envelope is null)
+            return AttemptAeadVerificationResult.KeyAccessIndeterminate();
+
+        AttemptDekLease lease;
+        try
+        {
+            lease = await provider.UnwrapDekAsync(
+                envelope.Reference,
+                envelope.Wrapped,
+                envelope.ContextFingerprint,
+                timeout.Token).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch
+        {
+            return AttemptAeadVerificationResult.KeyAccessIndeterminate();
+        }
+
+        using (lease)
+        {
         var output = new byte[request.Input.Length];
         try
         {
             using var aes = new AesGcm(lease.Material.Span, 16);
-            aes.Decrypt(
-                request.Nonce.Span,
-                request.Input.Span,
-                authenticationTag.Span,
-                output,
-                request.AssociatedData.Span);
-            return output;
+            try
+            {
+                aes.Decrypt(
+                    request.Nonce.Span,
+                    request.Input.Span,
+                    authenticationTag.Span,
+                    output,
+                    request.AssociatedData.Span);
+            }
+            catch (CryptographicException)
+            {
+                CryptographicOperations.ZeroMemory(output);
+                return AttemptAeadVerificationResult.AuthenticationFailed();
+            }
+
+            return AttemptAeadVerificationResult.Verified(output);
         }
         catch
         {
             CryptographicOperations.ZeroMemory(output);
             throw;
+        }
         }
     }
 

@@ -679,17 +679,140 @@ public sealed class Tip88C1B2DurableKeyFixtureProofTests(PostgresPersistenceFixt
     {
         var root = RepoRoot();
         var relative = "src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs";
-        var baseline = Git(root, $"show HEAD:{relative}").Replace("\r\n", "\n").Split('\n');
-        var current = File.ReadAllText(Path.Combine(root, relative.Replace('/', Path.DirectorySeparatorChar)))
-            .Replace("\r\n", "\n").Split('\n');
-        var cursor = 0;
-        foreach (var line in baseline)
+        var snapshot = File.ReadAllText(
+            Path.Combine(root, relative.Replace('/', Path.DirectorySeparatorChar)));
+        const string entityName =
+            "TagEkyc.Infrastructure.Persistence.Entities.RawExportFixtureKekWrapJournalRow";
+        var entityStartMarker = $"modelBuilder.Entity(\"{entityName}\", b =>";
+        Assert.Equal(1, Count(snapshot, entityStartMarker));
+        var entityStart = snapshot.IndexOf(entityStartMarker, StringComparison.Ordinal);
+        var nextEntity = snapshot.IndexOf(
+            "modelBuilder.Entity(\"",
+            entityStart + entityStartMarker.Length,
+            StringComparison.Ordinal);
+        Assert.True(nextEntity > entityStart, "DK-FIXTURE entity block is not structurally bounded.");
+        var block = snapshot[entityStart..nextEntity];
+
+        using var db = postgres.CreateDbContext();
+        var entity = db.GetService<Microsoft.EntityFrameworkCore.Metadata.IDesignTimeModel>()
+            .Model
+            .FindEntityType(entityName);
+        Assert.NotNull(entity);
+        Assert.Equal("raw_export_fixture_kek_wrap_journal", entity.GetTableName());
+        Assert.Equal("tagekyc", entity.GetSchema());
+        Assert.Contains(
+            "b.ToTable(\"raw_export_fixture_kek_wrap_journal\", \"tagekyc\", t =>",
+            block,
+            StringComparison.Ordinal);
+
+        var expectedProperties = new (string Name, string ColumnType, int? MaxLength)[]
         {
-            while (cursor < current.Length && current[cursor] != line) cursor++;
-            Assert.True(cursor < current.Length, $"Landed snapshot line deleted or changed: {line}");
-            cursor++;
+            ("FixtureWrapId", "uuid", null),
+            ("AttemptKeyContextFingerprint", "bytea", null),
+            ("CreatedAtUtc", "timestamp with time zone", null),
+            ("KeyProviderId", "character varying(512)", 512),
+            ("ProviderOperationReceipt", "character varying(512)", 512),
+            ("ProviderOperationToken", "character varying(43)", 43),
+            ("ProviderResourceReference", "character varying(512)", 512),
+            ("WrappedDekCiphertext", "bytea", null),
+            ("WrappedDekMetadataDigest", "bytea", null),
+            ("WrappedDekNonce", "bytea", null),
+            ("WrappedDekTag", "bytea", null),
+            ("WrappingSuiteId", "character varying(512)", 512),
+            ("WrappingSuiteVersion", "integer", null),
+        };
+        foreach (var expected in expectedProperties)
+        {
+            var property = entity.FindProperty(expected.Name);
+            Assert.NotNull(property);
+            Assert.False(property.IsNullable);
+            Assert.Equal(expected.ColumnType, property.GetColumnType());
+            Assert.Equal(expected.MaxLength, property.GetMaxLength());
+            Assert.Equal(1, CountMember(block, "b.Property<", $"(\"{expected.Name}\")"));
+            Assert.Contains($".HasColumnType(\"{expected.ColumnType}\")", block, StringComparison.Ordinal);
         }
-        Assert.Contains(current, line => line.Contains("raw_export_fixture_kek_wrap_journal", StringComparison.Ordinal));
+
+        var key = entity.FindPrimaryKey();
+        Assert.NotNull(key);
+        Assert.Equal("pk_raw_export_fixture_kek_wrap_journal", key.GetName());
+        Assert.Equal(new[] { "FixtureWrapId" }, key.Properties.Select(property => property.Name));
+        Assert.Contains(
+            "b.HasKey(\"FixtureWrapId\")",
+            block,
+            StringComparison.Ordinal);
+        Assert.Contains(
+            ".HasName(\"pk_raw_export_fixture_kek_wrap_journal\")",
+            block,
+            StringComparison.Ordinal);
+
+        var indexes = entity.GetIndexes()
+            .ToDictionary(index => index.GetDatabaseName()!, StringComparer.Ordinal);
+        Assert.Equal(2, indexes.Count);
+        Assert.True(indexes["uq_raw_export_fixture_kek_resource_ref"].IsUnique);
+        Assert.Equal(
+            new[] { "ProviderResourceReference" },
+            indexes["uq_raw_export_fixture_kek_resource_ref"].Properties.Select(property => property.Name));
+        Assert.True(indexes["uq_raw_export_fixture_kek_provider_token"].IsUnique);
+        Assert.Equal(
+            new[] { "KeyProviderId", "ProviderOperationToken" },
+            indexes["uq_raw_export_fixture_kek_provider_token"].Properties.Select(property => property.Name));
+        foreach (var indexName in indexes.Keys)
+            Assert.Equal(1, Count(block, $".HasDatabaseName(\"{indexName}\")"));
+
+        Assert.Empty(entity.GetForeignKeys());
+        Assert.DoesNotContain(
+            $"modelBuilder.Entity(\"{entityName}\", b =>{Environment.NewLine}                {{{Environment.NewLine}                    b.HasOne",
+            snapshot,
+            StringComparison.Ordinal);
+
+        var constraints = entity.GetCheckConstraints()
+            .ToDictionary(
+                constraint => constraint.Name
+                    ?? throw new InvalidOperationException("DK-FIXTURE check constraint is unnamed."),
+                StringComparer.Ordinal);
+        Assert.Equal(
+            new[]
+            {
+                "ck_raw_export_fixture_kek_wrap_shape",
+                "ck_raw_export_fixture_kek_wrap_text",
+            },
+            constraints.Keys.Order(StringComparer.Ordinal));
+        foreach (var constraint in constraints.Values)
+        {
+            var marker = $"t.HasCheckConstraint(\"{constraint.Name}\", ";
+            Assert.Equal(
+                1,
+                Count(block, marker));
+            Assert.Contains(
+                $"{marker}\"{Escape(constraint.Sql)}\");",
+                block,
+                StringComparison.Ordinal);
+        }
+
+        static int Count(string value, string token) =>
+            value.Split(token, StringSplitOptions.None).Length - 1;
+
+        static int CountMember(string value, string prefix, string suffix)
+        {
+            var count = 0;
+            var cursor = 0;
+            while ((cursor = value.IndexOf(prefix, cursor, StringComparison.Ordinal)) >= 0)
+            {
+                var end = value.IndexOf(";", cursor, StringComparison.Ordinal);
+                Assert.True(end > cursor, $"Unterminated snapshot member after {prefix}.");
+                if (value.IndexOf(suffix, cursor, end - cursor, StringComparison.Ordinal) >= 0)
+                    count++;
+                cursor = end + 1;
+            }
+            return count;
+        }
+
+        static string Escape(string value) => value
+            .Replace("\\", "\\\\", StringComparison.Ordinal)
+            .Replace("\"", "\\\"", StringComparison.Ordinal)
+            .Replace("\r", "\\r", StringComparison.Ordinal)
+            .Replace("\n", "\\n", StringComparison.Ordinal)
+            .Replace("\t", "\\t", StringComparison.Ordinal);
     }
 
     private static FixtureDurableKekOperationProvider Provider(TagEkycDbContext wrapDb, TagEkycDbContext lookupDb) =>

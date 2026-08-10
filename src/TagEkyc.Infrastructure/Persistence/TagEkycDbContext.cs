@@ -891,7 +891,12 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                     AND octet_length("NonceDerivationSeedCommitment") = 32
                     AND octet_length("FramingParametersDigest") = 32
                     AND octet_length("EncryptionAttemptFingerprint") = 32
-                    AND "R2TerminationDisposition" IS NULL
+                    AND (
+                      ("R2TerminationDisposition" IS NULL AND "R2TerminatedAtUtc" IS NULL)
+                      OR
+                      ("R2TerminationDisposition" IN ('Terminated','TerminatedBeforeStart')
+                       AND "R2TerminatedAtUtc" IS NOT NULL)
+                    )
                     """);
             });
             entity.HasKey(row => row.AttemptId)

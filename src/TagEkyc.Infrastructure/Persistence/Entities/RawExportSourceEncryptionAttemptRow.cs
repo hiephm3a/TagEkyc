@@ -22,6 +22,7 @@ public sealed class RawExportSourceEncryptionAttemptRow
     public byte[] EncryptionAttemptFingerprint { get; set; } = [];
     public DateTimeOffset OwnershipLeaseExpiresAtUtc { get; set; }
     public string? R2TerminationDisposition { get; set; }
+    public DateTimeOffset? R2TerminatedAtUtc { get; set; }
     public DateTimeOffset CreatedAtUtc { get; set; }
     public int SchemaVersion { get; set; }
 }
