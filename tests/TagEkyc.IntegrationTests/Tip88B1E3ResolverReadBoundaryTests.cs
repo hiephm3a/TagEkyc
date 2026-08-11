@@ -28,7 +28,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
     private const string Migration = "20260724015546_Tip88B1E3ResolverReadBoundary";
     private const string PreviousMigration = "20260723052003_Tip88B33RawExportAuthorizationPersistFunction";
     private const string ExpectedModelSnapshotSha256 =
-        "1AC9DB8F7CB790AF51459D4886BDA26B510CF9F73C16D2B9A27B4FEE25A12BC1";
+        "D81B8593166009279EFC770A5DDD55C3020FD71A4A822CEBCCC54BF3FF0BA510";
     private const string EligibilityFunction =
         "tagekyc.raw_export_read_authorization_eligibility_inputs(uuid,uuid,integer)";
     private const string PolicyFunction =
@@ -1679,6 +1679,20 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
         var migrator = db.GetService<IMigrator>();
         var snapshotBefore = ModelSnapshotSha256();
         Assert.Equal(ExpectedModelSnapshotSha256, snapshotBefore);
+        var r3Attempt = db.Model.FindEntityType(
+            "TagEkyc.Infrastructure.Persistence.Entities.RawExportSourceEncryptionAttemptRow");
+        Assert.NotNull(r3Attempt);
+        foreach (var property in new[]
+        {
+            "StagedCiphertextFingerprintSchemaVersion", "StagedCiphertextFingerprint",
+            "StagedObjectCustodyId", "StagedObjectStateRevision", "StagedFromReservationRevision",
+            "VerifiedPlaintextLength", "StagedCiphertextLength", "StagedCiphertextDigest",
+            "StagedProviderReceiptDigest", "StagedVerificationEvidenceDigest", "StagedAtUtc",
+        })
+            Assert.NotNull(r3Attempt!.FindProperty(property));
+        Assert.Contains(r3Attempt!.GetForeignKeys(), foreignKey =>
+            foreignKey.GetConstraintName() == "fk_raw_export_source_attempt_staged_object"
+            && foreignKey.Properties.Single().Name == "StagedObjectCustodyId");
         string[] expectedPreE3RuntimeAcl =
         [
             "raw_export_subject_consent_authorities|tagekyc|tagekyc_runtime|SELECT|false",

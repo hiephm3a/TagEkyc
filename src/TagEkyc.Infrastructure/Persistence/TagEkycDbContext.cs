@@ -897,6 +897,47 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                       ("R2TerminationDisposition" IN ('Terminated','TerminatedBeforeStart')
                        AND "R2TerminatedAtUtc" IS NOT NULL)
                     )
+                    AND (
+                      (
+                        "StagedCiphertextFingerprintSchemaVersion" IS NULL
+                        AND "StagedCiphertextFingerprint" IS NULL
+                        AND "StagedObjectCustodyId" IS NULL
+                        AND "StagedObjectStateRevision" IS NULL
+                        AND "StagedFromReservationRevision" IS NULL
+                        AND "VerifiedPlaintextLength" IS NULL
+                        AND "StagedCiphertextLength" IS NULL
+                        AND "StagedCiphertextDigest" IS NULL
+                        AND "StagedProviderReceiptDigest" IS NULL
+                        AND "StagedVerificationEvidenceDigest" IS NULL
+                        AND "StagedAtUtc" IS NULL
+                      )
+                      OR
+                      (
+                        "R2TerminationDisposition" IS NULL
+                        AND "R2TerminatedAtUtc" IS NULL
+                        AND "StagedCiphertextFingerprintSchemaVersion" IS NOT NULL
+                        AND "StagedCiphertextFingerprint" IS NOT NULL
+                        AND "StagedObjectCustodyId" IS NOT NULL
+                        AND "StagedObjectStateRevision" IS NOT NULL
+                        AND "StagedFromReservationRevision" IS NOT NULL
+                        AND "VerifiedPlaintextLength" IS NOT NULL
+                        AND "StagedCiphertextLength" IS NOT NULL
+                        AND "StagedCiphertextDigest" IS NOT NULL
+                        AND "StagedProviderReceiptDigest" IS NOT NULL
+                        AND "StagedVerificationEvidenceDigest" IS NOT NULL
+                        AND "StagedAtUtc" IS NOT NULL
+                        AND "StagedCiphertextFingerprintSchemaVersion" = 2
+                        AND octet_length("StagedCiphertextFingerprint") = 32
+                        AND "StagedObjectStateRevision" >= 1
+                        AND "StagedFromReservationRevision" >= 1
+                        AND "VerifiedPlaintextLength" >= 1
+                        AND "StagedCiphertextLength" BETWEEN 1 AND 134217728
+                        AND octet_length("StagedCiphertextDigest") = 32
+                        AND octet_length("StagedProviderReceiptDigest") = 32
+                        AND octet_length("StagedVerificationEvidenceDigest") = 32
+                        AND "StagedAtUtc" IS NOT NULL
+                      )
+                    )
                     """);
             });
             entity.HasKey(row => row.AttemptId)
@@ -930,6 +971,11 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                 .HasForeignKey(row => row.SourceArtifactId)
                 .OnDelete(DeleteBehavior.Restrict)
                 .HasConstraintName("fk_raw_export_source_attempt_reservation");
+            entity.HasOne<RawExportProvisionalObjectRow>()
+                .WithMany()
+                .HasForeignKey(row => row.StagedObjectCustodyId)
+                .OnDelete(DeleteBehavior.Restrict)
+                .HasConstraintName("fk_raw_export_source_attempt_staged_object");
         });
 
         modelBuilder.Entity<RawExportSourceHeadRow>(entity =>
@@ -938,7 +984,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             {
                 table.HasCheckConstraint(
                     "ck_raw_export_source_head_values",
-                    "\"CustodyState\" = 'Reserved' AND \"ReservationRevision\" >= 1 AND \"Fence\" >= 1");
+                    "\"CustodyState\" IN ('Reserved','Staged') AND \"ReservationRevision\" >= 1 AND \"Fence\" >= 1");
             });
             entity.HasKey(row => row.SourceArtifactId)
                 .HasName("pk_raw_export_source_head");

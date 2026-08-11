@@ -2674,9 +2674,11 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
 
     private async Task<WrittenSourceFixture> WriteObjectAsync(
         byte[] plaintext,
-        DurableObjectMinioFixture minio)
+        DurableObjectMinioFixture minio,
+        TimeSpan? sourceLifetime = null,
+        TimeSpan? consentLifetime = null)
     {
-        var source = await SeedReservedSourceAsync(plaintext);
+        var source = await SeedReservedSourceAsync(plaintext, sourceLifetime, consentLifetime);
         await using var brokerProvider = CreateBrokerProvider();
         await using var commitmentScope = brokerProvider.CreateAsyncScope();
         await using var writerDb = postgres.CreateDbContext();
@@ -2712,6 +2714,90 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         Assert.Equal(RawExportR2WriterDisposition.PendingVerification, written.Disposition);
         Assert.NotNull(written.ObjectCustodyId);
         return new(source, written);
+    }
+
+    internal async Task<R3VerifiedSourceFixture> CreateR3VerifiedSourceAsync(
+        byte[] plaintext,
+        DurableObjectMinioFixture minio,
+        bool restartBeforeVerification = false,
+        TimeSpan? sourceLifetime = null,
+        TimeSpan? consentLifetime = null)
+    {
+        var written = await WriteObjectAsync(plaintext, minio, sourceLifetime, consentLifetime);
+        if (restartBeforeVerification)
+            await minio.RestartAsync();
+
+        await using var provider = CreateBrokerProvider();
+        await using var scope = provider.CreateAsyncScope();
+        await using var verifyDb = postgres.CreateDbContext();
+        await using var verifyLookupDb = postgres.CreateDbContext();
+        var verifyKek = new FixtureDurableKekOperationProvider(
+            new PostgresFixtureKekJournal(verifyDb),
+            new PostgresFixtureKekJournal(verifyLookupDb));
+        var verified = await new RawExportR2CompletionVerifier(
+            new RawExportR2Repository(verifyDb),
+            new S3CompatibleProvisionalObjectReconciler(
+                minio.Options(ProvisionalObjectCapability.Reconciler)),
+            new AttemptAeadVerificationOperationService(
+                verifyDb,
+                verifyKek,
+                DurableKeyCustodyOptions.Resolve(new ConfigurationManager())),
+            scope.ServiceProvider.GetRequiredService<IContentCommitmentService>())
+            .ExecuteAsync(
+                new(
+                    written.Source.ActorPrincipalId,
+                    written.Source.AttemptId,
+                    written.Source.Revision,
+                    written.Source.Fence,
+                    written.Written.ObjectCustodyId!.Value),
+                CancellationToken.None);
+        Assert.Equal(RawExportR2VerificationDisposition.Verified, verified.Disposition);
+
+        await using var readDb = postgres.CreateDbContext();
+        var attempt = await readDb.RawExportSourceEncryptionAttempts.AsNoTracking()
+            .SingleAsync(row => row.AttemptId == written.Source.AttemptId);
+        var head = await readDb.RawExportSourceHeads.AsNoTracking()
+            .SingleAsync(row => row.SourceArtifactId == written.Source.SourceArtifactId);
+        var reservation = await readDb.RawExportSourceReservations.AsNoTracking()
+            .SingleAsync(row => row.SourceArtifactId == written.Source.SourceArtifactId);
+        var claim = await readDb.RawExportSourceIngressClaims.AsNoTracking()
+            .SingleAsync(row => row.IngressClaimId == reservation.IngressClaimId);
+        var session = await readDb.Sessions.AsNoTracking()
+            .SingleAsync(row => row.Id == claim.VerificationSessionId);
+        var authorityRevision = await readDb.RawExportAuthoritySnapshots.AsNoTracking()
+            .Where(row => row.ClientApplicationId == claim.ClientApplicationId
+                && row.VerificationSessionId == claim.VerificationSessionId
+                && row.CaptureAcceptanceId == claim.CaptureAcceptanceId
+                && row.RawClass == claim.RawClass
+                && row.EventType == "Granted")
+            .MaxAsync(row => row.Revision);
+        var objectRow = await readDb.RawExportProvisionalObjects.AsNoTracking()
+            .SingleAsync(row => row.ObjectCustodyId == written.Written.ObjectCustodyId!.Value);
+        Assert.Equal("VerifiedCompleted", objectRow.State);
+        return new(
+            written.Source.ActorPrincipalId,
+            attempt.SourceArtifactId,
+            attempt.AttemptId,
+            attempt.AttemptKeyReservationId,
+            objectRow.ObjectCustodyId,
+            head.ReservationRevision,
+            attempt.EncryptionAttemptRevision,
+            attempt.Fence,
+            objectRow.StateRevision,
+            objectRow.ObjectBindingDigest,
+            objectRow.CiphertextLength!.Value,
+            objectRow.CiphertextDigest!,
+            objectRow.ProviderReceiptDigest!,
+            objectRow.VerificationEvidenceDigest!,
+            claim.ClientApplicationId,
+            claim.VerificationSessionId,
+            claim.CaptureAcceptanceId,
+            claim.RawClass,
+            authorityRevision,
+            session.SubjectRef,
+            reservation.ConsentPolicyId,
+            reservation.ConsentPolicyVersion,
+            reservation.AbsoluteSourceExpiresAtUtc);
     }
 
     private async Task<RawExportR2VerifierResult> MarkAuthenticationFailureAsync(
@@ -2999,6 +3085,49 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         string state,
         DurableObjectMinioFixture? minio)
     {
+        if (state is "Deleted" or "Quarantined")
+        {
+            Assert.NotNull(minio);
+            var written = await WriteObjectAsync(
+                Encoding.ASCII.GetBytes($"r3-object-state-{state}"),
+                minio!);
+            Assert.Equal(
+                RawExportR2VerificationDisposition.VerificationFailedRequiresCleanup,
+                (await MarkAuthenticationFailureAsync(written, minio!)).Disposition);
+            var row = await ReadObjectRowAsync(written.Written.ObjectCustodyId!.Value);
+            if (state == "Deleted")
+            {
+                using var lifecycle = new S3CompatibleProvisionalObjectLifecycle(
+                    minio!.Options(ProvisionalObjectCapability.Lifecycle));
+                var deletion = await lifecycle.DeleteExactAsync(
+                    new(row.ProvisionalObjectIdentity, row.ObjectKey, row.ObjectBindingDigest),
+                    CancellationToken.None);
+                Assert.Equal(ExactDeleteOutcome.DeletedAcknowledged, deletion.Outcome);
+                var evidence = C1HashCanonical.Compute(
+                    "tip-88c1-object-delete-ack-evidence-v1",
+                    new C1HashCanonical.Scalar(Convert.ToHexString(row.ObjectBindingDigest).ToLowerInvariant()),
+                    new C1HashCanonical.Scalar(row.StateRevision.ToString(CultureInfo.InvariantCulture)),
+                    new C1HashCanonical.Scalar("DeleteAcknowledged"),
+                    new C1HashCanonical.Scalar("204"));
+                Assert.Equal("Deleted", (await RecordDeleteAcknowledgedAsync(
+                    written.Source.ActorPrincipalId, row.ObjectCustodyId, row.StateRevision, evidence)).OutcomeCode);
+            }
+            else
+            {
+                var evidence = C1HashCanonical.Compute(
+                    "tip-88c1-object-cleanup-quarantine-evidence-v1",
+                    new C1HashCanonical.Scalar(Convert.ToHexString(row.ObjectBindingDigest).ToLowerInvariant()),
+                    new C1HashCanonical.Scalar("CleanupPending"),
+                    new C1HashCanonical.Scalar(row.StateRevision.ToString(CultureInfo.InvariantCulture)),
+                    new C1HashCanonical.Scalar("DeleteOutcomeIndeterminateTerminal"),
+                    new C1HashCanonical.Scalar(Convert.ToHexString(row.CleanupEvidenceDigest!).ToLowerInvariant()));
+                Assert.Equal("Quarantined", (await RecordQuarantinedAsync(
+                    written.Source.ActorPrincipalId, row.ObjectCustodyId, row.StateRevision, evidence)).OutcomeCode);
+            }
+            Assert.Equal(state, (await ReadObjectRowAsync(row.ObjectCustodyId)).State);
+            return new(written.Source, row.ObjectCustodyId);
+        }
+
         if (state is "ObjectPresentPendingVerification" or "VerifiedCompleted" or "CleanupPending")
         {
             Assert.NotNull(minio);
@@ -3114,6 +3243,96 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         Assert.Equal("ConditionalConflict", conflict.OutcomeCode);
         Assert.Equal(state, conflict.ObjectState);
         return new(source, begun.ObjectCustodyId);
+    }
+
+    internal async Task<R3ObjectStateFixture> CreateR3ObjectStateAsync(
+        string state,
+        DurableObjectMinioFixture minio)
+    {
+        if (state is "CleanupPending" or "Deleted" or "Quarantined")
+        {
+            var verified = await CreateR3VerifiedSourceAsync(
+                Encoding.ASCII.GetBytes($"r3-verified-terminal-state-{state}"),
+                minio);
+            var verifiedRow = await ReadObjectRowAsync(verified.ObjectCustodyId);
+            var cleanupEvidence = C1HashCanonical.Compute(
+                "tip-88c1-object-cleanup-evidence-v1",
+                new C1HashCanonical.Scalar(Convert.ToHexString(verifiedRow.ObjectBindingDigest).ToLowerInvariant()),
+                new C1HashCanonical.Scalar("VerifiedCompleted"),
+                new C1HashCanonical.Scalar(verifiedRow.StateRevision.ToString(CultureInfo.InvariantCulture)),
+                new C1HashCanonical.Scalar("SourceExpired"));
+            var cleanup = await ExecuteR215ObjectMutationAsync(
+                verified.ActorPrincipalId,
+                "tagekyc_raw_export_lifecycle",
+                "raw_export_mark_provisional_object_cleanup_required",
+                ("id", verified.ObjectCustodyId),
+                ("revision", verifiedRow.StateRevision),
+                ("reason", "SourceExpired"),
+                ("evidence", cleanupEvidence));
+            Assert.Equal("CleanupRequired", cleanup.OutcomeCode);
+
+            if (state == "Deleted")
+            {
+                var cleanupRow = await ReadObjectRowAsync(verified.ObjectCustodyId);
+                using var lifecycle = new S3CompatibleProvisionalObjectLifecycle(
+                    minio.Options(ProvisionalObjectCapability.Lifecycle));
+                var deletion = await lifecycle.DeleteExactAsync(
+                    new(cleanupRow.ProvisionalObjectIdentity, cleanupRow.ObjectKey, cleanupRow.ObjectBindingDigest),
+                    CancellationToken.None);
+                Assert.Equal(ExactDeleteOutcome.DeletedAcknowledged, deletion.Outcome);
+                var deletionEvidence = C1HashCanonical.Compute(
+                    "tip-88c1-object-delete-ack-evidence-v1",
+                    new C1HashCanonical.Scalar(Convert.ToHexString(cleanupRow.ObjectBindingDigest).ToLowerInvariant()),
+                    new C1HashCanonical.Scalar(cleanupRow.StateRevision.ToString(CultureInfo.InvariantCulture)),
+                    new C1HashCanonical.Scalar("DeleteAcknowledged"),
+                    new C1HashCanonical.Scalar("204"));
+                Assert.Equal("Deleted", (await RecordDeleteAcknowledgedAsync(
+                    verified.ActorPrincipalId,
+                    verified.ObjectCustodyId,
+                    cleanupRow.StateRevision,
+                    deletionEvidence)).OutcomeCode);
+            }
+            else if (state == "Quarantined")
+            {
+                var cleanupRow = await ReadObjectRowAsync(verified.ObjectCustodyId);
+                var quarantineEvidence = C1HashCanonical.Compute(
+                    "tip-88c1-object-cleanup-quarantine-evidence-v1",
+                    new C1HashCanonical.Scalar(Convert.ToHexString(cleanupRow.ObjectBindingDigest).ToLowerInvariant()),
+                    new C1HashCanonical.Scalar("CleanupPending"),
+                    new C1HashCanonical.Scalar(cleanupRow.StateRevision.ToString(CultureInfo.InvariantCulture)),
+                    new C1HashCanonical.Scalar("DeleteOutcomeIndeterminateTerminal"),
+                    new C1HashCanonical.Scalar(Convert.ToHexString(cleanupRow.CleanupEvidenceDigest!).ToLowerInvariant()));
+                Assert.Equal("Quarantined", (await RecordQuarantinedAsync(
+                    verified.ActorPrincipalId,
+                    verified.ObjectCustodyId,
+                    cleanupRow.StateRevision,
+                    quarantineEvidence)).OutcomeCode);
+            }
+
+            var finalRow = await ReadObjectRowAsync(verified.ObjectCustodyId);
+            Assert.Equal(state, finalRow.State);
+            return new(
+                verified.ActorPrincipalId,
+                verified.SourceArtifactId,
+                verified.AttemptId,
+                verified.ObjectCustodyId,
+                verified.EncryptionAttemptRevision,
+                verified.Fence,
+                finalRow.StateRevision,
+                finalRow.State);
+        }
+
+        var created = await CreateR215ObjectStateAsync(state, minio);
+        var row = await ReadObjectRowAsync(created.ObjectCustodyId);
+        return new(
+            created.Source.ActorPrincipalId,
+            created.Source.SourceArtifactId,
+            created.Source.AttemptId,
+            created.ObjectCustodyId,
+            created.Source.Revision,
+            created.Source.Fence,
+            row.StateRevision,
+            row.State);
     }
 
     private async Task<R215BegunObjectFixture> BeginR215ObjectAsync(ReservedSourceFixture source)
@@ -3552,9 +3771,12 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         (value.Length - value.Replace(token, string.Empty, StringComparison.Ordinal).Length)
         / token.Length;
 
-    private async Task<ReservedSourceFixture> SeedReservedSourceAsync(byte[] plaintext)
+    private async Task<ReservedSourceFixture> SeedReservedSourceAsync(
+        byte[] plaintext,
+        TimeSpan? sourceLifetime = null,
+        TimeSpan? consentLifetime = null)
     {
-        var candidate = await SeedCandidateAsync(plaintext);
+        var candidate = await SeedCandidateAsync(plaintext, sourceLifetime, consentLifetime);
         await using var provider = CreateBrokerProvider();
         await using var scope = provider.CreateAsyncScope();
         var broker = scope.ServiceProvider.GetRequiredService<IRawExportSourceClaimComparisonBroker>();
@@ -3579,7 +3801,10 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
             reservation.ContentCommitment);
     }
 
-    private async Task<CandidateFixture> SeedCandidateAsync(byte[] plaintext)
+    private async Task<CandidateFixture> SeedCandidateAsync(
+        byte[] plaintext,
+        TimeSpan? sourceLifetime = null,
+        TimeSpan? consentLifetime = null)
     {
         var actor = Guid.NewGuid();
         var client = Guid.NewGuid();
@@ -3630,8 +3855,9 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         }
 
         var acceptance = await AppendAcceptanceAsync(actor, session, client, artifact);
-        await GrantConsentAsync(actor, client, session, policy);
-        var authority = await AppendAuthorityAsync(actor, client, session, acceptance, artifact, policy);
+        await GrantConsentAsync(actor, client, session, policy, consentLifetime);
+        var authority = await AppendAuthorityAsync(
+            actor, client, session, acceptance, artifact, policy, sourceLifetime, consentLifetime);
         var captured = now.AddSeconds(-5);
         var retentionStart = now.AddSeconds(-4);
         var retentionExpires = now.AddMinutes(30);
@@ -3731,7 +3957,8 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         Guid actor,
         Guid client,
         Guid session,
-        Guid policy)
+        Guid policy,
+        TimeSpan? lifetime = null)
     {
         var admin = Guid.NewGuid();
         await using var connection = await OpenAsync();
@@ -3748,7 +3975,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
             """,
             new NpgsqlParameter("actor", actor),
             new NpgsqlParameter("client", client),
-            new NpgsqlParameter("validUntil", DateTimeOffset.UtcNow.AddHours(1)));
+            new NpgsqlParameter("validUntil", DateTimeOffset.UtcNow.Add(lifetime ?? TimeSpan.FromHours(1))));
         await SetActorAsync(connection, transaction, actor);
         await ExecuteAsync(connection, transaction,
             """
@@ -3759,7 +3986,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
             """,
             new NpgsqlParameter("session", session),
             new NpgsqlParameter("policy", policy),
-            new NpgsqlParameter("validUntil", DateTimeOffset.UtcNow.AddHours(1)));
+            new NpgsqlParameter("validUntil", DateTimeOffset.UtcNow.Add(lifetime ?? TimeSpan.FromHours(1))));
         await transaction.CommitAsync();
     }
 
@@ -3769,7 +3996,9 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         Guid session,
         Guid acceptance,
         Guid artifact,
-        Guid policy)
+        Guid policy,
+        TimeSpan? sourceLifetime = null,
+        TimeSpan? consentLifetime = null)
     {
         await using var connection = await OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
@@ -3791,9 +4020,9 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         command.Parameters.AddWithValue("acceptance", acceptance);
         command.Parameters.AddWithValue("artifact", artifact);
         command.Parameters.AddWithValue("policy", policy);
-        command.Parameters.AddWithValue("sourceExpires", DateTimeOffset.UtcNow.AddHours(1));
+        command.Parameters.AddWithValue("sourceExpires", DateTimeOffset.UtcNow.Add(sourceLifetime ?? TimeSpan.FromHours(1)));
         command.Parameters.AddWithValue("evaluated", DateTimeOffset.UtcNow);
-        command.Parameters.AddWithValue("validUntil", DateTimeOffset.UtcNow.AddMinutes(45));
+        command.Parameters.AddWithValue("validUntil", DateTimeOffset.UtcNow.Add(consentLifetime ?? TimeSpan.FromMinutes(45)));
         var id = (Guid)(await command.ExecuteScalarAsync() ?? Guid.Empty);
         await transaction.CommitAsync();
         return id;
@@ -3901,6 +4130,41 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
     private sealed record WrittenSourceFixture(
         ReservedSourceFixture Source,
         RawExportR2WriterResult Written);
+
+    internal sealed record R3VerifiedSourceFixture(
+        Guid ActorPrincipalId,
+        Guid SourceArtifactId,
+        Guid AttemptId,
+        Guid AttemptKeyReservationId,
+        Guid ObjectCustodyId,
+        long ReservationRevision,
+        long EncryptionAttemptRevision,
+        long Fence,
+        long ObjectStateRevision,
+        byte[] ObjectBindingDigest,
+        long CiphertextLength,
+        byte[] CiphertextDigest,
+        byte[] ProviderReceiptDigest,
+        byte[] VerificationEvidenceDigest,
+        Guid ClientApplicationId,
+        Guid VerificationSessionId,
+        Guid CaptureAcceptanceId,
+        string RawClass,
+        long AuthorityRevision,
+        string SubjectRef,
+        Guid ConsentPolicyId,
+        int ConsentPolicyVersion,
+        DateTimeOffset AbsoluteSourceExpiresAtUtc);
+
+    internal sealed record R3ObjectStateFixture(
+        Guid ActorPrincipalId,
+        Guid SourceArtifactId,
+        Guid AttemptId,
+        Guid ObjectCustodyId,
+        long EncryptionAttemptRevision,
+        long Fence,
+        long ObjectStateRevision,
+        string ObjectState);
 
     private sealed record LifecycleContextFixture(
         Guid ObjectCustodyId,
