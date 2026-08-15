@@ -51,10 +51,7 @@ public static class ReadinessEndpoint
         {
             try
             {
-                using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                timeout.CancelAfter(PerCheckTimeout);
-                var result = await check.CheckAsync(timeout.Token)
-                    .WaitAsync(PerCheckTimeout, cancellationToken);
+                var result = await RunCheckAsync(check, cancellationToken);
                 issues.AddRange(result);
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -80,6 +77,47 @@ public static class ReadinessEndpoint
         return codes.Length == 0
             ? Results.Ok(new { status = "ready" })
             : Results.Json(new { status = "not-ready", codes }, statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+
+    private static async Task<IReadOnlyList<ReadinessIssue>> RunCheckAsync(
+        IReadinessCheck check,
+        CancellationToken cancellationToken)
+    {
+        using var operationCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken);
+        var operation = check.CheckAsync(operationCancellation.Token);
+
+        try
+        {
+            return await operation.WaitAsync(PerCheckTimeout, cancellationToken);
+        }
+        catch (TimeoutException)
+        {
+            operationCancellation.Cancel();
+            await QuiesceAfterCancellationAsync(operation, operationCancellation.Token);
+            throw;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            operationCancellation.Cancel();
+            await QuiesceAfterCancellationAsync(operation, operationCancellation.Token);
+            throw;
+        }
+    }
+
+    private static async Task QuiesceAfterCancellationAsync(
+        Task operation,
+        CancellationToken operationCancellation)
+    {
+        try
+        {
+            await operation;
+        }
+        catch (OperationCanceledException) when (operationCancellation.IsCancellationRequested)
+        {
+            // The timeout/request cancellation is expected, but the operation must be
+            // observed to terminal state before its owning scope can be disposed.
+        }
     }
 
     internal static ReadinessIssue PostureIssue(string code) => new(PostureOrder, code);

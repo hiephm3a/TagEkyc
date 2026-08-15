@@ -67,7 +67,10 @@ public sealed class Tip68ProdHsmSigningTests
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", "BogusBackend");
             });
 
-        var exception = Assert.ThrowsAny<Exception>(() => factory.CreateClient());
+        var exception = Assert.ThrowsAny<Exception>(() =>
+        {
+            _ = factory.Services;
+        });
 
         Assert.Contains("Invalid evidence signing backend configuration", exception.ToString(), StringComparison.Ordinal);
         Assert.DoesNotContain("localdev-es256-v1", exception.ToString(), StringComparison.OrdinalIgnoreCase);
@@ -82,7 +85,10 @@ public sealed class Tip68ProdHsmSigningTests
                 builder.UseSetting("TagEkyc:EvidenceSigning:RequireHardwareSigner", "true");
             });
 
-        var exception = Assert.ThrowsAny<Exception>(() => factory.CreateClient());
+        var exception = Assert.ThrowsAny<Exception>(() =>
+        {
+            _ = factory.Services;
+        });
 
         Assert.Contains("Invalid evidence signing backend configuration", exception.ToString(), StringComparison.Ordinal);
         Assert.DoesNotContain("localdev-es256-v1", exception.ToString(), StringComparison.OrdinalIgnoreCase);
@@ -102,7 +108,10 @@ public sealed class Tip68ProdHsmSigningTests
                 builder.UseSetting("TagEkyc:EvidenceSigning:Pkcs11:Kid", "tagekyc-es256-2026-v1");
             });
 
-        var exception = Assert.ThrowsAny<Exception>(() => factory.CreateClient());
+        var exception = Assert.ThrowsAny<Exception>(() =>
+        {
+            _ = factory.Services;
+        });
 
         Assert.Contains("PKCS#11 signing requires a library path", exception.ToString(), StringComparison.Ordinal);
         Assert.DoesNotContain(secretPin, exception.ToString(), StringComparison.Ordinal);

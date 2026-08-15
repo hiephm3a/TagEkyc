@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Net;
 using System.Security.Cryptography;
 using Amazon.Runtime;
 using Amazon.S3;
@@ -9,6 +10,7 @@ namespace TagEkyc.IntegrationTests;
 
 internal sealed class DurableObjectMinioFixture : IAsyncDisposable
 {
+    private const string StartupNotInitializedMessage = "Server not initialized yet, please try again.";
     internal const string Image = "minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e";
     private const string McImage = "minio/mc@sha256:eb4ea9884b77704230e2423e9004d2fa738dc272876b9cc41a297d29443b8780";
     private const string ObjectPrefix = "raw-export/c1/v1/";
@@ -27,6 +29,8 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
     private readonly List<string> additionalPolicyNames = [];
     private readonly List<string> buckets = [];
     private AmazonS3Client? cleanupAdmin;
+    private static readonly TimeSpan ProtocolUsabilityTimeout = TimeSpan.FromSeconds(20);
+    private static readonly TimeSpan ProtocolUsabilityRetryDelay = TimeSpan.FromMilliseconds(250);
 
     private DurableObjectMinioFixture()
     {
@@ -42,7 +46,8 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
         try
         {
             await fixture.StartContainerAsync().ConfigureAwait(false);
-            await fixture.CreateBucketAsync(fixture.BucketName).ConfigureAwait(false);
+            await fixture.ProveStartupRetryPolicyAsync().ConfigureAwait(false);
+            await fixture.CreateInitialBucketWhenUsableAsync(fixture.BucketName).ConfigureAwait(false);
             await fixture.ProvisionCapabilityIdentitiesAsync().ConfigureAwait(false);
             return fixture;
         }
@@ -151,6 +156,113 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
         throw new TimeoutException("MINIO_FIXTURE_NOT_READY");
     }
 
+    private async Task CreateInitialBucketWhenUsableAsync(string bucketName)
+    {
+        using var root = NewRootClient();
+        await ExecuteStartupOperationAsync(
+            () => root.PutBucketAsync(new PutBucketRequest { BucketName = bucketName }),
+            ProtocolUsabilityTimeout,
+            ProtocolUsabilityRetryDelay).ConfigureAwait(false);
+        await ExecuteStartupOperationAsync(
+            () => root.PutBucketPolicyAsync(new PutBucketPolicyRequest
+            {
+                BucketName = bucketName,
+                Policy = BucketDenyTaggingPolicy(bucketName),
+            }),
+            ProtocolUsabilityTimeout,
+            ProtocolUsabilityRetryDelay).ConfigureAwait(false);
+        buckets.Add(bucketName);
+    }
+
+    private async Task ProveStartupRetryPolicyAsync()
+    {
+        var recoverableAttempts = 0;
+        await ExecuteStartupOperationAsync(
+            () =>
+            {
+                recoverableAttempts++;
+                if (recoverableAttempts == 1)
+                    throw new AmazonS3Exception(StartupNotInitializedMessage);
+                return Task.CompletedTask;
+            },
+            ProtocolUsabilityTimeout,
+            TimeSpan.Zero).ConfigureAwait(false);
+        if (recoverableAttempts != 2)
+            throw new InvalidOperationException("MINIO_STARTUP_S1_NOT_DISCRIMINATING");
+
+        var persistentAttempts = 0;
+        try
+        {
+            await ExecuteStartupOperationAsync(
+                () =>
+                {
+                    persistentAttempts++;
+                    throw new AmazonS3Exception(StartupNotInitializedMessage);
+                },
+                TimeSpan.FromMilliseconds(10),
+                TimeSpan.Zero).ConfigureAwait(false);
+            throw new InvalidOperationException("MINIO_STARTUP_S2_DID_NOT_FAIL_CLOSED");
+        }
+        catch (TimeoutException)
+        {
+            if (persistentAttempts <= 1)
+                throw new InvalidOperationException("MINIO_STARTUP_S2_NOT_DISCRIMINATING");
+        }
+
+        var nonStartupAttempts = 0;
+        var accessDenied = new AmazonS3Exception("Access Denied")
+        {
+            ErrorCode = "AccessDenied",
+            StatusCode = HttpStatusCode.Forbidden,
+        };
+        try
+        {
+            await ExecuteStartupOperationAsync(
+                () =>
+                {
+                    nonStartupAttempts++;
+                    throw accessDenied;
+                },
+                ProtocolUsabilityTimeout,
+                ProtocolUsabilityRetryDelay).ConfigureAwait(false);
+            throw new InvalidOperationException("MINIO_STARTUP_S3_DID_NOT_FAIL_CLOSED");
+        }
+        catch (AmazonS3Exception exception) when (ReferenceEquals(exception, accessDenied))
+        {
+            if (nonStartupAttempts != 1)
+                throw new InvalidOperationException("MINIO_STARTUP_S3_RETRIED_NON_STARTUP_FAILURE");
+        }
+    }
+
+    private static async Task ExecuteStartupOperationAsync(
+        Func<Task> operation,
+        TimeSpan timeout,
+        TimeSpan retryDelay)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        while (true)
+        {
+            try
+            {
+                await operation().ConfigureAwait(false);
+                return;
+            }
+            catch (AmazonS3Exception exception) when (IsStartupNotInitialized(exception))
+            {
+                if (stopwatch.Elapsed >= timeout)
+                    throw new TimeoutException("MINIO_FIXTURE_PROTOCOL_NOT_USABLE", exception);
+            }
+
+            if (retryDelay > TimeSpan.Zero)
+                await Task.Delay(retryDelay).ConfigureAwait(false);
+            else
+                await Task.Yield();
+        }
+    }
+
+    private static bool IsStartupNotInitialized(AmazonS3Exception exception) =>
+        string.Equals(exception.Message, StartupNotInitializedMessage, StringComparison.Ordinal);
+
     private async Task CreateBucketAsync(string bucketName, bool objectLockEnabled = false)
     {
         using var root = NewRootClient();
@@ -162,12 +274,14 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
         await root.PutBucketPolicyAsync(new PutBucketPolicyRequest
         {
             BucketName = bucketName,
-            Policy = $$"""
-                {"Version":"2012-10-17","Statement":[{"Effect":"Deny","Principal":{"AWS":["*"]},"Action":["s3:GetObjectTagging"],"Resource":["arn:aws:s3:::{{bucketName}}/{{ObjectPrefix}}*"]}]}
-                """,
+            Policy = BucketDenyTaggingPolicy(bucketName),
         }).ConfigureAwait(false);
         buckets.Add(bucketName);
     }
+
+    private static string BucketDenyTaggingPolicy(string bucketName) => $$"""
+        {"Version":"2012-10-17","Statement":[{"Effect":"Deny","Principal":{"AWS":["*"]},"Action":["s3:GetObjectTagging"],"Resource":["arn:aws:s3:::{{bucketName}}/{{ObjectPrefix}}*"]}]}
+        """;
 
     private AmazonS3Client NewRootClient() => NewClient((rootAccessKey, rootSecretKey));
 
@@ -201,9 +315,39 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
         finally
         {
             cleanupAdmin?.Dispose();
+            await CaptureContainerLogsAsync().ConfigureAwait(false);
             await DockerAsync("rm", "-f", containerName, allowFailure: true).ConfigureAwait(false);
             await DockerAsync("volume", "rm", volumeName, allowFailure: true).ConfigureAwait(false);
         }
+    }
+
+    private async Task CaptureContainerLogsAsync()
+    {
+        var directory = Environment.GetEnvironmentVariable("TAGEKYC_DURABLE_OBJECT_LOG_DIRECTORY");
+        if (string.IsNullOrWhiteSpace(directory))
+            return;
+
+        Directory.CreateDirectory(directory);
+        var startInfo = new ProcessStartInfo("docker")
+        {
+            RedirectStandardError = true,
+            RedirectStandardOutput = true,
+            UseShellExecute = false,
+        };
+        startInfo.ArgumentList.Add("logs");
+        startInfo.ArgumentList.Add("--timestamps");
+        startInfo.ArgumentList.Add(containerName);
+        using var process = Process.Start(startInfo)
+            ?? throw new InvalidOperationException("DOCKER_LOG_CAPTURE_START_FAILED");
+        var standardOutput = await process.StandardOutput.ReadToEndAsync().ConfigureAwait(false);
+        var standardError = await process.StandardError.ReadToEndAsync().ConfigureAwait(false);
+        await process.WaitForExitAsync().ConfigureAwait(false);
+        var path = Path.Combine(directory, $"{containerName}.log");
+        await File.WriteAllTextAsync(
+            path,
+            $"exit={process.ExitCode}{Environment.NewLine}" +
+            $"stdout:{Environment.NewLine}{standardOutput}{Environment.NewLine}" +
+            $"stderr:{Environment.NewLine}{standardError}").ConfigureAwait(false);
     }
 
     private static async Task<string> DockerAsync(params string[] arguments) =>

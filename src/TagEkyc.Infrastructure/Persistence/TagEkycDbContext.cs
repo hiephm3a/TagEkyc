@@ -76,6 +76,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportFixtureKekWrapJournalRow> RawExportFixtureKekWrapJournal => Set<RawExportFixtureKekWrapJournalRow>();
     public DbSet<RawExportProvisionalObjectRow> RawExportProvisionalObjects => Set<RawExportProvisionalObjectRow>();
     public DbSet<RawExportProvisionalObjectEventRow> RawExportProvisionalObjectEvents => Set<RawExportProvisionalObjectEventRow>();
+    public DbSet<RawExportSourcePublicationRow> RawExportSourcePublications => Set<RawExportSourcePublicationRow>();
+    public DbSet<RawExportSourceCleanupItemRow> RawExportSourceCleanupItems => Set<RawExportSourceCleanupItemRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -86,6 +88,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         modelBuilder.ApplyConfiguration(new RawExportFixtureKekWrapJournalConfig());
         modelBuilder.ApplyConfiguration(new RawExportProvisionalObjectConfig());
         modelBuilder.ApplyConfiguration(new RawExportProvisionalObjectEventConfig());
+        modelBuilder.ApplyConfiguration(new RawExportSourcePublicationConfig());
+        modelBuilder.ApplyConfiguration(new RawExportSourceCleanupItemConfig());
 
         modelBuilder.Entity<VerificationSessionRow>(entity =>
         {
@@ -984,7 +988,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             {
                 table.HasCheckConstraint(
                     "ck_raw_export_source_head_values",
-                    "\"CustodyState\" IN ('Reserved','Staged') AND \"ReservationRevision\" >= 1 AND \"Fence\" >= 1");
+                    "\"CustodyState\" IN ('Reserved','Staged','Available') AND \"ReservationRevision\" >= 1 AND \"Fence\" >= 1");
             });
             entity.HasKey(row => row.SourceArtifactId)
                 .HasName("pk_raw_export_source_head");
