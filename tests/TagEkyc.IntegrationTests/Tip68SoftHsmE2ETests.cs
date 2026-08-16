@@ -13,6 +13,7 @@ using TagEkyc.Infrastructure.Signing;
 
 namespace TagEkyc.IntegrationTests;
 
+[Collection(Tip68ProcessEnvironmentCollection.Name)]
 public sealed class Tip68SoftHsmE2ETests(Tip68SoftHsmFixture softHsm) : IClassFixture<Tip68SoftHsmFixture>
 {
     [Fact]

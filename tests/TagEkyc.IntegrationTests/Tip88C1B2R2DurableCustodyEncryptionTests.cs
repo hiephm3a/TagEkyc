@@ -195,8 +195,8 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionTests
             typeof(RawExportR2FramedCiphertextStream),
             "BuildFinalFrameAsync");
         var verifyMoveNext = R206AsyncMoveNext(
-            typeof(RawExportR2CompletionVerifier),
-            "VerifyFramesAsync");
+            typeof(RawExportFramedSourceVerificationService),
+            "VerifyAsync");
         var encryptCalls = R206ResolvedCalls(encryptMoveNext);
         var verifyCalls = R206ResolvedCalls(verifyMoveNext);
         var helperCalls = R206ResolvedCalls(helper);
@@ -2679,6 +2679,14 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         TimeSpan? consentLifetime = null)
     {
         var source = await SeedReservedSourceAsync(plaintext, sourceLifetime, consentLifetime);
+        return await WriteObjectAsync(plaintext, minio, source);
+    }
+
+    private async Task<WrittenSourceFixture> WriteObjectAsync(
+        byte[] plaintext,
+        DurableObjectMinioFixture minio,
+        ReservedSourceFixture source)
+    {
         await using var brokerProvider = CreateBrokerProvider();
         await using var commitmentScope = brokerProvider.CreateAsyncScope();
         await using var writerDb = postgres.CreateDbContext();
@@ -2724,6 +2732,28 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         TimeSpan? consentLifetime = null)
     {
         var written = await WriteObjectAsync(plaintext, minio, sourceLifetime, consentLifetime);
+        return await VerifyWrittenSourceAsync(written, minio, restartBeforeVerification);
+    }
+
+    internal async Task<R3VerifiedSourceFixture> CreateR3VerifiedSourceForExistingSessionAsync(
+        byte[] plaintext,
+        DurableObjectMinioFixture minio,
+        Guid actorPrincipalId,
+        Guid clientApplicationId,
+        Guid verificationSessionId,
+        Guid consentPolicyId)
+    {
+        var source = await SeedReservedSourceForExistingSessionAsync(
+            plaintext, actorPrincipalId, clientApplicationId, verificationSessionId, consentPolicyId);
+        var written = await WriteObjectAsync(plaintext, minio, source);
+        return await VerifyWrittenSourceAsync(written, minio, restartBeforeVerification: false);
+    }
+
+    private async Task<R3VerifiedSourceFixture> VerifyWrittenSourceAsync(
+        WrittenSourceFixture written,
+        DurableObjectMinioFixture minio,
+        bool restartBeforeVerification)
+    {
         if (restartBeforeVerification)
             await minio.RestartAsync();
 
@@ -3777,6 +3807,11 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         TimeSpan? consentLifetime = null)
     {
         var candidate = await SeedCandidateAsync(plaintext, sourceLifetime, consentLifetime);
+        return await CompleteCandidateAsync(candidate);
+    }
+
+    private async Task<ReservedSourceFixture> CompleteCandidateAsync(CandidateFixture candidate)
+    {
         await using var provider = CreateBrokerProvider();
         await using var scope = provider.CreateAsyncScope();
         var broker = scope.ServiceProvider.GetRequiredService<IRawExportSourceClaimComparisonBroker>();
@@ -3904,6 +3939,87 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
                 actor, client, actor.ToString("N"), "capture-agent-r2", ingressKey,
                 token, plaintext.Length, "image/jpeg", captured, retentionStart,
                 retentionExpires, 1800, SHA256.HashData(plaintext)));
+    }
+
+    private async Task<ReservedSourceFixture> SeedReservedSourceForExistingSessionAsync(
+        byte[] plaintext,
+        Guid actor,
+        Guid client,
+        Guid session,
+        Guid policy)
+    {
+        var artifact = Guid.NewGuid();
+        var now = DateTimeOffset.UtcNow;
+        await using (var db = postgres.CreateDbContext())
+        {
+            db.CaptureArtifacts.Add(new CaptureArtifactRow
+            {
+                Id = artifact,
+                VerificationSessionId = session,
+                ArtifactType = "SelfieImage",
+                CaptureSource = "MobileSdk",
+                ArtifactHash = $"sha256:{new string('c', 64)}",
+                MetadataHash = $"sha256:{new string('d', 64)}",
+                QualityState = "Accepted",
+                RequestId = Guid.NewGuid().ToString("N"),
+                CorrelationId = Guid.NewGuid().ToString("N"),
+                CreatedAt = now,
+                ExpiresAt = now.AddHours(2),
+            });
+            await db.SaveChangesAsync();
+        }
+
+        var acceptance = await AppendAcceptanceAsync(actor, session, client, artifact);
+        var authority = await AppendAuthorityAsync(actor, client, session, acceptance, artifact, policy);
+        var captured = now.AddSeconds(-5);
+        var retentionStart = now.AddSeconds(-4);
+        var retentionExpires = now.AddMinutes(30);
+        var ingressKey = Guid.NewGuid();
+        var owner = Guid.NewGuid();
+        RawExportClaimEvaluationToken token;
+        await using (var connection = await OpenAsync())
+        await using (var transaction = await connection.BeginTransactionAsync())
+        {
+            await SetActorAsync(connection, transaction, actor);
+            await using var begin = new NpgsqlCommand(
+                """
+                SELECT * FROM tagekyc.begin_raw_export_source_ingress_claim(
+                  @actor,@client,@producer,@agent,@ingress,@session,@acceptance,@artifact,1,
+                  'LiveSelfieImage',@challenge,@authority,@length,'image/jpeg',@captured,
+                  @retentionStart,@retentionExpires,1800,'fixture-content-commitment',1,@owner,300,100);
+                """,
+                connection,
+                transaction);
+            begin.Parameters.AddWithValue("actor", actor);
+            begin.Parameters.AddWithValue("client", client);
+            begin.Parameters.AddWithValue("producer", actor.ToString("N"));
+            begin.Parameters.AddWithValue("agent", "capture-agent-c1");
+            begin.Parameters.AddWithValue("ingress", ingressKey.ToString("N"));
+            begin.Parameters.AddWithValue("session", session);
+            begin.Parameters.AddWithValue("acceptance", acceptance);
+            begin.Parameters.AddWithValue("artifact", artifact);
+            begin.Parameters.AddWithValue("challenge", ChallengeHash);
+            begin.Parameters.AddWithValue("authority", authority.ToString("D"));
+            begin.Parameters.AddWithValue("length", (long)plaintext.Length);
+            begin.Parameters.AddWithValue("captured", captured);
+            begin.Parameters.AddWithValue("retentionStart", retentionStart);
+            begin.Parameters.AddWithValue("retentionExpires", retentionExpires);
+            begin.Parameters.AddWithValue("owner", owner);
+            await using var reader = await begin.ExecuteReaderAsync();
+            Assert.True(await reader.ReadAsync());
+            token = new RawExportClaimEvaluationToken(
+                reader.GetGuid(4), reader.GetInt64(5), reader.GetInt64(6),
+                reader.GetString(2), reader.GetFieldValue<DateTimeOffset>(3), reader.GetString(1));
+            await reader.CloseAsync();
+            await transaction.CommitAsync();
+        }
+
+        return await CompleteCandidateAsync(new CandidateFixture(
+            actor,
+            new RawExportSourceClaimComparisonCommand(
+                actor, client, actor.ToString("N"), "capture-agent-c1", ingressKey,
+                token, plaintext.Length, "image/jpeg", captured, retentionStart,
+                retentionExpires, 1800, SHA256.HashData(plaintext))));
     }
 
     private async Task<Guid> SeedConsentPolicyAsync()

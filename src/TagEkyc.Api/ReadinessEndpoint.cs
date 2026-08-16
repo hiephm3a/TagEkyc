@@ -370,6 +370,23 @@ public sealed class DurableKeyCustodyReadinessCheck(
     }
 }
 
+public sealed class RawExportAssemblyReadinessCheck(
+    RawExportAssemblyReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportAssemblyReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
 public sealed class ProvisionalObjectCustodyReadinessCheck(
     ProvisionalObjectCustodyReadinessValidator validator) : IReadinessCheck
 {

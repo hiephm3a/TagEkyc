@@ -19,9 +19,9 @@ public sealed class RawExportJobReadinessValidator(
     public const string TablePrivilegeInvalid = "PROD_RAW_EXPORT_JOB_TABLE_PRIVILEGE_INVALID";
 
     private const int ExpectedSchemaRows = 114;
-    private const string ExpectedSchemaDigest = "86f383e0770d0c49c887ebcab70151bb";
+    private const string ExpectedSchemaDigest = "dc1208f09606eede7f76d12be233ef40";
     private const int ExpectedFunctionCount = 14;
-    private const string ExpectedFunctionDigest = "033bbf492b8f6c43a54a51af78bc8f44";
+    private const string ExpectedFunctionDigest = "40dc8b061e399f3c68fcfacc393106d6";
 
     public async Task ValidateAsync(CancellationToken cancellationToken)
     {
@@ -90,7 +90,21 @@ public sealed class RawExportJobReadinessValidator(
               JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
               JOIN pg_catalog.pg_roles owner_role ON owner_role.oid=p.proowner
               WHERE n.nspname='tagekyc'
-                AND (p.proname LIKE 'raw_export_%job%' OR p.proname LIKE 'enforce_raw_export_job_%')
+                AND p.proname IN (
+                    'enforce_raw_export_job_attempt_insert',
+                    'enforce_raw_export_job_class_insert',
+                    'enforce_raw_export_job_head_mutation',
+                    'enforce_raw_export_job_identity_has_classes',
+                    'enforce_raw_export_job_identity_insert',
+                    'enforce_raw_export_job_transition_insert',
+                    'raw_export_acquire_or_reclaim_job_lease',
+                    'raw_export_claim_or_read_job',
+                    'raw_export_lock_job_for_attempt',
+                    'raw_export_read_job',
+                    'raw_export_read_job_binding_inputs',
+                    'raw_export_record_job_attempt_failure',
+                    'raw_export_renew_job_lease',
+                    'raw_export_terminalize_job')
             ),
             nonowner AS (
               SELECT b.proname,x.grantor,x.grantee,x.privilege_type,x.is_grantable
@@ -173,35 +187,45 @@ public sealed class RawExportJobReadinessValidator(
           FROM pg_catalog.pg_class c
           JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
           JOIN pg_catalog.pg_roles r ON r.oid=c.relowner
-          WHERE n.nspname='tagekyc' AND c.relname LIKE 'raw_export_job_%' AND c.relkind='r'
+          WHERE n.nspname='tagekyc' AND c.relname IN (
+              'raw_export_job_identities','raw_export_job_classes','raw_export_job_attempts',
+              'raw_export_job_transitions','raw_export_job_operational_heads') AND c.relkind='r'
           UNION ALL
           SELECT 'C|'||c.relname::text||'|'||a.attnum::text||'|'||a.attname::text||'|'||
                  pg_catalog.format_type(a.atttypid,a.atttypmod)||'|'||a.attnotnull::text
           FROM pg_catalog.pg_class c
           JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
           JOIN pg_catalog.pg_attribute a ON a.attrelid=c.oid AND a.attnum>0 AND NOT a.attisdropped
-          WHERE n.nspname='tagekyc' AND c.relname LIKE 'raw_export_job_%' AND c.relkind='r'
+          WHERE n.nspname='tagekyc' AND c.relname IN (
+              'raw_export_job_identities','raw_export_job_classes','raw_export_job_attempts',
+              'raw_export_job_transitions','raw_export_job_operational_heads') AND c.relkind='r'
           UNION ALL
           SELECT 'K|'||c.relname::text||'|'||con.conname::text||'|'||con.contype::text||'|'||
                  pg_catalog.pg_get_constraintdef(con.oid,true)
           FROM pg_catalog.pg_constraint con
           JOIN pg_catalog.pg_class c ON c.oid=con.conrelid
           JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
-          WHERE n.nspname='tagekyc' AND c.relname LIKE 'raw_export_job_%'
+          WHERE n.nspname='tagekyc' AND c.relname IN (
+              'raw_export_job_identities','raw_export_job_classes','raw_export_job_attempts',
+              'raw_export_job_transitions','raw_export_job_operational_heads')
           UNION ALL
           SELECT 'I|'||t.relname::text||'|'||i.relname::text||'|'||pg_catalog.pg_get_indexdef(ix.indexrelid)
           FROM pg_catalog.pg_index ix
           JOIN pg_catalog.pg_class t ON t.oid=ix.indrelid
           JOIN pg_catalog.pg_namespace n ON n.oid=t.relnamespace
           JOIN pg_catalog.pg_class i ON i.oid=ix.indexrelid
-          WHERE n.nspname='tagekyc' AND t.relname LIKE 'raw_export_job_%'
+          WHERE n.nspname='tagekyc' AND t.relname IN (
+              'raw_export_job_identities','raw_export_job_classes','raw_export_job_attempts',
+              'raw_export_job_transitions','raw_export_job_operational_heads')
           UNION ALL
           SELECT 'G|'||c.relname::text||'|'||t.tgname::text||'|'||t.tgdeferrable::text||'|'||
                  t.tginitdeferred::text||'|'||pg_catalog.pg_get_triggerdef(t.oid,true)
           FROM pg_catalog.pg_trigger t
           JOIN pg_catalog.pg_class c ON c.oid=t.tgrelid
           JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
-          WHERE n.nspname='tagekyc' AND c.relname LIKE 'raw_export_job_%' AND NOT t.tgisinternal
+          WHERE n.nspname='tagekyc' AND c.relname IN (
+              'raw_export_job_identities','raw_export_job_classes','raw_export_job_attempts',
+              'raw_export_job_transitions','raw_export_job_operational_heads') AND NOT t.tgisinternal
         )
         SELECT count(*)::integer,md5(string_agg(value,E'\n' ORDER BY value)) FROM rows;
         """;
@@ -222,6 +246,20 @@ public sealed class RawExportJobReadinessValidator(
         JOIN pg_catalog.pg_language l ON l.oid=p.prolang
         JOIN pg_catalog.pg_roles r ON r.oid=p.proowner
         WHERE n.nspname='tagekyc'
-          AND (p.proname LIKE 'raw_export_%job%' OR p.proname LIKE 'enforce_raw_export_job_%');
+          AND p.proname IN (
+              'enforce_raw_export_job_attempt_insert',
+              'enforce_raw_export_job_class_insert',
+              'enforce_raw_export_job_head_mutation',
+              'enforce_raw_export_job_identity_has_classes',
+              'enforce_raw_export_job_identity_insert',
+              'enforce_raw_export_job_transition_insert',
+              'raw_export_acquire_or_reclaim_job_lease',
+              'raw_export_claim_or_read_job',
+              'raw_export_lock_job_for_attempt',
+              'raw_export_read_job',
+              'raw_export_read_job_binding_inputs',
+              'raw_export_record_job_attempt_failure',
+              'raw_export_renew_job_lease',
+              'raw_export_terminalize_job');
         """;
 }

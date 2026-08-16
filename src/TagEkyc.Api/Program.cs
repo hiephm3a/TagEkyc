@@ -44,6 +44,7 @@ if (DurableKeyTopologyOptions.Resolve(builder.Configuration).Topology
 builder.Services.AddTagEkycDurableKeyCustody(builder.Configuration);
 if (builder.Environment.IsProduction())
     builder.Services.AddTagEkycProvisionalObjectCustody(builder.Configuration);
+builder.Services.AddTagEkycRawExportAssembly(builder.Configuration, builder.Environment.IsProduction());
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
 ConfigureRetention(builder);
@@ -239,6 +240,7 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
             builder.Environment.IsProduction()));
     builder.Services.AddScoped<
         RawExportAuthoritySnapshotReadinessValidator>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportAssemblyReadinessCheck>();
 
     if (!builder.Environment.IsProduction())
     {

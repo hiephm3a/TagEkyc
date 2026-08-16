@@ -43,7 +43,9 @@ public sealed class CustodyRoleReadinessValidator(TagEkycDbContext db) : IDurabl
             FROM pg_catalog.pg_auth_members m
             JOIN pg_catalog.pg_roles member ON member.oid=m.member
             JOIN pg_catalog.pg_roles role ON role.oid=m.roleid
-            WHERE member.rolname LIKE 'tagekyc_raw_export_%_login'
+            WHERE member.rolname IN ('tagekyc_raw_export_encryptor_login',
+                                     'tagekyc_raw_export_reconciler_login',
+                                     'tagekyc_raw_export_lifecycle_login')
                OR role.rolname IN ('tagekyc_raw_export_custody_encryptor','tagekyc_raw_export_reconciler','tagekyc_raw_export_lifecycle')
             """).ToListAsync(cancellationToken);
         var expected = new HashSet<(string,string)>

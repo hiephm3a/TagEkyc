@@ -78,6 +78,10 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportProvisionalObjectEventRow> RawExportProvisionalObjectEvents => Set<RawExportProvisionalObjectEventRow>();
     public DbSet<RawExportSourcePublicationRow> RawExportSourcePublications => Set<RawExportSourcePublicationRow>();
     public DbSet<RawExportSourceCleanupItemRow> RawExportSourceCleanupItems => Set<RawExportSourceCleanupItemRow>();
+    public DbSet<RawExportJobSourceBindingRow> RawExportJobSourceBindings => Set<RawExportJobSourceBindingRow>();
+    public DbSet<RawExportAssemblyPreparationDispositionRow> RawExportAssemblyPreparationDispositions => Set<RawExportAssemblyPreparationDispositionRow>();
+    public DbSet<RawExportAssemblyIdentityRow> RawExportAssemblyIdentities => Set<RawExportAssemblyIdentityRow>();
+    public DbSet<RawExportAssemblyItemRow> RawExportAssemblyItems => Set<RawExportAssemblyItemRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -90,6 +94,10 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         modelBuilder.ApplyConfiguration(new RawExportProvisionalObjectEventConfig());
         modelBuilder.ApplyConfiguration(new RawExportSourcePublicationConfig());
         modelBuilder.ApplyConfiguration(new RawExportSourceCleanupItemConfig());
+        modelBuilder.ApplyConfiguration(new RawExportJobSourceBindingConfig());
+        modelBuilder.ApplyConfiguration(new RawExportAssemblyPreparationDispositionConfig());
+        modelBuilder.ApplyConfiguration(new RawExportAssemblyIdentityConfig());
+        modelBuilder.ApplyConfiguration(new RawExportAssemblyItemConfig());
 
         modelBuilder.Entity<VerificationSessionRow>(entity =>
         {

@@ -65,7 +65,9 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
                 FOREACH login_name IN ARRAY ARRAY[
                     'tagekyc_raw_export_encryptor_login',
                     'tagekyc_raw_export_reconciler_login',
-                    'tagekyc_raw_export_lifecycle_login']
+                    'tagekyc_raw_export_lifecycle_login',
+                    'tagekyc_raw_export_assembly_resolver_login',
+                    'tagekyc_raw_export_assembly_sealer_login']
                 LOOP
                     SELECT
                         rolcanlogin,

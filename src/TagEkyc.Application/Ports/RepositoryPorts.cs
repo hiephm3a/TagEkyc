@@ -1,5 +1,6 @@
 using TagEkyc.Domain;
 using TagEkyc.Contracts.InternalAudit.Manifest;
+using TagEkyc.Contracts.RawExport;
 
 namespace TagEkyc.Application.Ports;
 
@@ -378,6 +379,13 @@ public interface IRawExportJobRepository
 
     Task<RawExportJobTerminalizeResult> TerminalizeAsync(
         TerminalizeRawExportJobCommand command,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IRawExportAssemblyOrchestrator
+{
+    Task<RawExportAssemblyExecutionResult> ExecuteAsync(
+        RawExportAssemblyExecutionRequest request,
         CancellationToken cancellationToken = default);
 }
 

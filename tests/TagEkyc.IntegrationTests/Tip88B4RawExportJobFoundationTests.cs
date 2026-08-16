@@ -21,6 +21,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
         Guid.Parse("88b34000-0000-5000-8000-000000000002");
     private static readonly Guid WithdrawerPrincipal =
         Guid.Parse("88b34000-0000-5000-8000-000000000006");
+    private const string CurrentMigration = "20260815120000_Tip88C1C1ResolverAssembly";
 
     private static readonly string[] RepositoryMethods =
     [
@@ -33,6 +34,16 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
     ];
 
     private static readonly string[] Tables =
+    [
+        "raw_export_job_attempts",
+        "raw_export_job_classes",
+        "raw_export_job_identities",
+        "raw_export_job_operational_heads",
+        "raw_export_job_source_bindings",
+        "raw_export_job_transitions",
+    ];
+
+    private static readonly string[] B4OwnedTables =
     [
         "raw_export_job_attempts",
         "raw_export_job_classes",
@@ -81,6 +92,46 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
         "raw_export_job_operational_heads|LeaseOwnerId",
         "raw_export_job_operational_heads|Revision",
         "raw_export_job_operational_heads|UpdatedAt",
+        "raw_export_job_source_bindings|AbsoluteSourceExpiresAtUtc",
+        "raw_export_job_source_bindings|AttemptKeyReservationId",
+        "raw_export_job_source_bindings|AuthorityRevision",
+        "raw_export_job_source_bindings|AuthoritySnapshotId",
+        "raw_export_job_source_bindings|AuthoritySnapshotSchemaVersion",
+        "raw_export_job_source_bindings|BindingFingerprint",
+        "raw_export_job_source_bindings|CaptureAcceptanceId",
+        "raw_export_job_source_bindings|CaptureArtifactId",
+        "raw_export_job_source_bindings|CaptureRevision",
+        "raw_export_job_source_bindings|ConsentPolicyId",
+        "raw_export_job_source_bindings|ConsentPolicyVersion",
+        "raw_export_job_source_bindings|ContentCommitment",
+        "raw_export_job_source_bindings|ContentCommitmentKeyId",
+        "raw_export_job_source_bindings|ContentCommitmentKeyVersion",
+        "raw_export_job_source_bindings|ContentCommitmentSchemaVersion",
+        "raw_export_job_source_bindings|ControllerIdentity",
+        "raw_export_job_source_bindings|CreatedAtUtc",
+        "raw_export_job_source_bindings|EffectivePlaintextRetentionExpiresAtUtc",
+        "raw_export_job_source_bindings|EncryptionAttemptFence",
+        "raw_export_job_source_bindings|EncryptionAttemptId",
+        "raw_export_job_source_bindings|EncryptionAttemptRevision",
+        "raw_export_job_source_bindings|JobId",
+        "raw_export_job_source_bindings|JobSourceBindingId",
+        "raw_export_job_source_bindings|MediaType",
+        "raw_export_job_source_bindings|ObjectCustodyId",
+        "raw_export_job_source_bindings|ObjectStateRevision",
+        "raw_export_job_source_bindings|Ordinal",
+        "raw_export_job_source_bindings|PlaintextLength",
+        "raw_export_job_source_bindings|RawClass",
+        "raw_export_job_source_bindings|SchemaVersion",
+        "raw_export_job_source_bindings|SessionCaptureSelectionId",
+        "raw_export_job_source_bindings|SourceArtifactId",
+        "raw_export_job_source_bindings|SourcePublicationId",
+        "raw_export_job_source_bindings|SourcePublicationRevision",
+        "raw_export_job_source_bindings|StableDataScopeId",
+        "raw_export_job_source_bindings|SubjectRefToken",
+        "raw_export_job_source_bindings|SubjectRefTokenKeyId",
+        "raw_export_job_source_bindings|SubjectRefTokenKeyVersion",
+        "raw_export_job_source_bindings|SubjectRefTokenSchemaVersion",
+        "raw_export_job_source_bindings|VerificationSessionId",
         "raw_export_job_transitions|AttemptId",
         "raw_export_job_transitions|EventType",
         "raw_export_job_transitions|FailureCode",
@@ -112,6 +163,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
         "CK_raw_export_job_attempts_LeaseTime",
         "CK_raw_export_job_attempts_Phase",
         "CK_raw_export_job_identities_IdempotencyKey",
+        "ck_raw_export_job_source_binding_shape",
         "FK_b4_job_attempt_job",
         "FK_b4_job_class_job",
         "FK_b4_job_head_attempt",
@@ -121,16 +173,25 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
         "FK_b4_job_identity_session",
         "FK_b4_job_transition_attempt",
         "FK_b4_job_transition_job",
+        "fk_raw_export_job_source_binding_attempt",
+        "fk_raw_export_job_source_binding_job",
+        "fk_raw_export_job_source_binding_key",
+        "fk_raw_export_job_source_binding_object",
+        "fk_raw_export_job_source_binding_publication",
+        "fk_raw_export_job_source_binding_selection",
         "PK_b4_job_attempts",
         "PK_b4_job_classes",
         "PK_b4_job_identities",
         "PK_b4_job_operational_heads",
         "PK_b4_job_transitions",
+        "pk_raw_export_job_source_bindings",
         "UQ_b4_job_attempt_fence",
         "UQ_b4_job_attempt_ordinal",
         "UQ_b4_job_class_ordinal",
         "UQ_b4_job_identity_permit",
         "UQ_b4_job_transition_revision",
+        "uq_raw_export_job_source_binding_class",
+        "uq_raw_export_job_source_binding_ordinal",
         "tr_b4_job_identity_has_classes",
     ];
 
@@ -140,16 +201,24 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
         "IX_b4_job_identity_decision",
         "IX_b4_job_identity_session",
         "IX_b4_job_transition_attempt_fence",
+        "IX_raw_export_job_source_bindings_AttemptKeyReservationId",
+        "IX_raw_export_job_source_bindings_EncryptionAttemptId",
+        "IX_raw_export_job_source_bindings_ObjectCustodyId",
+        "IX_raw_export_job_source_bindings_SessionCaptureSelectionId",
+        "IX_raw_export_job_source_bindings_SourcePublicationId",
         "PK_b4_job_attempts",
         "PK_b4_job_classes",
         "PK_b4_job_identities",
         "PK_b4_job_operational_heads",
         "PK_b4_job_transitions",
+        "pk_raw_export_job_source_bindings",
         "UQ_b4_job_attempt_fence",
         "UQ_b4_job_attempt_ordinal",
         "UQ_b4_job_class_ordinal",
         "UQ_b4_job_identity_permit",
         "UQ_b4_job_transition_revision",
+        "uq_raw_export_job_source_binding_class",
+        "uq_raw_export_job_source_binding_ordinal",
     ];
 
     private static readonly string[] Triggers =
@@ -176,9 +245,11 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
         "enforce_raw_export_job_transition_insert",
         "raw_export_acquire_or_reclaim_job_lease",
         "raw_export_claim_or_read_job",
+        "raw_export_freeze_job_source_bindings",
         "raw_export_lock_job_for_attempt",
         "raw_export_read_job",
         "raw_export_read_job_binding_inputs",
+        "raw_export_read_job_source_verification_context",
         "raw_export_record_job_attempt_failure",
         "raw_export_renew_job_lease",
         "raw_export_terminalize_job",
@@ -2790,12 +2861,21 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
         var before = await ReadPreB4CatalogSnapshotAsync(db);
 
         await migrator.MigrateAsync("20260726145547_Tip88B4RawExportJobFoundation");
-        await HealthyReadinessAsync(db);
+        var firstB4Manifest = await ReadCatalogManifestAsync(db);
         await migrator.MigrateAsync("20260724015546_Tip88B1E3ResolverReadBoundary");
         var after = await ReadPreB4CatalogSnapshotAsync(db);
 
         Assert.Equal(before, after);
         await migrator.MigrateAsync("20260726145547_Tip88B4RawExportJobFoundation");
+        var secondB4Manifest = await ReadCatalogManifestAsync(db);
+        foreach (var kind in firstB4Manifest.Keys.OrderBy(value => value, StringComparer.Ordinal))
+        {
+            Assert.Equal(
+                firstB4Manifest[kind].OrderBy(value => value, StringComparer.Ordinal),
+                secondB4Manifest[kind].OrderBy(value => value, StringComparer.Ordinal));
+        }
+
+        await migrator.MigrateAsync(CurrentMigration);
         await HealthyReadinessAsync(db);
     }
 
@@ -2813,7 +2893,21 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
               JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
               JOIN pg_catalog.pg_roles r ON r.oid=p.proowner
               WHERE n.nspname='tagekyc'
-                AND (p.proname LIKE 'raw_export_%job%' OR p.proname LIKE 'enforce_raw_export_job_%')
+                AND p.proname IN (
+                    'enforce_raw_export_job_attempt_insert',
+                    'enforce_raw_export_job_class_insert',
+                    'enforce_raw_export_job_head_mutation',
+                    'enforce_raw_export_job_identity_has_classes',
+                    'enforce_raw_export_job_identity_insert',
+                    'enforce_raw_export_job_transition_insert',
+                    'raw_export_acquire_or_reclaim_job_lease',
+                    'raw_export_claim_or_read_job',
+                    'raw_export_lock_job_for_attempt',
+                    'raw_export_read_job',
+                    'raw_export_read_job_binding_inputs',
+                    'raw_export_record_job_attempt_failure',
+                    'raw_export_renew_job_lease',
+                    'raw_export_terminalize_job')
             ),
             nonowner AS (
               SELECT b.proname,grantor.rolname AS grantor_name,grantee.rolname AS grantee_name,
@@ -2923,7 +3017,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
                  """,
                 admin);
             await cleanup.ExecuteNonQueryAsync();
-            await migrator.MigrateAsync(b4Migration);
+            await migrator.MigrateAsync(CurrentMigration);
         }
 
         await HealthyReadinessAsync(db);
@@ -3055,7 +3149,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
             """;
         var parameter = command.CreateParameter();
         parameter.ParameterName = "tables";
-        parameter.Value = Tables;
+        parameter.Value = B4OwnedTables;
         command.Parameters.Add(parameter);
 
         Assert.Equal(0L, (long)(await command.ExecuteScalarAsync())!);
@@ -3082,7 +3176,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
             """;
         var parameter = command.CreateParameter();
         parameter.ParameterName = "tables";
-        parameter.Value = Tables;
+        parameter.Value = B4OwnedTables;
         command.Parameters.Add(parameter);
 
         Assert.Equal(0L, (long)(await command.ExecuteScalarAsync())!);
@@ -3210,26 +3304,22 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
     }
 
     [Fact]
-    public async Task M6_extra_runtime_granted_b4_entry_fails_readiness()
+    public async Task M6_valid_c1_job_functions_do_not_pollute_b4_readiness()
     {
         await using var db = postgres.CreateDbContext();
-        await db.Database.ExecuteSqlRawAsync("""
-            CREATE FUNCTION tagekyc.raw_export_b4_job_extra()
-            RETURNS boolean LANGUAGE sql AS 'SELECT true';
-            GRANT EXECUTE ON FUNCTION tagekyc.raw_export_b4_job_extra()
-            TO tagekyc_runtime;
-            """);
-        try
-        {
-            await AssertReadinessFailureAsync(
-                db,
-                RawExportJobReadinessValidator.FunctionAclInvalid);
-        }
-        finally
-        {
-            await db.Database.ExecuteSqlRawAsync(
-                "DROP FUNCTION tagekyc.raw_export_b4_job_extra();");
-        }
+        await db.Database.OpenConnectionAsync();
+        await using var command = db.Database.GetDbConnection().CreateCommand();
+        command.CommandText = """
+            SELECT pg_catalog.count(*) = 2
+            FROM pg_catalog.pg_proc p
+            JOIN pg_catalog.pg_namespace n ON n.oid = p.pronamespace
+            WHERE n.nspname = 'tagekyc'
+              AND p.proname IN (
+                  'raw_export_freeze_job_source_bindings',
+                  'raw_export_read_job_source_verification_context');
+            """;
+        Assert.True(await command.ExecuteScalarAsync() is true);
+
         await HealthyReadinessAsync(db);
     }
 
@@ -3347,7 +3437,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
                  """,
                 admin);
             await cleanup.ExecuteNonQueryAsync();
-            await migrator.MigrateAsync(b4Migration);
+            await migrator.MigrateAsync(CurrentMigration);
         }
 
         await HealthyReadinessAsync(db);
@@ -3416,7 +3506,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
             """;
         var parameter = command.CreateParameter();
         parameter.ParameterName = "tables";
-        parameter.Value = Tables;
+        parameter.Value = B4OwnedTables;
         command.Parameters.Add(parameter);
 
         Assert.Equal(0L, (long)(await command.ExecuteScalarAsync())!);

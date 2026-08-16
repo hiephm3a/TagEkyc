@@ -30,6 +30,7 @@ public enum RawExportJobEventType
     JobTerminalFailed = 6,
     JobCancelled = 7,
     JobExpired = 8,
+    AssemblySealed = 9,
 }
 
 public enum RawExportJobAttemptFailureCode { ATTEMPT_EXECUTION_FAILED_RETRYABLE = 0 }
