@@ -14,6 +14,7 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
     internal const string Image = "minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e";
     private const string McImage = "minio/mc@sha256:eb4ea9884b77704230e2423e9004d2fa738dc272876b9cc41a297d29443b8780";
     private const string ObjectPrefix = "raw-export/c1/v1/";
+    private const string RecipientPackagePrefix = "raw-export/c2-package/v1/";
     private readonly string containerName = $"tagekyc-durable-object-{Guid.NewGuid():N}";
     private readonly string volumeName = $"tagekyc-durable-object-{Guid.NewGuid():N}";
     private readonly string rootAccessKey = RandomCredential(16);
@@ -23,6 +24,9 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
             .ToDictionary(capability => capability, _ => (RandomCredential(16), RandomCredential(32)));
     private readonly (string Access, string Secret) cleanupCredential =
         (RandomCredential(16), RandomCredential(32));
+    private readonly Dictionary<string, (string Access, string Secret)> recipientPackageCredentials =
+        new[] { "writer", "reconciler", "lifecycle", "posture" }
+            .ToDictionary(name => name, _ => (RandomCredential(16), RandomCredential(32)), StringComparer.Ordinal);
     private readonly Dictionary<string, (string Access, string Secret, string PolicyName)>
         postureScenarioCredentials = new(StringComparer.Ordinal);
     private readonly Dictionary<ProvisionalObjectCapability, string> capabilityPolicyDocuments = [];
@@ -49,6 +53,7 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
             await fixture.ProveStartupRetryPolicyAsync().ConfigureAwait(false);
             await fixture.CreateInitialBucketWhenUsableAsync(fixture.BucketName).ConfigureAwait(false);
             await fixture.ProvisionCapabilityIdentitiesAsync().ConfigureAwait(false);
+            await fixture.ProvisionRecipientPackageIdentitiesAsync().ConfigureAwait(false);
             return fixture;
         }
         catch
@@ -111,6 +116,21 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
             System.Text.Encoding.UTF8.GetBytes($"{value.Access}\0{value.Secret}"))))
         .Distinct(StringComparer.Ordinal)
         .Count();
+
+    internal RecipientPackageProviderConfiguration RecipientPackageConfiguration() => new(
+        "c2-minio-fixture-v1",
+        ServiceUrl,
+        BucketName,
+        true,
+        "us-east-1",
+        new(recipientPackageCredentials["writer"].Access, recipientPackageCredentials["writer"].Secret),
+        new(recipientPackageCredentials["reconciler"].Access, recipientPackageCredentials["reconciler"].Secret),
+        new(recipientPackageCredentials["lifecycle"].Access, recipientPackageCredentials["lifecycle"].Secret),
+        new(recipientPackageCredentials["posture"].Access, recipientPackageCredentials["posture"].Secret),
+        true);
+
+    internal AmazonS3Client CreateRecipientPackageClient(string capability) =>
+        NewClient(recipientPackageCredentials[capability]);
 
     internal async Task<string> CreateBucketAsync(bool objectLockEnabled = false)
     {
@@ -434,6 +454,48 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
         }
     }
 
+    private async Task ProvisionRecipientPackageIdentitiesAsync()
+    {
+        var policyDirectory = Path.Combine(Path.GetTempPath(), $"tagekyc-c2-policies-{Guid.NewGuid():N}");
+        Directory.CreateDirectory(policyDirectory);
+        try
+        {
+            var policies = new Dictionary<string, string>(StringComparer.Ordinal)
+            {
+                ["writer"] = ObjectPolicyForPrefix(BucketName, RecipientPackagePrefix, "s3:PutObject"),
+                ["reconciler"] = ObjectPolicyForPrefix(BucketName, RecipientPackagePrefix, "s3:GetObject"),
+                ["lifecycle"] = ObjectPolicyForPrefix(BucketName, RecipientPackagePrefix, "s3:GetObject", "s3:DeleteObject"),
+                ["posture"] = BucketPolicy(BucketName,
+                    "s3:GetBucketVersioning", "s3:GetBucketObjectLockConfiguration",
+                    "s3:GetLifecycleConfiguration", "s3:GetBucketPolicy"),
+            };
+            foreach (var policy in policies)
+                await File.WriteAllTextAsync(Path.Combine(policyDirectory, $"{policy.Key}.json"), policy.Value)
+                    .ConfigureAwait(false);
+
+            var environment = new List<(string Name, string Value)>
+            {
+                ("MC_HOST_local", $"http://{rootAccessKey}:{rootSecretKey}@127.0.0.1:9000"),
+            };
+            foreach (var binding in recipientPackageCredentials)
+            {
+                environment.Add(($"C2_{binding.Key.ToUpperInvariant()}_ACCESS", binding.Value.Access));
+                environment.Add(($"C2_{binding.Key.ToUpperInvariant()}_SECRET", binding.Value.Secret));
+            }
+            var command = string.Join(" && ", recipientPackageCredentials.Select(binding =>
+                $"mc admin user add local \"$C2_{binding.Key.ToUpperInvariant()}_ACCESS\" \"$C2_{binding.Key.ToUpperInvariant()}_SECRET\""))
+                + " && " + string.Join(" && ", policies.Keys.Select(name =>
+                    $"mc admin policy create local tagekyc-c2-{name} /policies/{name}.json"))
+                + " && " + string.Join(" && ", recipientPackageCredentials.Select(binding =>
+                    $"mc admin policy attach local tagekyc-c2-{binding.Key} --user \"$C2_{binding.Key.ToUpperInvariant()}_ACCESS\""));
+            await RunMcAsync(policyDirectory, environment, command).ConfigureAwait(false);
+        }
+        finally
+        {
+            Directory.Delete(policyDirectory, recursive: true);
+        }
+    }
+
     private async Task ProvisionPostureScenarioIdentityAsync(string bucketName)
     {
         var suffix = Guid.NewGuid().ToString("N");
@@ -497,6 +559,8 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
         };
         foreach (var binding in bindings)
             environment.Add(($"{binding.Item1.ToUpperInvariant()}_ACCESS", binding.Item2.Access));
+        foreach (var binding in recipientPackageCredentials)
+            environment.Add(($"C2_{binding.Key.ToUpperInvariant()}_ACCESS", binding.Value.Access));
         var scenarioIndex = 0;
         foreach (var scenario in postureScenarioCredentials.Values)
         {
@@ -512,7 +576,12 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
             .Select(name => $"mc admin policy remove local {name}");
         var basePolicies = bindings.Select(binding =>
             $"mc admin policy remove local tagekyc-dobj-{binding.Item1}");
-        var command = string.Join(" ; ", scenarioUsers.Concat(baseUsers).Concat(scenarioPolicies).Concat(basePolicies));
+        var c2Users = recipientPackageCredentials.Select(binding =>
+            $"mc admin user remove local \"$C2_{binding.Key.ToUpperInvariant()}_ACCESS\"");
+        var c2Policies = recipientPackageCredentials.Keys.Select(name =>
+            $"mc admin policy remove local tagekyc-c2-{name}");
+        var command = string.Join(" ; ", scenarioUsers.Concat(baseUsers).Concat(c2Users)
+            .Concat(scenarioPolicies).Concat(basePolicies).Concat(c2Policies));
         await RunMcAsync(null, environment, command, allowFailure: true).ConfigureAwait(false);
     }
 
@@ -543,6 +612,10 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
 
     private static string ObjectPolicy(string bucketName, string action) => $$"""
         {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":["{{action}}"],"Resource":["arn:aws:s3:::{{bucketName}}/{{ObjectPrefix}}*"]}]}
+        """;
+
+    private static string ObjectPolicyForPrefix(string bucketName, string prefix, params string[] actions) => $$"""
+        {"Version":"2012-10-17","Statement":[{"Effect":"Allow","Action":[{{string.Join(',', actions.Select(action => $"\"{action}\""))}}],"Resource":["arn:aws:s3:::{{bucketName}}/{{prefix}}*"]}]}
         """;
 
     private static string BucketPolicy(string bucketName, params string[] actions) => $$"""

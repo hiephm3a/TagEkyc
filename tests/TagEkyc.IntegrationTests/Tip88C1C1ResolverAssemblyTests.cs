@@ -13,9 +13,65 @@ using TagEkyc.Infrastructure.RawExport;
 
 namespace TagEkyc.IntegrationTests;
 
+internal sealed record C2RecipientPackageLineageFixture(
+    C2AssemblyPreparationRequest Request,
+    Guid JobId,
+    Guid AttemptId,
+    long FencingToken);
+
+internal sealed record C1RealC2ExecutionFixture(
+    RawExportAssemblyExecutionResult Result,
+    Guid JobId,
+    Guid AttemptId,
+    long FencingToken,
+    Guid RecipientClientApplicationId);
+
 [Collection(PostgresPersistenceCollection.Name)]
 public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture postgres)
 {
+    internal async Task<C1RealC2ExecutionFixture> ExecuteWithRealC2ProviderAsync(
+        Func<Guid, Guid, Task<IC2AssemblyPreparationProvider>> providerFactory)
+    {
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            null,
+            null,
+            null,
+            null,
+            providerFactory);
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, CancellationToken.None);
+        await using var db = postgres.CreateDbContext();
+        var recipient = await db.RawExportJobIdentities.AsNoTracking()
+            .Where(row => row.JobId == prepared.JobId)
+            .Select(row => row.RecipientClientApplicationId)
+            .SingleAsync();
+        return new(
+            result,
+            prepared.JobId,
+            prepared.Request.AttemptId,
+            prepared.Request.ExpectedFence,
+            recipient);
+    }
+
+    internal async Task<C2RecipientPackageLineageFixture> CreateC2RecipientPackageLineageAsync()
+    {
+        var fixture = await CreateSealedAssemblyFixtureAsync();
+        await using var db = postgres.CreateDbContext();
+        var identity = await db.RawExportAssemblyIdentities.SingleAsync(row => row.AssemblyId == fixture.Result.AssemblyId);
+        return new(
+            new(
+                identity.C2PreparationId,
+                identity.AssemblyId,
+                identity.AssemblyFingerprint.ToArray(),
+                identity.ManifestDigest.ToArray(),
+                identity.AssemblyDigest.ToArray(),
+                identity.AssemblyAuthenticationValue.ToArray(),
+                identity.CompleteAssemblyLength,
+                identity.RecipientClientApplicationId),
+            identity.JobId,
+            identity.AttemptId,
+            identity.FencingToken);
+    }
+
     [Fact]
     public async Task C101_exact_selection_and_ordered_class_freeze()
     {
@@ -56,7 +112,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         BoundedFixtureC2Provider? c2Override,
         byte[]? plaintextOverride,
         Func<Tip88C1B2R2DurableCustodyEncryptionDatabaseTests.R3VerifiedSourceFixture, Task>? beforeAuthenticate,
-        RawExportJobLeaseState? leaseOverride = null)
+        RawExportJobLeaseState? leaseOverride = null,
+        Func<Guid, Guid, Task<IC2AssemblyPreparationProvider>>? c2Factory = null)
     {
         var plaintext = plaintextOverride ?? Encoding.UTF8.GetBytes("c1-end-to-end-synthetic-selfie");
         var minio = await DurableObjectMinioFixture.StartAsync();
@@ -122,12 +179,19 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                     verifyDb, kek, DurableKeyCustodyOptions.Resolve(new ConfigurationManager())),
                 contentScope.ServiceProvider.GetRequiredService<IContentCommitmentService>()));
         var c2 = c2Override ?? new BoundedFixtureC2Provider();
+        var recipient = await setup.RawExportJobIdentities.AsNoTracking()
+            .Where(row => row.JobId == bound.JobId)
+            .Select(row => row.RecipientClientApplicationId)
+            .SingleAsync();
+        var effectiveC2 = c2Factory is null
+            ? c2
+            : await c2Factory(bound.JobId, recipient);
         var orchestrator = new RawExportAssemblyOrchestrator(
             repository,
             resolver,
             new RawExportAssemblyAuthenticationService(new FixtureAssemblyAuthenticator(
                 beforeAuthenticate is null ? null : () => beforeAuthenticate(source))),
-            c2);
+            effectiveC2);
         var request = new RawExportAssemblyExecutionRequest(
             bound.JobId,
             acquired.AttemptId!.Value,
@@ -400,7 +464,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             Guid.NewGuid(), Guid.NewGuid(), fingerprint,
             Enumerable.Repeat((byte)0x52, 32).ToArray(),
             Enumerable.Repeat((byte)0x53, 32).ToArray(),
-            Enumerable.Repeat((byte)0x54, 32).ToArray(), 3);
+            Enumerable.Repeat((byte)0x54, 32).ToArray(), 3, Guid.NewGuid());
         static Task Write(Stream destination, CancellationToken token) =>
             destination.WriteAsync(new byte[] { 1, 2, 3 }, token).AsTask();
 
@@ -639,7 +703,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             Guid.NewGuid(), Guid.NewGuid(), fingerprint,
             Enumerable.Repeat((byte)0x62, 32).ToArray(),
             Enumerable.Repeat((byte)0x63, 32).ToArray(),
-            Enumerable.Repeat((byte)0x64, 32).ToArray(), 1);
+            Enumerable.Repeat((byte)0x64, 32).ToArray(), 1, Guid.NewGuid());
         await RawExportAssemblyOrchestrator.PrepareOrRecoverAsync(
             provider, request, false,
             (destination, token) => destination.WriteAsync(new byte[] { 7 }, token).AsTask(), default);
@@ -685,7 +749,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             preparationId, assemblyId, fingerprint,
             Enumerable.Repeat((byte)0x73, 32).ToArray(),
             Enumerable.Repeat((byte)0x74, 32).ToArray(),
-            Enumerable.Repeat((byte)0x75, 32).ToArray(), 1);
+            Enumerable.Repeat((byte)0x75, 32).ToArray(), 1, Guid.NewGuid());
         await RawExportAssemblyOrchestrator.PrepareOrRecoverAsync(
             provider, providerRequest, false,
             (destination, token) => destination.WriteAsync(new byte[] { 9 }, token).AsTask(), default);
@@ -807,20 +871,29 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Contains("DROP CONSTRAINT \"CK_b4_job_transition_event_shape\"", migration, StringComparison.Ordinal);
         Assert.Contains("CREATE OR REPLACE FUNCTION tagekyc.enforce_raw_export_job_head_mutation", migration, StringComparison.Ordinal);
         await postgres.ResetDatabaseAsync();
-        await using var db = postgres.CreateDbContext();
-        var migrator = db.GetService<IMigrator>();
-        await migrator.MigrateAsync("20260812120000_Tip88C1B2R4R6SourceFinalization");
-        await using (var connection = await OpenAsync())
-        await using (var command = connection.CreateCommand())
+        try
         {
-            command.CommandText = "SELECT pg_catalog.count(*) FROM pg_catalog.pg_roles WHERE rolname IN ('tagekyc_raw_export_assembly_resolver','tagekyc_raw_export_assembly_sealer')";
-            Assert.Equal(0L, Convert.ToInt64(await command.ExecuteScalarAsync()));
-            command.CommandText = "SELECT pg_catalog.count(*) FROM pg_catalog.pg_roles WHERE rolname IN ('tagekyc_raw_export_assembly_resolver_login','tagekyc_raw_export_assembly_sealer_login')";
-            Assert.Equal(2L, Convert.ToInt64(await command.ExecuteScalarAsync()));
+            await using var db = postgres.CreateDbContext();
+            var migrator = db.GetService<IMigrator>();
+            await migrator.MigrateAsync("20260812120000_Tip88C1B2R4R6SourceFinalization");
+            await using (var connection = await OpenAsync())
+            await using (var command = connection.CreateCommand())
+            {
+                command.CommandText = "SELECT pg_catalog.count(*) FROM pg_catalog.pg_roles WHERE rolname IN ('tagekyc_raw_export_assembly_resolver','tagekyc_raw_export_assembly_sealer')";
+                Assert.Equal(0L, Convert.ToInt64(await command.ExecuteScalarAsync()));
+                command.CommandText = "SELECT pg_catalog.count(*) FROM pg_catalog.pg_roles WHERE rolname IN ('tagekyc_raw_export_assembly_resolver_login','tagekyc_raw_export_assembly_sealer_login')";
+                Assert.Equal(2L, Convert.ToInt64(await command.ExecuteScalarAsync()));
+            }
+            await migrator.MigrateAsync("20260815120000_Tip88C1C1ResolverAssembly");
+            await using var reapplied = postgres.CreateDbContext();
+            Assert.False(reapplied.Database.HasPendingModelChanges());
         }
-        await migrator.MigrateAsync("20260815120000_Tip88C1C1ResolverAssembly");
-        await using var reapplied = postgres.CreateDbContext();
-        Assert.False(reapplied.Database.HasPendingModelChanges());
+        finally
+        {
+            await using var restore = postgres.CreateDbContext();
+            await restore.Database.GetService<IMigrator>().MigrateAsync();
+            await postgres.AssertLatestMigrationAsync(nameof(C125_migration_model_is_clean_and_b4_down_contract_is_present));
+        }
     }
 
     [Fact]

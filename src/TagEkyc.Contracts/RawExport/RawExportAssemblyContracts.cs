@@ -82,7 +82,8 @@ public sealed record C2AssemblyPreparationRequest(
     byte[] ManifestDigest,
     byte[] AssemblyDigest,
     byte[] AssemblyAuthenticationValue,
-    long CompleteAssemblyLength);
+    long CompleteAssemblyLength,
+    Guid RecipientClientApplicationId);
 
 public sealed record C2AssemblyPrepareResult(
     C2AssemblyPrepareOutcome Outcome,

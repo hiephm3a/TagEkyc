@@ -82,6 +82,9 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportAssemblyPreparationDispositionRow> RawExportAssemblyPreparationDispositions => Set<RawExportAssemblyPreparationDispositionRow>();
     public DbSet<RawExportAssemblyIdentityRow> RawExportAssemblyIdentities => Set<RawExportAssemblyIdentityRow>();
     public DbSet<RawExportAssemblyItemRow> RawExportAssemblyItems => Set<RawExportAssemblyItemRow>();
+    public DbSet<RawExportRecipientKeyRegistrationRow> RawExportRecipientKeyRegistrations => Set<RawExportRecipientKeyRegistrationRow>();
+    public DbSet<RawExportRecipientPackagePreparationRow> RawExportRecipientPackagePreparations => Set<RawExportRecipientPackagePreparationRow>();
+    public DbSet<RawExportRecipientPackageEventRow> RawExportRecipientPackageEvents => Set<RawExportRecipientPackageEventRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -98,6 +101,9 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         modelBuilder.ApplyConfiguration(new RawExportAssemblyPreparationDispositionConfig());
         modelBuilder.ApplyConfiguration(new RawExportAssemblyIdentityConfig());
         modelBuilder.ApplyConfiguration(new RawExportAssemblyItemConfig());
+        modelBuilder.ApplyConfiguration(new RawExportRecipientKeyRegistrationConfig());
+        modelBuilder.ApplyConfiguration(new RawExportRecipientPackagePreparationConfig());
+        modelBuilder.ApplyConfiguration(new RawExportRecipientPackageEventConfig());
 
         modelBuilder.Entity<VerificationSessionRow>(entity =>
         {

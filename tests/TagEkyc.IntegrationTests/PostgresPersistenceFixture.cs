@@ -51,6 +51,20 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
         return new TagEkycDbContext(options);
     }
 
+    public async Task AssertLatestMigrationAsync(string testName)
+    {
+        await using var db = CreateDbContext();
+        var expectedLatest = db.Database.GetMigrations().Last();
+        var actualLatest = (await db.Database.GetAppliedMigrationsAsync()).LastOrDefault() ?? "<none>";
+
+        if (!StringComparer.Ordinal.Equals(actualLatest, expectedLatest))
+        {
+            throw new InvalidOperationException(
+                $"Shared database migration-state leak: test '{testName}' left the database at " +
+                $"'{actualLatest}'; expected latest '{expectedLatest}'.");
+        }
+    }
+
     private async Task BootstrapClusterPrerequisitesAsync()
     {
         await using var connection = new NpgsqlConnection(ConnectionString);
@@ -67,7 +81,10 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
                     'tagekyc_raw_export_reconciler_login',
                     'tagekyc_raw_export_lifecycle_login',
                     'tagekyc_raw_export_assembly_resolver_login',
-                    'tagekyc_raw_export_assembly_sealer_login']
+                    'tagekyc_raw_export_assembly_sealer_login',
+                    'tagekyc_raw_export_package_preparer_login',
+                    'tagekyc_raw_export_package_reconciler_login',
+                    'tagekyc_raw_export_package_lifecycle_login']
                 LOOP
                     SELECT
                         rolcanlogin,

@@ -91,7 +91,8 @@ internal sealed class RawExportAssemblyOrchestrator(
 
             var providerRequest = new C2AssemblyPreparationRequest(
                 preparationId, assemblyId, assemblyFingerprint, manifestDigest,
-                assemblyDigest, authenticationValue, completeLength);
+                assemblyDigest, authenticationValue, completeLength,
+                job.RecipientClientApplicationId);
             var prepared = await PrepareOrRecoverAsync(
                 c2,
                 providerRequest,

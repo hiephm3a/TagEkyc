@@ -463,3 +463,16 @@ real Raw BIO, production C2, package construction or delivery.
 No staging, commit, push, merge, PR, deployment or production activation was
 performed. Unrelated working-tree changes were not staged or altered as part
 of this slice.
+
+## C2 trusted-recipient handoff successor
+
+TIP-88C1-C2 implementation uses the exact C1 server-derived
+`RecipientClientApplicationId` already present in the locked job context.
+`C2AssemblyPreparationRequest` carries that value directly from
+`RawExportAssemblyOrchestrator`; C2 does not add a database lookup, actor bypass,
+new C1 SQL function, grant, role or topology member. The C1 two-pass source-read
+boundary remains executable and green: the affected C1 census is `31/31 PASS`,
+and a real third digest pass turns C220 RED at `Expected: 2; Actual: 3`.
+
+This successor records only the authorized C1→C2 handoff. It does not authorize
+recipient management, delivery, download, production activation or real Raw BIO.

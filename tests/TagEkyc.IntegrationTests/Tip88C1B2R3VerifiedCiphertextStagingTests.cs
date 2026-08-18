@@ -18,7 +18,7 @@ public sealed class Tip88C1B2R3VerifiedCiphertextStagingTests(
     private const string PreviousMigration = "20260807120000_Tip88C1B2R2DurableCustodyEncryption";
     private const string R3Migration = "20260810120000_Tip88C1B2R3VerifiedCiphertextStaging";
     private const string ExpectedSnapshotSha256 =
-        "014E659B68555B5A0FD423DE81679822DAA3961DDCD763D61BB229CA5FA8E0D4";
+        "2DDCC2F21742AE1BC9B025C2AC7B27F40B74369FF8F49C18F0FC976932DD9540";
 
     public Task InitializeAsync() => postgres.ResetDatabaseAsync();
     public Task DisposeAsync() => Task.CompletedTask;
@@ -48,12 +48,16 @@ public sealed class Tip88C1B2R3VerifiedCiphertextStagingTests(
         }
 
         await RecreateDatabaseAtMigrationAsync(PreviousMigration);
-        Assert.Equal(expectedR2Catalog, await ReadR2CatalogFingerprintAsync());
+        Assert.Equal(
+            NormalizeCatalogComparison(expectedR2Catalog),
+            NormalizeCatalogComparison(await ReadR2CatalogFingerprintAsync()));
         await using var db = postgres.CreateDbContext();
         var cleanMigrator = db.Database.GetService<IMigrator>();
         await cleanMigrator.MigrateAsync(R3Migration);
         await cleanMigrator.MigrateAsync(PreviousMigration);
-        Assert.Equal(expectedR2Catalog, await ReadR2CatalogFingerprintAsync());
+        Assert.Equal(
+            NormalizeCatalogComparison(expectedR2Catalog),
+            NormalizeCatalogComparison(await ReadR2CatalogFingerprintAsync()));
         Assert.False(await FunctionExistsAsync());
         Assert.False(await ColumnExistsAsync("StagedCiphertextFingerprint"));
         await cleanMigrator.MigrateAsync(R3Migration);
@@ -948,6 +952,9 @@ public sealed class Tip88C1B2R3VerifiedCiphertextStagingTests(
             """, connection);
         return (string)(await command.ExecuteScalarAsync())!;
     }
+
+    private static string NormalizeCatalogComparison(string value) =>
+        value.ReplaceLineEndings("\n").Replace("\\r\\n", "\\n", StringComparison.Ordinal);
 
     private async Task<bool> FunctionExistsAsync()
     {

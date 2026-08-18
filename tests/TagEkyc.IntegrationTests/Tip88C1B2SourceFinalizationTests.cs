@@ -628,11 +628,18 @@ public sealed class Tip88C1B2SourceFinalizationTests(PostgresPersistenceFixture 
         await using(var reset=postgres.CreateDbContext()){await reset.Database.EnsureDeletedAsync();await reset.Database.GetService<IMigrator>().MigrateAsync(R3Migration);}
         var before=await HeadGuardDefinitionAsync();
         var coreBefore=await CoreGuardDefinitionAsync();
-        await MigrateAsync(R4R6Migration); await MigrateAsync(R3Migration);
-        Assert.Equal(before,await HeadGuardDefinitionAsync());
-        Assert.Equal(coreBefore,await CoreGuardDefinitionAsync());
-        await AssertR4R6CatalogAbsentAsync();
-        await MigrateAsync(R4R6Migration);
+        try
+        {
+            await MigrateAsync(R4R6Migration); await MigrateAsync(R3Migration);
+            Assert.Equal(before.ReplaceLineEndings("\n"),(await HeadGuardDefinitionAsync()).ReplaceLineEndings("\n"));
+            Assert.Equal(coreBefore.ReplaceLineEndings("\n"),(await CoreGuardDefinitionAsync()).ReplaceLineEndings("\n"));
+            await AssertR4R6CatalogAbsentAsync();
+        }
+        finally
+        {
+            await using var restore=postgres.CreateDbContext();
+            await restore.Database.GetService<IMigrator>().MigrateAsync();
+        }
     }
 
     [Fact]
