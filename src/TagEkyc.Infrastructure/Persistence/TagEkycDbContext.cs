@@ -85,6 +85,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportRecipientKeyRegistrationRow> RawExportRecipientKeyRegistrations => Set<RawExportRecipientKeyRegistrationRow>();
     public DbSet<RawExportRecipientPackagePreparationRow> RawExportRecipientPackagePreparations => Set<RawExportRecipientPackagePreparationRow>();
     public DbSet<RawExportRecipientPackageEventRow> RawExportRecipientPackageEvents => Set<RawExportRecipientPackageEventRow>();
+    public DbSet<RawExportRecipientPackageDeliveryRow> RawExportRecipientPackageDeliveries => Set<RawExportRecipientPackageDeliveryRow>();
+    public DbSet<RawExportRecipientPackageDeliveryEventRow> RawExportRecipientPackageDeliveryEvents => Set<RawExportRecipientPackageDeliveryEventRow>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -104,6 +106,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         modelBuilder.ApplyConfiguration(new RawExportRecipientKeyRegistrationConfig());
         modelBuilder.ApplyConfiguration(new RawExportRecipientPackagePreparationConfig());
         modelBuilder.ApplyConfiguration(new RawExportRecipientPackageEventConfig());
+        modelBuilder.ApplyConfiguration(new RawExportRecipientPackageDeliveryConfig());
+        modelBuilder.ApplyConfiguration(new RawExportRecipientPackageDeliveryEventConfig());
 
         modelBuilder.Entity<VerificationSessionRow>(entity =>
         {

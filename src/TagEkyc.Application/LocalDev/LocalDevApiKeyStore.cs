@@ -14,6 +14,11 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
         "session.cancel",
     };
 
+    private static readonly IReadOnlySet<string> RecipientPackageDeliveryScopes = new HashSet<string>
+    {
+        "business.raw-export.package.download",
+    };
+
     private static readonly IReadOnlySet<string> CaptureAgentScopes = new HashSet<string>
     {
         "capture.artifact.append",
@@ -62,6 +67,16 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             "localdev-complete-only-key",
             "ldev_complete",
             new HashSet<string> { "business.session.create", "session.complete", "session.cancel" },
+            ApiKeyStatus.Active,
+            DateTimeOffset.UtcNow.AddYears(10),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: LocalDevRuntimePolicySource.BusinessClientId),
+        new(
+            Guid.Parse("20000000-0000-0000-0000-000000000010"),
+            LocalDevRuntimePolicySource.BusinessClientId,
+            "localdev-recipient-package-delivery-key",
+            "ldev_delivery",
+            RecipientPackageDeliveryScopes,
             ApiKeyStatus.Active,
             DateTimeOffset.UtcNow.AddYears(10),
             AuthenticatedCallerCategory.BusinessConsumer,

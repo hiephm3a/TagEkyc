@@ -28,7 +28,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
     private const string Migration = "20260724015546_Tip88B1E3ResolverReadBoundary";
     private const string PreviousMigration = "20260723052003_Tip88B33RawExportAuthorizationPersistFunction";
     private const string ExpectedModelSnapshotSha256 =
-        "2DDCC2F21742AE1BC9B025C2AC7B27F40B74369FF8F49C18F0FC976932DD9540";
+        "467D7B65128C5BDCE18B2417E19AFD4C74E21C2D468087E52511695604D71A9E";
     private const string EligibilityFunction =
         "tagekyc.raw_export_read_authorization_eligibility_inputs(uuid,uuid,integer)";
     private const string PolicyFunction =
@@ -2621,23 +2621,26 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
         public static async Task<IsolatedPostgres> CreateAsync()
         {
             var containerName = $"tagekyc-e3-isolated-{Guid.NewGuid():N}";
-            await RunDockerAsync(
-                "run",
-                "-d",
-                "--name",
-                containerName,
-                "-e",
-                "POSTGRES_DB=tagekyc_e3_isolated",
-                "-e",
-                "POSTGRES_USER=tagekyc",
-                "-e",
-                "POSTGRES_PASSWORD=tagekyc",
-                "-p",
-                "127.0.0.1::5432",
-                "postgres:16");
-
             try
             {
+                await RunDockerAsync(
+                    "run",
+                    "-d",
+                    "--rm",
+                    "--tmpfs",
+                    "/var/lib/postgresql/data",
+                    "--name",
+                    containerName,
+                    "-e",
+                    "POSTGRES_DB=tagekyc_e3_isolated",
+                    "-e",
+                    "POSTGRES_USER=tagekyc",
+                    "-e",
+                    "POSTGRES_PASSWORD=tagekyc",
+                    "-p",
+                    "127.0.0.1::5432",
+                    "postgres:16");
+
                 var ready = false;
                 for (var attempt = 0; attempt < 60; attempt++)
                 {
@@ -2722,7 +2725,8 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
                                 'tagekyc_raw_export_assembly_sealer_login',
                                 'tagekyc_raw_export_package_preparer_login',
                                 'tagekyc_raw_export_package_reconciler_login',
-                                'tagekyc_raw_export_package_lifecycle_login']
+                                'tagekyc_raw_export_package_lifecycle_login',
+                                'tagekyc_raw_export_package_delivery_login']
                             LOOP
                                 IF EXISTS (
                                     SELECT 1 FROM pg_catalog.pg_roles

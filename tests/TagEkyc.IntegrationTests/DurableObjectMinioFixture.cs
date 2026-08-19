@@ -25,7 +25,7 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
     private readonly (string Access, string Secret) cleanupCredential =
         (RandomCredential(16), RandomCredential(32));
     private readonly Dictionary<string, (string Access, string Secret)> recipientPackageCredentials =
-        new[] { "writer", "reconciler", "lifecycle", "posture" }
+        new[] { "writer", "reconciler", "lifecycle", "posture", "delivery-reader" }
             .ToDictionary(name => name, _ => (RandomCredential(16), RandomCredential(32)), StringComparer.Ordinal);
     private readonly Dictionary<string, (string Access, string Secret, string PolicyName)>
         postureScenarioCredentials = new(StringComparer.Ordinal);
@@ -33,6 +33,7 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
     private readonly List<string> additionalPolicyNames = [];
     private readonly List<string> buckets = [];
     private AmazonS3Client? cleanupAdmin;
+    private int hostPort;
     private static readonly TimeSpan ProtocolUsabilityTimeout = TimeSpan.FromSeconds(20);
     private static readonly TimeSpan ProtocolUsabilityRetryDelay = TimeSpan.FromMilliseconds(250);
 
@@ -95,6 +96,18 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
 
     internal AmazonS3Client CreateAdminClient() => NewClient(cleanupCredential);
 
+    internal async Task PutRootObjectAsync(string bucketName, string objectKey, byte[] content)
+    {
+        using var root = NewRootClient();
+        await root.PutObjectAsync(new PutObjectRequest
+        {
+            BucketName = bucketName,
+            Key = objectKey,
+            InputStream = new MemoryStream(content, writable: false),
+            AutoCloseStream = true,
+        }).ConfigureAwait(false);
+    }
+
     internal AmazonS3Client CreateCapabilityClient(
         ProvisionalObjectCapability capability,
         string? bucketName = null)
@@ -132,6 +145,25 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
     internal AmazonS3Client CreateRecipientPackageClient(string capability) =>
         NewClient(recipientPackageCredentials[capability]);
 
+    internal RecipientPackageCredential RecipientPackageDeliveryReaderCredential() => new(
+        recipientPackageCredentials["delivery-reader"].Access,
+        recipientPackageCredentials["delivery-reader"].Secret);
+
+    internal RecipientPackageCredential RecipientPackageCredentialFor(string capability)
+    {
+        var credential = recipientPackageCredentials[capability];
+        return new(credential.Access, credential.Secret);
+    }
+
+    internal int RecipientPackageDistinctCredentialCount() => recipientPackageCredentials.Values
+        .Select(value => Convert.ToHexString(SHA256.HashData(
+            System.Text.Encoding.UTF8.GetBytes($"{value.Access}\0{value.Secret}"))))
+        .Distinct(StringComparer.Ordinal)
+        .Count();
+
+    internal string RecipientPackageDeliveryReaderPolicyDocument() =>
+        ObjectPolicyForPrefix(BucketName, RecipientPackagePrefix, "s3:GetObject");
+
     internal async Task<string> CreateBucketAsync(bool objectLockEnabled = false)
     {
         var bucketName = $"tagekyc-{Guid.NewGuid():N}";
@@ -142,16 +174,17 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
 
     private async Task StartContainerAsync()
     {
+        var portBinding = hostPort == 0 ? "127.0.0.1::9000" : $"127.0.0.1:{hostPort}:9000";
         await DockerAsync(
             "run", "-d", "--name", containerName,
             "-e", $"MINIO_ROOT_USER={rootAccessKey}",
             "-e", $"MINIO_ROOT_PASSWORD={rootSecretKey}",
             "-v", $"{volumeName}:/data",
-            "-p", "127.0.0.1::9000",
+            "-p", portBinding,
             Image, "server", "/data", "--console-address", ":9001").ConfigureAwait(false);
         var mapping = (await DockerAsync("port", containerName, "9000/tcp").ConfigureAwait(false)).Trim();
-        var port = int.Parse(mapping[(mapping.LastIndexOf(':') + 1)..], System.Globalization.CultureInfo.InvariantCulture);
-        ServiceUrl = new Uri($"http://127.0.0.1:{port}", UriKind.Absolute);
+        hostPort = int.Parse(mapping[(mapping.LastIndexOf(':') + 1)..], System.Globalization.CultureInfo.InvariantCulture);
+        ServiceUrl = new Uri($"http://127.0.0.1:{hostPort}", UriKind.Absolute);
 
         using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
         var deadline = DateTimeOffset.UtcNow.AddSeconds(45);
@@ -465,6 +498,7 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
                 ["writer"] = ObjectPolicyForPrefix(BucketName, RecipientPackagePrefix, "s3:PutObject"),
                 ["reconciler"] = ObjectPolicyForPrefix(BucketName, RecipientPackagePrefix, "s3:GetObject"),
                 ["lifecycle"] = ObjectPolicyForPrefix(BucketName, RecipientPackagePrefix, "s3:GetObject", "s3:DeleteObject"),
+                ["delivery-reader"] = ObjectPolicyForPrefix(BucketName, RecipientPackagePrefix, "s3:GetObject"),
                 ["posture"] = BucketPolicy(BucketName,
                     "s3:GetBucketVersioning", "s3:GetBucketObjectLockConfiguration",
                     "s3:GetLifecycleConfiguration", "s3:GetBucketPolicy"),
@@ -479,15 +513,15 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
             };
             foreach (var binding in recipientPackageCredentials)
             {
-                environment.Add(($"C2_{binding.Key.ToUpperInvariant()}_ACCESS", binding.Value.Access));
-                environment.Add(($"C2_{binding.Key.ToUpperInvariant()}_SECRET", binding.Value.Secret));
+                environment.Add(($"C2_{binding.Key.ToUpperInvariant().Replace('-', '_')}_ACCESS", binding.Value.Access));
+                environment.Add(($"C2_{binding.Key.ToUpperInvariant().Replace('-', '_')}_SECRET", binding.Value.Secret));
             }
             var command = string.Join(" && ", recipientPackageCredentials.Select(binding =>
-                $"mc admin user add local \"$C2_{binding.Key.ToUpperInvariant()}_ACCESS\" \"$C2_{binding.Key.ToUpperInvariant()}_SECRET\""))
+                $"mc admin user add local \"$C2_{binding.Key.ToUpperInvariant().Replace('-', '_')}_ACCESS\" \"$C2_{binding.Key.ToUpperInvariant().Replace('-', '_')}_SECRET\""))
                 + " && " + string.Join(" && ", policies.Keys.Select(name =>
                     $"mc admin policy create local tagekyc-c2-{name} /policies/{name}.json"))
                 + " && " + string.Join(" && ", recipientPackageCredentials.Select(binding =>
-                    $"mc admin policy attach local tagekyc-c2-{binding.Key} --user \"$C2_{binding.Key.ToUpperInvariant()}_ACCESS\""));
+                    $"mc admin policy attach local tagekyc-c2-{binding.Key} --user \"$C2_{binding.Key.ToUpperInvariant().Replace('-', '_')}_ACCESS\""));
             await RunMcAsync(policyDirectory, environment, command).ConfigureAwait(false);
         }
         finally
@@ -560,7 +594,7 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
         foreach (var binding in bindings)
             environment.Add(($"{binding.Item1.ToUpperInvariant()}_ACCESS", binding.Item2.Access));
         foreach (var binding in recipientPackageCredentials)
-            environment.Add(($"C2_{binding.Key.ToUpperInvariant()}_ACCESS", binding.Value.Access));
+            environment.Add(($"C2_{binding.Key.ToUpperInvariant().Replace('-', '_')}_ACCESS", binding.Value.Access));
         var scenarioIndex = 0;
         foreach (var scenario in postureScenarioCredentials.Values)
         {
@@ -577,7 +611,7 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
         var basePolicies = bindings.Select(binding =>
             $"mc admin policy remove local tagekyc-dobj-{binding.Item1}");
         var c2Users = recipientPackageCredentials.Select(binding =>
-            $"mc admin user remove local \"$C2_{binding.Key.ToUpperInvariant()}_ACCESS\"");
+            $"mc admin user remove local \"$C2_{binding.Key.ToUpperInvariant().Replace('-', '_')}_ACCESS\"");
         var c2Policies = recipientPackageCredentials.Keys.Select(name =>
             $"mc admin policy remove local tagekyc-c2-{name}");
         var command = string.Join(" ; ", scenarioUsers.Concat(baseUsers).Concat(c2Users)

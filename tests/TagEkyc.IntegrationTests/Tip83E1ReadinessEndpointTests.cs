@@ -650,23 +650,26 @@ public sealed class Tip83E1ReadinessEndpointTests
         public static async Task<DisposableReadinessPostgres> CreateAsync()
         {
             var containerName = $"tagekyc-readiness-{Guid.NewGuid():N}";
-            await RunDockerAsync(
-                "run",
-                "-d",
-                "--name",
-                containerName,
-                "-e",
-                "POSTGRES_DB=tagekyc_readiness",
-                "-e",
-                "POSTGRES_USER=tagekyc",
-                "-e",
-                "POSTGRES_PASSWORD=tagekyc",
-                "-p",
-                "127.0.0.1::5432",
-                "postgres:16");
-
             try
             {
+                await RunDockerAsync(
+                    "run",
+                    "-d",
+                    "--rm",
+                    "--tmpfs",
+                    "/var/lib/postgresql/data",
+                    "--name",
+                    containerName,
+                    "-e",
+                    "POSTGRES_DB=tagekyc_readiness",
+                    "-e",
+                    "POSTGRES_USER=tagekyc",
+                    "-e",
+                    "POSTGRES_PASSWORD=tagekyc",
+                    "-p",
+                    "127.0.0.1::5432",
+                    "postgres:16");
+
                 for (var attempt = 0; attempt < 60; attempt++)
                 {
                     var ready = await RunDockerAsync(

@@ -23,7 +23,7 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
     {
         var snapshotPath = ProjectPath("src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs");
         var snapshotHash = Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(snapshotPath)));
-        Assert.Equal("2DDCC2F21742AE1BC9B025C2AC7B27F40B74369FF8F49C18F0FC976932DD9540", snapshotHash);
+        Assert.Equal("467D7B65128C5BDCE18B2417E19AFD4C74E21C2D468087E52511695604D71A9E", snapshotHash);
         var pinPaths = new[]
         {
             "tests/TagEkyc.IntegrationTests/Tip88B1E3ResolverReadBoundaryTests.cs",
@@ -42,7 +42,8 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
                 SELECT
                   (SELECT pg_catalog.count(*) FROM pg_catalog.pg_class c
                    JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
-                   WHERE n.nspname='tagekyc' AND c.relname LIKE 'raw_export_recipient_%') AS tables,
+                   WHERE n.nspname='tagekyc' AND c.relname IN
+                     ('raw_export_recipient_key_registrations','raw_export_recipient_package_preparations','raw_export_recipient_package_events')) AS tables,
                   (SELECT pg_catalog.count(*) FROM pg_catalog.pg_roles
                    WHERE rolname IN ('tagekyc_raw_export_package_preparer_login','tagekyc_raw_export_package_reconciler_login','tagekyc_raw_export_package_lifecycle_login')) AS logins,
                   (SELECT pg_catalog.count(*) FROM pg_catalog.pg_roles
@@ -138,10 +139,16 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
                  'tagekyc_raw_export_package_preparer_login','tagekyc_raw_export_package_reconciler_login','tagekyc_raw_export_package_lifecycle_login')),
               (SELECT pg_catalog.count(*) FROM pg_catalog.pg_proc p
                JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
-               WHERE n.nspname='tagekyc' AND p.proname LIKE 'raw_export_%recipient_package%'),
+               WHERE n.nspname='tagekyc' AND p.proname IN (
+                 'raw_export_reserve_recipient_package','raw_export_begin_recipient_package_put',
+                 'raw_export_record_recipient_package_put_unknown','raw_export_record_recipient_package_prepared',
+                 'raw_export_read_recipient_package_recovery_context','raw_export_finalize_recipient_package',
+                 'raw_export_authorize_recipient_package_abort','raw_export_record_recipient_package_abort_result',
+                 'raw_export_record_recipient_package_quarantined')),
               (SELECT pg_catalog.count(*) FROM pg_catalog.pg_class c
                JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
-               WHERE n.nspname='tagekyc' AND c.relkind='r' AND c.relname LIKE 'raw_export_recipient_%')
+               WHERE n.nspname='tagekyc' AND c.relkind='r' AND c.relname IN
+                 ('raw_export_recipient_key_registrations','raw_export_recipient_package_preparations','raw_export_recipient_package_events'))
             """, connection);
         await using var reader = await counts.ExecuteReaderAsync();
         Assert.True(await reader.ReadAsync());

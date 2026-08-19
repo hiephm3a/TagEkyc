@@ -23,6 +23,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Insert(0, new VerificationProfileDtoJsonConverter());
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+builder.Services.Configure<Microsoft.AspNetCore.Routing.RouteOptions>(options =>
+    options.ConstraintMap["D"] = typeof(DFormatGuidRouteConstraint));
 
 builder.Services.AddSingleton<LocalDevInMemoryMetadataReferenceRegistry>();
 builder.Services.AddSingleton<IMetadataReferenceRegistry>(sp => sp.GetRequiredService<LocalDevInMemoryMetadataReferenceRegistry>());
@@ -44,7 +46,24 @@ if (DurableKeyTopologyOptions.Resolve(builder.Configuration).Topology
 builder.Services.AddTagEkycDurableKeyCustody(builder.Configuration);
 if (builder.Environment.IsProduction())
     builder.Services.AddTagEkycProvisionalObjectCustody(builder.Configuration);
+var recipientPackageOptions = RecipientPackageOptions.Resolve(builder.Configuration);
+if (recipientPackageOptions.Topology == RecipientPackageTopology.S3CompatibleDurable
+    && recipientPackageOptions.IsSyntacticallyValid)
+{
+    builder.Services.AddTagEkycRecipientPackage(builder.Configuration);
+}
+else
+{
+    builder.Services.AddSingleton(recipientPackageOptions);
+}
 builder.Services.AddTagEkycRawExportAssembly(builder.Configuration, builder.Environment.IsProduction());
+builder.Services.AddTagEkycRecipientPackageDelivery(builder.Configuration);
+var recipientPackageDeliveryOptions = RecipientPackageDeliveryOptions.Resolve(builder.Configuration);
+if (recipientPackageDeliveryOptions.Topology == RecipientPackageDeliveryTopology.S3CompatibleDurable
+    && recipientPackageDeliveryOptions.IsSyntacticallyValid)
+{
+    builder.Services.AddHostedService<RecipientPackageDeliveryHostedService>();
+}
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
 ConfigureRetention(builder);
@@ -103,6 +122,7 @@ app.MapGet("/", () => Results.Ok(new SessionStatusPlaceholder(
     "NOT_AVAILABLE")));
 
 app.MapVerificationSessionEndpoints();
+app.MapRecipientPackageDeliveryEndpoints();
 
 app.Run();
 
@@ -263,6 +283,7 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
     if (builder.Services.Any(descriptor =>
             descriptor.ServiceType == typeof(ProvisionalObjectCustodyReadinessValidator)))
         builder.Services.AddScoped<IReadinessCheck, ProvisionalObjectCustodyReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RecipientPackageDeliveryReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
 }
@@ -495,6 +516,13 @@ static void ValidateProductionTrialP12Configuration(WebApplicationBuilder builde
     {
         throw new InvalidOperationException("PROD_SIGNING_P12_PASSWORD_PLAINTEXT_FORBIDDEN");
     }
+}
+
+sealed class RecipientPackageDeliveryHostedService(
+    RecipientPackageDeliveryReconciler reconciler) : BackgroundService
+{
+    protected override Task ExecuteAsync(CancellationToken stoppingToken) =>
+        reconciler.RunAsync(stoppingToken);
 }
 
 public partial class Program;

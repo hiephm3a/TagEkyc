@@ -124,7 +124,7 @@ public sealed class Tip88C1C2RecipientPackageArchTests
     {
         var contracts = typeof(C2AssemblyPreparationRequest).Assembly.GetExportedTypes()
             .Where(type => type.Namespace == typeof(C2AssemblyPreparationRequest).Namespace).ToArray();
-        Assert.DoesNotContain(contracts, type => type.Name.Contains("Download", StringComparison.OrdinalIgnoreCase)
+        Assert.DoesNotContain(contracts.Where(type => !IsC3OwnedDeliveryContract(type)), type => type.Name.Contains("Download", StringComparison.OrdinalIgnoreCase)
             || type.Name.Contains("Delivery", StringComparison.OrdinalIgnoreCase)
             || type.Name.Contains("Locator", StringComparison.OrdinalIgnoreCase));
         Assert.False(typeof(RecipientPackageObjectClientFactory).IsPublic);
@@ -179,7 +179,7 @@ public sealed class Tip88C1C2RecipientPackageArchTests
             || path.EndsWith("Program.cs", StringComparison.Ordinal) || path.Contains("appsettings", StringComparison.OrdinalIgnoreCase));
         var contracts = typeof(C2AssemblyPreparationRequest).Assembly.GetExportedTypes()
             .Where(type => type.Namespace == typeof(C2AssemblyPreparationRequest).Namespace).ToArray();
-        Assert.DoesNotContain(contracts, type => type.Name.Contains("Download", StringComparison.OrdinalIgnoreCase)
+        Assert.DoesNotContain(contracts.Where(type => !IsC3OwnedDeliveryContract(type)), type => type.Name.Contains("Download", StringComparison.OrdinalIgnoreCase)
             || type.Name.Contains("Delivery", StringComparison.OrdinalIgnoreCase)
             || type.Name.Contains("Locator", StringComparison.OrdinalIgnoreCase));
         foreach (var path in changedPaths.Where(path => !path.EndsWith("tip_88c1_c2_recipient_package_as_built.md", StringComparison.Ordinal)))
@@ -188,6 +188,8 @@ public sealed class Tip88C1C2RecipientPackageArchTests
 
     private static string MigrationSource() => File.ReadAllText(ProjectPath(
         "src/TagEkyc.Infrastructure/Persistence/Migrations/20260818120000_Tip88C1C2RecipientPackage.cs"));
+    private static bool IsC3OwnedDeliveryContract(Type type) =>
+        type == typeof(RecipientPackageDeliveryDto) || type == typeof(RecipientPackageDeliveryErrorCodes);
     private static int Count(string value, string token) => (value.Length - value.Replace(token, string.Empty, StringComparison.Ordinal).Length) / token.Length;
     private static string Between(string value, string start, string end)
     {

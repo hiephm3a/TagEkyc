@@ -24,11 +24,20 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
 
     public async Task InitializeAsync()
     {
-        await RunDockerComposeAsync("up -d --wait");
-        await ResetDatabaseAsync();
+        try
+        {
+            await RunDockerComposeAsync("up -d --wait");
+            await ResetDatabaseAsync();
+        }
+        catch
+        {
+            await RunDockerComposeAsync("down -v --remove-orphans", allowFailure: true);
+            throw;
+        }
     }
 
-    public async Task DisposeAsync() => await RunDockerComposeAsync("down");
+    public async Task DisposeAsync() =>
+        await RunDockerComposeAsync("down -v --remove-orphans", allowFailure: true);
 
     public async Task ResetDatabaseAsync()
     {
@@ -49,6 +58,43 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
             .Options;
 
         return new TagEkycDbContext(options);
+    }
+
+    public async Task<DisposableCurrentDatabase> CreateDisposableCurrentDatabaseAsync(string purpose)
+    {
+        if (string.IsNullOrWhiteSpace(purpose) || purpose.Any(character => !char.IsAsciiLetterOrDigit(character) && character != '_'))
+            throw new ArgumentException("Disposable database purpose is invalid.", nameof(purpose));
+        var source = new NpgsqlConnectionStringBuilder(ConnectionString);
+        var databaseName = $"tagekyc_{purpose}_{Guid.NewGuid():N}";
+        var sourceDatabase = source.Database
+            ?? throw new InvalidOperationException("Source database is not configured.");
+        NpgsqlConnection.ClearAllPools();
+        var admin = new NpgsqlConnectionStringBuilder(ConnectionString) { Database = "postgres", Pooling = false };
+        await using (var connection = new NpgsqlConnection(admin.ConnectionString))
+        {
+            await connection.OpenAsync();
+            await using var command = new NpgsqlCommand(
+                $"CREATE DATABASE \"{databaseName}\" TEMPLATE \"{sourceDatabase.Replace("\"", "\"\"")}\"", connection);
+            await command.ExecuteNonQueryAsync();
+        }
+        var isolated = new NpgsqlConnectionStringBuilder(ConnectionString) { Database = databaseName, Pooling = false };
+        return new DisposableCurrentDatabase(admin.ConnectionString, isolated.ConnectionString, databaseName);
+    }
+
+    public sealed class DisposableCurrentDatabase(
+        string adminConnectionString, string connectionString, string databaseName) : IAsyncDisposable
+    {
+        public TagEkycDbContext CreateDbContext() => new(new DbContextOptionsBuilder<TagEkycDbContext>()
+            .UseNpgsql(connectionString).Options);
+
+        public async ValueTask DisposeAsync()
+        {
+            NpgsqlConnection.ClearAllPools();
+            await using var connection = new NpgsqlConnection(adminConnectionString);
+            await connection.OpenAsync();
+            await using var command = new NpgsqlCommand($"DROP DATABASE IF EXISTS \"{databaseName}\" WITH (FORCE)", connection);
+            await command.ExecuteNonQueryAsync();
+        }
     }
 
     public async Task AssertLatestMigrationAsync(string testName)
@@ -84,7 +130,8 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
                     'tagekyc_raw_export_assembly_sealer_login',
                     'tagekyc_raw_export_package_preparer_login',
                     'tagekyc_raw_export_package_reconciler_login',
-                    'tagekyc_raw_export_package_lifecycle_login']
+                    'tagekyc_raw_export_package_lifecycle_login',
+                    'tagekyc_raw_export_package_delivery_login']
                 LOOP
                     SELECT
                         rolcanlogin,
@@ -279,7 +326,7 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
         return await command.ExecuteScalarAsync() is true;
     }
 
-    private static async Task RunDockerComposeAsync(string arguments)
+    private static async Task RunDockerComposeAsync(string arguments, bool allowFailure = false)
     {
         var startInfo = new ProcessStartInfo("docker", $"compose -f docker-compose.persistence-tests.yml {arguments}")
         {
@@ -305,7 +352,7 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
 
         var output = await process.StandardOutput.ReadToEndAsync();
         var error = await process.StandardError.ReadToEndAsync();
-        if (process.ExitCode != 0)
+        if (!allowFailure && process.ExitCode != 0)
         {
             throw new InvalidOperationException($"docker compose failed with exit code {process.ExitCode}.{Environment.NewLine}{output}{Environment.NewLine}{error}");
         }
