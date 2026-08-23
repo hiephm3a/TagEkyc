@@ -39,6 +39,9 @@ internal sealed class ProtectedValuePurpose :
     internal static ProtectedValuePurpose SubjectRefTokenHmac { get; } =
         new("raw-export.subject-ref-token.hmac");
 
+    internal static ProtectedValuePurpose PackageReferenceCursorHmac { get; } =
+        new("raw-export.package-reference-cursor.hmac");
+
     private ProtectedValuePurpose(string code)
     {
         Code = code;

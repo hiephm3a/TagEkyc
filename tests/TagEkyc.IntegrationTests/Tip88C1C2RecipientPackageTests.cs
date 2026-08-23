@@ -23,7 +23,7 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
     {
         var snapshotPath = ProjectPath("src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs");
         var snapshotHash = Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(snapshotPath)));
-        Assert.Equal("467D7B65128C5BDCE18B2417E19AFD4C74E21C2D468087E52511695604D71A9E", snapshotHash);
+        Assert.Equal("5F8653C3D679DBA8EC3D933192BCB4B61E180BB3243953DCED60AAD4E87E8E3C", snapshotHash);
         var pinPaths = new[]
         {
             "tests/TagEkyc.IntegrationTests/Tip88B1E3ResolverReadBoundaryTests.cs",

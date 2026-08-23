@@ -131,7 +131,8 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
                     'tagekyc_raw_export_package_preparer_login',
                     'tagekyc_raw_export_package_reconciler_login',
                     'tagekyc_raw_export_package_lifecycle_login',
-                    'tagekyc_raw_export_package_delivery_login']
+                    'tagekyc_raw_export_package_delivery_login',
+                    'tagekyc_raw_export_package_reference_login']
                 LOOP
                     SELECT
                         rolcanlogin,

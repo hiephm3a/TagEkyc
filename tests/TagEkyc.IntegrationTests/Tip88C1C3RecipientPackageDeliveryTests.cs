@@ -1097,7 +1097,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         await migrator.MigrateAsync("20260818120000_Tip88C1C2RecipientPackage");
         await migrator.MigrateAsync();
         Assert.False(db.Database.HasPendingModelChanges());
-        Assert.Equal("20260819120000_Tip88C1C3AuthenticatedPackageDelivery", (await db.Database.GetAppliedMigrationsAsync()).Last());
+        Assert.Equal(db.Database.GetMigrations().Last(), (await db.Database.GetAppliedMigrationsAsync()).Last());
     }
 
     [Fact]

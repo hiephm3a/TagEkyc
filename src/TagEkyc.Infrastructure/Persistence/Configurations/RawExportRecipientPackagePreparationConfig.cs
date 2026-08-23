@@ -20,6 +20,10 @@ public sealed class RawExportRecipientPackagePreparationConfig : IEntityTypeConf
         entity.HasAlternateKey(row => row.ProviderOperationTokenDigest).HasName("uq_raw_export_recipient_package_operation");
         entity.HasIndex(row => new { row.JobId, row.AttemptId, row.FencingToken })
             .HasDatabaseName("ix_raw_export_recipient_package_attempt_fence");
+        entity.HasIndex(row => new { row.RecipientClientApplicationId, row.FinalizedAtUtc, row.PackageId })
+            .HasDatabaseName("ix_raw_export_recipient_package_reference_list")
+            .IsDescending(false, true, true)
+            .HasFilter("\"State\" = 'Finalized' AND \"FinalizedAtUtc\" IS NOT NULL");
         entity.Property(row => row.RecipientKeyId).HasMaxLength(128).IsRequired();
         entity.Property(row => row.PackageProfile).HasMaxLength(64).IsRequired();
         entity.Property(row => row.ProviderKind).HasMaxLength(64).IsRequired();

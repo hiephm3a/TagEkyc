@@ -58,6 +58,7 @@ else
 }
 builder.Services.AddTagEkycRawExportAssembly(builder.Configuration, builder.Environment.IsProduction());
 builder.Services.AddTagEkycRecipientPackageDelivery(builder.Configuration);
+builder.Services.AddTagEkycRecipientPackageReference(builder.Configuration);
 var recipientPackageDeliveryOptions = RecipientPackageDeliveryOptions.Resolve(builder.Configuration);
 if (recipientPackageDeliveryOptions.Topology == RecipientPackageDeliveryTopology.S3CompatibleDurable
     && recipientPackageDeliveryOptions.IsSyntacticallyValid)
@@ -123,6 +124,7 @@ app.MapGet("/", () => Results.Ok(new SessionStatusPlaceholder(
 
 app.MapVerificationSessionEndpoints();
 app.MapRecipientPackageDeliveryEndpoints();
+app.MapRecipientPackageReferenceEndpoints();
 
 app.Run();
 
@@ -284,6 +286,7 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
             descriptor.ServiceType == typeof(ProvisionalObjectCustodyReadinessValidator)))
         builder.Services.AddScoped<IReadinessCheck, ProvisionalObjectCustodyReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RecipientPackageDeliveryReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RecipientPackageReferenceReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
 }
