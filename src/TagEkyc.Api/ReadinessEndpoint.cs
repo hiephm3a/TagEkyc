@@ -2,6 +2,7 @@ using Microsoft.Extensions.Options;
 using TagEkyc.Application.Ports;
 using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.RawExport;
 using TagEkyc.Infrastructure.Signing;
 
 namespace TagEkyc.Api;
@@ -50,10 +51,7 @@ public static class ReadinessEndpoint
         {
             try
             {
-                using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-                timeout.CancelAfter(PerCheckTimeout);
-                var result = await check.CheckAsync(timeout.Token)
-                    .WaitAsync(PerCheckTimeout, cancellationToken);
+                var result = await RunCheckAsync(check, cancellationToken);
                 issues.AddRange(result);
             }
             catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
@@ -79,6 +77,47 @@ public static class ReadinessEndpoint
         return codes.Length == 0
             ? Results.Ok(new { status = "ready" })
             : Results.Json(new { status = "not-ready", codes }, statusCode: StatusCodes.Status503ServiceUnavailable);
+    }
+
+    private static async Task<IReadOnlyList<ReadinessIssue>> RunCheckAsync(
+        IReadinessCheck check,
+        CancellationToken cancellationToken)
+    {
+        using var operationCancellation = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken);
+        var operation = check.CheckAsync(operationCancellation.Token);
+
+        try
+        {
+            return await operation.WaitAsync(PerCheckTimeout, cancellationToken);
+        }
+        catch (TimeoutException)
+        {
+            operationCancellation.Cancel();
+            await QuiesceAfterCancellationAsync(operation, operationCancellation.Token);
+            throw;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            operationCancellation.Cancel();
+            await QuiesceAfterCancellationAsync(operation, operationCancellation.Token);
+            throw;
+        }
+    }
+
+    private static async Task QuiesceAfterCancellationAsync(
+        Task operation,
+        CancellationToken operationCancellation)
+    {
+        try
+        {
+            await operation;
+        }
+        catch (OperationCanceledException) when (operationCancellation.IsCancellationRequested)
+        {
+            // The timeout/request cancellation is expected, but the operation must be
+            // observed to terminal state before its owning scope can be disposed.
+        }
     }
 
     internal static ReadinessIssue PostureIssue(string code) => new(PostureOrder, code);
@@ -137,6 +176,280 @@ public sealed class PostgresReadinessCheck(PostgresProductionReadinessValidator 
             return [];
         }
         catch (PostgresProductionReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+public sealed class RawExportRuntimePrivilegeReadinessCheck(RawExportRuntimePrivilegeValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportRuntimePrivilegeException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+public sealed class RawExportControlPlaneReadinessCheck(RawExportControlPlaneReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportControlPlaneReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+public sealed class RawExportSubjectConsentReadinessCheck(RawExportSubjectConsentReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportSubjectConsentReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+public sealed class RawExportAuthoritySnapshotReadinessCheck(
+    RawExportAuthoritySnapshotReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportAuthoritySnapshotReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+internal sealed class RawExportCustodyProfileReadinessCheck(
+    RawExportCustodyProfileReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportCustodyProfileReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+internal sealed class RawExportAttemptKeyReadinessCheck(
+    RawExportAttemptKeyReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportAttemptKeyReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+internal sealed class RecipientPackageDeliveryReadinessCheck(
+    RecipientPackageDeliveryReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RecipientPackageDeliveryReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+internal sealed class RecipientPackageReferenceReadinessCheck(
+    RecipientPackageReferenceReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RecipientPackageReferenceReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+internal sealed class RecipientManagementReadinessCheck(
+    RecipientManagementReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken).ConfigureAwait(false);
+            return [];
+        }
+        catch (RecipientManagementReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+public sealed class RawExportAuthorizationReadinessCheck(RawExportAuthorizationReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportAuthorizationReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+public sealed class RawExportPermitTtlReadinessCheck(RawExportPermitTtlBoundsState bounds) : IReadinessCheck
+{
+    public Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult<IReadOnlyList<ReadinessIssue>>(bounds.IsValid
+            ? []
+            : [ReadinessEndpoint.DatabaseIssue(RawExportPermitTtlBoundsState.InvalidCode)]);
+    }
+}
+
+public sealed class RawExportJobReadinessCheck(
+    RawExportJobReadinessValidator validator,
+    RawExportJobLeaseState leaseState) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        if (!leaseState.IsValid)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(RawExportJobLeaseOptions.InvalidCode)];
+        }
+
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportJobReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+public sealed class DurableKeyCustodyReadinessCheck(
+    DurableKeyTopologyOptions topology,
+    IEnumerable<IDurableKeyReadinessValidator> validators) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        if (topology.Topology == DurableKeyTopology.Invalid)
+        {
+            return
+            [
+                ReadinessEndpoint.DatabaseIssue(
+                    DurableKeyProviderReadinessValidator.Codes[0]),
+            ];
+        }
+
+        if (topology.Topology != DurableKeyTopology.DurableKey)
+        {
+            return [];
+        }
+
+        try
+        {
+            foreach (var validator in validators)
+            {
+                await validator.ValidateAsync(cancellationToken);
+            }
+
+            return [];
+        }
+        catch (DurableKeyReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+public sealed class RawExportAssemblyReadinessCheck(
+    RawExportAssemblyReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportAssemblyReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
+public sealed class ProvisionalObjectCustodyReadinessCheck(
+    ProvisionalObjectCustodyReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (ProvisionalObjectCustodyReadinessException exception)
         {
             return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
         }

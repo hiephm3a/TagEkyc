@@ -45,6 +45,39 @@ public sealed class Tip83E2AuditDurabilityBoundaryTests
             typeof(EfAuditEventRepository).FullName!,
             new[] { "AppendAsync", "ListBySessionAsync" },
         ];
+        yield return
+        [
+            typeof(IRawExportPolicyRepository).FullName!,
+            typeof(EfRawExportPolicyRepository).FullName!,
+            new[]
+            {
+                "AbandonDraftAsync",
+                "AddVersionAsync",
+                "CatalogApproveAsync",
+                "GetLatestCatalogApprovedVersionAsync",
+                "GetLatestVersionAsync",
+                "GetVersionAsync",
+                "ListAsync",
+            },
+        ];
+        yield return
+        [
+            typeof(IRawExportControlPlaneRepository).FullName!,
+            typeof(EfRawExportControlPlaneRepository).FullName!,
+            new[]
+            {
+                "AcceptFulfillmentAsync",
+                "ActivatePolicyAsync",
+                "GrantControlAuthorityAsync",
+                "GrantExportPolicyAsync",
+                "ResolveExportEligibilityForAuthorizationAsync",
+                "RevokeControlAuthorityAsync",
+                "RevokeExportPolicyGrantAsync",
+                "RevokePolicyAsync",
+                "SuspendPolicyAsync",
+                "WithdrawFulfillmentAsync",
+            },
+        ];
     }
 
     [Theory]

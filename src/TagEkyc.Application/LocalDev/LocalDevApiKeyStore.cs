@@ -14,6 +14,16 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
         "session.cancel",
     };
 
+    private static readonly IReadOnlySet<string> RecipientPackageDeliveryScopes = new HashSet<string>
+    {
+        "business.raw-export.package.download",
+    };
+
+    private static readonly IReadOnlySet<string> RecipientPackageReferenceScopes = new HashSet<string>
+    {
+        "business.raw-export.package.references.read",
+    };
+
     private static readonly IReadOnlySet<string> CaptureAgentScopes = new HashSet<string>
     {
         "capture.artifact.append",
@@ -34,7 +44,8 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             BusinessScopes,
             ApiKeyStatus.Active,
             DateTimeOffset.UtcNow.AddYears(10),
-            AuthenticatedCallerCategory.BusinessConsumer),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: LocalDevRuntimePolicySource.BusinessClientId),
         new(
             Guid.Parse("20000000-0000-0000-0000-000000000002"),
             LocalDevRuntimePolicySource.OtherBusinessClientId,
@@ -43,7 +54,8 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             BusinessScopes,
             ApiKeyStatus.Active,
             DateTimeOffset.UtcNow.AddYears(10),
-            AuthenticatedCallerCategory.BusinessConsumer),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: LocalDevRuntimePolicySource.OtherBusinessClientId),
         new(
             Guid.Parse("20000000-0000-0000-0000-000000000003"),
             LocalDevRuntimePolicySource.BusinessClientId,
@@ -52,7 +64,8 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             new HashSet<string> { "business.session.read" },
             ApiKeyStatus.Active,
             DateTimeOffset.UtcNow.AddYears(10),
-            AuthenticatedCallerCategory.BusinessConsumer),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: LocalDevRuntimePolicySource.BusinessClientId),
         new(
             Guid.Parse("20000000-0000-0000-0000-000000000009"),
             LocalDevRuntimePolicySource.BusinessClientId,
@@ -61,7 +74,28 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             new HashSet<string> { "business.session.create", "session.complete", "session.cancel" },
             ApiKeyStatus.Active,
             DateTimeOffset.UtcNow.AddYears(10),
-            AuthenticatedCallerCategory.BusinessConsumer),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: LocalDevRuntimePolicySource.BusinessClientId),
+        new(
+            Guid.Parse("20000000-0000-0000-0000-000000000010"),
+            LocalDevRuntimePolicySource.BusinessClientId,
+            "localdev-recipient-package-delivery-key",
+            "ldev_delivery",
+            RecipientPackageDeliveryScopes,
+            ApiKeyStatus.Active,
+            DateTimeOffset.UtcNow.AddYears(10),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: LocalDevRuntimePolicySource.BusinessClientId),
+        new(
+            Guid.Parse("20000000-0000-0000-0000-000000000011"),
+            LocalDevRuntimePolicySource.BusinessClientId,
+            "localdev-recipient-package-reference-key",
+            "ldev_reference",
+            RecipientPackageReferenceScopes,
+            ApiKeyStatus.Active,
+            DateTimeOffset.UtcNow.AddYears(10),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: Guid.Parse("30000000-0000-0000-0000-000000000011")),
         new(
             Guid.Parse("20000000-0000-0000-0000-000000000004"),
             LocalDevRuntimePolicySource.BusinessClientId,
@@ -70,7 +104,8 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             BusinessScopes,
             ApiKeyStatus.Revoked,
             DateTimeOffset.UtcNow.AddYears(10),
-            AuthenticatedCallerCategory.BusinessConsumer),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: LocalDevRuntimePolicySource.BusinessClientId),
         new(
             Guid.Parse("20000000-0000-0000-0000-000000000005"),
             LocalDevRuntimePolicySource.BusinessClientId,
@@ -79,7 +114,8 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             BusinessScopes,
             ApiKeyStatus.Expired,
             DateTimeOffset.UtcNow.AddDays(-1),
-            AuthenticatedCallerCategory.BusinessConsumer),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: LocalDevRuntimePolicySource.BusinessClientId),
         new(
             Guid.Parse("20000000-0000-0000-0000-000000000006"),
             LocalDevRuntimePolicySource.DisabledClientId,
@@ -88,7 +124,8 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             BusinessScopes,
             ApiKeyStatus.Active,
             DateTimeOffset.UtcNow.AddYears(10),
-            AuthenticatedCallerCategory.BusinessConsumer),
+            AuthenticatedCallerCategory.BusinessConsumer,
+            PrincipalId: LocalDevRuntimePolicySource.DisabledClientId),
         new(
             Guid.Parse("20000000-0000-0000-0000-000000000007"),
             LocalDevRuntimePolicySource.BusinessClientId,
@@ -99,7 +136,8 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             DateTimeOffset.UtcNow.AddYears(10),
             AuthenticatedCallerCategory.CaptureAgent,
             new HashSet<Guid> { LocalDevRuntimePolicySource.BusinessClientId },
-            new HashSet<string> { "ldev_capture" }),
+            new HashSet<string> { "ldev_capture" },
+            PrincipalId: Guid.Parse("30000000-0000-0000-0000-000000000007")),
         new(
             Guid.Parse("20000000-0000-0000-0000-000000000008"),
             LocalDevRuntimePolicySource.BusinessClientId,
@@ -109,7 +147,8 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             ApiKeyStatus.Active,
             DateTimeOffset.UtcNow.AddYears(10),
             AuthenticatedCallerCategory.TrustedAdapter,
-            new HashSet<Guid> { LocalDevRuntimePolicySource.BusinessClientId }),
+            new HashSet<Guid> { LocalDevRuntimePolicySource.BusinessClientId },
+            PrincipalId: Guid.Parse("30000000-0000-0000-0000-000000000008")),
     ];
 
     public IReadOnlyList<LocalDevApiKeyRecord> ApiKeys => apiKeys;
@@ -132,5 +171,6 @@ public sealed class LocalDevApiKeyStore : IApiKeyStore
             apiKey.ExpiresAt,
             apiKey.CallerCategory,
             apiKey.AllowedClientApplicationIds,
-            apiKey.AllowedCaptureAgentIds);
+            apiKey.AllowedCaptureAgentIds,
+            apiKey.PrincipalId);
 }

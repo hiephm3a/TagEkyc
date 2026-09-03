@@ -1,13 +1,729 @@
 # TagEkyc TIP Index
 
 **File:** `docs/tips/README.md`
-**Version:** 1.34
+**Version:** 1.82
 **Status:** Active
-**Date:** 2026-07-01
+**Date:** 2026-07-29
 **Baseline:** Product Brief v0.1.2
 **Purpose:** Indexes TIP folders and records the TIP document naming convention.
 
 ## Changelog
+
+### v1.82 - TIP-88C1 v0.17 final planning correction
+
+- Updated the Planning Brief to v0.17 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Split configuration readiness, CaptureAgent pre-wait and custody post-wait
+  projections; corrected late token/backoff expired-owner sums to be
+  sequential after the shared lease/minimum-age owner-CAS anchor.
+- Removed the duplicate per-claim attempt limit. The 91-symbol register retains
+  three independently binding source/key/object limits.
+- Transferred retry-count accounting and all nine open questions to
+  `C1-BB-RETRY-COUNT-ACCOUNTING-GATE`, which blocks Build-Brief dispatch.
+- Synchronized HLD v0.13, LLD v1.9 and Debt Registry v0.14. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.81 - TIP-88C1 v0.16 self-auditing planning closure
+
+- Updated the Planning Brief to v0.16 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Replaced hand-written readiness groups with the exhaustive 15-path
+  state × preceding-wait derivation and the combined evaluation-wait plus
+  expired-owner-reclaim negative.
+- Published the 92-symbol population/register diff; closed five finite
+  attempt/key/object/retry limits, one common busy backoff,
+  `AdmissionProtocolRejected` and the non-resettable disposition clock.
+- Split pending/ready same-owner and expired-owner states; exact-fence
+  `Terminated` and P4 `TerminatedBeforeStart` both settle prior R2.
+- Synchronized HLD v0.12, LLD v1.8 and Debt Registry v0.13. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.80 - TIP-88C1 v0.15 symbol and retry correction
+
+- Updated the Planning Brief to v0.15 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Added one normative-symbol register, the three-case continuation projection
+  and the expired-owner reclaim-term mutation.
+- Made temporary unavailability retryable but non-terminal/non-replay-stable,
+  and made P4/P5 depend only on server-observable write/flush and reader/writer
+  facts.
+- Planning section 10.0 remains the sole phase/residue/retry/body/admission
+  contract; each invocation uses one external operation shape and a same-UUID
+  retry invokes that shape again.
+- Synchronized HLD v0.11, LLD v1.7 and Debt Registry v0.12. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.79 - TIP-88C1 v0.14 phase-table and termination-budget correction
+
+- Updated the Planning Brief to v0.14 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Made Planning section 10.0 the single exhaustive P0–P7 outcome contract and
+  split metadata-only finalization from body-required progression.
+- Added exact P4 post-R1/pre-admission attempt terminalization while retaining
+  Bound alias/idempotency evidence.
+- Added four bounded no-default prior-R2 termination budgets, conditional
+  runtime projections and discriminating time-bound tests.
+- Synchronized HLD v0.10, LLD v1.6 and Debt Registry v0.11. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.78 - TIP-88C1 v0.13 admission and re-entry correction
+
+- Updated the Planning Brief to v0.13 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Added one-operation metadata/R1/admission/body phase gating, a bounded
+  memory-only kernel/TLS residual and exact no-proxy/no-disk-buffer posture.
+- Split internal claim progression from the only agent-visible final union.
+- Added same-owner fenced re-entry after durable prior-R2 termination.
+- Removed agent-capacity attestation; local exhaustion stays local and server
+  capacity outcomes are custody-only.
+- Synchronized HLD v0.9, LLD v1.5 and Debt Registry v0.10. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.77 - TIP-88C1 v0.12 physical-capacity correction
+
+- Updated the Planning Brief to v0.12 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Chose Model A and split the eight-key capacity manifest between CaptureAgent
+  retained-buffer admission and custody stream/window admission; removed the
+  aggregate-subsuming product relation and required independently reachable
+  slot/aggregate mutations.
+- Classified incomplete transport as retryable temporary unavailability and
+  clean-EOF content mismatch as terminal, with exact same-UUID behavior.
+- Replaced stale three-class commitment evidence with two supported positives
+  plus the unsupported `LivenessMedia` negative, and pinned pre-begin versus
+  post-R2 declaration correction.
+- Synchronized HLD v0.8, LLD v1.4 and Debt Registry v0.9. No Build Brief,
+  implementation, Raw BIO/provider operation, build, test, commit, push, merge
+  or deployment is authorized.
+
+### v1.76 - TIP-88C1 v0.11 transport and bounded-capacity correction
+
+- Updated the Planning Brief to v0.11 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Pinned one external no-resume metadata+bounded-stream operation shape per
+  invocation; the complete
+  begin/broker/complete/R1–R6 ceremony remains internal to TagEkyc.
+- Added exact per-class size, per-operation/aggregate plaintext-memory and
+  per-producer/deployment concurrency bounds and failure contracts.
+- Added one token TTL to the lost-response retention relation and separated a
+  live current evaluation from lookup-lock contention with exact
+  `RetryNotBeforeUtc`.
+- Ratified D2 for `ChipDg2Portrait` and `LiveSelfieImage`; deferred
+  `LivenessMedia` to a separate resumable-transport slice.
+- Synchronized HLD v0.7, LLD v1.3 and Debt Registry v0.8. No Build Brief,
+  implementation, Raw BIO/provider operation, commit, push, merge or deployment
+  is authorized.
+
+### v1.75 - TIP-88C1 v0.10 lifecycle and privacy correction
+
+- Updated the Planning Brief to v0.10 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Ratified content-free producer-envelope v2, leaving content confirmation only
+  behind the keyed commitment and R3 verification boundary.
+- Closed token reissue/current-slot CAS and cleanup semantics, effective
+  server-cap admission, exact timeout/configuration bounds, response shape and
+  C1-only `C1HashCanonical` framing without changing landed JCS
+  `HashCanonical`.
+- Synchronized HLD v0.6, LLD v1.2 and Debt Registry v0.7. No Build Brief,
+  implementation, Raw BIO/provider operation, commit, push, merge or deployment
+  is authorized.
+
+### v1.74 - TIP-88C1 v0.9 external-review correction
+
+- Updated the TIP-88C1 Planning Brief to v0.9 while preserving
+  **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED — IMPLEMENTATION BLOCKED**.
+- Bound tokens to a server-canonical producer-claim envelope, expanded the
+  broker-internal normalized result, and required broker-owned `complete` to
+  recompute admission before R1.
+- Defined evaluation expiry, closed retry lineage and token-result semantics,
+  split capability/lifetime residue, and added reconciliation plaintext
+  hygiene plus custody-host readiness.
+- Synchronized HLD v0.5, LLD v1.1 and Debt Registry v0.6. External CC/GPT
+  re-review is required; no Build Brief, implementation, provider/key
+  operation, Raw BIO handling, commit, push, merge or deployment is authorized.
+
+### v1.73 - TIP-88C1 consolidated v0.8 planning patch
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.8 at status **PLANNING PATCHED — INDEPENDENT REVIEW REQUIRED —
+  IMPLEMENTATION BLOCKED**.
+- Added capture-time ingress idempotency, keyed commitment/subject-token
+  privacy, complete R1 recovery context, fenced producer/reconciler ownership,
+  authority snapshots/checkpoints, accepted-session source freeze, exact C2
+  disposition CAS, monotonic renewal, plaintext/host posture and historic-key
+  lifecycle/DR planning.
+- Closed V1 review gaps with a rotation-safe begin/broker-complete claim and
+  instance-independent artifact edge, server-authored acceptance
+  event/selection dependency, source/attempt/staged fingerprint split,
+  idempotent R1 key reference, exact complete-provisional recovery,
+  deterministic C2 `Preparing` pre-registration plus in-Seal disposition CAS,
+  and an exact least-privilege capability graph.
+- Closed the V3 atomicity finding: the NewCandidate `complete` branch is R1 and
+  returns a source only after its full recovery context commits; New post-begin
+  residue is an Evaluating alias plus bounded non-source shell, while an
+  Existing alternate preserves its alias plus unchanged canonical claim.
+- Closed V4 follow-on gaps with distinct New/Existing token semantics,
+  in-place monotonic shell reclaim, fresh authority revalidation inside
+  `complete`, and named atomicity/authority/reclaim mutation tests.
+- Applied the v0.8-V5 checkpoint corrections: durable alternate-key aliases/
+  tombstones, stateful token-bound HMAC brokerage, typed dependency results
+  routed through `complete`, closed token outcomes and cycle-qualified rounds.
+- Applied the final v0.8-V6 patches for broker-owned completion, a mandatory
+  1–300-second DB-issued token TTL, exact alias/canonical residue and the closed
+  token-variant/result matrix. Per Homeowner direction there is no internal V7;
+  these patches require external CC/GPT verification and do not claim PASS.
+- Synchronized HLD v0.4, LLD v1.0 and Debt Registry v0.5. Controller/legal/
+  retention/purge/hold/provider/key choices, D2–D9, the additive
+  acceptance-surface/producer and every real-artifact/production gate remain
+  open.
+- This docs-only candidate authorizes no Build Brief, source/test/migration,
+  provider/key operation, Raw BIO handling, build, commit, push, merge,
+  deployment or production activation.
+
+### v1.72 - TIP-88C1 consolidated v0.7 review candidate
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.7 after GPT, CC, and Codex adjudication.
+- Recorded the Homeowner-ratified `EncryptedRawVaultRetained` mode direction,
+  with controller/legal/retention/purge/hold/access/B4/delivery sub-decisions
+  still requiring Homeowner ratification.
+- Closed the circular reservation fingerprint, source-selection ambiguity,
+  committed replay/admission conflict, sealed-state reclaim, unknown-seal abort
+  race, timestamp round-trip, crash nondeterminism, observability, credential
+  topology, and ingress-response specification gaps.
+- Synchronized HLD v0.3, LLD v0.9, and Debt Registry v0.4 while preserving
+  separate ART persistence/readability/completeness gates and complete fixture
+  non-claims.
+- v0.7 is only a candidate for independent review. It authorizes no Build
+  Brief, implementation, provider execution/evidence, raw persistence/reuse,
+  commit, push, merge, deployment, or production activation.
+
+### v1.71 - TIP-88C1 round-5 root-cause and GUID correction
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.6 after V5 found one HIGH `PATCH_REGRESSION`: v0.5 used GUID `D`
+  strings while the authoritative LLD and landed hash call sites use `N`.
+- Recorded the mandatory round-5 root-cause checkpoint, corrected every C1
+  preimage to lowercase GUID `N`, and required a complete independent
+  cross-language scalar/hash/id golden vector.
+- Updated the LLD to v0.8 and debt registry to v0.3. Scope, provider posture,
+  D1–D9 decisions, GOV/ART gates, and all non-authorization boundaries remain
+  unchanged.
+- This entry authorizes no implementation, provider evidence collection,
+  raw-data handling, commit, push, merge, deployment, or real-patient
+  activation.
+
+### v1.70 - TIP-88C1 V4 governance, retry, and lease corrections
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.5 after V4 found one HIGH and three MEDIUM actionable gaps.
+- Synchronized the C1 planning amendment into the HLD, LLD, and debt registry;
+  required complete fixture lifecycle dispositions; split job-stable assembly
+  values from attempt-scoped manifest/C2 values; and added landed B4
+  lease-renewal supervision with latest-revision propagation.
+- Updated the feasibility spike to v0.3 only to label its v0.1 planning status
+  as historical rather than current.
+- Added exact cross-attempt and longer-than-one-lease proof requirements. The
+  initial mode/class/key/provider decisions remain unratified, and no
+  implementation dispatch has been issued.
+- This entry authorizes no implementation, provider evidence collection,
+  raw-data handling, commit, push, merge, deployment, or real-patient
+  activation.
+
+### v1.69 - TIP-88C1 V3 lifecycle and key-boundary corrections
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.4 after V3 found three HIGH and one MEDIUM contract gaps.
+- Required exact equality between sealed items and the immutable B4 ordered
+  job-class set, made the committed seal the authority point for finalizing its
+  exact C2 preparation, and separated source-encryption keys from assembly
+  signing and C2 verification.
+- Added D9 to carry `GOV-001` and `ART-001` through `ART-009`, including the
+  provider-fixture evidence packet, real-artifact, HLD/LLD, and debt-registry
+  gates. Provider-neutral storage direction, mode/class recommendations, scope,
+  and non-authorization remain unchanged.
+- This entry authorizes no implementation, raw-data handling, provider
+  production use, commit, push, merge, deployment, or real-patient activation.
+
+### v1.68 - TIP-88C1 V2 seal replay and outcome synchronization
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.3 after V2 found two HIGH and two MEDIUM patch-local defects.
+- Completed the seal command with every persisted assembly field, made exact
+  replay reachable from `AssemblySealed`, pinned stale admission before fresh
+  authority for a new seal, and synchronized binding/integrity outcome tokens.
+- Added discriminating response-loss replay and simultaneous
+  stale-plus-withdrawal proofs. Provider-neutral storage direction, mode/class
+  recommendations, scope, and non-authorization remain unchanged.
+- This entry authorizes no implementation, raw-data handling, provider
+  production use, commit, push, merge, deployment, or real-patient activation.
+
+### v1.67 - TIP-88C1 round-1 distributed-boundary corrections
+
+- Updated
+  [`TIP-88C1 Planning Brief`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  to v0.2 after independent High-risk review found five HIGH and two MEDIUM
+  planning defects.
+- Added the C1-owned B4 `Assembling → AssemblySealed` transaction, the
+  provider/metadata provisional-object crash protocol, fresh pre-seal authority
+  revalidation, credential/session-challenge producer binding, the C2
+  prepare/finalize/abort boundary, and a distinct DG2 artifact identity.
+- Split custody-ingress and assembly-worker precedence matrices and added exact
+  consumer mappings. The accepted provider-neutral/S3-reference direction and
+  all implementation/non-production boundaries remain unchanged.
+- Corrected the feasibility spike wording so production-provider qualification,
+  rather than the already accepted reference-adapter direction, remains a
+  Homeowner decision.
+- This entry authorizes no implementation, raw-data handling, provider
+  production use, commit, push, merge, deployment, or real-patient activation.
+
+### v1.66 - TIP-88C1 planning opened with provider-neutral storage direction
+
+- Added
+  [`TIP-88C1 Planning Brief v0.1`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_planning_brief.md)
+  under the active PI-TAG-001 High-risk pilot.
+- Recorded the Homeowner-selected provider-neutral raw-artifact storage
+  boundary, an S3-compatible first reference adapter tested against a pinned
+  MinIO version/digest, and an encrypted-filesystem provider as a separately
+  qualified single-node alternative rather than parallel mandatory scope.
+- Kept MinIO production approval, the initial mode/class set, cryptographic/key
+  boundary, pre-capture retention authority, and CaptureAgent cross-repository
+  allowlist behind explicit gates. The draft recommends
+  `EncryptedExportPacket` with `ChipDg2Portrait`, `LiveSelfieImage`, and
+  `LivenessMedia`, but does not ratify or dispatch those choices.
+- Refreshed the
+  [`TIP-88C1 Feasibility Spike`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_feasibility_spike.md)
+  to v0.2 so its storage-provider wording matches the accepted direction.
+- This entry authorizes no implementation, raw-data handling, provider
+  production use, commit, push, merge, deployment, or real-patient activation.
+
+### v1.65 - TIP-88C1 feasibility characterized
+
+- Added
+  [`TIP-88C1 Feasibility Spike`](tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_feasibility_spike.md)
+  against TagEkyc `33b478c` and a read-only inspection of CaptureAgent
+  `b193f63`. The spike confirms that TagEkyc has metadata/hashes but no raw
+  source/provider/resolver, while CaptureAgent keeps only transient
+  zero-on-dispose buffers and rejects `RawVault` configuration. C1 planning may
+  proceed under the now-active PI-TAG-001 High-risk pilot, but implementation is
+  blocked until the initial mode, supported class subset, source/handoff
+  topology, provider/key boundary, and cross-repository scope are ratified.
+  This entry authorizes no raw access, implementation, provider selection,
+  commit, push, merge, deployment, or production activation.
+
+### v1.64 - TIP-88B4 closeout prepared
+
+- Added
+  [`TIP-88B4 Closeout`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_closeout.md)
+  against settled baseline `92d64e6`. TIP-88B4 is closed as the metadata-only
+  permit-to-job consumption foundation: five tables, eight runtime entries, six
+  internal guards, ten triggers, the six-method repository, fingerprint/lease
+  contracts, readiness, and exact ACL/transaction evidence are landed. The
+  closeout records the independently rerun 794-pass/0-fail/1-intentional-skip
+  validation, honest post-landing defects, mutation adequacy, D1 accounting,
+  remaining B4/E3 debt, and the no-Raw-BIO/package/encryption/delivery boundary.
+  The closeout document is prepared but its docs-only commit still requires
+  separate Homeowner authorization; no push, merge, deployment, Raw BIO access,
+  or production activation is authorized.
+
+### v1.63 - TIP-88B4 D1/D2 evidence correction synchronized
+
+- Synchronized the Homeowner-authorized documentation correction into
+  [`TIP-88B4 Planning Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  v0.22 and
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  v0.19. The mutation matrix now distinguishes behavioral mutation proof,
+  structural/constraint proof, source/static proof, and non-constructible states;
+  it preserves all executed tests without overstating distinct cells. The
+  `ExistingMatch` wording now matches landed idempotency: immutable validated
+  replay returns early, `ExportMode` remains fingerprint-bound, and prospective
+  `NewJob` mode/closure validation remains mandatory. Implementation is landed;
+  this docs-only amendment does not authorize commit, closeout, push, merge, PR,
+  deployment, Raw BIO access, or production activation.
+
+### v1.62 - TIP-88B4 connection-lifecycle Amendment D synchronized
+
+- Recorded the Homeowner-ratified Option-D correction in
+  [`TIP-88B4 Planning Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  v0.21 and
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  v0.18. B4 no longer mutates or normalizes a scoped connection string per call.
+  It retains preflight-first ambient/EF/provider/open-connection rejection, a
+  final no-gap admission check, one fresh explicit Read Committed transaction,
+  one unchanged scoped DbContext/connection/transaction, and
+  closed/transaction-free cleanup. A previously-opened-now-closed scoped
+  connection is explicitly supported. Named all-six preflight and adjacency
+  gates plus a complete six-method × four-exit cleanup/reopen matrix prevent
+  subset evidence from satisfying the amendment. Implementation remains stopped;
+  this docs-only synchronization authorizes no implementation resume, commit,
+  push, merge, PR, deployment, Raw BIO access, or production activation.
+
+### v1.61 - TIP-88B4 synchronization verified
+
+- Recorded independent Round-4
+  **PASS — 0 HIGH / 0 MEDIUM / 0 LOW** for
+  [`TIP-88B4 Planning Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  v0.20 and
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  v0.17. The planning status is **RATIFIED AS AMENDED — SYNCHRONIZATION
+  VERIFIED**; the build brief is **READY FOR CONTROLLED DOCS-ONLY RATIFICATION
+  COMMIT — NOT DISPATCHED**. This creates no implementation, migration, push,
+  merge, deployment, Raw BIO, or production-activation authority.
+
+### v1.60 - TIP-88B4 round-3 version synchronization
+
+- Advanced the
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.16 after Round 3 confirmed the ratified semantics clean but found one
+  MEDIUM stale pointer to Planning v0.18. The operative incorporation record now
+  points to authoritative Planning v0.19 and the v0.15 history accurately records
+  its substantive manifest change. Status remains **DRAFT — ROUND-3 VERSION SYNC
+  CORRECTION PATCHED — NOT DISPATCHED** pending independent verification; no
+  implementation or release authority is created.
+
+### v1.59 - TIP-88B4 round-2 manifest correction
+
+- Advanced
+  [`TIP-88B4 Planning Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  to v0.19 and the
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.15 after Round 2 confirmed all prior defects closed but found one MEDIUM
+  stable-code manifest omission. The patch adds and defines
+  `PROD_RAW_EXPORT_JOB_LEASE_CONFIG_INVALID` consistently with the ratified
+  result mapping and readiness contract. Status remains **DRAFT — ROUND-2
+  SYNCHRONIZATION CORRECTION PATCHED — NOT DISPATCHED** pending independent
+  verification; no implementation or release authority is created.
+
+### v1.58 - TIP-88B4 round-1 synchronization corrections
+
+- Advanced
+  [`TIP-88B4 Planning Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  to v0.18 and the
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.14 after independent review found 2 HIGH / 1 MEDIUM synchronization
+  defects. The patch makes §2.1 a ratified incorporation record, completes the
+  all-six transaction, committed-`GraphInvalid`, and lease-bound result mappings,
+  and removes completed governance actions from remaining gates. Status remains
+  **DRAFT — ROUND-1 SYNCHRONIZATION CORRECTIONS PATCHED — NOT DISPATCHED**
+  pending independent correction verification; no implementation or release
+  authority is created.
+
+### v1.57 - TIP-88B4 Amendments A–C ratified and synchronized
+
+- Synchronized the Homeowner-ratified coordinated Amendments A–C into
+  [`TIP-88B4 Planning Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  v0.17 and advanced the
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.13 at status **AMENDMENTS RATIFIED — SYNCHRONIZATION VERIFICATION
+  REQUIRED — NOT DISPATCHED**. This authorizes independent synchronization
+  review and continued build-brief preparation only; it creates no
+  implementation, migration, commit, push, merge, deployment, Raw BIO, or
+  production-activation authority.
+
+### v1.56 - TIP-88B4 Task-0 gate verified clean
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to metadata-only closeout v0.12 at status
+  **READY FOR HOMEOWNER AMENDMENT RATIFICATION — NOT DISPATCHED** after the exact
+  Task-0 PowerShell gate passed valid-order permutations and failed closed for
+  empty, invalid-revision, extra, missing, wrong, case-changed, and rename cases.
+  Amendments A–C remain unratified and no implementation or release authority is
+  created.
+
+### v1.55 - TIP-88B4 Task-0 exact-delta gate corrected
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.11 at status
+  **DRAFT — TASK-0 GATE PATCHED, VERIFICATION REQUIRED — NOT DISPATCHED**.
+  Correction verification accepted the v0.10 restoration/build-graph/summary
+  patches but reproduced one MEDIUM false-pass in the docs-only commit gate.
+  v0.11 disables rename detection, checks Git exit status and exact path count,
+  and performs ordinal per-path equality without `Compare-Object`. No
+  implementation or release authority is created.
+
+### v1.54 - TIP-88B4 v0.9 review corrections
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.10 at status
+  **DRAFT — v0.9 CORRECTIONS PATCHED, VERIFICATION REQUIRED — NOT DISPATCHED**.
+  The review passed Amendments A–C but found 1 HIGH / 1 MEDIUM / 1 LOW in build
+  hardening. The patch restores the scoped connection string on every exit,
+  protects the exact docs-only dispatch commit and root build graph, adds
+  same-scope restoration tests/mutations, and synchronizes summary wording to
+  all six repository methods. No implementation or release authority is created.
+
+### v1.53 - TIP-88B4 external corrections verified clean
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to metadata-only closeout v0.9 at status
+  **READY FOR HOMEOWNER AMENDMENT RATIFICATION — NOT DISPATCHED** after the
+  independent correction review returned **PASS — 0 findings**. Amendments A–C
+  are safe to present for the Homeowner's planning decision but remain
+  unratified. No implementation, migration, code/test, commit, push, merge,
+  deployment, Raw BIO, or production authority is created.
+
+### v1.52 - TIP-88B4 external-review corrections
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.8 at status
+  **DRAFT — EXTERNAL CORRECTIONS PATCHED, VERIFICATION REQUIRED — NOT
+  DISPATCHED** after an external review returned 1 HIGH / 4 MEDIUM / 1 LOW.
+  **Historical, superseded by TIP-88B4 Amendment D:** the patch pinned
+  same-scoped-DbContext `Enlist=false` handling, extended Amendment B to planning
+  section 3.3, hardened Task 0 against commit/staged/untracked drift,
+  removes governance files from the implementation allowlist, names every
+  amendment test/mutation, and corrects the worker-capability non-claim. No
+  implementation or release authority is created.
+
+### v1.51 - TIP-88B4 closeout readiness wording synchronized
+
+- Updated the metadata-only closeout
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.7 after byte-delta attestation found one stale current-state phrase.
+  Dispatch Readiness now lists Homeowner amendment ratification and subsequent
+  planning/index synchronization verification as remaining, rather than the
+  already-completed review-convergence gate. No substantive contract,
+  implementation, migration, code/test, or release authority changed.
+
+### v1.50 - TIP-88B4 amendment package review-converged
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to metadata-only closeout v0.6 at status
+  **READY FOR HOMEOWNER AMENDMENT RATIFICATION — NOT DISPATCHED** after V5
+  returned **PASS — 0 HIGH / 0 MEDIUM / 0 LOW**. The five-round ladder covered
+  deep bounded review, patch verification, free adversarial review, and two
+  bounded convergence checks. Amendments A–C are now safe to present for the
+  Homeowner's planning decision. They are not yet ratified, and this entry grants
+  no implementation, migration, code/test, commit, push, merge, deployment,
+  Raw BIO, or production authority.
+
+### v1.49 - TIP-88B4 amendment-package V4 correction
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.5 after V4 returned one HIGH patch regression. Amendment B now
+  distinguishes normal claim-admitted bind from the repository-admitted,
+  pre-claim committed-job `GraphInvalid` direct-terminalization path required by
+  Amendment A. All other V3 findings were verified closed. Status remains
+  **BLOCKED — PLANNING AMENDMENTS RATIFICATION REQUIRED — NOT DISPATCHED**.
+  V5 is the final convergence review; no implementation or release authority is
+  created.
+
+### v1.48 - TIP-88B4 coordinated planning-amendment candidate
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.4 after V3 returned 2 HIGH / 1 MEDIUM. The candidate now packages three
+  coordinated, still-unratified planning amendments: committed-job
+  `GraphInvalid` bind terminal/race results, fresh per-method transaction
+  admission, and direct lease-bound precedence. It also makes lease-result
+  `AttemptId` mean only a newly acquired work-authorizing attempt. Status remains
+  **BLOCKED — PLANNING AMENDMENTS RATIFICATION REQUIRED — NOT DISPATCHED**. V4
+  verification and Homeowner ratification are still required; no implementation
+  or release authority is created.
+
+### v1.47 - TIP-88B4 V2 correction candidate and planning erratum
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.3 at status
+  **BLOCKED — PLANNING ERRATUM RATIFICATION REQUIRED — NOT DISPATCHED** after V2
+  returned 2 HIGH / 1 MEDIUM. The candidate now represents actor-scoped
+  `NotFound`, `AlreadyTerminal`, `Cancelled`, and code-less expiry exactly; pins
+  direct lease-bound precedence; and records the exact section-9.1a planning
+  erratum needed for fresh read/renew/failure/terminalize transactions. The
+  erratum is proposed, not ratified. V3 review and explicit Homeowner ratification
+  remain required; no implementation or release authority is created.
+
+### v1.46 - TIP-88B4 build-brief V1 findings patched
+
+- Updated
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  to v0.2 at status
+  **DRAFT — V1 FINDINGS PATCHED, VERIFICATION REQUIRED — NOT DISPATCHED**.
+  The independent deep review returned 4 HIGH, 2 MEDIUM, and 1 LOW; v0.2 fixes
+  class-ordinal uniqueness, the full index manifest, the public C# declaration
+  manifest, all-six-method transaction ownership, invalid lease-state behavior,
+  the extra-B4-function readiness universe/mutation, and the stale E3 runbook
+  hold instruction. V2 verification remains required. This remains
+  build-brief preparation only and authorizes no implementation or release
+  action.
+
+### v1.45 - TIP-88B4 implementation build brief drafted
+
+- Added
+  [`TIP-88B4 Implementation Build Brief`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_implementation_build_brief.md)
+  v0.1 at status **DRAFT FOR DEEP REVIEW — NOT DISPATCHED**, under the
+  Homeowner's build-brief-preparation-only authority. The draft translates the
+  ratified planning contract into an Intent Ledger, candidate baseline/Task-0,
+  exact C#/EF/SQL/readiness surfaces, proposed permanent allowlist, M1–M13 and
+  mutation protocol, validation order, STOP/RRI conditions, and builder report.
+  It does not authorize implementation, migration creation/execution, model or
+  snapshot changes, code/test work, commit, push, merge, deployment, Raw BIO
+  access, or production activation. Independent review and separate Homeowner
+  build dispatch remain required.
+
+### v1.44 - TIP-88B4 planning contract ratified
+
+- Recorded the Homeowner's 2026-07-26 ratification of
+  [`TIP-88B4 Permit-to-Job Consumption Foundation`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  Planning Brief v0.15 as the authoritative scope and design contract. The
+  document is now v0.16 at status
+  **RATIFIED — BUILD BRIEF PREPARATION AUTHORIZED**; v0.16 adds only the
+  ratification metadata/record. This decision authorizes preparation of the
+  implementation build brief only. It does not authorize implementation,
+  migration creation/execution, model changes, commit, push, merge, deployment,
+  Raw BIO access, package/encryption/delivery capability, or production
+  activation.
+
+### v1.43 - TIP-88B4 planning review re-closed
+
+- Updated
+  [`TIP-88B4 Permit-to-Job Consumption Foundation`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  to planning brief v0.15 at status **READY_FOR_HOMEOWNER_RATIFICATION** after an
+  independent byte-to-EOF review of v0.14 returned
+  **PASS — 0 HIGH / 0 MEDIUM / 0 LOW**. Version 0.15 changes only closeout
+  metadata and the clean Round-14 review record. This status makes the planning
+  brief eligible only for the Homeowner governance decision; it does not ratify
+  the plan or authorize a build, migration, implementation, commit, push, merge,
+  or deploy.
+
+### v1.42 - TIP-88B4 round-13 proof corrections
+
+- Updated
+  [`TIP-88B4 Permit-to-Job Consumption Foundation`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  to planning brief v0.14 at status **READY_FOR_FINAL_VERIFICATION** after the
+  v0.13 review returned 0 HIGH / 2 MEDIUM / 0 LOW. The patch restores
+  invalid-command preflight ahead of transaction-ownership failure and adds
+  discriminating bind/attempt gates using matching Read Committed ambient and
+  already-active transactions. These fixtures prevent the later SQL isolation
+  guard from masking a missing early repository rejection and assert zero B4
+  database commands. No table redesign or raw-source, package, encryption,
+  delivery, HTTP, build, migration, commit, push, merge, or deploy authorization
+  is created. Final independent verification remains required before Homeowner
+  ratification.
+
+### v1.41 - TIP-88B4 round-12 isolation correction
+
+- Updated
+  [`TIP-88B4 Permit-to-Job Consumption Foundation`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  to planning brief v0.13 at status **READY_FOR_FINAL_VERIFICATION** after one
+  HIGH residual showed that physical database time did not by itself guarantee a
+  fresh MVCC snapshot. Bind and attempt orchestration now own explicit
+  `IsolationLevel.ReadCommitted` transactions and reject caller/ambient
+  transactions; claim and attempt-lock SQL seams reject other isolation levels
+  with one distinct stable operational code before lookup or lock. Dedicated
+  source, direct-runtime, visibility-race, and mutation-red gates pin the
+  contract without relying on Npgsql's coincidentally matching default. No table
+  redesign or raw-source, package, encryption, delivery, HTTP, build, migration,
+  commit, push, merge, or deploy authorization is created. Final independent
+  verification remains required before Homeowner ratification.
+
+### v1.40 - TIP-88B4 planning review closed
+
+- Updated
+  [`TIP-88B4 Permit-to-Job Consumption Foundation`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  to planning brief v0.12 at status **READY_FOR_HOMEOWNER_RATIFICATION** after an
+  independent byte-to-EOF review of v0.11 returned
+  **PASS — 0 HIGH / 0 MEDIUM / 0 LOW**. Version 0.12 changes only closeout
+  metadata and the clean Round-11 review record. This status makes the planning
+  brief eligible only for the Homeowner governance decision; it does not ratify
+  the plan or authorize a build, migration, implementation, commit, push, merge,
+  or deploy.
+
+### v1.39 - TIP-88B4 round-10 corrections
+
+- Updated
+  [`TIP-88B4 Permit-to-Job Consumption Foundation`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  to planning brief v0.11 at status **READY_FOR_FINAL_VERIFICATION** after the
+  Round-10 1-HIGH / 2-MEDIUM review. The accepted corrections extend the exact
+  no-direct-table-access posture to column ACL rows in `pg_attribute.attacl`,
+  pin schema-v1 row-local attempt CHECKs, and enforce the canonical idempotency
+  grammar independently in C# preflight, the runtime claim function, and the
+  identity table. Migration/readiness and mutation-red gates cover each
+  correction. No model redesign or raw-source, package, encryption, delivery,
+  HTTP, build, migration, commit, push, merge, or deploy authorization is
+  created. Final independent verification remains required before Homeowner
+  ratification.
+
+### v1.38 - TIP-88B4 round-9 corrections
+
+- Updated
+  [`TIP-88B4 Permit-to-Job Consumption Foundation`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  to planning brief v0.10 at status **READY_FOR_FINAL_VERIFICATION** after a
+  3-HIGH / 2-MEDIUM review. The accepted corrections pin named deferred-
+  constraint execution inside the SD bind function, exact grantor-aware
+  function/table ACL manifests and migration-time gates, a post-claim finite
+  authority check for `NewJob`, the landed actor-context taxonomy, and
+  live-lease-only worker failure semantics separated from head-first
+  orchestration terminalization. No model redesign or raw-source, package,
+  encryption, delivery, HTTP, build, migration, commit, push, merge, or deploy
+  authorization is created. Final independent verification remains required
+  before Homeowner ratification.
+
+### v1.37 - TIP-88B4 permit-to-job planning opened
+
+- Added
+  [`TIP-88B4 Permit-to-Job Consumption Foundation`](tip_88b4_permit_to_job_consumption_foundation/tip_88b4_planning_brief.md)
+  planning brief v0.9 at status **READY_FOR_HOMEOWNER_RATIFICATION**.
+  The metadata-only slice binds one immutable B3 permit to one logical job,
+  freezes the authoritative identity/mode/classes/deadlines, separates immutable
+  identity, append-only attempts/transitions, and a fenced CAS operational head,
+  and defines runtime-role, migration, concurrency, crash/reclaim, mutation, and
+  readiness gates. It creates no raw-source, package, encryption, delivery, HTTP,
+  or SignFlow capability. Independent review rounds 1–8 are complete; round 8
+  returned **PASS — 0 HIGH / 0 MEDIUM / 0 LOW**. This status makes the brief
+  eligible only for Homeowner governance ratification; it does not ratify the
+  plan or authorize a build, migration, commit, push, merge, or deploy.
+
+### v1.36 - TIP-88 Raw BIO data-plane decomposition ratified
+
+- Updated the authoritative
+  [`TIP-88 program spine`](tip_88_raw_export_policy_spine/tip_88_planning_brief.md)
+  after the B3/E3 foundation closed. Minted five sequential implementation slice
+  identifiers: **TIP-88B4** permit-to-job consumption foundation, **TIP-88C1**
+  secure raw source + sealed assembly, **TIP-88C2** recipient encryption +
+  package custody, **TIP-88C3** authenticated delivery surface, and **TIP-88C4**
+  lifecycle/operations + neutral technical E2E. Locked separate Permit and
+  ExportJob aggregates, immutable identity + append-only evidence + mutable CAS
+  operational head, one job per permit, lease fencing, mode-specific custody and
+  retry semantics, secure source establishment, checkpoint revalidation, honest
+  non-exactly-once delivery with `DeliveryOutcomeUnknown`, independent delivery
+  and reconciliation deadlines, isolated raw worker boundaries, final package
+  authenticity, trusted recipient-key lifecycle, and SignFlow neutrality. This
+  entry ratifies only the decomposition, identifiers, and program-wide
+  invariants: it is not a build dispatch and creates no implementation folders,
+  migrations, or raw-byte capability.
+
+### v1.35 - TIP-88B1-E3 resolver runtime read boundary closed
+
+- TIP-88B1-E3 (`tip_88b1e3_resolver_runtime_read_access/`) is **CLOSED**. The
+  implementation adds typed `SECURITY DEFINER` authorization projections and a
+  bounded root-health capability, removes runtime direct table access across the
+  fourteen protected tables, pins the PostgreSQL 16 dedicated-login role
+  topology and grantor-aware ACL/catalog manifests, hardens fulfillment
+  materialization and B2 constraint-mode handling, and proves exact
+  apply/rollback/reapply behavior. Final validation: 580 passed, 0 failed, 1
+  intentional skip; build 0 warnings/0 errors; pending model clean; snapshot
+  unchanged. See
+  [`tip_88b1e3_closeout.md`](tip_88b1e3_resolver_runtime_read_access/tip_88b1e3_closeout.md).
 
 ### v1.34 - TIP-73 built (agent-side Silent-Face liveness + earned method)
 

@@ -6,6 +6,9 @@ Apply TagEkyc EF migrations as an explicit deploy step. Production startup never
 
 ## Preconditions
 
+- PostgreSQL 16 or later. E3 requires PostgreSQL 16 membership-edge options so
+  the runtime membership can inherit capability while explicitly disallowing
+  SET ROLE. Readiness treats an older server as an invalid deployment posture.
 - `TagEkyc:Persistence:Provider=Postgres`
 - `TagEkyc:Persistence:ConnectionStringSecretRef=env:TAGEKYC_POSTGRES_CONNECTION_STRING` or `file:<absolute protected path>`
 - The resolved secret is a Postgres connection string stored outside appsettings.
@@ -45,6 +48,197 @@ For stronger runtime hardening, deploy with separate identities:
 - For the append-only tables, the runtime role should have `INSERT`/`SELECT` only and no `UPDATE`, `DELETE`, `ALTER`, `DROP`, or trigger-disable capability.
 
 This is deployment guidance, not auto-applied SQL. Concrete role names and grants belong to the hospital deployment plan. A migration run by the schema owner cannot make that same owner least-privileged; the runtime role split must be provisioned operationally.
+
+## Raw-Export Rule-Table Privilege Gate (TIP-88A)
+
+The raw-export requirement-rule tables `tagekyc.raw_export_requirement_rule_sets` and `tagekyc.raw_export_requirement_rules` (added by `20260711132410_Tip88ARawExportPolicyCatalog`) are migration-seeded and immutable at runtime. Two layers protect them:
+
+- In-DB enforcement, always on and role-independent: the `reject_raw_export_rule_runtime_mutation()` trigger raises on any `INSERT`/`UPDATE`/`DELETE` from any caller. Derivation rules can only change via a new migration.
+- Deployment gate after TIP-88B1-E3: the production runtime role has no direct table privileges; the E3 eligibility capability performs the required read.
+
+  ```sql
+  REVOKE SELECT, INSERT, UPDATE, DELETE, TRUNCATE, REFERENCES, TRIGGER ON
+    tagekyc.raw_export_requirement_rule_sets,
+    tagekyc.raw_export_requirement_rules
+  FROM tagekyc_runtime;
+  ```
+
+Production `/readiness` retains the rule-table mutation code and E3 additionally returns `PROD_RAW_EXPORT_CONTROL_PLANE_FORBIDDEN_TABLE_PRIVILEGE` for any direct runtime privilege on these tables. A single-role deployment where runtime equals the schema owner cannot become ready.
+
+## Raw-Export Control-Plane Role & Bootstrap Gate (TIP-88B1)
+
+TIP-88B1 (migration `20260712133151_Tip88B1RawExportControlPlane`) adds 4 append-only event tables written ONLY via `SECURITY DEFINER` functions, plus a root-authority model. Three layers:
+
+- In-DB enforcement, always on: direct raw-SQL INSERT into `raw_export_grants` / `raw_export_control_authorities` / `raw_export_fulfillments` / `raw_export_policy_lifecycle` is rejected; every append goes through a SD function that stamps the actor from a transaction-local GUC (`SET LOCAL tagekyc.actor_principal_id`), fail-closed on missing/blank/malformed.
+- Deployment gate, must be provisioned operationally (the migration creates the roles as `NOLOGIN`; wiring the app to the runtime role is a deployment step):
+  - `tagekyc_raw_export_deployer` — owns the SD functions; has INSERT on the 4 event tables. NOT the app's connection role.
+  - `tagekyc_runtime` — a least-privilege runtime CAPABILITY role (created `NOLOGIN`): the migration grants it `USAGE` on the schema + `EXECUTE` on the 4 append functions. It does NOT grant it table `SELECT` and it CANNOT be a login principal directly.
+  - `tagekyc_raw_export_bootstrapper` — deploy-only: `EXECUTE` on `raw_export_bootstrap_global_authority(...)` to seed the initial root authorities.
+  - **The app connects as a dedicated inheriting LOGIN principal `<app_login_role>` whose only transitive role membership is `tagekyc_runtime`** — NOT as the deployer/bootstrapper. `SET ROLE` is not supported for the production E3 readiness connection: `session_user` must equal `current_user`. Exactly one `pg_auth_members` row may exist across all grantors for the login-to-runtime pair; that row must have no admin option, must inherit, and must not permit SET. The effective login must fail the direct-event-table-write privilege check and pass the function/owner-backing-read checks.
+  - The former direct resolver/readiness table-SELECT set is obsolete after TIP-88B1-E3. Do not restore it:
+    ```sql
+    -- Obsolete after TIP-88B1-E3: do not grant direct table SELECT to tagekyc_runtime.
+    ```
+    TIP-88B1-E3 supersedes the preceding legacy guidance: the runtime role now reads eligibility and root health only through the three E3 capabilities documented below.
+  - Root `GrantAdmin` / `RecorderAuthorityAdmin` / `ActivationAuthority` authorities MUST be bootstrap-seeded with REAL operator principals (never a dev/default) before the control plane is used. Bootstrapping is deploy-time (bootstrapper role), never a runtime command.
+
+Production `/readiness` fails closed (HTTP 503) with any of: `PROD_RAW_EXPORT_ROOT_AUTHORITY_MISSING` (an authority class has no root), `PROD_RAW_EXPORT_ROOT_AUTHORITY_DEV_DEFAULT` (a dev/default principal seeded as root), `PROD_RAW_EXPORT_CONTROL_PLANE_TABLE_MUTATION_PRIVILEGE` (runtime principal can write the event tables directly), `PROD_RAW_EXPORT_CONTROL_PLANE_FUNCTION_ACL_INVALID` (SD/ACL/search_path drift), `PROD_RAW_EXPORT_CONTROL_PLANE_DEPLOYMENT_ROLE_INVALID` (role setup wrong). NOTE: the append actor principal is APPLICATION-ASSERTED, not DB-authenticated — its non-forgeability depends on the runtime/deployer role separation above being provisioned. Tracked as a P1 gate in `docs/phase1_scope_and_debt_registry_v0_1.md`.
+
+## Raw-Export Subject-Consent Role & Bootstrap Gate (TIP-88B2)
+
+TIP-88B2 (subject export consent, landed `8cd52a3`) adds three append-only tables — `raw_export_subject_consent_events`, `raw_export_subject_consent_classes`, `raw_export_subject_consent_authorities` — written ONLY through `SECURITY DEFINER` functions owned by the non-login `tagekyc_raw_export_deployer` with a fixed `search_path=pg_catalog`. In-DB enforcement is always on: UPDATE/DELETE are denied by trigger on all three tables; a direct INSERT is rejected unless it comes through the intended append path; the actor principal comes from the transaction-local GUC `SET LOCAL tagekyc.actor_principal_id`, fail-closed; and class child rows may only be written in the SAME transaction as their `Granted` parent (xmin guard).
+
+**Deployment gate (operational, NOT an EF-migration artifact):**
+  - The app must connect as the dedicated inheriting LOGIN described above. Its complete transitive reachable-role set is exactly `{tagekyc_runtime}`; `session_user == current_user`; deployer/bootstrapper must not be reachable directly or indirectly.
+  - `tagekyc_runtime` must hold `EXECUTE` on **exactly three** functions: `raw_export_resolve_subject_consent_for_authorization`, `raw_export_append_subject_consent_granted`, `raw_export_append_subject_consent_withdrawn`. It must NOT hold EXECUTE on the authority-management function or on the bare hash / lock-key / session-lock helpers.
+  - `tagekyc_runtime` must hold **none** of the seven table privileges (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, `TRIGGER`) on the three consent tables or `tagekyc.verification_sessions`. The lock, resolver, and granted-consent completeness check stay inside controlled SECURITY DEFINER paths.
+  - **Consent recorder/withdrawer authorities MUST be bootstrap-seeded by the DEPLOYMENT role before any consent write.** `AuthorityType` is `SubjectConsentRecorder` (governs consent `Granted`) or `SubjectConsentWithdrawer` (governs consent `Withdrawn`). Runtime has no EXECUTE on authority grant/revoke and cannot self-grant. A consent write by a principal with no CURRENT effective authority is denied.
+  - Authority state follows latest-event-overall with **no fallback**: an expired or revoked latest event makes the authority INACTIVE, and only a LATER `Granted` reactivates it. An expiring authority therefore silently stops consent capture — monitor `ValidUntilUtc` on seeded authorities.
+
+Production `/readiness` fails closed (HTTP 503) on `PROD_RAW_EXPORT_SUBJECT_CONSENT_FUNCTION_ACL_INVALID` / `..._TABLE_MUTATION_PRIVILEGE` for any drift in the B2 function manifest — exact signature, `prosecdef`, non-login owner, exact `search_path=pg_catalog`, no PUBLIC EXECUTE, and the per-function runtime EXECUTE expectation — or if the runtime principal can mutate a consent table directly.
+
+**Operational note on withdrawal:** consent `Granted` requires the verification session to be `Completed`, but consent `Withdrawn` deliberately does NOT — a subject can withdraw after the session reaches `Expired`, `Cancelled` or `TechnicalTerminal`. Do not add any deployment-level guard that blocks withdrawal on session state; doing so would trap consent in a non-revocable state. Tracked as a P1 gate in `docs/phase1_scope_and_debt_registry_v0_1.md`.
+
+## Resolver Runtime Read Boundary (TIP-88B1-E3)
+
+TIP-88B1-E3 and its remediation are landed. Preserve the closed E3 identity,
+transitive-role, backing-read, deterministic-ACL, fulfillment-materialization,
+role-precedence, and B2 constraint-mode posture during every later migration.
+Do not restore any pre-E3 direct runtime table read.
+
+TIP-88B1-E3 supersedes the older SELECT-only guidance above. Authorization and readiness are capability-only: `tagekyc_runtime` must have zero of `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, and `TRIGGER` on all fourteen protected tables (the four policy-catalog tables, both requirement-rule tables, four B1 event tables, `verification_sessions`, and the three B2 consent tables).
+
+Keep every landed B1/B2/B3 function grant and add these E3 grants:
+
+```sql
+GRANT EXECUTE ON FUNCTION
+  tagekyc.raw_export_read_authorization_eligibility_inputs(uuid,uuid,integer),
+  tagekyc.raw_export_read_authorization_policy_inputs(uuid,uuid,integer),
+  tagekyc.raw_export_control_plane_root_health()
+TO tagekyc_runtime;
+
+GRANT SELECT ON tagekyc.raw_export_policy_allowed_classes
+TO tagekyc_raw_export_deployer;
+
+REVOKE SELECT ON
+  tagekyc.verification_sessions,
+  tagekyc.raw_export_subject_consent_authorities,
+  tagekyc.raw_export_subject_consent_events,
+  tagekyc.raw_export_subject_consent_classes
+FROM tagekyc_runtime;
+```
+
+The B2 granted-consent append capability forces its deferred class-completeness check while still inside the `SECURITY DEFINER` boundary; do not compensate by restoring runtime SELECT. `/readiness` returns HTTP 503 with `PROD_RAW_EXPORT_CONTROL_PLANE_FORBIDDEN_TABLE_PRIVILEGE` for any forbidden table-privilege cell and validates the exact E3 function bodies, owners, fixed search paths, and ACLs. Root health returns only a bounded boolean and status code, never authority or principal identifiers.
+
+The target remediated posture additionally pins the function-owner backing-read
+manifest. Eligibility reads policy versions, requirement rule sets, closures,
+grants, lifecycle, policy requirements, and fulfillments. Policy projection reads
+policy versions, closures, and allowed classes. Root-health reads control
+authorities. Deployer write/ownership capability must equal the accepted pre-E3
+landed manifest; E3 neither adds a new write capability nor removes a capability
+required by landed command functions.
+
+Each E3 projection function has exactly one explicit non-owner ACL row:
+`grantor=tagekyc_raw_export_deployer`,
+`grantee=tagekyc_runtime`, `privilege=EXECUTE`,
+`is_grantable=false`. Owner authority is checked separately. An otherwise
+identical runtime grant from another grantor is ACL drift and readiness must
+reject it.
+
+The production topology remains one hospital per database. Hospital IT must
+provision a dedicated inheriting runtime LOGIN whose transitive reachable-role
+set is exactly `{tagekyc_runtime}`. Exactly one `pg_auth_members` row may exist
+across all grantors for that pair; on PostgreSQL 16 it has
+`admin_option=false`, `inherit_option=true`, and `set_option=false`. The LOGIN is
+`INHERIT`, `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`, `NOREPLICATION`, and
+`NOBYPASSRLS`. Rotate its secret and audit break-glass use. This boundary reduces
+accidental/direct SQL reach; it does not claim resistance to compromise of the
+full backend or database-owner credentials, and it does not add shared-database
+multi-hospital support.
+
+`session_user == current_user` detects an unsupported active `SET ROLE`; it is
+not proof of the originally authenticated identity against a malicious
+superuser using `SET SESSION AUTHORIZATION`. The production application login is
+`NOSUPERUSER`. Superuser connectivity is operationally forbidden except through
+an audited break-glass procedure.
+
+## Permit-to-Job Consumption Foundation (TIP-88B4)
+
+TIP-88B4 adds metadata orchestration only:
+
+```text
+tagekyc.raw_export_job_identities
+tagekyc.raw_export_job_classes
+tagekyc.raw_export_job_attempts
+tagekyc.raw_export_job_transitions
+tagekyc.raw_export_job_operational_heads
+```
+
+`tagekyc_runtime` receives `EXECUTE` on exactly these eight entry functions:
+
+```text
+raw_export_read_job_binding_inputs(uuid,uuid,uuid)
+raw_export_claim_or_read_job(uuid,uuid,uuid,uuid,uuid,uuid,uuid,text,uuid,integer,text,uuid,text,timestamptz,timestamptz,text,bytea,text[])
+raw_export_read_job(uuid,uuid,uuid)
+raw_export_lock_job_for_attempt(uuid,uuid,uuid,bigint,bigint)
+raw_export_acquire_or_reclaim_job_lease(uuid,uuid,uuid,bigint,bigint,uuid,uuid,integer)
+raw_export_renew_job_lease(uuid,uuid,uuid,bigint,bigint,uuid,uuid,integer)
+raw_export_record_job_attempt_failure(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text)
+raw_export_terminalize_job(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text,text)
+```
+
+The grantor is `tagekyc_raw_export_deployer`, every grant is non-grantable, and
+the six `enforce_raw_export_job_*` functions have no non-owner ACL row. Runtime
+and every other non-owner have zero table-level and zero column-level privilege
+on all five B4 tables. Do not compensate for an entry-function failure by
+granting table or column access.
+
+`TagEkyc:RawExport:JobLeaseSeconds` is resolved once at process startup. Absent
+means `60`; valid values are integers from `10` through `300`, inclusive.
+Blank, malformed, under-range, and over-range values leave the process running
+but make readiness fail closed with
+`PROD_RAW_EXPORT_JOB_LEASE_CONFIG_INVALID`. A configuration change requires an
+application restart.
+
+Other B4 readiness failures are:
+
+```text
+PROD_RAW_EXPORT_JOB_SCHEMA_INVALID
+PROD_RAW_EXPORT_JOB_FUNCTION_ACL_INVALID
+PROD_RAW_EXPORT_JOB_TABLE_PRIVILEGE_INVALID
+```
+
+Before migration, capture the current E3 catalog, function ACL, table/column
+ACL, role-membership edge, and readiness result. Apply the B4 migration on
+PostgreSQL 16, verify all five tables and the exact function/ACL manifests
+above, then require healthy E3 and B4 readiness. For rollback rehearsal, migrate
+back to `20260724015546_Tip88B1E3ResolverReadBoundary`, prove the complete
+pre-B4 catalog/ACL snapshot is identical, and reapply
+`20260726145547_Tip88B4RawExportJobFoundation`. Migration apply must abort on
+`TIP88B4_FUNCTION_ACL_INVALID` or `TIP88B4_TABLE_ACL_INVALID`; do not repair
+unexpected ACLs by broadening the accepted manifest.
+
+Test-only roles, role memberships, default ACLs, explicit grants, and alternate
+grantors used for migration/readiness drills must be removed in `finally` and
+verified absent after the drill. Never leave a scratch login or default ACL in
+the hospital database.
+
+B4 does not read or persist Raw BIO bytes, assemble a package, encrypt content,
+create delivery handles, expose an HTTP export endpoint, or activate production
+raw export. It does not add shared-database multi-hospital support or claim
+resistance to compromise of a trusted backend/database-owner credential.
+
+## Raw-Export Permit-TTL Bounds Config (TIP-88A-E2)
+
+TIP-88A-E2 (committed local `09c9359`) adds a per-policy-version `PermitTtlSeconds` (the raw-export permit lifetime) plus app-config BOUNDS that constrain what TTL a policy version may declare. The TTL VALUE lives on the approved policy version (immutable, versioned); the BOUNDS are operational config, changeable between deploy/restart (NOT hot-reloaded).
+
+**Config keys** (section `TagEkyc:RawExport`):
+- `TagEkyc:RawExport:PermitTtlMinSeconds`
+- `TagEkyc:RawExport:PermitTtlMaxSeconds`
+
+**Semantics:** both keys absent => default `[60, 900]`; exactly one absent, malformed/non-integer/overflow, `min <= 0`, `max < min`, or `max > 3600` (the absolute maximum) => INVALID. On an INVALID bounds state the process stays up but `/readiness` fails closed (HTTP 503) with `PROD_RAW_EXPORT_PERMIT_TTL_BOUNDS_INVALID`, and all raw-export policy write commands (add-version / catalog-approve) fail closed. Bounds are resolved ONCE at startup into an immutable state; change requires a restart. The readiness payload is sanitized (it does not echo the configured min/max).
+
+**Legacy disposition:** a policy version created before E2 has NULL `PermitTtlSeconds`. Existing `CatalogApproved` NULL rows remain readable but TIP-88B3 will reject them at authorization — publish a new policy version with a valid in-bounds TTL before raw-export use. Legacy `Draft` NULL rows cannot be catalog-approved (closure-completeness rejects); abandon and create a new version. No backfill, no in-place mutation.
 
 ## Retention Policy Declaration
 

@@ -1,6 +1,9 @@
+using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using Microsoft.AspNetCore.Mvc.Testing;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
@@ -9,11 +12,26 @@ using TagEkyc.Contracts.Common;
 using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.Persistence.Entities;
 using TagEkyc.Infrastructure.Signing;
+using Xunit.Abstractions;
 
 namespace TagEkyc.IntegrationTests;
 
+[CollectionDefinition(Name, DisableParallelization = true)]
+public sealed class Tip68ProcessEnvironmentCollection
+{
+    public const string Name = "Tip68ProcessEnvironment";
+}
+
+[Collection(Tip68ProcessEnvironmentCollection.Name)]
 public sealed class Tip68ProdHsmSigningTests
 {
+    private readonly ITestOutputHelper output;
+
+    public Tip68ProdHsmSigningTests(ITestOutputHelper output)
+    {
+        this.output = output;
+    }
+
     [Fact]
     public async Task Shared_construction_matches_the_localdev_jws_header_and_payload()
     {
@@ -67,7 +85,10 @@ public sealed class Tip68ProdHsmSigningTests
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", "BogusBackend");
             });
 
-        var exception = Assert.ThrowsAny<Exception>(() => factory.CreateClient());
+        var exception = Assert.ThrowsAny<Exception>(() =>
+        {
+            _ = factory.Services;
+        });
 
         Assert.Contains("Invalid evidence signing backend configuration", exception.ToString(), StringComparison.Ordinal);
         Assert.DoesNotContain("localdev-es256-v1", exception.ToString(), StringComparison.OrdinalIgnoreCase);
@@ -76,16 +97,96 @@ public sealed class Tip68ProdHsmSigningTests
     [Fact]
     public void RequireHardwareSigner_fails_closed_on_host_startup_without_pkcs11_backend()
     {
-        using var factory = new WebApplicationFactory<Program>()
-            .WithWebHostBuilder(builder =>
+        AssertTip68ProcessEnvironmentIsolation();
+
+        var correlationId = Guid.NewGuid().ToString("N");
+        var lifecycle = new List<HostStartupLifecycleMarker>(capacity: 8);
+        WebApplicationFactory<Program>? factory = null;
+        IServiceProvider? serviceProvider = null;
+        Exception? startupException = null;
+        Exception? testFailure = null;
+
+        AddLifecycleMarker(lifecycle, "factory_construction_begin");
+        try
+        {
+            factory = new WebApplicationFactory<Program>()
+                .WithWebHostBuilder(builder =>
+                {
+                    builder.UseSetting("TagEkyc:EvidenceSigning:RequireHardwareSigner", "true");
+                });
+            AddLifecycleMarker(
+                lifecycle,
+                "factory_construction_end",
+                $"factory={RuntimeHelpers.GetHashCode(factory)}");
+
+            AddLifecycleMarker(lifecycle, "startup_force_begin");
+            AddLifecycleMarker(lifecycle, "services_access_begin");
+            startupException = Assert.ThrowsAny<Exception>(() =>
             {
-                builder.UseSetting("TagEkyc:EvidenceSigning:RequireHardwareSigner", "true");
+                serviceProvider = factory.Services;
             });
+            AddLifecycleMarker(
+                lifecycle,
+                "exception_observed",
+                $"type={startupException.GetType().FullName}");
 
-        var exception = Assert.ThrowsAny<Exception>(() => factory.CreateClient());
+            Assert.Contains(
+                "Invalid evidence signing backend configuration",
+                startupException.ToString(),
+                StringComparison.Ordinal);
+            Assert.DoesNotContain(
+                "localdev-es256-v1",
+                startupException.ToString(),
+                StringComparison.OrdinalIgnoreCase);
+        }
+        catch (Exception exception)
+        {
+            testFailure = exception;
+            AddLifecycleMarker(
+                lifecycle,
+                "failure_capture",
+                $"type={exception.GetType().FullName}");
+        }
+        finally
+        {
+            AddLifecycleMarker(
+                lifecycle,
+                "factory_disposal_begin",
+                FactoryIdentity(factory));
+            try
+            {
+                factory?.Dispose();
+            }
+            catch (Exception exception)
+            {
+                testFailure = exception;
+                AddLifecycleMarker(
+                    lifecycle,
+                    "factory_disposal_exception",
+                    $"type={exception.GetType().FullName}");
+            }
+            finally
+            {
+                AddLifecycleMarker(
+                    lifecycle,
+                    "factory_disposal_end",
+                    FactoryIdentity(factory));
+            }
+        }
 
-        Assert.Contains("Invalid evidence signing backend configuration", exception.ToString(), StringComparison.Ordinal);
-        Assert.DoesNotContain("localdev-es256-v1", exception.ToString(), StringComparison.OrdinalIgnoreCase);
+        if (testFailure is null)
+        {
+            return;
+        }
+
+        output.WriteLine(BuildHostStartupFailureDiagnostic(
+            correlationId,
+            lifecycle,
+            factory,
+            serviceProvider,
+            startupException,
+            testFailure));
+        ExceptionDispatchInfo.Capture(testFailure).Throw();
     }
 
     [Fact]
@@ -102,7 +203,10 @@ public sealed class Tip68ProdHsmSigningTests
                 builder.UseSetting("TagEkyc:EvidenceSigning:Pkcs11:Kid", "tagekyc-es256-2026-v1");
             });
 
-        var exception = Assert.ThrowsAny<Exception>(() => factory.CreateClient());
+        var exception = Assert.ThrowsAny<Exception>(() =>
+        {
+            _ = factory.Services;
+        });
 
         Assert.Contains("PKCS#11 signing requires a library path", exception.ToString(), StringComparison.Ordinal);
         Assert.DoesNotContain(secretPin, exception.ToString(), StringComparison.Ordinal);
@@ -258,6 +362,116 @@ public sealed class Tip68ProdHsmSigningTests
             ],
             "opaque challenge: tip68",
             "sha256:4444444444444444444444444444444444444444444444444444444444444444");
+
+    private static void AddLifecycleMarker(
+        ICollection<HostStartupLifecycleMarker> lifecycle,
+        string name,
+        string? identity = null) =>
+        lifecycle.Add(new(
+            name,
+            Stopwatch.GetTimestamp(),
+            Environment.CurrentManagedThreadId,
+            Task.CurrentId,
+            identity));
+
+    private static string BuildHostStartupFailureDiagnostic(
+        string correlationId,
+        IEnumerable<HostStartupLifecycleMarker> lifecycle,
+        WebApplicationFactory<Program>? factory,
+        IServiceProvider? serviceProvider,
+        Exception? startupException,
+        Exception testFailure)
+    {
+        var diagnostic = new StringBuilder();
+        diagnostic.AppendLine("TIP68_HOST_STARTUP_FAILURE_DIAGNOSTIC_V1");
+        diagnostic.AppendLine($"correlation_id={correlationId}");
+        diagnostic.AppendLine($"factory_identity={FactoryIdentity(factory)}");
+        diagnostic.AppendLine($"host_identity=NOT_OBSERVABLE_WITHOUT_EXTRA_INSTANCE");
+        diagnostic.AppendLine($"service_provider_identity={ServiceProviderIdentity(serviceProvider)}");
+        diagnostic.AppendLine("competing_factory_lifecycle=COMPETING_FACTORY_LIFECYCLE_NOT_OBSERVABLE");
+        diagnostic.AppendLine("lifecycle:");
+        foreach (var marker in lifecycle)
+        {
+            diagnostic.AppendLine(
+                $"  {marker.Name}|timestamp={marker.Timestamp}|thread={marker.ManagedThreadId}|task={marker.TaskId?.ToString() ?? "none"}|identity={marker.Identity ?? "none"}");
+        }
+
+        AppendExceptionDiagnostic(diagnostic, "startup_exception", startupException);
+        AppendExceptionDiagnostic(diagnostic, "test_failure", testFailure);
+        return diagnostic.ToString();
+    }
+
+    private static void AppendExceptionDiagnostic(
+        StringBuilder diagnostic,
+        string label,
+        Exception? exception)
+    {
+        if (exception is null)
+        {
+            diagnostic.AppendLine($"{label}=NOT_CAPTURED");
+            return;
+        }
+
+        diagnostic.AppendLine($"{label}.full_to_string_begin");
+        diagnostic.AppendLine(exception.ToString());
+        diagnostic.AppendLine($"{label}.full_to_string_end");
+
+        var depth = 0;
+        for (var current = exception; current is not null; current = current.InnerException)
+        {
+            diagnostic.AppendLine($"{label}.chain[{depth}].type={current.GetType().FullName}");
+            diagnostic.AppendLine($"{label}.chain[{depth}].message={current.Message}");
+            diagnostic.AppendLine($"{label}.chain[{depth}].stack_begin");
+            diagnostic.AppendLine(current.StackTrace ?? "NOT_CAPTURED");
+            diagnostic.AppendLine($"{label}.chain[{depth}].stack_end");
+            if (current is ObjectDisposedException disposed)
+            {
+                diagnostic.AppendLine($"{label}.chain[{depth}].disposed_object_name={disposed.ObjectName ?? "NOT_CAPTURED"}");
+                diagnostic.AppendLine($"{label}.chain[{depth}].disposed_message={disposed.Message}");
+                diagnostic.AppendLine($"{label}.chain[{depth}].disposed_stack_begin");
+                diagnostic.AppendLine(disposed.StackTrace ?? "NOT_CAPTURED");
+                diagnostic.AppendLine($"{label}.chain[{depth}].disposed_stack_end");
+            }
+
+            depth++;
+        }
+    }
+
+    private static string FactoryIdentity(WebApplicationFactory<Program>? factory) =>
+        factory is null
+            ? "NOT_CONSTRUCTED"
+            : $"{factory.GetType().FullName}:{RuntimeHelpers.GetHashCode(factory)}";
+
+    private static string ServiceProviderIdentity(IServiceProvider? serviceProvider) =>
+        serviceProvider is null
+            ? "NOT_OBTAINED"
+            : $"{serviceProvider.GetType().FullName}:{RuntimeHelpers.GetHashCode(serviceProvider)}";
+
+    private static void AssertTip68ProcessEnvironmentIsolation()
+    {
+        var productionCollection = CollectionName(typeof(Tip68ProdHsmSigningTests));
+        var softHsmCollection = CollectionName(typeof(Tip68SoftHsmE2ETests));
+        var collectionDefinition = typeof(Tip68ProcessEnvironmentCollection)
+            .GetCustomAttribute<CollectionDefinitionAttribute>();
+
+        Assert.Equal(Tip68ProcessEnvironmentCollection.Name, productionCollection);
+        Assert.Equal(Tip68ProcessEnvironmentCollection.Name, softHsmCollection);
+        Assert.True(collectionDefinition?.DisableParallelization);
+    }
+
+    private static string? CollectionName(Type testClass) =>
+        testClass.CustomAttributes
+            .SingleOrDefault(attribute => attribute.AttributeType == typeof(CollectionAttribute))?
+            .ConstructorArguments
+            .SingleOrDefault()
+            .Value as string;
+
+    private sealed record HostStartupLifecycleMarker(
+        string Name,
+        long Timestamp,
+        int ManagedThreadId,
+        int? TaskId,
+        string? Identity);
 
     private static byte[] Base64UrlDecode(string value)
     {

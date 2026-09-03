@@ -5,6 +5,7 @@ using TagEkyc.Application.Ports;
 using TagEkyc.Domain;
 using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.Persistence.Entities;
+using TagEkyc.Infrastructure.RawExport;
 
 namespace TagEkyc.Infrastructure.Auth;
 
@@ -36,10 +37,48 @@ public sealed class PostgresHashedApiKeyStore(TagEkycDbContext dbContext, ApiKey
             return null;
         }
 
-        return ToResolved(row);
+        var scopes = DeserializeSet<string>(row.ScopesJson);
+        var hasActivationScope = scopes.Contains("business.raw-export.package.download")
+            || scopes.Contains("business.raw-export.package.references.read");
+        if (hasActivationScope)
+        {
+            if (!scopes.SetEquals(RecipientManagementCodec.ActivationScopes)
+                || !string.Equals(row.CallerCategory, "BusinessConsumer", StringComparison.Ordinal))
+                return null;
+
+            var expectedDigest = RecipientManagementCodec.ScopeSetDigest(
+                RecipientManagementCodec.ActivationScopes);
+            try
+            {
+                var companion = await (
+                    from credential in dbContext.RawExportManagedRecipientCredentials.AsNoTracking()
+                    join identity in dbContext.RawExportManagedRecipientIdentities.AsNoTracking()
+                        on new { credential.RecipientClientApplicationId, credential.PrincipalId }
+                        equals new { identity.RecipientClientApplicationId, identity.PrincipalId }
+                    join policy in dbContext.RawExportManagedRecipientPolicies.AsNoTracking()
+                        on credential.RecipientClientApplicationId equals policy.RecipientClientApplicationId
+                    where credential.ApiKeyId == row.ApiKeyId
+                        && credential.RecipientClientApplicationId == row.ClientApplicationId
+                        && credential.PrincipalId == row.PrincipalId
+                        && credential.State == "Active"
+                        && identity.State == "Active"
+                        && policy.State == "Active"
+                        && policy.ActivationProfile == "C3C4RecipientV1"
+                    select policy.ActivationScopesDigest)
+                    .SingleOrDefaultAsync(cancellationToken).ConfigureAwait(false);
+                if (companion is null
+                    || !ApiKeyHasher.FixedTimeEquals(companion, expectedDigest)) return null;
+            }
+            finally
+            {
+                System.Security.Cryptography.CryptographicOperations.ZeroMemory(expectedDigest);
+            }
+        }
+
+        return ToResolved(row, scopes);
     }
 
-    private static ResolvedApiKey ToResolved(ApiKeyRow row)
+    private static ResolvedApiKey ToResolved(ApiKeyRow row, IReadOnlySet<string> scopes)
     {
         var status = MapStatus(row.CredentialStatus);
         if (!Enum.TryParse<AuthenticatedCallerCategory>(row.CallerCategory, ignoreCase: false, out var category))
@@ -52,12 +91,13 @@ public sealed class PostgresHashedApiKeyStore(TagEkycDbContext dbContext, ApiKey
             row.ApiKeyId,
             row.ClientApplicationId,
             row.KeyPrefix,
-            DeserializeSet<string>(row.ScopesJson),
+            scopes,
             status,
             row.ExpiresAt,
             category,
             DeserializeNullableSet<Guid>(row.AllowedClientApplicationIdsJson),
-            DeserializeNullableSet<string>(row.AllowedCaptureAgentIdsJson));
+            DeserializeNullableSet<string>(row.AllowedCaptureAgentIdsJson),
+            row.PrincipalId);
     }
 
     private static ApiKeyStatus MapStatus(string status) =>

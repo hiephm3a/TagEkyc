@@ -1,5 +1,6 @@
 using TagEkyc.Domain;
 using TagEkyc.Contracts.InternalAudit.Manifest;
+using TagEkyc.Contracts.RawExport;
 
 namespace TagEkyc.Application.Ports;
 
@@ -126,6 +127,266 @@ public interface IClientApplicationPolicyReader
     Task<ClientApplication?> GetClientApplicationAsync(Guid clientApplicationId, CancellationToken cancellationToken = default);
 
     Task<ApiKeyMetadata?> GetApiKeyMetadataAsync(string keyPrefix, CancellationToken cancellationToken = default);
+}
+
+public sealed record AddRawExportPolicyVersionCommand(
+    Guid PolicyId,
+    int ExpectedLatestVersion,
+    RawExportMode Mode,
+    string Purpose,
+    string? RetentionProfileRef,
+    string? RetentionPurposeCode,
+    RawExportConsentRequirement ConsentRequirement,
+    string? RecipientCategory,
+    string? RecipientAssuranceRequirement,
+    string? ControllerRole,
+    string? ControllerEntityRef,
+    string? ControllerJurisdiction,
+    string? RecipientJurisdiction,
+    string? ProcessingInfrastructureJurisdiction,
+    string? TransferScenarioCode,
+    string? TransferLegalBasisCode,
+    IReadOnlySet<RawExportRawClass> AllowedClasses,
+    int PermitTtlSeconds);
+
+public sealed record CloseRawExportPolicyVersionCommand(
+    Guid PolicyId,
+    int PolicyVersion,
+    string ClosedByPrincipalId,
+    string DecisionRef);
+
+public interface IRawExportPolicyRepository
+{
+    Task<RawExportPolicyVersion> AddVersionAsync(
+        AddRawExportPolicyVersionCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion> CatalogApproveAsync(
+        CloseRawExportPolicyVersionCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion> AbandonDraftAsync(
+        CloseRawExportPolicyVersionCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion?> GetVersionAsync(
+        Guid policyId,
+        int policyVersion,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion?> GetLatestVersionAsync(
+        Guid policyId,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportPolicyVersion?> GetLatestCatalogApprovedVersionAsync(
+        Guid policyId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<RawExportPolicyVersion>> ListAsync(CancellationToken cancellationToken = default);
+}
+
+public sealed record RawExportGrantCommand(
+    Guid ActorPrincipalId,
+    Guid PrincipalId,
+    Guid PolicyId,
+    int PolicyVersion,
+    int ExpectedRevision,
+    Guid? ClientApplicationId,
+    string DecisionRef);
+
+public sealed record RawExportAuthorityCommand(
+    Guid ActorPrincipalId,
+    Guid PrincipalId,
+    RawExportAuthorityType AuthorityType,
+    RawExportAuthorityScopeType ScopeType,
+    Guid? ScopeId,
+    RawExportRequirementType? RequirementType,
+    int ExpectedRevision,
+    string DecisionRef);
+
+public sealed record RawExportFulfillmentAcceptCommand(
+    Guid ActorPrincipalId,
+    Guid PolicyId,
+    int PolicyVersion,
+    RawExportRequirementType RequirementType,
+    int ExpectedRevision,
+    int? SupersedesRevision,
+    string ArtifactRef,
+    string ArtifactVersion,
+    DateTimeOffset ValidFromUtc,
+    DateTimeOffset? ValidUntilUtc,
+    string DecisionRef);
+
+public sealed record RawExportFulfillmentWithdrawCommand(
+    Guid ActorPrincipalId,
+    Guid PolicyId,
+    int PolicyVersion,
+    RawExportRequirementType RequirementType,
+    int ExpectedRevision,
+    int TargetRevision,
+    string DecisionRef);
+
+public sealed record RawExportLifecycleCommand(
+    Guid ActorPrincipalId,
+    Guid PolicyId,
+    int PolicyVersion,
+    int ExpectedRevision,
+    string DecisionRef);
+
+public interface IRawExportControlPlaneRepository
+{
+    Task<int> GrantExportPolicyAsync(RawExportGrantCommand command, CancellationToken cancellationToken = default);
+
+    Task<int> RevokeExportPolicyGrantAsync(RawExportGrantCommand command, CancellationToken cancellationToken = default);
+
+    Task<int> GrantControlAuthorityAsync(RawExportAuthorityCommand command, CancellationToken cancellationToken = default);
+
+    Task<int> RevokeControlAuthorityAsync(RawExportAuthorityCommand command, CancellationToken cancellationToken = default);
+
+    Task<int> AcceptFulfillmentAsync(RawExportFulfillmentAcceptCommand command, CancellationToken cancellationToken = default);
+
+    Task<int> WithdrawFulfillmentAsync(RawExportFulfillmentWithdrawCommand command, CancellationToken cancellationToken = default);
+
+    Task<int> ActivatePolicyAsync(RawExportLifecycleCommand command, CancellationToken cancellationToken = default);
+
+    Task<int> SuspendPolicyAsync(RawExportLifecycleCommand command, CancellationToken cancellationToken = default);
+
+    Task<int> RevokePolicyAsync(RawExportLifecycleCommand command, CancellationToken cancellationToken = default);
+
+    Task<RawExportEligibilitySnapshot> ResolveExportEligibilityForAuthorizationAsync(
+        Guid principalId,
+        Guid policyId,
+        int policyVersion,
+        CancellationToken cancellationToken = default);
+}
+
+public sealed record RawExportAuthorizationGrantProjection(
+    Guid PrincipalId,
+    Guid PolicyId,
+    int PolicyVersion,
+    int Revision,
+    RawExportGrantEventType EventType);
+
+public sealed record RawExportAuthorizationLifecycleProjection(
+    Guid PolicyId,
+    int PolicyVersion,
+    int Revision,
+    RawExportLifecycleEventType EventType);
+
+public sealed record RawExportAuthorizationFulfillmentProjection(
+    Guid FulfillmentEventId,
+    int Revision,
+    RawExportFulfillmentEventType EventType,
+    string? ArtifactRef,
+    string? ArtifactVersion,
+    DateTimeOffset? ValidFromUtc,
+    DateTimeOffset? ValidUntilUtc);
+
+public sealed record RawExportAuthorizationRequirementProjection(
+    int Ordinal,
+    RawExportRequirementType RequirementType,
+    RawExportAuthorizationFulfillmentProjection? LatestFulfillment);
+
+public sealed record RawExportAuthorizationEligibilityProjection(
+    Guid PolicyId,
+    int PolicyVersion,
+    DateTimeOffset EvaluatedAtUtc,
+    bool PolicyExists,
+    int? BoundRuleSetVersion,
+    int CurrentRuleSetVersion,
+    RawExportPolicyClosureType? ClosureType,
+    RawExportAuthorizationGrantProjection? Grant,
+    RawExportAuthorizationLifecycleProjection? Lifecycle,
+    IReadOnlyList<RawExportAuthorizationRequirementProjection> Requirements);
+
+public sealed record RawExportAuthorizationPolicyProjection(
+    Guid PolicyId,
+    int PolicyVersion,
+    DateTimeOffset EvaluatedAtUtc,
+    bool PolicyExists,
+    int? PermitTtlSeconds,
+    RawExportPolicyClosureType? ClosureType,
+    IReadOnlySet<RawExportRawClass> AllowedClasses);
+
+public interface IRawExportAuthorizationProjectionReader
+{
+    Task<RawExportAuthorizationEligibilityProjection> ReadEligibilityInputsAsync(
+        Guid principalId,
+        Guid policyId,
+        int policyVersion,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportAuthorizationPolicyProjection> ReadPolicyInputsAsync(
+        Guid principalId,
+        Guid policyId,
+        int policyVersion,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IRawExportSubjectConsentRepository
+{
+    Task<int> GrantConsentAuthorityAsync(
+        RawExportSubjectConsentAuthorityCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<int> RevokeConsentAuthorityAsync(
+        RawExportSubjectConsentAuthorityCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportSubjectConsentSnapshot> RecordSubjectConsentGrantedAsync(
+        RawExportSubjectConsentGrantCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportSubjectConsentSnapshot> RecordSubjectConsentWithdrawnAsync(
+        RawExportSubjectConsentWithdrawCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportSubjectConsentSnapshot> ResolveSubjectExportConsentForAuthorizationAsync(
+        Guid verificationSessionId,
+        Guid policyId,
+        int policyVersion,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IRawExportAuthorizationRepository
+{
+    Task<RawExportAuthorizationResult> AuthorizeExportAsync(
+        AuthorizeRawExportCommand command,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IRawExportJobRepository
+{
+    Task<RawExportJobBindResult> BindAsync(
+        BindRawExportJobCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobReadResult> ReadAsync(
+        ReadRawExportJobCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobLeaseResult> AcquireOrReclaimLeaseAsync(
+        AcquireOrReclaimRawExportJobLeaseCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobRenewResult> RenewLeaseAsync(
+        RenewRawExportJobLeaseCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobAttemptFailureResult> RecordAttemptFailureAsync(
+        RecordRawExportJobAttemptFailureCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<RawExportJobTerminalizeResult> TerminalizeAsync(
+        TerminalizeRawExportJobCommand command,
+        CancellationToken cancellationToken = default);
+}
+
+public interface IRawExportAssemblyOrchestrator
+{
+    Task<RawExportAssemblyExecutionResult> ExecuteAsync(
+        RawExportAssemblyExecutionRequest request,
+        CancellationToken cancellationToken = default);
 }
 
 public sealed record VerificationFinalizationWrite(

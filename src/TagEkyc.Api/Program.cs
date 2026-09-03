@@ -3,11 +3,13 @@ using System.Globalization;
 using System.Text.Json.Serialization;
 using TagEkyc.Api;
 using TagEkyc.Api.LocalDev;
+using TagEkyc.Application;
 using TagEkyc.Application.LocalDev;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.RawExport;
 using TagEkyc.Infrastructure.Retention;
 using TagEkyc.Infrastructure.Secrets;
 using TagEkyc.Infrastructure.Signing;
@@ -22,6 +24,8 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.Converters.Insert(0, new VerificationProfileDtoJsonConverter());
     options.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
+builder.Services.Configure<Microsoft.AspNetCore.Routing.RouteOptions>(options =>
+    options.ConstraintMap["D"] = typeof(DFormatGuidRouteConstraint));
 
 builder.Services.AddSingleton<LocalDevInMemoryMetadataReferenceRegistry>();
 builder.Services.AddSingleton<IMetadataReferenceRegistry>(sp => sp.GetRequiredService<LocalDevInMemoryMetadataReferenceRegistry>());
@@ -32,8 +36,39 @@ builder.Services
     .AddOptions<ApiKeyStoreOptions>()
     .Bind(builder.Configuration.GetSection(ApiKeyStoreOptions.SectionName));
 ConfigureEvidenceSigning(builder);
+ConfigureRawExportPermitTtl(builder);
+ConfigureRawExportJobLease(builder);
+builder.Services.AddTagEkycCustodyProfiles(builder.Configuration);
+if (DurableKeyTopologyOptions.Resolve(builder.Configuration).Topology
+    == DurableKeyTopology.ProcessLocalFixture)
+{
+    builder.Services.AddTagEkycAttemptKeyProvider(builder.Configuration);
+}
+builder.Services.AddTagEkycDurableKeyCustody(builder.Configuration);
+if (builder.Environment.IsProduction())
+    builder.Services.AddTagEkycProvisionalObjectCustody(builder.Configuration);
+var recipientPackageOptions = RecipientPackageOptions.Resolve(builder.Configuration);
+if (recipientPackageOptions.Topology == RecipientPackageTopology.S3CompatibleDurable
+    && recipientPackageOptions.IsSyntacticallyValid)
+{
+    builder.Services.AddTagEkycRecipientPackage(builder.Configuration);
+}
+else
+{
+    builder.Services.AddSingleton(recipientPackageOptions);
+}
+builder.Services.AddTagEkycRawExportAssembly(builder.Configuration, builder.Environment.IsProduction());
+builder.Services.AddTagEkycRecipientPackageDelivery(builder.Configuration);
+builder.Services.AddTagEkycRecipientPackageReference(builder.Configuration);
+var recipientPackageDeliveryOptions = RecipientPackageDeliveryOptions.Resolve(builder.Configuration);
+if (recipientPackageDeliveryOptions.Topology == RecipientPackageDeliveryTopology.S3CompatibleDurable
+    && recipientPackageDeliveryOptions.IsSyntacticallyValid)
+{
+    builder.Services.AddHostedService<RecipientPackageDeliveryHostedService>();
+}
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
+builder.Services.AddTagEkycRecipientManagement(builder.Configuration, builder.Environment.IsProduction());
 ConfigureRetention(builder);
 ConfigureDecisionThresholds(builder);
 ConfigureReadiness(builder);
@@ -90,6 +125,9 @@ app.MapGet("/", () => Results.Ok(new SessionStatusPlaceholder(
     "NOT_AVAILABLE")));
 
 app.MapVerificationSessionEndpoints();
+app.MapRecipientPackageDeliveryEndpoints();
+app.MapRecipientPackageReferenceEndpoints();
+app.MapRecipientManagementEndpoints();
 
 app.Run();
 
@@ -158,7 +196,7 @@ static void ConfigureApiKeyStore(WebApplicationBuilder builder)
     builder.Services.AddSingleton<LocalDevRuntimePolicySource>();
     builder.Services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
     builder.Services.AddScoped<LocalDevApiKeyValidator>();
-    builder.Services.AddScoped<IApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
+    builder.Services.AddScoped<IApiKeyAuthenticator, C5CredentialAwareApiKeyAuthenticator>();
 
     if (builder.Environment.IsProduction() &&
         !string.IsNullOrWhiteSpace(options.Pepper))
@@ -203,6 +241,32 @@ static void ConfigureApiKeyStore(WebApplicationBuilder builder)
 
 static void ConfigureReadiness(WebApplicationBuilder builder)
 {
+    if (DurableKeyTopologyOptions.Resolve(builder.Configuration).Topology
+        == DurableKeyTopology.ProcessLocalFixture)
+    {
+        builder.Services.AddSingleton(
+            new RawExportAttemptKeyReadinessValidator(
+                builder.Configuration,
+                builder.Environment.IsProduction()));
+        builder.Services.AddScoped<
+            IReadinessCheck,
+            RawExportAttemptKeyReadinessCheck>();
+    }
+    builder.Services.AddSingleton(
+        new RawExportCustodyProfileReadinessValidator(
+            builder.Configuration,
+            builder.Environment.IsProduction()));
+    builder.Services.AddScoped<
+        IReadinessCheck,
+        RawExportCustodyProfileReadinessCheck>();
+    builder.Services.AddSingleton(
+        RawExportAuthoritySnapshotProfileState.Resolve(
+            builder.Configuration,
+            builder.Environment.IsProduction()));
+    builder.Services.AddScoped<
+        RawExportAuthoritySnapshotReadinessValidator>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportAssemblyReadinessCheck>();
+
     if (!builder.Environment.IsProduction())
     {
         return;
@@ -210,8 +274,39 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
 
     builder.Services.AddScoped<IReadinessCheck, ProductionPostureReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, PostgresReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportRuntimePrivilegeReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportControlPlaneReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportSubjectConsentReadinessCheck>();
+    builder.Services.AddScoped<
+        IReadinessCheck,
+        RawExportAuthoritySnapshotReadinessCheck>();
+    builder.Services.AddScoped<RawExportAuthorizationReadinessValidator>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportAuthorizationReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportPermitTtlReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportJobReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, DurableKeyCustodyReadinessCheck>();
+    if (builder.Services.Any(descriptor =>
+            descriptor.ServiceType == typeof(ProvisionalObjectCustodyReadinessValidator)))
+        builder.Services.AddScoped<IReadinessCheck, ProvisionalObjectCustodyReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RecipientPackageDeliveryReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RecipientPackageReferenceReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RecipientManagementReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
+}
+
+static void ConfigureRawExportPermitTtl(WebApplicationBuilder builder)
+{
+    var bounds = RawExportPermitTtlOptions.Resolve(
+        builder.Configuration[$"{RawExportPermitTtlOptions.SectionName}:{RawExportPermitTtlOptions.PermitTtlMinSecondsKey}"],
+        builder.Configuration[$"{RawExportPermitTtlOptions.SectionName}:{RawExportPermitTtlOptions.PermitTtlMaxSecondsKey}"]);
+    builder.Services.AddSingleton(bounds);
+}
+
+static void ConfigureRawExportJobLease(WebApplicationBuilder builder)
+{
+    builder.Services.AddSingleton(
+        RawExportJobLeaseOptions.Resolve(builder.Configuration[RawExportJobLeaseOptions.Key]));
 }
 
 static void ConfigureRetention(WebApplicationBuilder builder)
@@ -430,4 +525,30 @@ static void ValidateProductionTrialP12Configuration(WebApplicationBuilder builde
     }
 }
 
+sealed class RecipientPackageDeliveryHostedService(
+    RecipientPackageDeliveryReconciler reconciler) : BackgroundService
+{
+    protected override Task ExecuteAsync(CancellationToken stoppingToken) =>
+        reconciler.RunAsync(stoppingToken);
+}
+
 public partial class Program;
+
+public sealed class C5CredentialAwareApiKeyAuthenticator(
+    IApiKeyStore apiKeyStore,
+    ILocalDevClientPolicyProvider globalPolicies) : IApiKeyAuthenticator
+{
+    private const string HeaderName = "X-TagEkyc-Api-Key";
+    private readonly RecipientCredentialAuthenticationPolicy policy = new(apiKeyStore, globalPolicies);
+
+    public async Task<SessionOperationResult<AuthenticatedClientContext>> AuthenticateAsync(
+        HttpContext httpContext,
+        string? requiredScope = null,
+        CancellationToken cancellationToken = default)
+    {
+        httpContext.Request.Headers.TryGetValue(HeaderName, out var values);
+        var presented = values.FirstOrDefault();
+        return await policy.AuthenticateAsync(presented, requiredScope, cancellationToken)
+            .ConfigureAwait(false);
+    }
+}

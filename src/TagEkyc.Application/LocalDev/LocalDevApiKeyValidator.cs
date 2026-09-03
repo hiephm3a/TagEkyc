@@ -53,7 +53,8 @@ public sealed class LocalDevApiKeyValidator(IApiKeyStore apiKeyStore, ILocalDevC
             apiKey.CallerCategory,
             apiKey.Scopes,
             apiKey.AllowedClientApplicationIds,
-            apiKey.AllowedCaptureAgentIds));
+            apiKey.AllowedCaptureAgentIds,
+            apiKey.PrincipalId));
     }
 
     private static SessionOperationResult<AuthenticatedClientContext> Unauthorized(string code, string message) =>

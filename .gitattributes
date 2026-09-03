@@ -1,0 +1,7 @@
+# Keep embedded multiline model SQL stable across platforms.
+src/TagEkyc.Infrastructure/Persistence/TagEkycDbContext.cs text eol=lf
+src/TagEkyc.Infrastructure/Persistence/Migrations/20260819180000_Tip88C1C4PackageReferenceDistribution.cs text eol=lf
+src/TagEkyc.Infrastructure/Persistence/Migrations/20260819180000_Tip88C1C4PackageReferenceDistribution.Designer.cs text eol=lf
+src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs text eol=lf
+src/TagEkyc.Infrastructure/Persistence/Migrations/20260823120000_Tip88C1C5ManagedRecipientEnrollment.cs text eol=lf
+src/TagEkyc.Infrastructure/Persistence/Migrations/20260823120000_Tip88C1C5ManagedRecipientEnrollment.Designer.cs text eol=lf
