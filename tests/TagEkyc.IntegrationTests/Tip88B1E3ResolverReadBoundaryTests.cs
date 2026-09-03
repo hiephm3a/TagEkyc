@@ -28,7 +28,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
     private const string Migration = "20260724015546_Tip88B1E3ResolverReadBoundary";
     private const string PreviousMigration = "20260723052003_Tip88B33RawExportAuthorizationPersistFunction";
     private const string ExpectedModelSnapshotSha256 =
-        "5F8653C3D679DBA8EC3D933192BCB4B61E180BB3243953DCED60AAD4E87E8E3C";
+        "80A4DE4E70B41804FA32AFC3C29833FC6A27A8D871399F82BB423BC6A6EEFE05";
     private const string EligibilityFunction =
         "tagekyc.raw_export_read_authorization_eligibility_inputs(uuid,uuid,integer)";
     private const string PolicyFunction =
@@ -2727,7 +2727,8 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
                                 'tagekyc_raw_export_package_reconciler_login',
                                 'tagekyc_raw_export_package_lifecycle_login',
                                 'tagekyc_raw_export_package_delivery_login',
-                                'tagekyc_raw_export_package_reference_login']
+                                'tagekyc_raw_export_package_reference_login',
+                                'tagekyc_raw_export_recipient_manager_login']
                             LOOP
                                 IF EXISTS (
                                     SELECT 1 FROM pg_catalog.pg_roles

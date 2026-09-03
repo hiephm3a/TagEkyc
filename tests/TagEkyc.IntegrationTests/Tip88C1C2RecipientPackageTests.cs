@@ -23,7 +23,7 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
     {
         var snapshotPath = ProjectPath("src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs");
         var snapshotHash = Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(snapshotPath)));
-        Assert.Equal("5F8653C3D679DBA8EC3D933192BCB4B61E180BB3243953DCED60AAD4E87E8E3C", snapshotHash);
+        Assert.Equal("80A4DE4E70B41804FA32AFC3C29833FC6A27A8D871399F82BB423BC6A6EEFE05", snapshotHash);
         var pinPaths = new[]
         {
             "tests/TagEkyc.IntegrationTests/Tip88B1E3ResolverReadBoundaryTests.cs",
@@ -361,7 +361,7 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
         await connection.OpenAsync();
         await using (var revoke = new NpgsqlCommand("""
             UPDATE tagekyc.raw_export_recipient_key_registrations
-            SET "State"='Revoked',"Revision"=2,"RevokedAtUtc"=pg_catalog.clock_timestamp()
+            SET "State"='Revoked',"Revision"=2,"RevokedAtUtc"=pg_catalog.clock_timestamp(),"RevocationReason"='C2_TEST_REVOKE'
             WHERE "RecipientClientApplicationId"=@recipient AND "RecipientKeyId"=@keyId AND "RecipientKeyVersion"=@keyVersion
             """, connection))
         {
@@ -999,14 +999,14 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
         return new(candidate.Repository, candidate.PreparationRequest, candidate.Request, first, candidate.Key);
     }
 
-    private async Task<PackageCandidateFixture> CreatePackageCandidateAsync()
+    internal async Task<PackageCandidateFixture> CreatePackageCandidateAsync()
     {
         var lineage = await new Tip88C1C1ResolverAssemblyTests(postgres).CreateC2RecipientPackageLineageAsync();
         await using var connection = new NpgsqlConnection(postgres.ConnectionString);
         await connection.OpenAsync();
         await using (var revokeExisting = new NpgsqlCommand("""
             UPDATE tagekyc.raw_export_recipient_key_registrations
-            SET "State"='Revoked',"Revision"="Revision"+1,"RevokedAtUtc"=pg_catalog.clock_timestamp()
+            SET "State"='Revoked',"Revision"="Revision"+1,"RevokedAtUtc"=pg_catalog.clock_timestamp(),"RevocationReason"='C2_TEST_REVOKE'
             WHERE "RecipientClientApplicationId"=@recipient AND "State"='Active'
             """, connection))
         {
@@ -1102,7 +1102,7 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
         await connection.OpenAsync();
         await using (var revoke = new NpgsqlCommand("""
             UPDATE tagekyc.raw_export_recipient_key_registrations
-            SET "State"='Revoked',"Revision"="Revision"+1,"RevokedAtUtc"=pg_catalog.clock_timestamp()
+            SET "State"='Revoked',"Revision"="Revision"+1,"RevokedAtUtc"=pg_catalog.clock_timestamp(),"RevocationReason"='C2_TEST_REVOKE'
             WHERE "RecipientClientApplicationId"=@recipient AND "State"='Active'
             """, connection))
         {
@@ -1234,7 +1234,7 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
         }
     }
 
-    private sealed record RecipientKeyFixture(
+    internal sealed record RecipientKeyFixture(
         string KeyId,
         int KeyVersion,
         byte[] Spki,
@@ -1247,7 +1247,7 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
         RecipientPackageReserveRequest Request,
         RecipientPackageReserveResult First,
         RecipientKeyFixture Key);
-    private sealed record PackageCandidateFixture(
+    internal sealed record PackageCandidateFixture(
         RecipientPackageRepository Repository,
         C2AssemblyPreparationRequest PreparationRequest,
         RecipientPackageReserveRequest Request,

@@ -133,8 +133,9 @@ public sealed class Tip84BHashedApiKeyStoreTests(PostgresPersistenceFixture post
     [Fact]
     public async Task Readiness_rejects_missing_api_keys_table()
     {
-        await using var db = postgres.CreateDbContext();
-        await db.Database.ExecuteSqlRawAsync("DROP TABLE tagekyc.api_keys");
+        await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("missing_api_keys");
+        await using var db = isolated.CreateDbContext();
+        await db.Database.ExecuteSqlRawAsync("DROP TABLE tagekyc.api_keys CASCADE");
 
         var exception = await Assert.ThrowsAsync<PostgresProductionReadinessException>(() =>
             new PostgresProductionReadinessValidator(db).ValidateAsync(CancellationToken.None));

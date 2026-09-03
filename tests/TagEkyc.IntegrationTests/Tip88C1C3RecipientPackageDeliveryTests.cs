@@ -402,7 +402,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
             Assert.Equal("Ineligible", result.Outcome);
             Assert.Equal(0L, await CountRowsAsync("raw_export_recipient_package_deliveries", package.PackageId));
         }
-        await AssertRejectedAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"RevokedAtUtc\"=clock_timestamp() WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'");
+        await AssertRejectedAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"RevokedAtUtc\"=clock_timestamp(),\"RevocationReason\"='C3_TEST_REVOKE' WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'");
         await AssertRejectedAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"PublicKeyFingerprint\"=tagekyc_extensions.digest(\"PublicKeyFingerprint\",'sha256') WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'");
         await AssertRejectedAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"Revision\"=\"Revision\"+1 WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'");
         await AssertRejectedAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"ValidFromUtc\"=clock_timestamp()+interval '1 hour',\"ValidUntilUtc\"=clock_timestamp()+interval '2 hours' WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'");
@@ -1064,7 +1064,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         await ExecuteAsync("WITH t AS (SELECT clock_timestamp()-interval '31 minutes' AS authorized) UPDATE tagekyc.raw_export_recipient_package_deliveries SET \"AuthorizedAtUtc\"=t.authorized,\"AuthorizationExpiresAtUtc\"=t.authorized+interval '30 minutes' FROM t WHERE \"DeliveryId\"=@id", ("id", expired.DeliveryId));
         await expired.Repository.ReconcileNextAsync(default);
 
-        await ExecuteAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"Revision\"=\"Revision\"+1,\"RevokedAtUtc\"=clock_timestamp() WHERE \"RecipientClientApplicationId\"=@id", ("id", package.RecipientId));
+        await ExecuteAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"Revision\"=\"Revision\"+1,\"RevokedAtUtc\"=clock_timestamp(),\"RevocationReason\"='C3_TEST_REVOKE' WHERE \"RecipientClientApplicationId\"=@id", ("id", package.RecipientId));
         var expected = new Dictionary<Guid, string>
         {
             [authorized.DeliveryId] = "Authorized", [streaming.DeliveryId] = "Streaming",
@@ -1116,7 +1116,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         await postgres.AssertLatestMigrationAsync("C3 proof census");
     }
 
-    private async Task<DeliveryFixture> CreateDeliveryAsync(FinalizedPackage? package = null, string? key = null)
+    internal async Task<DeliveryFixture> CreateDeliveryAsync(FinalizedPackage? package = null, string? key = null)
     {
         package ??= await CreateFinalizedPackageAsync();
         key ??= $"delivery-{Guid.NewGuid():N}";
@@ -1128,7 +1128,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         return new(repository, package, deliveryId, result);
     }
 
-    private Task<RecipientPackageDeliveryMutation> BeginAsync(DeliveryFixture fixture) => fixture.Repository.BeginAsync(
+    internal Task<RecipientPackageDeliveryMutation> BeginAsync(DeliveryFixture fixture) => fixture.Repository.BeginAsync(
         fixture.Package.RecipientId, fixture.DeliveryId, Guid.NewGuid(), Guid.NewGuid(), RandomNumberGenerator.GetBytes(32), default);
 
     private static async Task AssertExactC3FunctionSurfaceAsync(NpgsqlConnection connection)
@@ -1238,10 +1238,10 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         };
     }
 
-    private async Task<FinalizedPackage> CreateFinalizedPackageAsync(byte[]? packageBody = null)
+    internal async Task<FinalizedPackage> CreateFinalizedPackageAsync(byte[]? packageBody = null)
     {
         var lineage = await new Tip88C1C1ResolverAssemblyTests(postgres).CreateC2RecipientPackageLineageAsync();
-        await ExecuteAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"Revision\"=\"Revision\"+1,\"RevokedAtUtc\"=clock_timestamp() WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'", ("id", lineage.Request.RecipientClientApplicationId));
+        await ExecuteAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"Revision\"=\"Revision\"+1,\"RevokedAtUtc\"=clock_timestamp(),\"RevocationReason\"='C3_TEST_REVOKE' WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'", ("id", lineage.Request.RecipientClientApplicationId));
         using var rsa = RSA.Create(3072); var spki = rsa.ExportSubjectPublicKeyInfo(); var keyId = $"c3-{Guid.NewGuid():N}"; var fingerprint = SHA256.HashData(spki);
         await ExecuteAsync("INSERT INTO tagekyc.raw_export_recipient_key_registrations(\"RecipientClientApplicationId\",\"RecipientKeyId\",\"RecipientKeyVersion\",\"PublicKeyAlgorithm\",\"PublicKeySpki\",\"PublicKeyFingerprint\",\"ValidFromUtc\",\"ValidUntilUtc\",\"State\",\"Revision\",\"RegisteredAtUtc\") VALUES(@recipient,@key,1,'RSA-OAEP-256',@spki,@fp,clock_timestamp()-interval '1 minute',clock_timestamp()+interval '1 hour','Active',1,clock_timestamp())",
             ("recipient", lineage.Request.RecipientClientApplicationId), ("key", keyId), ("spki", spki), ("fp", fingerprint));
@@ -1285,7 +1285,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         var fingerprint = SHA256.HashData(spki);
         try
         {
-            await ExecuteAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"Revision\"=\"Revision\"+1,\"RevokedAtUtc\"=clock_timestamp() WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'", ("id", recipientId));
+            await ExecuteAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"Revision\"=\"Revision\"+1,\"RevokedAtUtc\"=clock_timestamp(),\"RevocationReason\"='C3_TEST_REVOKE' WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'", ("id", recipientId));
             await ExecuteAsync("INSERT INTO tagekyc.raw_export_recipient_key_registrations(\"RecipientClientApplicationId\",\"RecipientKeyId\",\"RecipientKeyVersion\",\"PublicKeyAlgorithm\",\"PublicKeySpki\",\"PublicKeyFingerprint\",\"ValidFromUtc\",\"ValidUntilUtc\",\"State\",\"Revision\",\"RegisteredAtUtc\") VALUES(@recipient,@key,1,'RSA-OAEP-256',@spki,@fp,clock_timestamp()-interval '1 minute',clock_timestamp()+interval '1 hour','Active',1,clock_timestamp())",
                 ("recipient", recipientId), ("key", keyId), ("spki", spki), ("fp", fingerprint));
         }
@@ -1322,8 +1322,8 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
     private static string Between(string text,string start,string end){var a=text.IndexOf(start,StringComparison.Ordinal);var b=text.IndexOf(end,a,StringComparison.Ordinal);return text[a..b];}
     private static int Count(string text,string token)=>(text.Length-text.Replace(token,string.Empty,StringComparison.Ordinal).Length)/token.Length;
     private static string ProjectPath(string relative){var d=new DirectoryInfo(AppContext.BaseDirectory);while(d is not null&&!File.Exists(Path.Combine(d.FullName,"TagEkyc.sln")))d=d.Parent;return Path.Combine(d?.FullName??throw new InvalidOperationException(),relative);}
-    private sealed record FinalizedPackage(Guid PackageId,Guid RecipientId,long Length,byte[] CiphertextDigest,long PackageRevision,byte[] Content);
-    private sealed record DeliveryFixture(RecipientPackageDeliveryRepository Repository,FinalizedPackage Package,Guid DeliveryId,RecipientPackageDeliveryMutation Created);
+    internal sealed record FinalizedPackage(Guid PackageId,Guid RecipientId,long Length,byte[] CiphertextDigest,long PackageRevision,byte[] Content);
+    internal sealed record DeliveryFixture(RecipientPackageDeliveryRepository Repository,FinalizedPackage Package,Guid DeliveryId,RecipientPackageDeliveryMutation Created);
     private sealed class DeliveryRoleConnectionFactory(string connectionString):IRecipientPackageDeliveryConnectionFactory{public async Task<NpgsqlConnection> OpenAsync(CancellationToken token){var c=new NpgsqlConnection(connectionString);await c.OpenAsync(token);await new NpgsqlCommand("SET ROLE tagekyc_raw_export_package_delivery",c).ExecuteNonQueryAsync(token);return c;}}
     private sealed class CountingReader : IRecipientPackageDeliveryReader
     {

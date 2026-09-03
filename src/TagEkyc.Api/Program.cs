@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Text.Json.Serialization;
 using TagEkyc.Api;
 using TagEkyc.Api.LocalDev;
+using TagEkyc.Application;
 using TagEkyc.Application.LocalDev;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
@@ -67,6 +68,7 @@ if (recipientPackageDeliveryOptions.Topology == RecipientPackageDeliveryTopology
 }
 ConfigurePersistence(builder);
 ConfigureApiKeyStore(builder);
+builder.Services.AddTagEkycRecipientManagement(builder.Configuration, builder.Environment.IsProduction());
 ConfigureRetention(builder);
 ConfigureDecisionThresholds(builder);
 ConfigureReadiness(builder);
@@ -125,6 +127,7 @@ app.MapGet("/", () => Results.Ok(new SessionStatusPlaceholder(
 app.MapVerificationSessionEndpoints();
 app.MapRecipientPackageDeliveryEndpoints();
 app.MapRecipientPackageReferenceEndpoints();
+app.MapRecipientManagementEndpoints();
 
 app.Run();
 
@@ -193,7 +196,7 @@ static void ConfigureApiKeyStore(WebApplicationBuilder builder)
     builder.Services.AddSingleton<LocalDevRuntimePolicySource>();
     builder.Services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
     builder.Services.AddScoped<LocalDevApiKeyValidator>();
-    builder.Services.AddScoped<IApiKeyAuthenticator, LocalDevApiKeyAuthenticator>();
+    builder.Services.AddScoped<IApiKeyAuthenticator, C5CredentialAwareApiKeyAuthenticator>();
 
     if (builder.Environment.IsProduction() &&
         !string.IsNullOrWhiteSpace(options.Pepper))
@@ -287,6 +290,7 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
         builder.Services.AddScoped<IReadinessCheck, ProvisionalObjectCustodyReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RecipientPackageDeliveryReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RecipientPackageReferenceReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RecipientManagementReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, ApiKeyStoreReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, SignerJwksReadinessCheck>();
 }
@@ -529,3 +533,22 @@ sealed class RecipientPackageDeliveryHostedService(
 }
 
 public partial class Program;
+
+public sealed class C5CredentialAwareApiKeyAuthenticator(
+    IApiKeyStore apiKeyStore,
+    ILocalDevClientPolicyProvider globalPolicies) : IApiKeyAuthenticator
+{
+    private const string HeaderName = "X-TagEkyc-Api-Key";
+    private readonly RecipientCredentialAuthenticationPolicy policy = new(apiKeyStore, globalPolicies);
+
+    public async Task<SessionOperationResult<AuthenticatedClientContext>> AuthenticateAsync(
+        HttpContext httpContext,
+        string? requiredScope = null,
+        CancellationToken cancellationToken = default)
+    {
+        httpContext.Request.Headers.TryGetValue(HeaderName, out var values);
+        var presented = values.FirstOrDefault();
+        return await policy.AuthenticateAsync(presented, requiredScope, cancellationToken)
+            .ConfigureAwait(false);
+    }
+}

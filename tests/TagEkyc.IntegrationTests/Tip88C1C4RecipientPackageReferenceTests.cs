@@ -395,7 +395,14 @@ public sealed class Tip88C1C4RecipientPackageReferenceTests(PostgresPersistenceF
     }
 
     [Fact]
-    public async Task C411_real_c1_c2_package_flows_through_c4_http_into_real_c3_without_test_substitute()
+    public Task C411_real_c1_c2_package_flows_through_c4_http_into_real_c3_without_test_substitute() =>
+        ExecuteC411RealChainAsync(recipientId =>
+            InsertActiveKeyAsync(recipientId, $"c411-{Guid.NewGuid():N}"));
+
+    internal async Task ExecuteC411RealChainAsync(
+        Func<Guid, Task> provisionRecipientKeyAsync,
+        Func<Guid, Guid, Task>? beforeReferenceListAsync = null,
+        bool includeAuthenticatedDelivery = true)
     {
         await using var minio = await DurableObjectMinioFixture.StartAsync();
         var providerConfiguration = minio.RecipientPackageConfiguration();
@@ -406,7 +413,7 @@ public sealed class Tip88C1C4RecipientPackageReferenceTests(PostgresPersistenceF
             var execution = await new Tip88C1C1ResolverAssemblyTests(postgres).ExecuteWithRealC2ProviderAsync(
                 async (_, recipientId) =>
                 {
-                    await InsertActiveKeyAsync(recipientId, $"c411-{Guid.NewGuid():N}");
+                    await provisionRecipientKeyAsync(recipientId);
                     var factory = new RecipientPackageObjectClientFactory(c2Options);
                     store = new S3CompatibleRecipientPackageProvider(c2Options, factory);
                     return new RecipientPackagePreparationProvider(c2Options,
@@ -420,6 +427,8 @@ public sealed class Tip88C1C4RecipientPackageReferenceTests(PostgresPersistenceF
             var package = await db.RawExportRecipientPackagePreparations.AsNoTracking()
                 .SingleAsync(row => row.C2PreparationId == execution.Result.C2PreparationId);
             Assert.Equal("Finalized", package.State);
+            if (beforeReferenceListAsync is not null)
+                await beforeReferenceListAsync(package.PackageId, package.RecipientClientApplicationId);
             var assembly = await db.RawExportAssemblyIdentities.AsNoTracking()
                 .SingleOrDefaultAsync(row => row.JobId == package.JobId);
             var objectProvenance = await ReadC411ObjectProvenanceAsync(store!, package);
@@ -476,6 +485,7 @@ public sealed class Tip88C1C4RecipientPackageReferenceTests(PostgresPersistenceF
             response.EnsureSuccessStatusCode();
             var page = await response.Content.ReadFromJsonAsync<RecipientPackageReferencePageDto>();
             Assert.Contains(page!.Items, item => item.PackageId == package.PackageId);
+            if (!includeAuthenticatedDelivery) return;
 
             var deliveryOptions = new RecipientPackageDeliveryOptions(RecipientPackageDeliveryTopology.S3CompatibleDurable,
                 providerConfiguration, minio.RecipientPackageDeliveryReaderCredential(), postgres.ConnectionString, true);
@@ -1857,7 +1867,7 @@ public sealed class Tip88C1C4RecipientPackageReferenceTests(PostgresPersistenceF
         var spki = rsa.ExportSubjectPublicKeyInfo(); var fingerprint = SHA256.HashData(spki);
         try
         {
-            await ExecuteAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"Revision\"=\"Revision\"+1,\"RevokedAtUtc\"=clock_timestamp() WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'", ("id", recipientId));
+            await ExecuteAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"Revision\"=\"Revision\"+1,\"RevokedAtUtc\"=clock_timestamp(),\"RevocationReason\"='C4_TEST_REVOKE' WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'", ("id", recipientId));
             await ExecuteAsync("INSERT INTO tagekyc.raw_export_recipient_key_registrations(\"RecipientClientApplicationId\",\"RecipientKeyId\",\"RecipientKeyVersion\",\"PublicKeyAlgorithm\",\"PublicKeySpki\",\"PublicKeyFingerprint\",\"ValidFromUtc\",\"ValidUntilUtc\",\"State\",\"Revision\",\"RegisteredAtUtc\") VALUES(@recipient,@key,1,'RSA-OAEP-256',@spki,@fp,clock_timestamp()-interval '1 minute',clock_timestamp()+interval '1 hour','Active',1,clock_timestamp())",
                 ("recipient", recipientId), ("key", keyId), ("spki", spki), ("fp", fingerprint));
         }

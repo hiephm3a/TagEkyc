@@ -14,4 +14,5 @@ public sealed class RawExportRecipientKeyRegistrationRow
     public long Revision { get; set; }
     public DateTimeOffset RegisteredAtUtc { get; set; }
     public DateTimeOffset? RevokedAtUtc { get; set; }
+    public string? RevocationReason { get; set; }
 }

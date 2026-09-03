@@ -1,4 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions.Infrastructure;
+using Microsoft.Extensions.DependencyInjection;
 using TagEkyc.Infrastructure.Persistence.Configurations;
 using TagEkyc.Infrastructure.Persistence.Entities;
 
@@ -83,10 +88,22 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportAssemblyIdentityRow> RawExportAssemblyIdentities => Set<RawExportAssemblyIdentityRow>();
     public DbSet<RawExportAssemblyItemRow> RawExportAssemblyItems => Set<RawExportAssemblyItemRow>();
     public DbSet<RawExportRecipientKeyRegistrationRow> RawExportRecipientKeyRegistrations => Set<RawExportRecipientKeyRegistrationRow>();
+    public DbSet<RawExportManagedRecipientIdentityRow> RawExportManagedRecipientIdentities => Set<RawExportManagedRecipientIdentityRow>();
+    public DbSet<RawExportManagedRecipientPolicyRow> RawExportManagedRecipientPolicies => Set<RawExportManagedRecipientPolicyRow>();
+    public DbSet<RawExportManagedRecipientCredentialRow> RawExportManagedRecipientCredentials => Set<RawExportManagedRecipientCredentialRow>();
+    public DbSet<RawExportRecipientManagementOperationRow> RawExportRecipientManagementOperations => Set<RawExportRecipientManagementOperationRow>();
+    public DbSet<RawExportRecipientManagementEventRow> RawExportRecipientManagementEvents => Set<RawExportRecipientManagementEventRow>();
     public DbSet<RawExportRecipientPackagePreparationRow> RawExportRecipientPackagePreparations => Set<RawExportRecipientPackagePreparationRow>();
     public DbSet<RawExportRecipientPackageEventRow> RawExportRecipientPackageEvents => Set<RawExportRecipientPackageEventRow>();
     public DbSet<RawExportRecipientPackageDeliveryRow> RawExportRecipientPackageDeliveries => Set<RawExportRecipientPackageDeliveryRow>();
     public DbSet<RawExportRecipientPackageDeliveryEventRow> RawExportRecipientPackageDeliveryEvents => Set<RawExportRecipientPackageDeliveryEventRow>();
+
+    protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
+    {
+        configurationBuilder.Conventions.Replace<ForeignKeyIndexConvention>(serviceProvider =>
+            new C5ScopedForeignKeyIndexConvention(
+                serviceProvider.GetRequiredService<ProviderConventionSetBuilderDependencies>()));
+    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -104,6 +121,12 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         modelBuilder.ApplyConfiguration(new RawExportAssemblyIdentityConfig());
         modelBuilder.ApplyConfiguration(new RawExportAssemblyItemConfig());
         modelBuilder.ApplyConfiguration(new RawExportRecipientKeyRegistrationConfig());
+        modelBuilder.ApplyConfiguration(new RawExportManagedRecipientIdentityConfig());
+        modelBuilder.ApplyConfiguration(new RawExportManagedRecipientPolicyConfig());
+        modelBuilder.ApplyConfiguration(new RawExportManagedRecipientCredentialConfig());
+        modelBuilder.ApplyConfiguration(new RawExportRecipientManagementOperationConfig());
+        modelBuilder.ApplyConfiguration(new RawExportRecipientManagementEventConfig());
+
         modelBuilder.ApplyConfiguration(new RawExportRecipientPackagePreparationConfig());
         modelBuilder.ApplyConfiguration(new RawExportRecipientPackageEventConfig());
         modelBuilder.ApplyConfiguration(new RawExportRecipientPackageDeliveryConfig());
@@ -305,6 +328,8 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.OAuthClientId).HasMaxLength(128);
             entity.Property(row => row.MtlsSubjectDn).HasMaxLength(512);
             entity.HasIndex(row => row.KeyPrefix).IsUnique();
+            entity.HasAlternateKey(row => new { row.ApiKeyId, row.ClientApplicationId, row.PrincipalId })
+                .HasName("uq_api_keys_managed_identity");
         });
 
         modelBuilder.Entity<RawExportRequirementRuleSetRow>(entity =>
@@ -644,6 +669,24 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         ConfigureRawExportSourceIngressClaims(modelBuilder);
         ConfigureRawExportAuthoritySnapshots(modelBuilder);
         ConfigureRawExportSourceReservations(modelBuilder);
+    }
+
+    private sealed class C5ScopedForeignKeyIndexConvention(
+        ProviderConventionSetBuilderDependencies dependencies)
+        : ForeignKeyIndexConvention(dependencies)
+    {
+        protected override IConventionIndex? CreateIndex(
+            IReadOnlyList<IConventionProperty> properties,
+            bool unique,
+            IConventionEntityTypeBuilder entityTypeBuilder)
+        {
+            // C5 owns an exact six-index catalog delta. PostgreSQL does not require
+            // supporting indexes on the referencing side of these credential FKs.
+            if (entityTypeBuilder.Metadata.ClrType == typeof(RawExportManagedRecipientCredentialRow))
+                return null;
+
+            return base.CreateIndex(properties, unique, entityTypeBuilder);
+        }
     }
 
     private static void ConfigureRawExportAuthoritySnapshots(ModelBuilder modelBuilder)

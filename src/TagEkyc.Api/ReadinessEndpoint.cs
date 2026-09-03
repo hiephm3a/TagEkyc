@@ -319,6 +319,23 @@ internal sealed class RecipientPackageReferenceReadinessCheck(
     }
 }
 
+internal sealed class RecipientManagementReadinessCheck(
+    RecipientManagementReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken).ConfigureAwait(false);
+            return [];
+        }
+        catch (RecipientManagementReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
 public sealed class RawExportAuthorizationReadinessCheck(RawExportAuthorizationReadinessValidator validator) : IReadinessCheck
 {
     public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(CancellationToken cancellationToken)
