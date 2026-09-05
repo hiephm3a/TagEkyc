@@ -90,16 +90,18 @@ public sealed class RecipientPackageDeliveryReadinessValidator(
         expected_tables(name) AS (VALUES
           ('raw_export_recipient_package_deliveries'),
           ('raw_export_recipient_package_delivery_events')),
-        expected_functions(name,args,runtime) AS (VALUES
-          ('raw_export_create_recipient_package_delivery','uuid, uuid, uuid, bytea, uuid, uuid, bytea',true),
-          ('raw_export_read_recipient_package_delivery','uuid, uuid',true),
-          ('raw_export_probe_recipient_package_delivery_content','uuid, uuid',true),
-          ('raw_export_begin_recipient_package_delivery_stream','uuid, uuid, uuid, uuid, bytea',true),
-          ('raw_export_record_recipient_package_delivery_interrupted','uuid, bigint, bigint, text, bytea',true),
-          ('raw_export_record_recipient_package_integrity_unavailable','uuid, bigint, bigint, text, bytea',true),
-          ('raw_export_complete_recipient_package_delivery','uuid, bigint, bigint, bigint, bytea',true),
-          ('raw_export_reconcile_next_recipient_package_delivery','',true),
-          ('raw_export_guard_recipient_package_delivery_event','',false)),
+        expected_functions(name,args,grantee) AS (VALUES
+          ('raw_export_create_recipient_package_delivery','uuid, uuid, uuid, bytea, uuid, uuid, bytea','tagekyc_raw_export_package_delivery'),
+          ('raw_export_read_recipient_package_delivery','uuid, uuid','tagekyc_raw_export_package_delivery'),
+          ('raw_export_probe_recipient_package_delivery_content','uuid, uuid','tagekyc_raw_export_package_delivery'),
+          ('raw_export_begin_recipient_package_delivery_stream','uuid, uuid, uuid, uuid, bytea','tagekyc_raw_export_package_delivery'),
+          ('raw_export_record_recipient_package_delivery_interrupted','uuid, bigint, bigint, text, bytea','tagekyc_raw_export_package_delivery'),
+          ('raw_export_record_recipient_package_integrity_unavailable','uuid, bigint, bigint, text, bytea','tagekyc_raw_export_package_delivery'),
+          ('raw_export_complete_recipient_package_delivery','uuid, bigint, bigint, bigint, bytea','tagekyc_raw_export_package_delivery'),
+          ('raw_export_reconcile_next_recipient_package_delivery','','tagekyc_raw_export_package_delivery'),
+          ('raw_export_guard_recipient_package_delivery_event','',NULL),
+          ('raw_export_c3_current_authority_eligible','uuid, uuid, uuid, timestamp with time zone',NULL),
+          ('raw_export_begin_production_source_ingress_with_authority','uuid, uuid, text, text, text, uuid, uuid, uuid, integer, text, text, bigint, text, timestamp with time zone, timestamp with time zone, timestamp with time zone, integer, text, integer, uuid, integer, integer','tagekyc_raw_export_claim_broker')),
         role_ok AS (
           SELECT pg_catalog.count(*)=2 AND pg_catalog.bool_and(
             r.rolcanlogin=e.login AND r.rolinherit AND NOT r.rolsuper AND NOT r.rolcreatedb
@@ -122,7 +124,7 @@ public sealed class RecipientPackageDeliveryReadinessValidator(
           FROM expected_tables e JOIN pg_catalog.pg_namespace n ON n.nspname='tagekyc'
           JOIN pg_catalog.pg_class c ON c.relnamespace=n.oid AND c.relname=e.name AND c.relkind='r'),
         function_ok AS (
-          SELECT pg_catalog.count(*)=9 AND pg_catalog.bool_and(
+          SELECT pg_catalog.count(*)=11 AND pg_catalog.bool_and(
             pg_catalog.pg_get_userbyid(p.proowner)='tagekyc_raw_export_deployer'
             AND p.prosecdef AND p.proconfig=ARRAY['search_path=pg_catalog']::text[]
             AND NOT EXISTS (SELECT 1 FROM pg_catalog.aclexplode(COALESCE(p.proacl,pg_catalog.acldefault('f',p.proowner))) a
@@ -139,14 +141,14 @@ public sealed class RecipientPackageDeliveryReadinessValidator(
           CROSS JOIN LATERAL pg_catalog.aclexplode(COALESCE(p.proacl,pg_catalog.acldefault('f',p.proowner))) a
           WHERE a.grantee<>p.proowner),
         expected_acl AS (
-          SELECT name,args,'tagekyc_raw_export_package_delivery'::text grantee FROM expected_functions WHERE runtime),
+          SELECT name,args,grantee FROM expected_functions WHERE grantee IS NOT NULL),
         acl_ok AS (
-          SELECT pg_catalog.count(*)=8
+          SELECT pg_catalog.count(*)=9
             AND NOT EXISTS (SELECT name,args,grantee FROM expected_acl EXCEPT SELECT name,args,grantee FROM actual_acl)
             AND NOT EXISTS (SELECT name,args,grantee FROM actual_acl EXCEPT SELECT name,args,grantee FROM expected_acl) ok
           FROM actual_acl),
         surface_ok AS (
-          SELECT pg_catalog.count(*)=9 ok FROM pg_catalog.pg_proc p
+          SELECT pg_catalog.count(*)=11 ok FROM pg_catalog.pg_proc p
           JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
           WHERE n.nspname='tagekyc' AND p.proname IN (SELECT name FROM expected_functions))
         SELECT r.ok AND m.ok AND t.ok AND f.ok AND a.ok AND s.ok

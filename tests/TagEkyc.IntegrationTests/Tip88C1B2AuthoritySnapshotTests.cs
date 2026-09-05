@@ -513,6 +513,10 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
             "Fixture",
             isProduction: true,
             RawExportAuthoritySnapshotReadinessValidator.FixtureActive);
+        await AssertReadinessFailureAsync(
+            "Production",
+            isProduction: false,
+            RawExportAuthoritySnapshotReadinessValidator.ProfileInvalid);
 
         var configuration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -525,6 +529,19 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
             configuration,
             isProduction: false);
         await new RawExportAuthoritySnapshotReadinessValidator(state)
+            .ValidateAsync(CancellationToken.None);
+
+        var productionConfiguration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?>
+            {
+                [RawExportAuthoritySnapshotProfileState.ConfigurationPath] =
+                    "Production",
+            })
+            .Build();
+        var productionState = RawExportAuthoritySnapshotProfileState.Resolve(
+            productionConfiguration,
+            isProduction: true);
+        await new RawExportAuthoritySnapshotReadinessValidator(productionState)
             .ValidateAsync(CancellationToken.None);
     }
 

@@ -46,19 +46,31 @@ public sealed class RawExportAuthoritySnapshotReadinessValidator(
                 ProfileMissing);
         }
 
-        if (!string.Equals(
-                state.Profile,
-                "Fixture",
-                StringComparison.Ordinal))
+        var isFixture = string.Equals(
+            state.Profile,
+            "Fixture",
+            StringComparison.Ordinal);
+        var isProduction = string.Equals(
+            state.Profile,
+            "Production",
+            StringComparison.Ordinal);
+
+        if (!isFixture && !isProduction)
         {
             throw new RawExportAuthoritySnapshotReadinessException(
                 ProfileInvalid);
         }
 
-        if (state.IsProduction)
+        if (state.IsProduction && isFixture)
         {
             throw new RawExportAuthoritySnapshotReadinessException(
                 FixtureActive);
+        }
+
+        if (!state.IsProduction && isProduction)
+        {
+            throw new RawExportAuthoritySnapshotReadinessException(
+                ProfileInvalid);
         }
 
         return Task.CompletedTask;
