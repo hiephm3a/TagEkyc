@@ -211,7 +211,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         var coordinator = new RecipientPackageDeliveryCoordinator(options, fixture.Repository, reader, pool);
         var actor = new AuthenticatedClientContext(Guid.NewGuid(), package.RecipientId, "c314",
             AuthenticatedCallerCategory.BusinessConsumer,
-            new HashSet<string> { "business.raw-export.package.download" }, PrincipalId: Guid.NewGuid());
+            new HashSet<string> { "business.raw-export.package.download" }, PrincipalId: package.PrincipalId);
         var correlation = RecipientPackageDeliveryCodec.CorrelationDigest("c314-exact-get");
         try
         {
@@ -455,7 +455,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         Assert.Equal(authorizedRow.CreatorApiKeyId, authorizedEvent.AuthenticatedApiKeyId);
         Assert.Equal(authorizedRow.CreatorPrincipalId, authorizedEvent.AuthenticatedPrincipalId);
 
-        var streamApiKey = Guid.NewGuid(); var streamPrincipal = Guid.NewGuid();
+        var streamApiKey = Guid.NewGuid(); var streamPrincipal = fixture.Package.PrincipalId;
         var streamCorrelation = RandomNumberGenerator.GetBytes(32);
         var started = await fixture.Repository.BeginAsync(fixture.Package.RecipientId, fixture.DeliveryId,
             streamApiKey, streamPrincipal, streamCorrelation, default);
@@ -549,7 +549,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
     public async Task C311_concurrent_begin_has_one_attempt_fence_and_stale_CAS_cannot_write()
     {
         var fixture = await CreateDeliveryAsync();
-        var actor = (Guid.NewGuid(), Guid.NewGuid(), RandomNumberGenerator.GetBytes(32));
+        var actor = (Guid.NewGuid(), fixture.Package.PrincipalId, RandomNumberGenerator.GetBytes(32));
         var results = await Task.WhenAll(
             fixture.Repository.BeginAsync(fixture.Package.RecipientId, fixture.DeliveryId, actor.Item1, actor.Item2, actor.Item3, default),
             fixture.Repository.BeginAsync(fixture.Package.RecipientId, fixture.DeliveryId, actor.Item1, actor.Item2, actor.Item3, default));
@@ -601,7 +601,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
             var predecessor = interrupted ? "Interrupted" : "Authorized";
             if (interrupted)
             {
-                expectedApiKey = Guid.NewGuid(); expectedPrincipal = Guid.NewGuid();
+                expectedApiKey = Guid.NewGuid(); expectedPrincipal = fixture.Package.PrincipalId;
                 expectedCorrelation = RandomNumberGenerator.GetBytes(32);
                 var started = await fixture.Repository.BeginAsync(fixture.Package.RecipientId, fixture.DeliveryId,
                     expectedApiKey, expectedPrincipal, expectedCorrelation, default);
@@ -713,7 +713,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         Assert.Equal(RecipientPackageDeliveryCodec.EventId(expired.DeliveryId, expired.Revision), expiredEvent.DeliveryEventId);
 
         var interruptedFixture = await CreateDeliveryAsync();
-        var interruptedApiKey = Guid.NewGuid(); var interruptedPrincipal = Guid.NewGuid();
+        var interruptedApiKey = Guid.NewGuid(); var interruptedPrincipal = interruptedFixture.Package.PrincipalId;
         var interruptedCorrelation = RandomNumberGenerator.GetBytes(32);
         var interruptedStart = await interruptedFixture.Repository.BeginAsync(
             interruptedFixture.Package.RecipientId, interruptedFixture.DeliveryId,
@@ -745,7 +745,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
             interruptedExpired.ExpiredAtUtc!.Value), interruptedEvent.EvidenceDigest);
 
         var staleFixture = await CreateDeliveryAsync();
-        var apiKey = Guid.NewGuid(); var principal = Guid.NewGuid(); var correlation = RandomNumberGenerator.GetBytes(32);
+        var apiKey = Guid.NewGuid(); var principal = staleFixture.Package.PrincipalId; var correlation = RandomNumberGenerator.GetBytes(32);
         var started = await staleFixture.Repository.BeginAsync(staleFixture.Package.RecipientId, staleFixture.DeliveryId,
             apiKey, principal, correlation, default);
         Assert.Equal("Started", started.Outcome);
@@ -797,7 +797,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
             new ScriptedReader(RecipientPackageDeliveryReadOutcome.Opened, truncated), pool);
         var actor = new AuthenticatedClientContext(Guid.NewGuid(), package.RecipientId, "c316",
             AuthenticatedCallerCategory.BusinessConsumer,
-            new HashSet<string> { "business.raw-export.package.download" }, PrincipalId: Guid.NewGuid());
+            new HashSet<string> { "business.raw-export.package.download" }, PrincipalId: package.PrincipalId);
         var correlation = RecipientPackageDeliveryCodec.CorrelationDigest("c316-early-eof");
         try
         {
@@ -840,6 +840,10 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
             await using var db = postgres.CreateDbContext();
             var package = await db.RawExportRecipientPackagePreparations.AsNoTracking()
                 .SingleAsync(row => row.C2PreparationId == execution.Result.C2PreparationId);
+            var principalId = await db.RawExportJobIdentities.AsNoTracking()
+                .Where(row => row.JobId == execution.JobId)
+                .Select(row => row.PrincipalId)
+                .SingleAsync();
             Assert.Equal("Finalized", package.State);
             Assert.NotNull(package.EncryptedPackageLength);
             Assert.NotNull(package.PackageCiphertextDigest);
@@ -859,7 +863,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
                 Guid.NewGuid(), execution.RecipientClientApplicationId, "c317",
                 AuthenticatedCallerCategory.BusinessConsumer,
                 new HashSet<string>(StringComparer.Ordinal) { "business.raw-export.package.download" },
-                PrincipalId: Guid.NewGuid());
+                PrincipalId: principalId);
             var correlation = RecipientPackageDeliveryCodec.CorrelationDigest("c317-real-c2-through-c3");
             try
             {
@@ -936,7 +940,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         var firstCoordinator = new RecipientPackageDeliveryCoordinator(options, a.Repository, absent, firstPool);
         var actor = new AuthenticatedClientContext(Guid.NewGuid(), package.RecipientId, "c318",
             AuthenticatedCallerCategory.BusinessConsumer,
-            new HashSet<string> { "business.raw-export.package.download" }, PrincipalId: Guid.NewGuid());
+            new HashSet<string> { "business.raw-export.package.download" }, PrincipalId: package.PrincipalId);
         var correlation = RecipientPackageDeliveryCodec.CorrelationDigest("c318-a");
         var failed = await firstCoordinator.PrepareContentAsync(actor, a.DeliveryId, correlation, default);
         Assert.False(failed.IsSuccess);
@@ -1011,7 +1015,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
             Convert.ToHexString(SHA256.HashData(preimage)));
 
         var fixture = await CreateDeliveryAsync();
-        var apiKeyId = Guid.NewGuid(); var principalId = Guid.NewGuid();
+        var apiKeyId = Guid.NewGuid(); var principalId = fixture.Package.PrincipalId;
         var correlation = RandomNumberGenerator.GetBytes(32);
         var started = await fixture.Repository.BeginAsync(fixture.Package.RecipientId, fixture.DeliveryId,
             apiKeyId, principalId, correlation, default);
@@ -1096,6 +1100,8 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         await using var db = isolated.CreateDbContext(); var migrator = db.GetService<IMigrator>();
         await migrator.MigrateAsync("20260818120000_Tip88C1C2RecipientPackage");
         await migrator.MigrateAsync();
+        await migrator.MigrateAsync("20260823120000_Tip88C1C5ManagedRecipientEnrollment");
+        await migrator.MigrateAsync();
         Assert.False(db.Database.HasPendingModelChanges());
         Assert.Equal(db.Database.GetMigrations().Last(), (await db.Database.GetAppliedMigrationsAsync()).Last());
     }
@@ -1116,6 +1122,153 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
         await postgres.AssertLatestMigrationAsync("C3 proof census");
     }
 
+    [Fact] public void C6A01_exact_migration_topology_is_frozen() =>
+        Assert.Contains("Tip88C1C6AProductionAuthorityDeliveryBarrier", C6AMigrationSource(), StringComparison.Ordinal);
+    [Fact] public void C6A02_snapshot_is_server_derived() { var s=C6AMigrationSource(); Assert.DoesNotContain("p_authority_snapshot_id", Between(s,"raw_export_begin_production_source_ingress_with_authority","RETURNS TABLE"),StringComparison.Ordinal); Assert.Contains("raw_export_append_authority_snapshot",s,StringComparison.Ordinal); }
+    [Fact] public void C6A03_replay_is_inspected_before_append() { var s=C6AMigrationSource(); Assert.True(s.IndexOf("existing_snapshot_id IS NULL",StringComparison.Ordinal)<s.LastIndexOf("raw_export_append_authority_snapshot",StringComparison.Ordinal)); }
+    [Fact] public void C6A04_admission_precedes_source_byte_surface() => Assert.DoesNotContain("OpenRead",C6AMigrationSource(),StringComparison.Ordinal);
+    [Fact] public void C6A05_begin_stream_calls_current_barrier_before_started_event() { var s=C6AMigrationSource(); Assert.Contains("raw_export_c3_current_authority_eligible(p_delivery,p_recipient,p_principal,now_utc)",s,StringComparison.Ordinal); }
+    [Fact] public void C6A06_current_grant_is_required() => Assert.Contains("GrantEventType\" <> 'Granted'",C6AMigrationSource(),StringComparison.Ordinal);
+    [Fact] public void C6A07_policy_rules_and_fulfillments_are_current() { var s=C6AMigrationSource(); Assert.Contains("RequirementRuleSetVersion",s,StringComparison.Ordinal); Assert.Contains("FulfillmentEventType",s,StringComparison.Ordinal); }
+    [Fact] public void C6A08_permit_and_job_deadlines_are_live() { var s=C6AMigrationSource(); Assert.Contains("PermitExpiresAt\" <= p_evaluated_at_utc",s,StringComparison.Ordinal); Assert.Contains("JobExpiresAt\" <= p_evaluated_at_utc",s,StringComparison.Ordinal); }
+    [Fact] public void C6A09_consent_is_resolved_per_source_class() => Assert.Contains("WHERE \"RawClass\" = source_row.\"RawClass\"",C6AMigrationSource(),StringComparison.Ordinal);
+    [Fact] public void C6A10_current_authority_identity_and_revision_are_exact() { var s=C6AMigrationSource(); Assert.Contains("AuthoritySnapshotId",s,StringComparison.Ordinal); Assert.Contains("AuthorityRevision",s,StringComparison.Ordinal); }
+    [Fact] public void C6A11_both_source_horizons_are_live() { var s=C6AMigrationSource(); Assert.Contains("AbsoluteSourceExpiresAtUtc",s,StringComparison.Ordinal); Assert.Contains("EffectivePlaintextRetentionExpiresAtUtc",s,StringComparison.Ordinal); }
+    [Fact] public async Task C6A12_failed_barrier_has_no_stream_event()
+    { var f=await CreateDeliveryAsync(); var before=await CountRowsAsync("raw_export_recipient_package_delivery_events"); var r=await f.Repository.BeginAsync(f.Package.RecipientId,f.DeliveryId,Guid.NewGuid(),Guid.NewGuid(),RandomNumberGenerator.GetBytes(32),default); Assert.Equal("Ineligible",r.Outcome); Assert.Equal(before,await CountRowsAsync("raw_export_recipient_package_delivery_events")); }
+    [Fact] public void C6A13_reconciler_has_no_authority_call() => Assert.DoesNotContain("raw_export_c3_current_authority_eligible",Between(MigrationSource(),"raw_export_reconcile_next_recipient_package_delivery","ALTER FUNCTION"),StringComparison.Ordinal);
+    [Fact] public void C6A14_c1_c2_functions_are_not_replaced() { var s=C6AMigrationSource(); Assert.DoesNotContain("CREATE OR REPLACE FUNCTION tagekyc.raw_export_seal",s,StringComparison.Ordinal); Assert.DoesNotContain("CREATE OR REPLACE FUNCTION tagekyc.raw_export_finalize_recipient_package",s,StringComparison.Ordinal); }
+    [Fact] public void C6A15_barrier_uses_post_lock_clock() { var s=Between(MigrationSource(),"raw_export_begin_recipient_package_delivery_stream","raw_export_record_recipient_package_delivery_interrupted"); Assert.True(s.IndexOf("FOR UPDATE",StringComparison.Ordinal)<s.IndexOf("now_utc:=pg_catalog.clock_timestamp()",StringComparison.Ordinal)); }
+    [Fact] public void C6A16_profile_error_codes_remain_exact() { var s=File.ReadAllText(ProjectPath("src/TagEkyc.Infrastructure/Persistence/RawExportAuthoritySnapshotReadinessValidator.cs")); Assert.Contains("PROFILE_MISSING",s,StringComparison.Ordinal); Assert.Contains("PROFILE_INVALID",s,StringComparison.Ordinal); Assert.Contains("FIXTURE_ACTIVE",s,StringComparison.Ordinal); }
+    [Fact] public void C6A17_no_recipient_management_surface_is_added() => Assert.DoesNotContain("recipient_management",C6AMigrationSource(),StringComparison.OrdinalIgnoreCase);
+    [Fact] public async Task C6A18_down_reapply_is_clean() { await using var isolated=await postgres.CreateDisposableCurrentDatabaseAsync("c6a18"); await using var db=isolated.CreateDbContext(); var m=db.GetService<IMigrator>(); await m.MigrateAsync("20260823120000_Tip88C1C5ManagedRecipientEnrollment"); await m.MigrateAsync(); await m.MigrateAsync("20260823120000_Tip88C1C5ManagedRecipientEnrollment"); await m.MigrateAsync(); Assert.False(db.Database.HasPendingModelChanges()); }
+    [Fact] public async Task C6A19_wrong_principal_is_ineligible() { var f=await CreateDeliveryAsync(); var r=await f.Repository.BeginAsync(f.Package.RecipientId,f.DeliveryId,Guid.NewGuid(),Guid.NewGuid(),RandomNumberGenerator.GetBytes(32),default); Assert.Equal("Ineligible",r.Outcome); }
+    [Fact] public void C6A20_decision_job_client_and_recipient_are_compared() { var s=C6AMigrationSource(); Assert.Contains("decision_row.\"ClientApplicationId\"",s,StringComparison.Ordinal); Assert.Contains("RecipientClientApplicationId",s,StringComparison.Ordinal); }
+    [Fact] public async Task C6A21_fault_after_append_rolls_back_snapshot()
+    {
+        var package=await CreateFinalizedPackageAsync();
+        async Task<long> CountAsync(){await using var c=new NpgsqlConnection(postgres.ConnectionString);await c.OpenAsync();await using var q=new NpgsqlCommand("WITH scope AS (SELECT s.\"ClientApplicationId\",s.\"VerificationSessionId\",s.\"CaptureAcceptanceId\",s.\"RawClass\" FROM tagekyc.raw_export_job_source_bindings b JOIN tagekyc.raw_export_authority_snapshots s ON s.\"AuthoritySnapshotId\"=b.\"AuthoritySnapshotId\" WHERE b.\"JobId\"=@job LIMIT 1) SELECT count(*) FROM tagekyc.raw_export_authority_snapshots s JOIN scope x ON x.\"ClientApplicationId\"=s.\"ClientApplicationId\" AND x.\"VerificationSessionId\"=s.\"VerificationSessionId\" AND x.\"CaptureAcceptanceId\"=s.\"CaptureAcceptanceId\" AND x.\"RawClass\"=s.\"RawClass\"",c);q.Parameters.AddWithValue("job",package.JobId);return (long)(await q.ExecuteScalarAsync())!;}
+        var before=await CountAsync();await using(var c=new NpgsqlConnection(postgres.ConnectionString)){await c.OpenAsync();await using var tx=await c.BeginTransactionAsync();try{await using var q=new NpgsqlCommand("""
+          WITH source AS (SELECT s.* FROM tagekyc.raw_export_job_source_bindings b JOIN tagekyc.raw_export_authority_snapshots s ON s."AuthoritySnapshotId"=b."AuthoritySnapshotId" WHERE b."JobId"=@job LIMIT 1),
+          appended AS (SELECT * FROM source s CROSS JOIN LATERAL tagekyc.raw_export_append_authority_snapshot(s."ClientApplicationId",s."VerificationSessionId",s."CaptureAcceptanceId",s."RawClass",s."AuthorityArtifactId",s."AuthorityArtifactVersion",s."ControllerIdentity",s."StableDataScopeId",s."RetentionPolicyId",s."RetentionPolicyVersion",s."ConsentPolicyId",s."ConsentPolicyVersion",s."RetentionClass",s."RetentionStartEvent",s."AbsoluteSourceExpiresAtUtc",s."RevocationPolicyId",s."PurgePolicyId",s."LegalHoldPolicyId",clock_timestamp(),s."ValidUntilUtc") a)
+          SELECT 1/0 FROM appended
+          """,c,tx);q.Parameters.AddWithValue("job",package.JobId);await q.ExecuteNonQueryAsync();}catch(PostgresException){await tx.RollbackAsync();}}
+        Assert.Equal(before,await CountAsync());
+        var s=Between(C6AMigrationSource(),"raw_export_begin_production_source_ingress_with_authority","ALTER FUNCTION tagekyc.raw_export_begin_production");Assert.Contains("raw_export_append_authority_snapshot",s,StringComparison.Ordinal);Assert.Contains("begin_raw_export_source_ingress_claim",s,StringComparison.Ordinal);Assert.DoesNotContain("COMMIT;",s,StringComparison.OrdinalIgnoreCase);
+    }
+    [Fact] public async Task C6A22_wrapper_and_begin_share_lock_order_without_duplicate_identity()
+    {
+        var package=await CreateFinalizedPackageAsync();
+        async Task<Guid> SourceActorAsync()
+        { await using var c=new NpgsqlConnection(postgres.ConnectionString);await c.OpenAsync();await using var q=new NpgsqlCommand("SELECT claim.\"AuthenticatedPrincipalId\" FROM tagekyc.raw_export_job_source_bindings b JOIN tagekyc.raw_export_source_reservations reservation ON reservation.\"SourceArtifactId\"=b.\"SourceArtifactId\" JOIN tagekyc.raw_export_source_ingress_claims claim ON claim.\"IngressClaimId\"=reservation.\"IngressClaimId\" WHERE b.\"JobId\"=@job LIMIT 1",c);q.Parameters.AddWithValue("job",package.JobId);return (Guid)(await q.ExecuteScalarAsync())!; }
+        var sourceActor=await SourceActorAsync();
+        async Task<long> SnapshotCountAsync()
+        { await using var c=new NpgsqlConnection(postgres.ConnectionString);await c.OpenAsync();await using var q=new NpgsqlCommand("SELECT count(*) FROM tagekyc.raw_export_authority_snapshots s JOIN tagekyc.raw_export_job_source_bindings b ON b.\"AuthoritySnapshotId\"=s.\"AuthoritySnapshotId\" WHERE b.\"JobId\"=@job",c);q.Parameters.AddWithValue("job",package.JobId);return (long)(await q.ExecuteScalarAsync())!; }
+        async Task CallAsync(bool wrapper)
+        {
+            await using var c=new NpgsqlConnection(postgres.ConnectionString);await c.OpenAsync();await using var tx=await c.BeginTransactionAsync();
+            await using(var actor=new NpgsqlCommand("SELECT pg_catalog.set_config('tagekyc.actor_principal_id',@actor::text,true)",c,tx)){actor.Parameters.AddWithValue("actor",sourceActor);await actor.ExecuteNonQueryAsync();}
+            var name=wrapper?"raw_export_begin_production_source_ingress_with_authority":"begin_raw_export_source_ingress_claim";
+            var snapshot=wrapper?string.Empty:",x.\"AuthoritySnapshotId\"";
+            var sql=$$"""
+                WITH x AS (
+                  SELECT claim.*,alias."IngressIdempotencyKey",alias."CurrentClaimEvaluationOwnerId",
+                    reservation."ClaimedPlaintextLength",reservation."MediaType",reservation."CapturedAtUtc",
+                    reservation."PlaintextRetentionStartedAtUtc",reservation."PlaintextRetentionExpiresAtUtc",
+                    reservation."PlaintextRetentionBudgetSeconds"
+                  FROM tagekyc.raw_export_job_source_bindings b
+                  JOIN tagekyc.raw_export_source_reservations reservation ON reservation."SourceArtifactId"=b."SourceArtifactId"
+                  JOIN tagekyc.raw_export_source_ingress_claims claim ON claim."IngressClaimId"=reservation."IngressClaimId"
+                  JOIN tagekyc.raw_export_source_ingress_claim_aliases alias ON alias."IngressClaimId"=claim."IngressClaimId"
+                  WHERE b."JobId"=@job LIMIT 1)
+                SELECT result.* FROM x CROSS JOIN LATERAL tagekyc.{{name}}(
+                  x."AuthenticatedPrincipalId",x."ClientApplicationId",x."ProducerId",x."CaptureAgentInstanceId",
+                  pg_catalog.replace(x."IngressIdempotencyKey"::text,'-',''),x."VerificationSessionId",x."CaptureAcceptanceId",x."CaptureArtifactId",
+                  x."CaptureRevision",x."RawClass",x."SessionChallengeHash"{{snapshot}},x."ClaimedPlaintextLength",x."MediaType",
+                  x."CapturedAtUtc",x."PlaintextRetentionStartedAtUtc",x."PlaintextRetentionExpiresAtUtc",
+                  x."PlaintextRetentionBudgetSeconds",x."CommitmentKeySelectorId",x."CommitmentKeySelectorVersion",
+                  x."CurrentClaimEvaluationOwnerId",60,2000) AS result
+                """;
+            await using var command=new NpgsqlCommand(sql,c,tx);command.Parameters.AddWithValue("job",package.JobId);await command.ExecuteNonQueryAsync();await tx.CommitAsync();
+        }
+        var before=await SnapshotCountAsync();await Task.WhenAll(CallAsync(true),CallAsync(false));var after=await SnapshotCountAsync();
+        Assert.Equal(before,after);
+        var s=C6AMigrationSource();Assert.Contains("first_lock := LEAST(alias_lock, exact_lock)",s,StringComparison.Ordinal);Assert.Contains("second_lock := GREATEST(alias_lock, exact_lock)",s,StringComparison.Ordinal);
+    }
+    [Fact] public async Task C6A23_composition_acl_is_broker_only()
+    {
+        await using var connection=new NpgsqlConnection(postgres.ConnectionString); await connection.OpenAsync();
+        await using var command=new NpgsqlCommand("""
+            SELECT pg_catalog.pg_get_userbyid(p.proowner),p.prosecdef,p.proconfig,
+              COALESCE(pg_catalog.array_agg(pg_catalog.pg_get_userbyid(a.grantee) ORDER BY pg_catalog.pg_get_userbyid(a.grantee)) FILTER (WHERE a.grantee<>p.proowner),ARRAY[]::text[])
+            FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
+            CROSS JOIN LATERAL pg_catalog.aclexplode(COALESCE(p.proacl,pg_catalog.acldefault('f',p.proowner))) a
+            WHERE n.nspname='tagekyc' AND p.proname='raw_export_begin_production_source_ingress_with_authority'
+            GROUP BY p.proowner,p.prosecdef,p.proconfig
+            """,connection);
+        await using var reader=await command.ExecuteReaderAsync(); Assert.True(await reader.ReadAsync());
+        Assert.Equal("tagekyc_raw_export_deployer",reader.GetString(0)); Assert.True(reader.GetBoolean(1));
+        Assert.Equal(new[]{"search_path=pg_catalog"},reader.GetFieldValue<string[]>(2));
+        Assert.Equal(new[]{"tagekyc_raw_export_claim_broker"},reader.GetFieldValue<string[]>(3));
+    }
+
+    [Fact] public Task C6A07A_latest_withdrawn_fulfillment_blocks_delivery() => AssertC6ABarrierMutationAsync("""
+        DO $proof$ DECLARE j record; f record; BEGIN
+          SELECT * INTO j FROM tagekyc.raw_export_job_identities WHERE "JobId"=@job;
+          SELECT x.* INTO f FROM tagekyc.raw_export_fulfillments x WHERE x."PolicyId"=j."PolicyId" AND x."PolicyVersion"=j."PolicyVersion" AND x."EventType"='Accepted' ORDER BY x."Revision" DESC LIMIT 1;
+          PERFORM pg_catalog.set_config('tagekyc.actor_principal_id',f."RecordedByPrincipalId"::text,true);
+          PERFORM tagekyc.raw_export_append_fulfillment(j."PolicyId",j."PolicyVersion",f."RequirementType",f."Revision",'Withdrawn',NULL,f."Revision",NULL,NULL,NULL,NULL,'C6A07A');
+        END $proof$;
+        """);
+
+    [Fact] public Task C6A06A_latest_revoked_grant_blocks_delivery() => AssertC6ABarrierMutationAsync("""
+        DO $proof$ DECLARE j record; g record; BEGIN
+          SELECT * INTO j FROM tagekyc.raw_export_job_identities WHERE "JobId"=@job;
+          SELECT x.* INTO g FROM tagekyc.raw_export_grants x WHERE x."PrincipalId"=j."PrincipalId" AND x."PolicyId"=j."PolicyId" AND x."PolicyVersion"=j."PolicyVersion" ORDER BY x."Revision" DESC LIMIT 1;
+          PERFORM pg_catalog.set_config('tagekyc.actor_principal_id',g."RecordedByPrincipalId"::text,true);
+          PERFORM tagekyc.raw_export_append_grant(j."PrincipalId",j."PolicyId",j."PolicyVersion",g."Revision",'Revoked',g."ClientApplicationId",'C6A06A');
+        END $proof$;
+        """);
+
+    [Fact] public Task C6A09A_withdrawn_consent_blocks_retry() => AssertC6ABarrierMutationAsync("""
+        DO $proof$ DECLARE j record; c record; withdrawer uuid:=pg_catalog.gen_random_uuid(); BEGIN
+          SELECT * INTO j FROM tagekyc.raw_export_job_identities WHERE "JobId"=@job;
+          SELECT x.* INTO c FROM tagekyc.raw_export_subject_consent_events x WHERE x."VerificationSessionId"=j."VerificationSessionId" AND x."PolicyId"=j."PolicyId" AND x."PolicyVersion"=j."PolicyVersion" ORDER BY x."Revision" DESC LIMIT 1;
+          PERFORM pg_catalog.set_config('tagekyc.actor_principal_id',c."CapturedByPrincipalId"::text,true);
+          PERFORM tagekyc.raw_export_append_subject_consent_authority(withdrawer,j."ClientApplicationId",'SubjectConsentWithdrawer',0,'Granted',NULL,'C6A09A',clock_timestamp()+interval '1 hour');
+          PERFORM pg_catalog.set_config('tagekyc.actor_principal_id',withdrawer::text,true);
+          PERFORM tagekyc.raw_export_append_subject_consent_withdrawn(j."VerificationSessionId",j."PolicyId",j."PolicyVersion",c."Revision",c."Revision",'C6A09A',NULL);
+        END $proof$;
+        """);
+
+    [Fact] public Task C6A10A_terminal_authority_snapshot_blocks_delivery() => AssertC6ABarrierMutationAsync("""
+        DO $proof$ DECLARE s record; BEGIN
+          SELECT snapshot.* INTO s FROM tagekyc.raw_export_job_source_bindings b JOIN tagekyc.raw_export_authority_snapshots snapshot ON snapshot."AuthoritySnapshotId"=b."AuthoritySnapshotId" WHERE b."JobId"=@job ORDER BY b."Ordinal" LIMIT 1;
+          PERFORM pg_catalog.set_config('tagekyc.actor_principal_id',s."CapturedByPrincipalId"::text,true);
+          PERFORM tagekyc.raw_export_withdraw_authority_snapshot(s."ClientApplicationId",s."VerificationSessionId",s."CaptureAcceptanceId",s."RawClass",s."Revision",s."CapturedByPrincipalId");
+        END $proof$;
+        """);
+
+    [Fact] public Task C6A11A_elapsed_effective_retention_horizon_blocks_delivery() => AssertC6ABarrierMutationAsync("""
+        SET session_replication_role=replica;
+        UPDATE tagekyc.raw_export_job_source_bindings SET "EffectivePlaintextRetentionExpiresAtUtc"=clock_timestamp()-interval '1 second' WHERE "JobId"=@job;
+        SET session_replication_role=origin;
+        """);
+
+    private async Task AssertC6ABarrierMutationAsync(string mutationSql)
+    {
+        var fixture=await CreateDeliveryAsync();var before=await CountRowsAsync("raw_export_recipient_package_delivery_events");
+        await ExecuteAsync(mutationSql.Replace(
+            "@job",
+            $"'{fixture.Package.JobId:D}'::uuid",
+            StringComparison.Ordinal));
+        var reader=new CountingReader();using var pool=new RecipientPackageDeliverySpoolPool();
+        var coordinator=new RecipientPackageDeliveryCoordinator(new RecipientPackageDeliveryOptions(RecipientPackageDeliveryTopology.S3CompatibleDurable,TestProvider(),new("delivery","secret"),postgres.ConnectionString,true),fixture.Repository,reader,pool);
+        var actor=new AuthenticatedClientContext(Guid.NewGuid(),fixture.Package.RecipientId,"c6a-negative",AuthenticatedCallerCategory.BusinessConsumer,new HashSet<string>{"business.raw-export.package.download"},PrincipalId:fixture.Package.PrincipalId);
+        var result=await coordinator.PrepareContentAsync(actor,fixture.DeliveryId,RandomNumberGenerator.GetBytes(32),default);
+        Assert.False(result.IsSuccess);Assert.Equal(RecipientPackageDeliveryErrorCodes.Ineligible,result.Error?.Code);Assert.Equal(0,reader.OpenCount);Assert.Equal(before,await CountRowsAsync("raw_export_recipient_package_delivery_events"));
+    }
+
     internal async Task<DeliveryFixture> CreateDeliveryAsync(FinalizedPackage? package = null, string? key = null)
     {
         package ??= await CreateFinalizedPackageAsync();
@@ -1129,7 +1282,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
     }
 
     internal Task<RecipientPackageDeliveryMutation> BeginAsync(DeliveryFixture fixture) => fixture.Repository.BeginAsync(
-        fixture.Package.RecipientId, fixture.DeliveryId, Guid.NewGuid(), Guid.NewGuid(), RandomNumberGenerator.GetBytes(32), default);
+        fixture.Package.RecipientId, fixture.DeliveryId, Guid.NewGuid(), fixture.Package.PrincipalId, RandomNumberGenerator.GetBytes(32), default);
 
     private static async Task AssertExactC3FunctionSurfaceAsync(NpgsqlConnection connection)
     {
@@ -1144,6 +1297,8 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
             ("raw_export_reconcile_next_recipient_package_delivery", ""),
             ("raw_export_record_recipient_package_delivery_interrupted", "uuid, bigint, bigint, text, bytea"),
             ("raw_export_record_recipient_package_integrity_unavailable", "uuid, bigint, bigint, text, bytea"),
+            ("raw_export_c3_current_authority_eligible", "uuid, uuid, uuid, timestamp with time zone"),
+            ("raw_export_begin_production_source_ingress_with_authority", "uuid, uuid, text, text, text, uuid, uuid, uuid, integer, text, text, bigint, text, timestamp with time zone, timestamp with time zone, timestamp with time zone, integer, text, integer, uuid, integer, integer"),
         };
         await using var command = new NpgsqlCommand("""
             SELECT p.proname, pg_catalog.oidvectortypes(p.proargtypes)
@@ -1241,6 +1396,11 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
     internal async Task<FinalizedPackage> CreateFinalizedPackageAsync(byte[]? packageBody = null)
     {
         var lineage = await new Tip88C1C1ResolverAssemblyTests(postgres).CreateC2RecipientPackageLineageAsync();
+        await using var identityDb = postgres.CreateDbContext();
+        var principalId = await identityDb.RawExportJobIdentities.AsNoTracking()
+            .Where(row => row.JobId == lineage.JobId)
+            .Select(row => row.PrincipalId)
+            .SingleAsync();
         await ExecuteAsync("UPDATE tagekyc.raw_export_recipient_key_registrations SET \"State\"='Revoked',\"Revision\"=\"Revision\"+1,\"RevokedAtUtc\"=clock_timestamp(),\"RevocationReason\"='C3_TEST_REVOKE' WHERE \"RecipientClientApplicationId\"=@id AND \"State\"='Active'", ("id", lineage.Request.RecipientClientApplicationId));
         using var rsa = RSA.Create(3072); var spki = rsa.ExportSubjectPublicKeyInfo(); var keyId = $"c3-{Guid.NewGuid():N}"; var fingerprint = SHA256.HashData(spki);
         await ExecuteAsync("INSERT INTO tagekyc.raw_export_recipient_key_registrations(\"RecipientClientApplicationId\",\"RecipientKeyId\",\"RecipientKeyVersion\",\"PublicKeyAlgorithm\",\"PublicKeySpki\",\"PublicKeyFingerprint\",\"ValidFromUtc\",\"ValidUntilUtc\",\"State\",\"Revision\",\"RegisteredAtUtc\") VALUES(@recipient,@key,1,'RSA-OAEP-256',@spki,@fp,clock_timestamp()-interval '1 minute',clock_timestamp()+interval '1 hour','Active',1,clock_timestamp())",
@@ -1266,7 +1426,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
             begun.RowRevision!.Value, RandomNumberGenerator.GetBytes(32), length, ciphertext, RandomNumberGenerator.GetBytes(32), RandomNumberGenerator.GetBytes(32), default);
         var finalized = await repository.FinalizeAsync(lineage.Request.C2PreparationId, prepared.RowRevision!.Value, lineage.Request.AssemblyFingerprint, default);
         Assert.Equal("Finalized", finalized.Outcome);
-        return new(packageId, lineage.Request.RecipientClientApplicationId, length, ciphertext, 4, packageBytes);
+        return new(packageId, lineage.Request.RecipientClientApplicationId, principalId, lineage.JobId, length, ciphertext, 4, packageBytes);
     }
 
     private async Task AssertIntegrityFailureKindAsync(Guid deliveryId, string expected)
@@ -1319,10 +1479,11 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
     }
     private static RecipientPackageProviderConfiguration TestProvider() => new("c2-integration-minio-v1", new Uri("http://127.0.0.1:9000/"), "tagekyc-c2-integration", true, "us-east-1", new("writer", "secret"), new("reader", "secret"), new("lifecycle", "secret"), new("posture", "secret"), true);
     private static string MigrationSource() => File.ReadAllText(ProjectPath("src/TagEkyc.Infrastructure/Persistence/Migrations/20260819120000_Tip88C1C3AuthenticatedPackageDelivery.cs"));
+    private static string C6AMigrationSource() => File.ReadAllText(ProjectPath("src/TagEkyc.Infrastructure/Persistence/Migrations/20260904154848_Tip88C1C6AProductionAuthorityDeliveryBarrier.cs"));
     private static string Between(string text,string start,string end){var a=text.IndexOf(start,StringComparison.Ordinal);var b=text.IndexOf(end,a,StringComparison.Ordinal);return text[a..b];}
     private static int Count(string text,string token)=>(text.Length-text.Replace(token,string.Empty,StringComparison.Ordinal).Length)/token.Length;
     private static string ProjectPath(string relative){var d=new DirectoryInfo(AppContext.BaseDirectory);while(d is not null&&!File.Exists(Path.Combine(d.FullName,"TagEkyc.sln")))d=d.Parent;return Path.Combine(d?.FullName??throw new InvalidOperationException(),relative);}
-    internal sealed record FinalizedPackage(Guid PackageId,Guid RecipientId,long Length,byte[] CiphertextDigest,long PackageRevision,byte[] Content);
+    internal sealed record FinalizedPackage(Guid PackageId,Guid RecipientId,Guid PrincipalId,Guid JobId,long Length,byte[] CiphertextDigest,long PackageRevision,byte[] Content);
     internal sealed record DeliveryFixture(RecipientPackageDeliveryRepository Repository,FinalizedPackage Package,Guid DeliveryId,RecipientPackageDeliveryMutation Created);
     private sealed class DeliveryRoleConnectionFactory(string connectionString):IRecipientPackageDeliveryConnectionFactory{public async Task<NpgsqlConnection> OpenAsync(CancellationToken token){var c=new NpgsqlConnection(connectionString);await c.OpenAsync(token);await new NpgsqlCommand("SET ROLE tagekyc_raw_export_package_delivery",c).ExecuteNonQueryAsync(token);return c;}}
     private sealed class CountingReader : IRecipientPackageDeliveryReader
