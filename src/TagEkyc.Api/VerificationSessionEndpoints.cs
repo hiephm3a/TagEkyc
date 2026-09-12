@@ -12,13 +12,16 @@ public static class VerificationSessionEndpoints
     private const string CreateScope = "business.session.create";
     private const string ReadScope = "business.session.read";
 
-    public static IEndpointRouteBuilder MapVerificationSessionEndpoints(this IEndpointRouteBuilder endpoints)
+    public static IEndpointRouteBuilder MapVerificationSessionEndpoints(this IEndpointRouteBuilder endpoints, bool includeLegacyProducerRoutes = true)
     {
         endpoints.MapPost("/api/ekyc/verification-sessions", CreateAsync);
         endpoints.MapGet("/api/ekyc/verification-sessions/{id}", GetAsync);
         endpoints.MapGet("/api/ekyc/verification-sessions/{id}/evidence-ledger", GetEvidenceLedgerAsync);
-        endpoints.MapPost("/api/ekyc/verification-sessions/{id}/capture-artifacts", AppendCaptureArtifactAsync);
-        endpoints.MapPost("/api/ekyc/verification-sessions/{id}/evidence-results", AppendEvidenceResultAsync);
+        if (includeLegacyProducerRoutes)
+        {
+            endpoints.MapPost("/api/ekyc/verification-sessions/{id}/capture-artifacts", AppendCaptureArtifactAsync);
+            endpoints.MapPost("/api/ekyc/verification-sessions/{id}/evidence-results", AppendEvidenceResultAsync);
+        }
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/complete", CompleteAsync);
         endpoints.MapPost("/api/ekyc/verification-sessions/{id}/cancel", CancelAsync);
         endpoints.MapGet("/api/ekyc/evidence-packages/{id}", GetEvidencePackageAsync);

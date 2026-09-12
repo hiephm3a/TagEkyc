@@ -508,6 +508,7 @@ public sealed class LocalDevInMemoryVerificationFinalizationBoundary(
                 current.State is VerificationSessionState.Expired
                     or VerificationSessionState.Cancelled
                     or VerificationSessionState.TechnicalTerminal ||
+                current.ExpiresAt <= write.CancellationAuditEvent.OccurredAt ||
                 write.CancelledSession.State != VerificationSessionState.Cancelled)
             {
                 return Task.FromResult(new VerificationFinalizationWriteResult(

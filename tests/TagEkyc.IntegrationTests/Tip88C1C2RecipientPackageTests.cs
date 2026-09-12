@@ -22,8 +22,10 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
     public async Task C201_additive_model_migration_tripwires_and_three_tables_are_exact()
     {
         var snapshotPath = ProjectPath("src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs");
-        var snapshotHash = Convert.ToHexString(SHA256.HashData(await File.ReadAllBytesAsync(snapshotPath)));
-        Assert.Equal("80A4DE4E70B41804FA32AFC3C29833FC6A27A8D871399F82BB423BC6A6EEFE05", snapshotHash);
+        // Homeowner A1 continuation §13: authorized additive A1 model, strict content pin with CRLF/LF normalization only.
+        var snapshotHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(
+            Encoding.UTF8.GetString(await File.ReadAllBytesAsync(snapshotPath)).Replace("\r\n", "\n", StringComparison.Ordinal))));
+        Assert.Equal("1B5F09EF3BF78A4D5748021AAEB82AC26A8B00D631F9C071EECEA903A1F17578", snapshotHash);
         var pinPaths = new[]
         {
             "tests/TagEkyc.IntegrationTests/Tip88B1E3ResolverReadBoundaryTests.cs",

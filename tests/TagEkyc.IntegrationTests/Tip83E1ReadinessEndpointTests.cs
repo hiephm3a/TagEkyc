@@ -246,7 +246,7 @@ public sealed class Tip83E1ReadinessEndpointTests
     [Fact]
     public async Task Non_production_readiness_returns_ready_without_running_checks()
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Development");
@@ -341,7 +341,7 @@ public sealed class Tip83E1ReadinessEndpointTests
 
     private static WebApplicationFactory<Program> ProductionReadinessFactory(
         Action<IServiceCollection> configureChecks) =>
-        new WebApplicationFactory<Program>()
+        new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");
@@ -382,7 +382,7 @@ public sealed class Tip83E1ReadinessEndpointTests
     private static WebApplicationFactory<Program> ProductionObjectCustodyFactory(
         string? topology,
         bool durable = false) =>
-        new WebApplicationFactory<Program>()
+        new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");

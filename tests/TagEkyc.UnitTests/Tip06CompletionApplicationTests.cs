@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Http;
 using TagEkyc.Application;
 using TagEkyc.Application.LocalDev;
+using TagEkyc.Application.Ports;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Contracts.BusinessConsumer;
 using TagEkyc.Contracts.CaptureAgent;
@@ -15,6 +16,42 @@ namespace TagEkyc.UnitTests;
 public sealed class Tip06CompletionApplicationTests
 {
     private static readonly JsonSerializerOptions JsonOptions = CreateJsonOptions();
+
+    [Theory]
+    [InlineData(VerificationSessionState.Created, true)]
+    [InlineData(VerificationSessionState.Expired, false)]
+    [InlineData(VerificationSessionState.Completed, false)]
+    [InlineData(VerificationSessionState.TechnicalTerminal, false)]
+    public async Task Cancel_terminal_candidate_reaches_owning_boundary_and_preserves_409(
+        VerificationSessionState state, bool elapsed)
+    {
+        CountingCancellationBoundary? counted = null;
+        var fixture = CreateFixture(inner => counted = new CountingCancellationBoundary(inner));
+        var now = DateTimeOffset.UtcNow;
+        var session = VerificationSession.Create(LocalDevRuntimePolicySource.BusinessClientId,
+            "synthetic", VerificationProfile.StandardEkycProfile, "PATIENT_REGISTRATION",
+            [RequiredCheckType.CaptureQuality], elapsed ? now.AddMinutes(-1) : now.AddHours(1), now.AddHours(-2));
+        await fixture.Sessions.AddAsync(session);
+        await fixture.Sessions.SetStateAsync(session.Id, state, CancellationToken.None);
+        var before = await fixture.Sessions.GetAsync(session.Id);
+        var caller = BusinessCaller() with { Scopes = new HashSet<string> { "session.cancel" } };
+        var result = await fixture.CompletionService.CancelAsync(caller, session.Id.ToString("N"), new());
+        Assert.Equal(1, counted!.Calls);
+        Assert.False(result.IsSuccess);
+        Assert.Equal(409, result.Error!.StatusCode);
+        Assert.Equal("SESSION_TERMINAL", result.Error.Code);
+        Assert.Equal(before, await fixture.Sessions.GetAsync(session.Id));
+        Assert.DoesNotContain(fixture.Audit.Events, row => row.EventType == "SESSION_CANCELLED");
+    }
+
+    private sealed class CountingCancellationBoundary(IVerificationFinalizationBoundary inner) : IVerificationFinalizationBoundary
+    {
+        public int Calls;
+        public Task<VerificationFinalizationWriteResult> TryFinalizeAsync(VerificationFinalizationWrite write, CancellationToken ct = default) =>
+            inner.TryFinalizeAsync(write, ct);
+        public Task<VerificationFinalizationWriteResult> TryCancelAsync(VerificationCancellationWrite write, CancellationToken ct = default)
+        { Calls++; return inner.TryCancelAsync(write, ct); }
+    }
 
     [Fact]
     public async Task Complete_calculates_passed_decision_and_stores_deterministic_package_snapshot()
@@ -531,7 +568,7 @@ public sealed class Tip06CompletionApplicationTests
         return await fixture.SessionService.CreateAsync(BusinessCaller(), request, cancellationToken: CancellationToken.None);
     }
 
-    private static TestFixture CreateFixture()
+    private static TestFixture CreateFixture(Func<IVerificationFinalizationBoundary, IVerificationFinalizationBoundary>? wrap = null)
     {
         var sessions = new LocalDevInMemoryVerificationSessionRepository();
         var artifacts = new LocalDevInMemoryCaptureArtifactRepository();
@@ -559,7 +596,7 @@ public sealed class Tip06CompletionApplicationTests
             manifests,
             audit,
             new TestEvidenceSigner(),
-            finalization);
+            wrap is null ? finalization : wrap(finalization));
 
         return new TestFixture(
             sessionService,

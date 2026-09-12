@@ -1,0 +1,589 @@
+{
+  "status": "BOUNDED_AS_BUILT_CORRECTION_DONE_MEASURED_READY_FOR_INDEPENDENT_REVIEW",
+  "authority": "Homeowner attachment 6d84e902-daa1-4688-9689-0aa98d387b0f and canonical Operation Master addendum",
+  "data": "synthetic/non-patient only",
+  "stage_commit_push": "NOT_GRANTED",
+  "current_full_run": {
+    "status": "MEASURED_COMPLETE_PASS",
+    "trx": "integration-full-asbuilt-correction.trx",
+    "source_count": 625,
+    "source_freeze_sha256": "B3517A6F2E632301FCF9CE28A3764E656A77228AC4C927CCF479257785CE181B",
+    "pre_run_containers": [
+      "signflow-postgres on 15432"
+    ],
+    "fixture_mutex": "Global\\TagEkycPostgresFixture",
+    "command": "dotnet test tests/TagEkyc.IntegrationTests/TagEkyc.IntegrationTests.csproj --no-build --logger trx;LogFileName=integration-full-asbuilt-correction.trx --results-directory TestResults/a1-r26-correction -v minimal",
+    "total": 1001,
+    "executed": 1000,
+    "passed": 1000,
+    "failed": 0,
+    "skipped": 1,
+    "trx_sha256": "0B704051D2CB24FADC11C6A74ADC899F66DA88D5138AD9E3605897793DC0447C",
+    "start": "2026-09-12T18:15:48.7217263+07:00",
+    "finish": "2026-09-12T19:12:05.7305326+07:00",
+    "exit_code": 0,
+    "post_run_containers": [
+      "signflow-postgres on 15432"
+    ],
+    "tagekyc_fixture_residue": false,
+    "source_drift_count": 0,
+    "manual_skip": "Tip67GGoldenNeutralProofVectorTests.Manual_generate_tip67g_golden_vectors — explicit manual one-shot generator"
+  },
+  "superseded_v5_full_run": {
+    "trx": "integration-full-v5.trx",
+    "status": "ABORTED_BY_ROOT_NOT_FULL_SUITE_EVIDENCE",
+    "observed_passed": 87,
+    "observed_failed": 0,
+    "observed_skipped": 1,
+    "reason": "Stopped after 2m to remove an unnecessary constant addition to the read-only A3 contract; restored exact bound contract bytes. API retains the same already-ratified outcome literal. Rebuilt and restarted full v6 on frozen product/test sources.",
+    "cleanup": "Exclusive fixture mutex and test compose down; post-cleanup only untouched signflow-postgres15432."
+  },
+  "superseded_full_run": {
+    "trx": "integration-full-r1.trx",
+    "status": "ABORTED_BY_ROOT_SUPERSEDED_BINARY_NOT_FULL_SUITE_EVIDENCE",
+    "observed_passed": 489,
+    "observed_failed": 61,
+    "observed_skipped": 1,
+    "reason": "Stopped verified testhost after 26m20s because it executed the pre-correction binary; latest fixes require rebuild and full rerun. Testhost-crash wording in TRX represents this deliberate stop, not an unexplained product crash.",
+    "failure_groups": "60 historical host setup failures; 1 R214 Debug compiler-field guard",
+    "cleanup": "Exclusive fixture mutex; docker compose -f docker-compose.persistence-tests.yml down --remove-orphans; post-cleanup only signflow-postgres 15432, untouched. Synthetic TagEkyc disposable fixture removed."
+  },
+  "measured_runs": [
+    {
+      "trx": "unit-v10.trx",
+      "passed": 322,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "normative-v10.trx",
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "pre_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "post_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "tagekyc_fixture_residue": false
+    },
+    {
+      "trx": "a1-v9.trx",
+      "passed": 137,
+      "failed": 2,
+      "skipped": 0,
+      "failure": "Remaining core synthetic session seed and dblink default OS username. Fixed exact seed and explicit session_user, all complete normative SQL fences then passed normative-v10.",
+      "pre_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "post_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "tagekyc_fixture_residue": false
+    },
+    {
+      "trx": "arch-v9.trx",
+      "passed": 153,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "a1-v8.trx",
+      "passed": 126,
+      "failed": 13,
+      "skipped": 0,
+      "pre_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "post_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "tagekyc_fixture_residue": false,
+      "failure": "5 R11 SQL bigint return failures; 6 incomplete synthetic session seeds; 1 EF SQL-brace formatting; 1 obsolete thrown-exception expectation (actual sanitized NOT_READY). Four isolated-cluster downgrade tests passed.",
+      "status": "PRESERVED_FAILURE_RUN_CORRECTIONS_AWAIT_RETEST"
+    },
+    {
+      "trx": "unit-v6.trx",
+      "passed": 294,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "arch-v6.trx",
+      "passed": 152,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "contract-v6.trx",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "historical-v5-r1.trx",
+      "passed": 125,
+      "failed": 0,
+      "skipped": 0,
+      "fixture_mutex": "Global\\TagEkycPostgresFixture",
+      "pre_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "post_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "tagekyc_fixture_residue": false
+    },
+    {
+      "trx": "unit-v5.trx",
+      "passed": 294,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "arch-v5.trx",
+      "passed": 152,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "contract-v5.trx",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "a1-v5-r1.trx",
+      "passed": 123,
+      "failed": 1,
+      "skipped": 0,
+      "failure": "Fixture fingerprint corruption was blocked by the real append-only trigger before HTTP. Test injection corrected and awaiting retest; no product guard weakened.",
+      "measured_new_successes": "Actual R01/R02 CLI process, R20-R23 HTTP/P256/nonce/business flow, both R26 elapsed-session expiry-on-denied cases, R214 guard and historical readiness fixture",
+      "fixture_mutex": "Global\\TagEkycPostgresFixture",
+      "pre_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "post_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "tagekyc_fixture_residue": false
+    },
+    {
+      "trx": "unit-r3.trx",
+      "passed": 288,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "arch-r1.trx",
+      "passed": 152,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "contract-r1.trx",
+      "passed": 15,
+      "failed": 0,
+      "skipped": 0
+    },
+    {
+      "trx": "a1-r26-r2.trx",
+      "passed": 97,
+      "failed": 0,
+      "skipped": 0,
+      "command": "dotnet test tests/TagEkyc.IntegrationTests/TagEkyc.IntegrationTests.csproj --no-build --filter FullyQualifiedName~Tip88C1C6BA1 --logger trx;LogFileName=a1-r26-r2.trx --results-directory TestResults/a1-r26-correction -v minimal",
+      "fixture_mutex": "Global\\TagEkycPostgresFixture",
+      "fixture_port": 55432,
+      "pre_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "post_run_containers": [
+        "signflow-postgres on 15432"
+      ],
+      "tagekyc_fixture_residue": false
+    }
+  ],
+  "preserved_failure_evidence": [
+    "unit-r1.trx",
+    "r26-first.trx",
+    "r26-diagnostic.trx",
+    "r26-commit-diagnostic.trx",
+    "r26-sql-diagnostic.trx"
+  ],
+  "measured_root_cause": "r26-sql-diagnostic.trx: SQLSTATE 42501, audit_events INSERT missing for SECURITY DEFINER owner",
+  "remaining_before_closeout": [
+    "Independent bounded as-built review and Homeowner acceptance; no stage/commit/push or A2/A3/production authority inferred."
+  ],
+  "convergence_analysis": {
+    "round_1": "Moved from signatures/source presence to real HTTP and transaction execution; found fixture registration and replay path gaps.",
+    "round_2": "Direct SQL exposed privilege failure hidden by closed HTTP 503; correlated graph guard with already-ratified immutable terminal history.",
+    "round_3": "Expanded review to wire bytes and body limits, not only DTO names and route presence.",
+    "round_4": "Review now includes executable CLI commit-before-output and historical host prerequisite isolation; full-suite green is not inferred from A1 scoped green.",
+    "round_5": "Whole-call-path review found Application terminal short-circuit bypassing SQL expiry-on-denied. Correction moves existing guard into B and adds elapsed-session HTTP/unit tests. Canonical audit also found stale Prepared R26 exclusion and old R28/append signatures; reconcile actual operative text, not hash-only shadowing. Review must inspect negative branches before the SQL caller and compare live bytes rather than repeating prior findings.",
+    "round_6": "Finite audit of all 34 acceptance IDs exposed earlier incomplete review: related test names were mistaken for complete runtime evidence. Clear gaps: expected-head/rollback publication, narrowing override, Bound/stale Replace, runtime takeover, combined committed N with B audit failure, real catalogue joins. Further missing discrimination: actual platform authenticator and entrypoint tail aliases. Four bound SQL proofs had no complete .NET runner. Correction uses existing ratified transitions, independent canonical DDL projection, complete scripts and real production crypto; no new semantic decision. Primary method mapping is evidence navigation, not a completion claim. Build/full regression results from the prior binary cannot qualify these newly authored proofs.",
+    "round_7": "Cross-review confirmed real production crypto/nonce/B/audit paths and found two patch issues: fixed-seed tests cloned shared data without reset, and the catalogue-test prose still overclaimed every acceptance rule. Both corrected before execution. Read-after-write also caught an agent editing historical unsuffixed ledger files instead of live R27 successors; original historical SHA172B1C9550C2DDB750CD251E4D2A2E272DE24998B581D23A0654BF76C37314CE and BB3B2AEED01753F563B5DC56720172DBD9EB1EA27EE88EEBA11F65038CCB2881 restored exactly, then intended sections transferred to live files. Final proof-owner scan additionally distinguishes sequential lifecycle assertions from actual two-connection race proof; new race cases remain execution candidates until run. No product authority decision changed.",
+    "round_8": "Executed new proofs against real current schema, rather than assuming independently reviewed SQL fixture stubs were complete. Found real R11 first-result integer/bigint mismatch; corrected Foundation and canonical companion. Fixed seven normative session seeds without dropping assertions, EF literal-brace transport without SQL rewriting, and N/B audit-failure proof to assert actual sanitized NOT_READY plus exact injected failure. Four historical Down tests now pass in isolated clusters; production role-dependency guard unchanged. Architecture parser expanded grouped GRANT syntax and parent operation ranges, no product ACL change. Source and runtime coverage remain distinct.",
+    "round_9": "Proof-level census found missing actual operator/enrollment HTTP handler matrices despite service/SQL tests. Added finite real-TestServer matrices with fake typed services/auth labelled honestly, all applicable success/replay/auth/authority/conflict/dependency/parser envelopes; Unit322/322 measured. R20 metadata suspicion was disproved by exact OM section1 code/correlationId error envelope; corrected stale derived parent wording and strengthened actual HTTP/durable replay assertion without expanding API. Remaining normative fixtures corrected and complete PG16 fences passed.",
+    "round_10": "Both independent subagents reviewed the same bounded patch surface (HTTP matrices, R20 replay, R11 bigint, R26 canonical/manifest, R28 parity and proof limits): PASS 0 actionable findings. No claim of full A1 execution PASS until current full suite and final exact-byte reconciliation finish. No further planning review cycle authorized or needed."
+  },
+  "previous_full_run": {
+    "trx": "integration-full-v6.trx",
+    "status": "MEASURED_COMPLETE_WITH_FOUR_FIXTURE_FAILURES",
+    "total": 975,
+    "passed": 970,
+    "failed": 4,
+    "skipped": 1,
+    "elapsed_minutes": 52.8587,
+    "failure_scope": "C325, C6A18, C417, C528 all fail TIP88C1C6BA_CAPABILITY_ROLE_DEPENDENCY on database-clone Down. A1 roles are cluster-global and source DB legitimately retains dependencies. Fix isolated test cluster; do not weaken production Down.",
+    "pre_run_containers": [
+      "signflow-postgres on 15432"
+    ],
+    "post_run_containers": [
+      "signflow-postgres on 15432"
+    ],
+    "tagekyc_fixture_residue": false,
+    "source_freeze": "616 sorted repository-relative .cs paths under src/tests/tools, excluding bin/obj; each path plus space plus raw SHA256, LF joined, UTF8 SHA256",
+    "source_freeze_sha256": "E423F9623AF0FDFF0DE4706BDC848EFCCEF208B3A07917C14DD021958BCC633F",
+    "scope_note": "This running binary predates the additional round-6 proof-coverage tests. Do not infer their results from this full run. No product changes during the run.",
+    "read_only_a3_contract_sha256": "4F86BAFC3FE4AD21435B8ACFBE4AA6102DC2CF78615DD3CB83D0696462171D66"
+  },
+  "implemented_corrections": [
+    "R26 eight-input SQL, internal session UUID identity and exact raw SHA256 fingerprint",
+    "Canonical Operation Master generic fingerprint excludes R26; R26 owns its literal contract",
+    "First committed cancellation metadata and immutable terminal binding history",
+    "Column-only audit INSERT grant to existing NOLOGIN owner; no online A1 role grant",
+    "Required JSON member validation, canonical new CaptureRuntime response atoms, R24/R25 16384-byte limit",
+    "R19 all-three-domain pepper readiness",
+    "R01/R02 CLI output only after transaction commit",
+    "Prepared legacy ingress dependencies constructed lazily; unavailable dependencies deny before any body read",
+    "R26 terminal/elapsed cancellation reaches B for authorized capability expiry-on-denied; InMemory horizon guard preserved"
+  ],
+  "final_measured_runs": [
+    {
+      "start": "2026-09-12T18:13:25.1202632+07:00",
+      "finish": "2026-09-12T18:13:30.3389666+07:00",
+      "skipped": 0,
+      "passed": 153,
+      "failed": 0,
+      "hash": "F554827CD91FAA70E5A3324760C2639BBFD1B01352A45BADD9F898DB62BA72F7",
+      "total": 153,
+      "file": "arch-asbuilt-correction.trx"
+    },
+    {
+      "start": "2026-09-12T18:14:46.4096122+07:00",
+      "finish": "2026-09-12T18:15:32.1138409+07:00",
+      "skipped": 0,
+      "passed": 20,
+      "failed": 0,
+      "hash": "84C7C52A256CB9A7732DB5ED7B8B4090FD5E55064F7BB41D4FE84CA63781AC46",
+      "total": 20,
+      "file": "r26-normative-asbuilt-correction.trx"
+    },
+    {
+      "start": "2026-09-12T18:15:48.7217263+07:00",
+      "finish": "2026-09-12T19:12:05.7305326+07:00",
+      "skipped": 1,
+      "passed": 1000,
+      "failed": 0,
+      "hash": "0B704051D2CB24FADC11C6A74ADC899F66DA88D5138AD9E3605897793DC0447C",
+      "total": 1001,
+      "file": "integration-full-asbuilt-correction.trx"
+    },
+    {
+      "file": "arch-asbuilt-correction-final.trx",
+      "passed": 153,
+      "failed": 0,
+      "skipped": 0,
+      "hash": "637EC6556FE71FDD4CA760A7D8700313EE0910FF7013416F468F204B870CD382"
+    }
+  ],
+  "post_rebind_runs": [
+    {
+      "hash": "BA28D5BEA3A10ACCCA97987F241599A52B70E6EAD383839E0A50E7EB01417C3F",
+      "file": "arch-final-rebind.trx",
+      "passed": 153,
+      "failed": 0
+    },
+    {
+      "hash": "BB35990A5ED1F5260384C0467CE4AFA9953789E91B7CA038C3356DE8014F1C3A",
+      "file": "normative-final-rebind.trx",
+      "passed": 3,
+      "failed": 0
+    }
+  ],
+  "final_catalogue": {
+    "parent": {
+      "bytes": 83454,
+      "path": "docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a1_server_identity_control_dispatch_r27_metadata_v1.md",
+      "hash": "9BC62E297098A2E06E20DF6B14786F7BDF0DC3008B7F652178119DC01FE2E661",
+      "lines": 988
+    },
+    "operation_master_sha256": "54AE16BF69A58DC60B07287C2271FDD7F6A8E3977B3F22ADEE16E0EEB7D9B018",
+    "ddl_sha256": "8FB6C4A608F99641915C44E291C142DFDB2282E93116BC7CD73DCF1FEF866CB1",
+    "transition_sha256": [
+      "13097C3650C8874501EDB9378CFDA009D72ABB422A093ABCA42EBA3E46D79102",
+      "BF6892BC320C2F7DE8FCD68EC6F1A9D48BFE0FBCA005978AA2604093492C0115",
+      "771BA6AE1C63147B70C4DF3E22B267E5E87A1ED85F6ABF027EE3869121D20B7F",
+      "8B5C9336255E623862699650F637F5D56D353A8C7FE030E4A03E88CAF622EE3C"
+    ],
+    "proof_sha256": [
+      "756E2420ED9E8C9480D4F469CC971BDFB847506B8733B602BA84A81663330E5B",
+      "04A86A6C4F1C2002BAFDCA73CAE1CDF3ADE4BB546D23C14759D387015220BACE",
+      "678078E228A299EBA5EA44B0012A891A0A7B45D2FB9F7A95B07574019C08625E",
+      "5E324200F58B9D0710C5C201942612D2D8B262E1CAD156807FBCD90485591F8F"
+    ],
+    "consumed_source": [
+      {
+        "path": "src/TagEkyc.Api/Program.cs",
+        "hash": "97A41D2C2EE3025C497C203E44ED8B2BD5758CD9EA962D600F65BA412C80C499"
+      },
+      {
+        "path": "src/TagEkyc.Contracts/TrustedAdapter/TrustedAdapterContracts.cs",
+        "hash": "923CDF0E0204EFFC1A44FC9CC906DDB5D12A8BBD9290A76FD760906B93EC9012"
+      },
+      {
+        "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs",
+        "hash": "945FD9C6028CE3B310891F21FF3F20E033928CA8C88CDD3DEBAB09F551C7B92E"
+      },
+      {
+        "path": "src/TagEkyc.Infrastructure/Persistence/RawExportControlPlaneReadinessValidator.cs",
+        "hash": "AE4408D7B2BF46A3EAFA9F1801D59C37BF3B5950662EBCA73ED1109D147762C7"
+      },
+      {
+        "path": "tests/TagEkyc.IntegrationTests/Tip88C1AAcceptanceSurfaceTests.cs",
+        "hash": "B4655A1562C6B3414066D638BD4682F0D736E94877415D967674477B5FA2D2BF"
+      },
+      {
+        "path": "src/TagEkyc.Api/CaptureAgentConfigurationEndpoints.cs",
+        "hash": "532F4196BE430DCDF877F263D6DB37890E399353DE835D579A63F893616B47A8"
+      },
+      {
+        "path": "src/TagEkyc.Api/CaptureAgentConfigurationProvider.cs",
+        "hash": "831D6032AA4C25105924501D808F5CD3E67498D7F97CAC32157BC6747EBF8A88"
+      },
+      {
+        "path": "src/TagEkyc.Api/RawExportSourceIngressEndpoints.cs",
+        "hash": "C37599AB9D4EE15F666FDBFBF1CCC082342F8D139D14FB37B9BCEA027D548570"
+      },
+      {
+        "path": "src/TagEkyc.Application/Ports/RawExportSourceIngressPorts.cs",
+        "hash": "F63CB0521220DEFE50B96E24C7F2F70387F83835DF50344277D5BC456EE286CA"
+      },
+      {
+        "path": "src/TagEkyc.Application/RawExport/RawExportSourceIngressApplicationService.cs",
+        "hash": "C996F31D4ADBBE7F33225879807741622CB67DDDD8305E5498C8C6CCC8357195"
+      },
+      {
+        "path": "src/TagEkyc.Contracts/RawExport/RawExportSourceIngressContracts.cs",
+        "hash": "4F86BAFC3FE4AD21435B8ACFBE4AA6102DC2CF78615DD3CB83D0696462171D66"
+      }
+    ],
+    "operation_master": {
+      "bytes": 149510,
+      "path": "docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a1_operation_master_r27_metadata_v1.md",
+      "hash": "54AE16BF69A58DC60B07287C2271FDD7F6A8E3977B3F22ADEE16E0EEB7D9B018",
+      "lines": 1605
+    },
+    "as_built_report": {
+      "bytes": 10604,
+      "path": "docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a1_as_built.md",
+      "hash": "37D4BBE0AB17000BE85E408DA4260C304B18270E6BD82674E9C2A2B511716D67",
+      "lines": 154
+    }
+  },
+  "final_scope": {
+    "staged": 0,
+    "conflicted": 0,
+    "project_file_changes": 0,
+    "source_changes_during_final_reconciliation": 0,
+    "review_rounds": 10,
+    "independent_external_as_built_review": "NOT_YET_CLAIMED",
+    "production": "PROHIBITED",
+    "a2_a3": "NOT_GRANTED",
+    "captureagent_full_suite": "NOT_RUN_BY_SERVER_A1; no CaptureAgent completion claim",
+    "changed_test_files_in_bounded_correction": 1
+  },
+  "previous_candidate_full_run": {
+    "trx": "integration-full-v10.trx",
+    "status": "MEASURED_COMPLETE_PASS",
+    "source_freeze_sha256": "611E7649E2ADC071AD544C59131DA9107CB4628D59BF7644F8F5F0E82F2E9BE4",
+    "source_count": 625,
+    "pre_run_containers": [
+      "signflow-postgres on 15432"
+    ],
+    "fixture_mutex": "Global\\TagEkycPostgresFixture",
+    "command": "dotnet test tests/TagEkyc.IntegrationTests/TagEkyc.IntegrationTests.csproj --no-build --logger trx;LogFileName=integration-full-v10.trx --results-directory TestResults/a1-r26-correction -v minimal",
+    "total": 999,
+    "executed": 998,
+    "passed": 998,
+    "failed": 0,
+    "skipped": 1,
+    "trx_sha256": "20FE28AAEF195B1D925F29DAC85EFFABA3EB468A59A99390490FFD464786B293",
+    "manual_skip": "Tip67GGoldenNeutralProofVectorTests.Manual_generate_tip67g_golden_vectors — explicit manual one-shot generator, not normal regression",
+    "post_run_containers": [
+      "signflow-postgres on 15432"
+    ],
+    "tagekyc_fixture_residue": false,
+    "source_drift_count": 0
+  },
+  "pre_correction_catalogue": {
+    "parent": {
+      "bytes": 88482,
+      "lines": 1068,
+      "hash": "FEB1C7E468109C7B299AC943E3DCDBEC31A7BDF354F2115BC77C370852B28D0D"
+    },
+    "operation_master_sha256": "2C4DB10B87E1C2EBCE69EE64323697216C19A892E463FE74F7746D69E018ADF6",
+    "ddl_sha256": "8FB6C4A608F99641915C44E291C142DFDB2282E93116BC7CD73DCF1FEF866CB1",
+    "transition_sha256": [
+      "CEAE782094D31C9311CDC4510C989F49581BA9D6A80B611D6873F8E7F15409A6",
+      "AEDC262786E744DE1ACB01DC680A59E4CAD4C18D54C80CBB0B45833141DD6DAC",
+      "289E18339DFB3B08FAFD796C8A341009DE95DA550E33A274700B8F5293A9C102",
+      "E0E0EAEA9AB5D037D94BF305949CA89122AA0A899732BD83B1B80BF7FA7A091C"
+    ],
+    "proof_sha256": [
+      "39F85EDF9FACC5740BBBEC62D833BE112E0D8F69069EB0B9253A9E2EAF1D6B3C",
+      "6CB65F7AC6E7D47C88B84B3D45E254D3ED9AB239556A29F71DA56DFD4C9C29DB",
+      "080BD63D668C3A665943D47DA1F153B537A85B19741FBA1C6C27AC9463361889",
+      "B2A303F272F243CA4C3A971C9B560F134D82C8F6922233FE8C23944B67C6EA8A"
+    ],
+    "consumed_source": [
+      {
+        "path": "src/TagEkyc.Api/Program.cs",
+        "hash": "97A41D2C2EE3025C497C203E44ED8B2BD5758CD9EA962D600F65BA412C80C499"
+      },
+      {
+        "path": "src/TagEkyc.Contracts/TrustedAdapter/TrustedAdapterContracts.cs",
+        "hash": "923CDF0E0204EFFC1A44FC9CC906DDB5D12A8BBD9290A76FD760906B93EC9012"
+      },
+      {
+        "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs",
+        "hash": "945FD9C6028CE3B310891F21FF3F20E033928CA8C88CDD3DEBAB09F551C7B92E"
+      },
+      {
+        "path": "src/TagEkyc.Infrastructure/Persistence/RawExportControlPlaneReadinessValidator.cs",
+        "hash": "AE4408D7B2BF46A3EAFA9F1801D59C37BF3B5950662EBCA73ED1109D147762C7"
+      },
+      {
+        "path": "tests/TagEkyc.IntegrationTests/Tip88C1AAcceptanceSurfaceTests.cs",
+        "hash": "B4655A1562C6B3414066D638BD4682F0D736E94877415D967674477B5FA2D2BF"
+      },
+      {
+        "path": "src/TagEkyc.Api/CaptureAgentConfigurationEndpoints.cs",
+        "hash": "532F4196BE430DCDF877F263D6DB37890E399353DE835D579A63F893616B47A8"
+      },
+      {
+        "path": "src/TagEkyc.Api/CaptureAgentConfigurationProvider.cs",
+        "hash": "831D6032AA4C25105924501D808F5CD3E67498D7F97CAC32157BC6747EBF8A88"
+      },
+      {
+        "path": "src/TagEkyc.Api/RawExportSourceIngressEndpoints.cs",
+        "hash": "C37599AB9D4EE15F666FDBFBF1CCC082342F8D139D14FB37B9BCEA027D548570"
+      },
+      {
+        "path": "src/TagEkyc.Application/Ports/RawExportSourceIngressPorts.cs",
+        "hash": "F63CB0521220DEFE50B96E24C7F2F70387F83835DF50344277D5BC456EE286CA"
+      },
+      {
+        "path": "src/TagEkyc.Application/RawExport/RawExportSourceIngressApplicationService.cs",
+        "hash": "C996F31D4ADBBE7F33225879807741622CB67DDDD8305E5498C8C6CCC8357195"
+      },
+      {
+        "path": "src/TagEkyc.Contracts/RawExport/RawExportSourceIngressContracts.cs",
+        "hash": "4F86BAFC3FE4AD21435B8ACFBE4AA6102DC2CF78615DD3CB83D0696462171D66"
+      }
+    ]
+  },
+  "as_built_correction": {
+    "authority": "f53454e8-7c46-48fc-b592-d733f0c545ea",
+    "specified": [
+      "Do not change product implementation",
+      "Separate report from normative parent",
+      "Name and prove both HISTORICAL_LANDED_CANCEL shapes"
+    ],
+    "done": [
+      "Report moved to tip_88c1_c6b_a1_as_built.md",
+      "Parent/OM historical cancellation semantics named; no product changes",
+      "Two-shape HTTP test plus ordinary first/replay positive control"
+    ],
+    "measured": {
+      "arch_passed": 153,
+      "arch_failed": 0,
+      "r26_normative_passed": 20,
+      "r26_normative_failed": 0,
+      "build_errors": 0,
+      "build_warnings": 50,
+      "full_passed": 1000,
+      "full_failed": 0,
+      "full_skipped": 1
+    },
+    "correction_of_prior_claim": "arch-final-rebind153/153 preceded last parent mutation; final prior candidate had duplicate R26/R27/R28 per independent reviewer. Do not treat old result as final-byte PASS.",
+    "product_mutation_count": 0,
+    "changed_test_path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1CancellationHttpTests.cs",
+    "final_audit": {
+      "changedFromPrior": [
+        "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1CancellationHttpTests.cs"
+      ],
+      "conflicted": 0,
+      "consumedMismatch": 0,
+      "consumedCount": 11,
+      "projectChanges": 0,
+      "artifacts": [
+        {
+          "bytes": 83454,
+          "path": "docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a1_server_identity_control_dispatch_r27_metadata_v1.md",
+          "hash": "9BC62E297098A2E06E20DF6B14786F7BDF0DC3008B7F652178119DC01FE2E661",
+          "lines": 988
+        },
+        {
+          "bytes": 149510,
+          "path": "docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a1_operation_master_r27_metadata_v1.md",
+          "hash": "54AE16BF69A58DC60B07287C2271FDD7F6A8E3977B3F22ADEE16E0EEB7D9B018",
+          "lines": 1605
+        },
+        {
+          "bytes": 10604,
+          "path": "docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a1_as_built.md",
+          "hash": "37D4BBE0AB17000BE85E408DA4260C304B18270E6BD82674E9C2A2B511716D67",
+          "lines": 154
+        }
+      ],
+      "normativeCount": 16,
+      "staged": 0,
+      "sourceDrift": 0,
+      "normativeMissing": 0
+    }
+  },
+  "previous_candidate_measured_runs": [
+    {
+      "counters": "<Counters total=\"322\" executed=\"322\" passed=\"322\" failed=\"0\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "hash": "13D9F5D169E8AEE0B27FEA3F2AE077787B177F227BF3D0168E0CAF47786DAC55",
+      "times": "<Times creation=\"2026-09-12T09:03:10.7543873+07:00\" queuing=\"2026-09-12T09:03:10.7543882+07:00\" start=\"2026-09-12T09:03:09.7649934+07:00\" finish=\"2026-09-12T09:03:16.8543533+07:00\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "file": "unit-v10.trx"
+    },
+    {
+      "counters": "<Counters total=\"153\" executed=\"153\" passed=\"153\" failed=\"0\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "hash": "322D950AFAC95327A608735EBBDE1A3048E4409E49FF15713E435088AEC26362",
+      "times": "<Times creation=\"2026-09-12T09:08:06.6517786+07:00\" queuing=\"2026-09-12T09:08:06.6517793+07:00\" start=\"2026-09-12T09:08:06.0767803+07:00\" finish=\"2026-09-12T09:08:07.1691882+07:00\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "file": "arch-v10.trx"
+    },
+    {
+      "counters": "<Counters total=\"15\" executed=\"15\" passed=\"15\" failed=\"0\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "hash": "ECCBB0F81A5978CA912EFD1AAB8E43D99DD2FFA841575731883446C20634F323",
+      "times": "<Times creation=\"2026-09-12T09:08:09.3230152+07:00\" queuing=\"2026-09-12T09:08:09.3230157+07:00\" start=\"2026-09-12T09:08:08.4345835+07:00\" finish=\"2026-09-12T09:08:09.3644843+07:00\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "file": "contract-v10.trx"
+    },
+    {
+      "counters": "<Counters total=\"999\" executed=\"998\" passed=\"998\" failed=\"0\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "hash": "20FE28AAEF195B1D925F29DAC85EFFABA3EB468A59A99390490FFD464786B293",
+      "times": "<Times creation=\"2026-09-12T09:04:20.7618263+07:00\" queuing=\"2026-09-12T09:04:20.7618267+07:00\" start=\"2026-09-12T09:04:20.0835836+07:00\" finish=\"2026-09-12T09:58:18.9471527+07:00\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "file": "integration-full-v10.trx"
+    },
+    {
+      "counters": "<Counters total=\"3\" executed=\"3\" passed=\"3\" failed=\"0\" error=\"0\" timeout=\"0\" aborted=\"0\" inconclusive=\"0\" passedButRunAborted=\"0\" notRunnable=\"0\" notExecuted=\"0\" disconnected=\"0\" warning=\"0\" completed=\"0\" inProgress=\"0\" pending=\"0\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "hash": "35938DEF6B6537B4FD5F2E642D32FCA8FA279336F53A461F51E3AAC94648FB5C",
+      "times": "<Times creation=\"2026-09-12T08:56:11.3917009+07:00\" queuing=\"2026-09-12T08:56:11.3917013+07:00\" start=\"2026-09-12T08:55:56.8428560+07:00\" finish=\"2026-09-12T08:56:21.1507124+07:00\" xmlns=\"http://microsoft.com/schemas/VisualStudio/TeamTest/2010\" />",
+      "file": "normative-v10.trx"
+    }
+  ]
+}

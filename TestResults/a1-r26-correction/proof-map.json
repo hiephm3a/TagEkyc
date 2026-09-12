@@ -1,0 +1,244 @@
+{
+  "status": "IN_PROGRESS",
+  "note": "Primary actual owner per logical obligation; supplementary tests and execution results required before closeout. No claim every obligation is satisfied by this one method.",
+  "rows": [
+    {
+      "id": "A1-01",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1PlatformAuthenticationTests.cs",
+      "method": "PlatformAuthentication_RealPersistedVersionAndDigest_ContextIsolationAndClosedDenials",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-02",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ContractTests.cs",
+      "method": "AuthenticationEnvelope_MixedSchemesDenyWithoutFallback",
+      "level": "pure contract",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-03",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C6BA1ArchitectureTests.cs",
+      "method": "Crt1_GoldenVectorsMatchClientAndServer",
+      "level": "production crypto + architecture",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-04",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RuntimeAppendTransactionTests.cs",
+      "method": "A1_23_RealCrt1NonceCommits_BAuditFailureRollsBackOnlyAppend",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-05",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1StartupCompositionTests.cs",
+      "method": "RealReader_ThreeRestrictedLogins_PreparedPasses_ActivatedRequiresAdmissionAndReadiness",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-06",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1EnrollmentTests.cs",
+      "method": "Enrollment_AtomicActivationAndLostResponseReplay",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-07",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RotationTests.cs",
+      "method": "Rotation_DualProofAtomicCutoverAndSameRouteReplay",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-08",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RootCliTests.cs",
+      "method": "R01_ActualCli_CommitsBeforeSecret_AndReplayDoesNotReemit",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-09",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1TransitionCoverageTests.cs",
+      "method": "CatalogExpectedHead_RejectsStaleWriter_RollbackPublishesNewAuditedRevision",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-10",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1TransitionCoverageTests.cs",
+      "method": "ConfigurationOverride_NarrowingIsAllowed_WideningFailsWithoutChangingBase",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-11",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1ExecutionHttpTests.cs",
+      "method": "R20ToR23_RealHttpCryptoNonceAndBusinessPersistence_ReplayAndConditionalRefresh",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-12",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1TransitionCoverageTests.cs",
+      "method": "CapabilityReplace_WrongRevisionAndBoundDeny_SecondRuntimeCannotTakeOver",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-13",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1TransitionCoverageTests.cs",
+      "method": "CapabilityReplace_WrongRevisionAndBoundDeny_SecondRuntimeCannotTakeOver",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-14",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1ExecutionHttpTests.cs",
+      "method": "R20ToR23_RealHttpCryptoNonceAndBusinessPersistence_ReplayAndConditionalRefresh",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-15",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1CancellationHttpTests.cs",
+      "method": "R26_NoHeader_InternalFingerprint_ExactReplay_ChangedMetadataAndHeadersKeepFirstWinner",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-16",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RuntimeAppendTransactionTests.cs",
+      "method": "R24R25_RealHelperPlannerWriter_CommitTogether_AndMismatchDoesNotWrite",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-17",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RuntimeAppendTransactionTests.cs",
+      "method": "R24R25_RealHelperPlannerWriter_CommitTogether_AndMismatchDoesNotWrite",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-18",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RawIngressBoundaryTests.cs",
+      "method": "RawIngressAuthSuccess_HandsUnreadBodyToA3ExactlyOnce",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-19",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1CanonicalDdlProjectionTests.cs",
+      "method": "CanonicalDdl_IndependentExpectedSchema_ExactColumnsConstraintsIndexes_ThreeMutationsAreRed",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-20",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1AclTests.cs",
+      "method": "DatabaseAcl_ExactOwnersGranteesNoTableDmlAndSafeDown",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-21",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1RouteRegistrationTests.cs",
+      "method": "ActualEndpointDataSources_AreExactExclusiveRouteSets",
+      "level": "actual route registration",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-22",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1RouteRegistrationTests.cs",
+      "method": "ActualEndpointDataSources_AreExactExclusiveRouteSets",
+      "level": "actual route registration",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-23",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RuntimeAppendTransactionTests.cs",
+      "method": "A1_23_RealCrt1NonceCommits_BAuditFailureRollsBackOnlyAppend",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-24",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1StartupCompositionTests.cs",
+      "method": "RealReader_ThreeRestrictedLogins_PreparedPasses_ActivatedRequiresAdmissionAndReadiness",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-25",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C6BA1ArchitectureTests.cs",
+      "method": "Architecture_ExcludesAgentBrokerDeploymentAndSdkMutation",
+      "level": "architecture",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-26",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C6BA1DispatchCatalogueTests.cs",
+      "method": "DispatchCatalogue_IsClosedAndBidirectionallyJoined",
+      "level": "catalogue",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-27",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1StartupReadinessDiagnosticTests.cs",
+      "method": "RequiredPepperVersions_Parity_AllBranchesHaveIndependentRedControls",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-28",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C6BA1ArchitectureTests.cs",
+      "method": "A1_28_CaptureRuntimeVerifier_HasNoClientApiKeyPepperDependency",
+      "level": "architecture",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-29",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ContractTests.cs",
+      "method": "VerifierSecretCodec_CanonicalTailBitsAndGoldenVectors",
+      "level": "pure production crypto",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-30",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RootCliTests.cs",
+      "method": "R01_ActualCli_CommitsBeforeSecret_AndReplayDoesNotReemit",
+      "level": "runtime",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-31",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1PlatformAuthenticationTests.cs",
+      "method": "PlatformAuthentication_RealPersistedVersionAndDigest_ContextIsolationAndClosedDenials",
+      "level": "runtime + ExecutionHttp capability aliases + Enrollment bootstrap negatives",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-32",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ContractTests.cs",
+      "method": "RootRequestFingerprint_R01Provision_BindsIntentNotGeneratedSecret",
+      "level": "pure production crypto + RootCli/Persistence replay",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-33",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ContractTests.cs",
+      "method": "RootRequestFingerprint_R02Revoke_BindsTargetRevisionAndDomain",
+      "level": "pure production crypto + RootCli/Persistence replay",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    },
+    {
+      "id": "A1-34",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ContractTests.cs",
+      "method": "RootRequestFingerprint_R01Provision_BindsIntentNotGeneratedSecret",
+      "level": "pure production crypto/helper signature and domain assertions",
+      "status": "CANDIDATE_MAPPING_NOT_COMPLETION_EVIDENCE"
+    }
+  ]
+}

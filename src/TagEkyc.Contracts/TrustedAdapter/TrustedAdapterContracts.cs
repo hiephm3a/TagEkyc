@@ -130,7 +130,14 @@ public sealed record EvidenceResultSubmissionResponseDto(
     bool Accepted,
     string SessionState,
     string? NextAction,
-    bool Deduplicated = false);
+    bool Deduplicated = false,
+    RawCaptureAcceptanceDto? RawCaptureAcceptance = null);
+
+public sealed record RawCaptureAcceptanceDto(
+    Guid CaptureArtifactId,
+    Guid CaptureAcceptanceId,
+    int CaptureRevision,
+    string RawClass);
 
 public sealed record DocumentResultSubmissionRequestDto(
     string DocumentType,

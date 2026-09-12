@@ -188,9 +188,7 @@ public sealed class Tip88C1AAcceptanceSurfaceTests(PostgresPersistenceFixture po
                     reader.GetBoolean(2));
                 Assert.Equal("search_path=pg_catalog", reader.GetString(3));
                 Assert.False(reader.GetBoolean(4));
-                Assert.Equal(
-                    name != "enforce_raw_export_capture_acceptance_insert",
-                    reader.GetBoolean(5));
+                Assert.False(reader.GetBoolean(5));
             }
 
             Assert.Equal(Functions.Order(StringComparer.Ordinal), seen);

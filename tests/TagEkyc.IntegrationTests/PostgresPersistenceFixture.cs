@@ -15,6 +15,10 @@ public sealed class PostgresPersistenceCollection : ICollectionFixture<PostgresP
 
 public sealed class PostgresPersistenceFixture : IAsyncLifetime
 {
+    public PostgresPersistenceFixture() { }
+
+    // Dedicated-cluster tests reuse the exact bootstrap without invoking shared Compose lifecycle.
+    internal PostgresPersistenceFixture(string connectionString) => ConnectionString = connectionString;
     private const string DurableKeyPrerequisiteMigration =
         "20260731130919_Tip88C1B2BetaExistingCandidates";
 

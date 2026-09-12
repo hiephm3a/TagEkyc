@@ -171,7 +171,7 @@ public sealed class Tip84BHashedApiKeyStoreTests(PostgresPersistenceFixture post
     [Fact]
     public void Postgres_api_key_store_requires_postgres_persistence()
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Development");
@@ -272,7 +272,7 @@ public sealed class Tip84BHashedApiKeyStoreTests(PostgresPersistenceFixture post
     }
 
     private static WebApplicationFactory<Program> ProductionFactory(Action<IWebHostBuilder> configure) =>
-        new WebApplicationFactory<Program>()
+        new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");

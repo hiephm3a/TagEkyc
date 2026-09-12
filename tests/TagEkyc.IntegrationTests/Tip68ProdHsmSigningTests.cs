@@ -79,7 +79,7 @@ public sealed class Tip68ProdHsmSigningTests
     [Fact]
     public void Unknown_backend_fails_closed_on_host_startup()
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", "BogusBackend");
@@ -109,7 +109,7 @@ public sealed class Tip68ProdHsmSigningTests
         AddLifecycleMarker(lifecycle, "factory_construction_begin");
         try
         {
-            factory = new WebApplicationFactory<Program>()
+            factory = new HistoricalPreparedWebApplicationFactory()
                 .WithWebHostBuilder(builder =>
                 {
                     builder.UseSetting("TagEkyc:EvidenceSigning:RequireHardwareSigner", "true");
@@ -193,7 +193,7 @@ public sealed class Tip68ProdHsmSigningTests
     public void Pkcs11_backend_missing_config_fails_closed_on_host_startup_without_echoing_pin()
     {
         const string secretPin = "tip68-host-secret-pin";
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("TagEkyc:EvidenceSigning:Backend", EvidenceSigningBackends.Pkcs11);

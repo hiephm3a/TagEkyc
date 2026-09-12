@@ -15,8 +15,9 @@ public sealed class VerificationEvidenceApplicationService(
     IAppendIdempotencyRepository idempotencyRecords,
     IAppendIdempotencyBoundary appendBoundary,
     IMetadataReferenceRegistry? metadataReferences = null,
-    DecisionThresholdOptions? decisionThresholdOptions = null)
-    : ICaptureArtifactCommands, ITrustedEvidenceResultCommands
+    DecisionThresholdOptions? decisionThresholdOptions = null,
+    IAppendBusinessTransaction? businessTransaction = null)
+    : ICaptureArtifactCommands, ITrustedEvidenceResultCommands, IAuthorityNeutralVerificationEvidencePlanner, IAuthorityNeutralVerificationEvidenceWriter
 {
     private readonly DecisionThresholdOptions decisionThresholds = decisionThresholdOptions ?? new DecisionThresholdOptions();
 
@@ -48,7 +49,17 @@ public sealed class VerificationEvidenceApplicationService(
         "CAPTURE_BINDING_UNVERIFIED",
     };
 
-    public async Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> AppendCaptureArtifactAsync(
+    public Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> AppendCaptureArtifactAsync(
+        AuthenticatedClientContext caller, string verificationSessionId,
+        CaptureArtifactSubmissionRequestDto request, CancellationToken cancellationToken = default,
+        string? idempotencyKey = null) =>
+        businessTransaction is null
+            ? AppendCaptureArtifactCoreAsync(caller, verificationSessionId, request, cancellationToken, idempotencyKey)
+            : businessTransaction.ExecuteAsync(
+                ct => AppendCaptureArtifactCoreAsync(caller, verificationSessionId, request, ct, idempotencyKey),
+                cancellationToken);
+
+    private async Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> AppendCaptureArtifactCoreAsync(
         AuthenticatedClientContext caller,
         string verificationSessionId,
         CaptureArtifactSubmissionRequestDto request,
@@ -97,103 +108,26 @@ public sealed class VerificationEvidenceApplicationService(
                 "CaptureAgentId does not match the authenticated capture agent policy.");
         }
 
-        var artifactType = ToDomain(request.ArtifactType);
-        var artifactPolicyError = ValidateArtifactPolicy<CaptureArtifactSubmissionResponseDto>(
-            session,
-            policy,
-            artifactType);
-        if (artifactPolicyError is not null)
-        {
-            return artifactPolicyError;
-        }
-
-        var hashError = ValidateCaptureHashes<CaptureArtifactSubmissionResponseDto>(
-            artifactType,
-            request.ArtifactHash,
-            request.MetadataHash,
-            out var artifactHash,
-            out var metadataHash);
-        if (hashError is not null)
-        {
-            return hashError;
-        }
-
-        var now = DateTimeOffset.UtcNow;
-        var artifact = new CaptureArtifact(
-            Guid.NewGuid(),
-            session.Id,
-            artifactType,
-            ToDomain(request.CaptureSource),
-            captureAgentId,
-            request.DeviceId,
-            VaultRef: null,
-            artifactHash,
-            metadataHash,
-            CaptureArtifactQualityState.Pending,
-            RetryReasonCode: null,
-            request.RequestId ?? session.RequestId,
-            request.CorrelationId ?? session.CorrelationId,
-            now,
-            ExpiresAt: null);
-        var submissionSlot = artifact.ArtifactType.ToString();
-        var fingerprint = FingerprintCaptureArtifact(artifact);
-        if (existing is not null)
-        {
-            return await ResolveCaptureArtifactReplayAsync(existing, submissionSlot, fingerprint, artifact, session, caller, cancellationToken);
-        }
-
-        var writableError = ValidateWritableAppendSession<CaptureArtifactSubmissionResponseDto>(session);
-        if (writableError is not null)
-        {
-            return writableError;
-        }
-
-        var finalState = session.State;
-        var auditWrites = new List<AuditEvent>();
-        if (session.State == VerificationSessionState.Created)
-        {
-            finalState = VerificationSessionState.InProgress;
-            auditWrites.Add(CreateAuditEvent(caller, session, "SESSION_STATE_CHANGED"));
-        }
-
-        auditWrites.Add(CreateAuditEvent(caller, session, "CAPTURE_ARTIFACT_RECORDED"));
-        var apply = await appendBoundary.TryApplyCaptureArtifactAsync(
-            new AppendCaptureArtifactWrite(
-                new AppendIdempotencyRecord(
-                    session.Id,
-                    key.Value!,
-                    "captureArtifact",
-                    submissionSlot,
-                    artifact.Id,
-                    fingerprint,
-                    now),
-                artifact,
-                session,
-                finalState,
-                auditWrites),
-            cancellationToken);
-        if (apply.Status == AppendIdempotencyApplyStatus.SessionTerminal)
-        {
-            return SessionTerminal<CaptureArtifactSubmissionResponseDto>();
-        }
-
-        if (apply.Status != AppendIdempotencyApplyStatus.Applied)
-        {
-            return await ResolveCaptureArtifactReplayAsync(apply.Record, submissionSlot, fingerprint, artifact, session, caller, cancellationToken);
-        }
-
-        await RegisterCaptureArtifactMetadataReferenceAsync(artifact, now, cancellationToken);
-
-        return SessionOperationResult<CaptureArtifactSubmissionResponseDto>.Success(new CaptureArtifactSubmissionResponseDto(
-            FormatId(artifact.Id),
-            FormatId(session.Id),
-            artifact.ArtifactHash?.ToString(),
-            Accepted: true,
-            finalState.ToString(),
-            artifact.CorrelationId));
+        var plan = await PlanCaptureArtifactAsync(
+            new VerifiedAppendPrincipal.Client(caller, captureAgentId, request.DeviceId),
+            session, policy, AuthorityNeutralPayloadAdapters.MapClientCapturePayload(request),
+            key.Value!, DateTimeOffset.UtcNow, cancellationToken);
+        if (!plan.IsSuccess)
+            return SessionOperationResult<CaptureArtifactSubmissionResponseDto>.Failure(plan.Error!.Code, plan.Error.Message, plan.Error.StatusCode);
+        return await ApplyCaptureArtifactAsync(new VerifiedAppendPrincipal.Client(caller, captureAgentId, request.DeviceId), plan.Value!, cancellationToken);
     }
 
-    public async Task<SessionOperationResult<EvidenceResultSubmissionResponseDto>> AppendEvidenceResultAsync(
+    public Task<SessionOperationResult<EvidenceResultSubmissionResponseDto>> AppendEvidenceResultAsync(
+        AuthenticatedClientContext caller, string verificationSessionId,
+        EvidenceResultSubmissionRequestDto request, CancellationToken cancellationToken = default,
+        string? idempotencyKey = null) =>
+        businessTransaction is null
+            ? AppendEvidenceResultCoreAsync(caller, verificationSessionId, request, cancellationToken, idempotencyKey)
+            : businessTransaction.ExecuteAsync(
+                ct => AppendEvidenceResultCoreAsync(caller, verificationSessionId, request, ct, idempotencyKey),
+                cancellationToken);
+
+    private async Task<SessionOperationResult<EvidenceResultSubmissionResponseDto>> AppendEvidenceResultCoreAsync(
         AuthenticatedClientContext caller,
         string verificationSessionId,
         EvidenceResultSubmissionRequestDto request,
@@ -230,10 +164,154 @@ public sealed class VerificationEvidenceApplicationService(
         var session = context.Value!.Session;
         var policy = context.Value.Policy;
         var existing = await idempotencyRecords.GetAsync(session.Id, key.Value!, cancellationToken);
+        var sessionArtifacts = await captureArtifacts.ListBySessionAsync(session.Id, cancellationToken);
+        var plan = await PlanEvidenceResultAsync(new VerifiedAppendPrincipal.Client(caller, null, null),
+            session, policy, sessionArtifacts, AuthorityNeutralPayloadAdapters.MapClientEvidencePayload(request),
+            key.Value!, DateTimeOffset.UtcNow, cancellationToken);
+        if (!plan.IsSuccess)
+            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(plan.Error!.Code, plan.Error.Message, plan.Error.StatusCode);
+        return await ApplyEvidenceResultAsync(new VerifiedAppendPrincipal.Client(caller, null, null), plan.Value!, cancellationToken);
+    }
+
+    public async Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> ApplyCaptureArtifactAsync(
+        VerifiedAppendPrincipal principal, AppendCaptureArtifactWrite write, CancellationToken cancellationToken)
+    {
+        var session = write.Session;
+        var existing = await idempotencyRecords.GetAsync(session.Id, write.Idempotency.IdempotencyKey, cancellationToken);
+        var artifact = write.Artifact;
+        var now = artifact.CreatedAt;
+        var finalState = write.FinalState;
+        var submissionSlot = write.Idempotency.SubmissionSlot;
+        var fingerprint = write.Idempotency.Fingerprint;
+        if (existing is not null)
+            return await ResolveCaptureArtifactReplayAsync(existing, submissionSlot, fingerprint, artifact, session, principal, cancellationToken);
+        var apply = await appendBoundary.TryApplyCaptureArtifactAsync(write, cancellationToken);
+        if (apply.Status == AppendIdempotencyApplyStatus.SessionTerminal)
+        {
+            return SessionTerminal<CaptureArtifactSubmissionResponseDto>();
+        }
+
+        if (apply.Status != AppendIdempotencyApplyStatus.Applied)
+        {
+            return await ResolveCaptureArtifactReplayAsync(apply.Record, submissionSlot, fingerprint, artifact, session, principal, cancellationToken);
+        }
+
+        await RegisterCaptureArtifactMetadataReferenceAsync(artifact, now, cancellationToken);
+
+        return SessionOperationResult<CaptureArtifactSubmissionResponseDto>.Success(new CaptureArtifactSubmissionResponseDto(
+            FormatId(artifact.Id),
+            FormatId(session.Id),
+            artifact.ArtifactHash?.ToString(),
+            Accepted: true,
+            finalState.ToString(),
+            artifact.CorrelationId));
+    }
+
+    public async Task<SessionOperationResult<EvidenceResultSubmissionResponseDto>> ApplyEvidenceResultAsync(
+        VerifiedAppendPrincipal principal, AppendEvidenceResultWrite write, CancellationToken cancellationToken)
+    {
+        var session = write.Session;
+        var existing = await idempotencyRecords.GetAsync(session.Id, write.Idempotency.IdempotencyKey, cancellationToken);
+        var evidence = write.EvidenceResult;
+        var finalState = write.FinalState;
+        var submissionSlot = write.Idempotency.SubmissionSlot;
+        var fingerprint = write.Idempotency.Fingerprint;
+        if (existing is not null)
+            return await ResolveEvidenceResultReplayAsync(existing, submissionSlot, fingerprint, evidence, session, principal, cancellationToken);
+        var apply = await appendBoundary.TryApplyEvidenceResultAsync(write, cancellationToken);
+        if (apply.Status == AppendIdempotencyApplyStatus.SessionTerminal)
+        {
+            return SessionTerminal<EvidenceResultSubmissionResponseDto>();
+        }
+
+        if (apply.Status != AppendIdempotencyApplyStatus.Applied)
+        {
+            return await ResolveEvidenceResultReplayAsync(apply.Record, submissionSlot, fingerprint, evidence, session, principal, cancellationToken);
+        }
+
+        return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Success(new EvidenceResultSubmissionResponseDto(
+            FormatId(evidence.Id),
+            Accepted: true,
+            finalState.ToString(),
+            NextAction: evidence.Result == VerificationResult.RetryRequired ? "RETRY_CAPTURE" : null));
+    }
+
+
+    public async Task<SessionOperationResult<AppendCaptureArtifactWrite>> PlanCaptureArtifactAsync(
+        VerifiedAppendPrincipal principal, VerificationSession session, LocalDevClientPolicy policy,
+        NeutralCaptureArtifactPayload request, string idempotencyKey, DateTimeOffset now,
+        CancellationToken cancellationToken = default)
+    {
+        var artifactType = ToDomain(request.ArtifactType);
+        var artifactPolicyError = ValidateArtifactPolicy<AppendCaptureArtifactWrite>(
+            session,
+            policy,
+            artifactType);
+        if (artifactPolicyError is not null)
+        {
+            return artifactPolicyError;
+        }
+
+        var hashError = ValidateCaptureHashes<AppendCaptureArtifactWrite>(
+            artifactType,
+            request.ArtifactHash,
+            request.MetadataHash,
+            out var artifactHash,
+            out var metadataHash);
+        if (hashError is not null)
+        {
+            return hashError;
+        }
+
+        var artifact = new CaptureArtifact(
+            Guid.NewGuid(),
+            session.Id,
+            artifactType,
+            ToDomain(request.CaptureSource),
+            principal.CaptureAgentIdentity,
+            principal.DeviceIdentity,
+            VaultRef: null,
+            artifactHash,
+            metadataHash,
+            CaptureArtifactQualityState.Pending,
+            RetryReasonCode: null,
+            request.RequestId ?? session.RequestId,
+            request.CorrelationId ?? session.CorrelationId,
+            now,
+            ExpiresAt: null);
+        var submissionSlot = artifact.ArtifactType.ToString();
+        var fingerprint = FingerprintCaptureArtifact(artifact);
+
+        var writableError = ValidateWritableAppendSession<AppendCaptureArtifactWrite>(session);
+        if (writableError is not null && await idempotencyRecords.GetAsync(session.Id, idempotencyKey, cancellationToken) is null)
+        {
+            return writableError;
+        }
+
+        var finalState = session.State;
+        var auditWrites = new List<AuditEvent>();
+        if (session.State == VerificationSessionState.Created)
+        {
+            finalState = VerificationSessionState.InProgress;
+            auditWrites.Add(CreateAuditEvent(principal, session, "SESSION_STATE_CHANGED"));
+        }
+
+        auditWrites.Add(CreateAuditEvent(principal, session, "CAPTURE_ARTIFACT_RECORDED"));
+
+        return SessionOperationResult<AppendCaptureArtifactWrite>.Success(new(
+            new(session.Id, idempotencyKey, "captureArtifact", submissionSlot, artifact.Id, fingerprint, now),
+            artifact, session, finalState, auditWrites));
+    }
+
+    public async Task<SessionOperationResult<AppendEvidenceResultWrite>> PlanEvidenceResultAsync(
+        VerifiedAppendPrincipal principal, VerificationSession session, LocalDevClientPolicy policy,
+        IReadOnlyList<CaptureArtifact> sessionArtifacts, NeutralEvidenceResultPayload request,
+        string idempotencyKey, DateTimeOffset now, CancellationToken cancellationToken = default)
+    {
         var resultType = ToDomain(request.ResultType);
         if (resultType == EvidenceResultType.FraudRisk)
         {
-            return Forbidden<EvidenceResultSubmissionResponseDto>(
+            return Forbidden<AppendEvidenceResultWrite>(
                 "FRAUD_RISK_DEFERRED",
                 "FraudRisk evidence runtime recording is deferred in TIP-05.");
         }
@@ -242,26 +320,25 @@ public sealed class VerificationEvidenceApplicationService(
         if (!session.RequiredChecks.Contains(evidenceCheck) &&
             policy.AllowedOptionalEvidenceChecks?.Contains(evidenceCheck) != true)
         {
-            return Forbidden<EvidenceResultSubmissionResponseDto>(
+            return Forbidden<AppendEvidenceResultWrite>(
                 "CHECK_NOT_ALLOWED",
                 "Evidence result type does not map to a required or policy-allowed check.");
         }
 
         if (request.InputCaptureArtifactIds is null || request.InputCaptureArtifactIds.Count == 0)
         {
-            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+            return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                 "INPUT_CAPTURE_ARTIFACTS_REQUIRED",
                 "InputCaptureArtifactIds is required for this evidence result type.",
                 400);
         }
 
-        var sessionArtifacts = await captureArtifacts.ListBySessionAsync(session.Id, cancellationToken);
         var inputArtifacts = new List<CaptureArtifact>();
         foreach (var inputId in request.InputCaptureArtifactIds)
         {
             if (!Guid.TryParse(inputId, out var parsedId))
             {
-                return NotFound<EvidenceResultSubmissionResponseDto>(
+                return NotFound<AppendEvidenceResultWrite>(
                     "CAPTURE_ARTIFACT_NOT_FOUND",
                     "Input capture artifact was not found for this session.");
             }
@@ -269,7 +346,7 @@ public sealed class VerificationEvidenceApplicationService(
             var artifact = sessionArtifacts.SingleOrDefault(candidate => candidate.Id == parsedId);
             if (artifact is null)
             {
-                return NotFound<EvidenceResultSubmissionResponseDto>(
+                return NotFound<AppendEvidenceResultWrite>(
                     "CAPTURE_ARTIFACT_NOT_FOUND",
                     "Input capture artifact was not found for this session.");
             }
@@ -279,7 +356,7 @@ public sealed class VerificationEvidenceApplicationService(
 
         if (inputArtifacts.Any(artifact => !IsCompatibleInput(request.ResultType, artifact.ArtifactType, policy)))
         {
-            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+            return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                 "INVALID_EVIDENCE_RESULT",
                 "Input capture artifact type is not compatible with the evidence result type.",
                 400);
@@ -287,7 +364,7 @@ public sealed class VerificationEvidenceApplicationService(
 
         if (request.Result is VerificationResultDto.NotAvailable or VerificationResultDto.NotSupported)
         {
-            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+            return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                 "INVALID_RESULT_STATUS",
                 "Evidence result status is not accepted in TIP-05.",
                 400);
@@ -295,7 +372,7 @@ public sealed class VerificationEvidenceApplicationService(
 
         if (request.Confidence is < 0 or > 1)
         {
-            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+            return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                 "INVALID_CONFIDENCE",
                 "Confidence must be between 0.0 and 1.0.",
                 400);
@@ -303,7 +380,7 @@ public sealed class VerificationEvidenceApplicationService(
 
         if (string.IsNullOrWhiteSpace(request.EngineName) || string.IsNullOrWhiteSpace(request.EngineVersion))
         {
-            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+            return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                 "INVALID_EVIDENCE_RESULT",
                 "EngineName and EngineVersion are required.",
                 400);
@@ -311,7 +388,7 @@ public sealed class VerificationEvidenceApplicationService(
 
         if (!IsSanitizedSummaryRefAllowed(request.SanitizedSummaryRef))
         {
-            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+            return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                 "INVALID_EVIDENCE_RESULT",
                 "SanitizedSummaryRef must not contain vault refs, raw paths, sensitive URLs, raw refs, or plaintext identity payloads.",
                 400);
@@ -329,7 +406,7 @@ public sealed class VerificationEvidenceApplicationService(
                 inputArtifacts);
             if (!nfcPreparation.IsSuccess)
             {
-                return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+                return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                     nfcPreparation.Error!.Code,
                     nfcPreparation.Error.Message,
                     nfcPreparation.Error.StatusCode);
@@ -349,7 +426,7 @@ public sealed class VerificationEvidenceApplicationService(
                 priorEvidence);
             if (!faceMatchPreparation.IsSuccess)
             {
-                return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+                return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                     faceMatchPreparation.Error!.Code,
                     faceMatchPreparation.Error.Message,
                     faceMatchPreparation.Error.StatusCode);
@@ -367,7 +444,7 @@ public sealed class VerificationEvidenceApplicationService(
                 inputArtifacts);
             if (!livenessPreparation.IsSuccess)
             {
-                return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+                return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                     livenessPreparation.Error!.Code,
                     livenessPreparation.Error.Message,
                     livenessPreparation.Error.StatusCode);
@@ -379,13 +456,12 @@ public sealed class VerificationEvidenceApplicationService(
         }
         else if (!TryCreateHashRef(request.PayloadHash, out payloadHash))
         {
-            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+            return SessionOperationResult<AppendEvidenceResultWrite>.Failure(
                 "INVALID_HASH_REF",
                 "PayloadHash is required and must use the sha256: prefix.",
                 400);
         }
 
-        var now = DateTimeOffset.UtcNow;
         var evidence = new EvidenceResult(
             Guid.NewGuid(),
             session.Id,
@@ -406,13 +482,9 @@ public sealed class VerificationEvidenceApplicationService(
             now);
         var submissionSlot = evidence.ResultType.ToString();
         var fingerprint = FingerprintEvidenceResult(evidence);
-        if (existing is not null)
-        {
-            return await ResolveEvidenceResultReplayAsync(existing, submissionSlot, fingerprint, evidence, session, caller, cancellationToken);
-        }
 
-        var writableError = ValidateWritableAppendSession<EvidenceResultSubmissionResponseDto>(session);
-        if (writableError is not null)
+        var writableError = ValidateWritableAppendSession<AppendEvidenceResultWrite>(session);
+        if (writableError is not null && await idempotencyRecords.GetAsync(session.Id, idempotencyKey, cancellationToken) is null)
         {
             return writableError;
         }
@@ -434,40 +506,23 @@ public sealed class VerificationEvidenceApplicationService(
         }
 
         var auditWrites = stateEvents
-            .Select(stateEvent => CreateAuditEvent(caller, session, stateEvent))
-            .Append(CreateAuditEvent(caller, session, "EVIDENCE_RESULT_RECORDED"))
+            .Select(stateEvent => CreateAuditEvent(principal, session, stateEvent))
+            .Append(CreateAuditEvent(principal, session, "EVIDENCE_RESULT_RECORDED"))
             .ToArray();
-        var apply = await appendBoundary.TryApplyEvidenceResultAsync(
-            new AppendEvidenceResultWrite(
-                new AppendIdempotencyRecord(
-                    session.Id,
-                    key.Value!,
-                    "evidenceResult",
-                    submissionSlot,
-                    evidence.Id,
-                    fingerprint,
-                    now),
-                evidence,
-                session,
-                finalState,
-                auditWrites),
-            cancellationToken);
-        if (apply.Status == AppendIdempotencyApplyStatus.SessionTerminal)
-        {
-            return SessionTerminal<EvidenceResultSubmissionResponseDto>();
-        }
 
-        if (apply.Status != AppendIdempotencyApplyStatus.Applied)
-        {
-            return await ResolveEvidenceResultReplayAsync(apply.Record, submissionSlot, fingerprint, evidence, session, caller, cancellationToken);
-        }
-
-        return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Success(new EvidenceResultSubmissionResponseDto(
-            FormatId(evidence.Id),
-            Accepted: true,
-            finalState.ToString(),
-            NextAction: effectiveResult == VerificationResultDto.RetryRequired ? "RETRY_CAPTURE" : null));
+        return SessionOperationResult<AppendEvidenceResultWrite>.Success(new(
+            new(session.Id, idempotencyKey, "evidenceResult", submissionSlot, evidence.Id, fingerprint, now),
+            evidence, session, finalState, auditWrites));
     }
+
+    private static AuditEvent CreateAuditEvent(VerifiedAppendPrincipal principal,
+        VerificationSession session, string eventType) =>
+        principal is VerifiedAppendPrincipal.Client client
+            ? CreateAuditEvent(client.Actor, session, eventType)
+            : new AuditEvent(Guid.NewGuid(), session.ClientApplicationId, session.Id,
+                "CaptureRuntime", ((VerifiedAppendPrincipal.Runtime)principal).CredentialId.ToString("N"),
+                eventType, new HashRef($"sha256:localdev-{eventType.ToLowerInvariant()}"),
+                null, session.RequestId, session.CorrelationId, DateTimeOffset.UtcNow);
 
     private static SessionOperationResult<string> ValidateIdempotencyKey<T>(string? idempotencyKey)
     {
@@ -496,7 +551,7 @@ public sealed class VerificationEvidenceApplicationService(
         string fingerprint,
         CaptureArtifact artifact,
         VerificationSession session,
-        AuthenticatedClientContext caller,
+        VerifiedAppendPrincipal caller,
         CancellationToken cancellationToken)
     {
         var mismatch = ResolveReplayMismatch<CaptureArtifactSubmissionResponseDto>(record, "captureArtifact", submissionSlot, fingerprint);
@@ -522,7 +577,7 @@ public sealed class VerificationEvidenceApplicationService(
         string fingerprint,
         EvidenceResult evidence,
         VerificationSession session,
-        AuthenticatedClientContext caller,
+        VerifiedAppendPrincipal caller,
         CancellationToken cancellationToken)
     {
         var mismatch = ResolveReplayMismatch<EvidenceResultSubmissionResponseDto>(record, "evidenceResult", submissionSlot, fingerprint);
@@ -612,7 +667,7 @@ public sealed class VerificationEvidenceApplicationService(
 
     private static SessionOperationResult<NfcEvidencePreparation> PrepareNfcEvidenceResult(
         VerificationSession session,
-        EvidenceResultSubmissionRequestDto request,
+        NeutralEvidenceResultPayload request,
         IReadOnlyList<CaptureArtifact> inputArtifacts)
     {
         var basis = request.NfcEvidenceDecisionBasis;
@@ -723,7 +778,7 @@ public sealed class VerificationEvidenceApplicationService(
     private static bool IsCaptureBindingTrusted(
         VerificationSession session,
         IReadOnlyList<CaptureArtifact> inputArtifacts,
-        NfcCaptureBindingDto? captureBinding)
+        NeutralCaptureBinding? captureBinding)
     {
         if (captureBinding is null ||
             inputArtifacts.Count == 0 ||
@@ -757,9 +812,9 @@ public sealed class VerificationEvidenceApplicationService(
 
     private static object BuildNormalizedNfcDecisionBasis(
         VerificationSession session,
-        EvidenceResultSubmissionRequestDto request,
+        NeutralEvidenceResultPayload request,
         IReadOnlyList<CaptureArtifact> inputArtifacts,
-        NfcEvidenceDecisionBasisDto submittedBasis,
+        NeutralNfcEvidenceDecisionBasis submittedBasis,
         IReadOnlySet<string> finalFlags,
         VerificationResultDto effectiveResult)
     {
@@ -803,7 +858,7 @@ public sealed class VerificationEvidenceApplicationService(
 
     private SessionOperationResult<FaceMatchEvidencePreparation> PrepareFaceMatchEvidenceResult(
         VerificationSession session,
-        EvidenceResultSubmissionRequestDto request,
+        NeutralEvidenceResultPayload request,
         IReadOnlyList<CaptureArtifact> inputArtifacts,
         IReadOnlyList<CaptureArtifact> sessionArtifacts,
         IReadOnlyList<EvidenceResult> priorEvidence)
@@ -927,7 +982,7 @@ public sealed class VerificationEvidenceApplicationService(
     private static bool IsFaceCaptureBindingTrusted(
         VerificationSession session,
         CaptureArtifact liveArtifact,
-        FaceMatchCaptureBindingDto? captureBinding)
+        NeutralCaptureBinding? captureBinding)
     {
         if (captureBinding is null ||
             liveArtifact.CaptureSource == CaptureSource.ExternalPreStaged)
@@ -950,7 +1005,7 @@ public sealed class VerificationEvidenceApplicationService(
 
     private static FaceMatchReferenceValidation ValidateFaceMatchReference(
         VerificationSession session,
-        FaceMatchEvidenceDecisionBasisDto basis,
+        NeutralFaceMatchEvidenceDecisionBasis basis,
         IReadOnlyList<CaptureArtifact> sessionArtifacts,
         IReadOnlyList<EvidenceResult> priorEvidence)
     {
@@ -1007,9 +1062,9 @@ public sealed class VerificationEvidenceApplicationService(
 
     private object BuildNormalizedFaceMatchDecisionBasis(
         VerificationSession session,
-        EvidenceResultSubmissionRequestDto request,
+        NeutralEvidenceResultPayload request,
         CaptureArtifact liveArtifact,
-        FaceMatchEvidenceDecisionBasisDto submittedBasis,
+        NeutralFaceMatchEvidenceDecisionBasis submittedBasis,
         IReadOnlySet<string> finalFlags,
         FaceMatchReferenceValidation referenceValidation,
         bool serverIsMatch,
@@ -1063,7 +1118,7 @@ public sealed class VerificationEvidenceApplicationService(
 
     private SessionOperationResult<LivenessEvidencePreparation> PrepareLivenessEvidenceResult(
         VerificationSession session,
-        EvidenceResultSubmissionRequestDto request,
+        NeutralEvidenceResultPayload request,
         IReadOnlyList<CaptureArtifact> inputArtifacts)
     {
         var basis = request.LivenessEvidenceDecisionBasis;
@@ -1232,7 +1287,7 @@ public sealed class VerificationEvidenceApplicationService(
     private static bool IsLivenessCaptureBindingTrusted(
         VerificationSession session,
         CaptureArtifact liveArtifact,
-        LivenessCaptureBindingDto? captureBinding)
+        NeutralCaptureBinding? captureBinding)
     {
         if (captureBinding is null ||
             liveArtifact.CaptureSource == CaptureSource.ExternalPreStaged)
@@ -1255,9 +1310,9 @@ public sealed class VerificationEvidenceApplicationService(
 
     private object BuildNormalizedLivenessDecisionBasis(
         VerificationSession session,
-        EvidenceResultSubmissionRequestDto request,
+        NeutralEvidenceResultPayload request,
         CaptureArtifact liveArtifact,
-        LivenessEvidenceDecisionBasisDto submittedBasis,
+        NeutralLivenessEvidenceDecisionBasis submittedBasis,
         IReadOnlySet<string> finalFlags,
         string? adapterRequestedVerdict,
         bool serverDerivedIsLive,
@@ -1789,7 +1844,7 @@ public sealed class VerificationEvidenceApplicationService(
             DateTimeOffset.UtcNow);
 
     private static AuditEvent CreateDeduplicatedAuditEvent(
-        AuthenticatedClientContext caller,
+        VerifiedAppendPrincipal caller,
         VerificationSession session,
         string eventType,
         AppendIdempotencyRecord record)
@@ -1813,10 +1868,10 @@ public sealed class VerificationEvidenceApplicationService(
 
         return new AuditEvent(
             Guid.NewGuid(),
-            caller.ClientApplicationId,
+            session.ClientApplicationId,
             session.Id,
-            caller.CallerCategory.ToString(),
-            caller.KeyPrefix,
+            caller is VerifiedAppendPrincipal.Client c ? c.Actor.CallerCategory.ToString() : "CaptureRuntime",
+            caller is VerifiedAppendPrincipal.Client client ? client.Actor.KeyPrefix : ((VerifiedAppendPrincipal.Runtime)caller).CredentialId.ToString("N"),
             eventType,
             new HashRef(auditHash),
             EventPayloadRef: null,

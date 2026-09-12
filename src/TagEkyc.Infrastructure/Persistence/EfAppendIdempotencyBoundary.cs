@@ -26,6 +26,8 @@ public sealed class EfAppendIdempotencyBoundary(TagEkycDbContext db)
         AppendCaptureArtifactWrite write,
         CancellationToken cancellationToken = default)
     {
+        if (db.Database.CurrentTransaction is not null)
+            return await ApplyCaptureArtifactWriteAsync(write, cancellationToken);
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         try
         {
@@ -67,6 +69,8 @@ public sealed class EfAppendIdempotencyBoundary(TagEkycDbContext db)
         AppendEvidenceResultWrite write,
         CancellationToken cancellationToken = default)
     {
+        if (db.Database.CurrentTransaction is not null)
+            return await ApplyEvidenceResultWriteAsync(write, cancellationToken);
         await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
         try
         {
@@ -103,6 +107,51 @@ public sealed class EfAppendIdempotencyBoundary(TagEkycDbContext db)
             return await ReplayOrThrowAsync(write.Idempotency, cancellationToken);
         }
     }
+
+    public async Task<AppendIdempotencyApplyResult> ApplyCaptureArtifactWriteAsync(
+        AppendCaptureArtifactWrite write, CancellationToken cancellationToken = default)
+    {
+        if (db.Database.CurrentTransaction is null) throw new InvalidOperationException("Append requires its owning business transaction.");
+        await LockSessionAsync(write.Session.Id, cancellationToken);
+        var prior = await GetAsync(write.Session.Id, write.Idempotency.IdempotencyKey, cancellationToken);
+        if (prior is not null) return Compare(prior, write.Idempotency);
+        if (await IsSessionTerminalAsync(write.Session.Id, cancellationToken))
+            return new(AppendIdempotencyApplyStatus.SessionTerminal, write.Idempotency);
+        db.AppendIdempotencyRecords.Add(DomainRowMapper.ToRow(write.Idempotency));
+        db.CaptureArtifacts.Add(DomainRowMapper.ToRow(write.Artifact));
+        await ApplySessionStateAsync(write.Session.Id, write.FinalState, cancellationToken);
+        AddAuditEvents(write.AuditEvents);
+        await db.SaveChangesAsync(cancellationToken);
+        return new(AppendIdempotencyApplyStatus.Applied, write.Idempotency);
+    }
+
+    public async Task<AppendIdempotencyApplyResult> ApplyEvidenceResultWriteAsync(
+        AppendEvidenceResultWrite write, CancellationToken cancellationToken = default)
+    {
+        if (db.Database.CurrentTransaction is null) throw new InvalidOperationException("Append requires its owning business transaction.");
+        await LockSessionAsync(write.Session.Id, cancellationToken);
+        var prior = await GetAsync(write.Session.Id, write.Idempotency.IdempotencyKey, cancellationToken);
+        if (prior is not null) return Compare(prior, write.Idempotency);
+        if (await IsSessionTerminalAsync(write.Session.Id, cancellationToken))
+            return new(AppendIdempotencyApplyStatus.SessionTerminal, write.Idempotency);
+        db.AppendIdempotencyRecords.Add(DomainRowMapper.ToRow(write.Idempotency));
+        db.EvidenceResults.Add(DomainRowMapper.ToRow(write.EvidenceResult));
+        await ApplySessionStateAsync(write.Session.Id, write.FinalState, cancellationToken);
+        AddAuditEvents(write.AuditEvents);
+        await db.SaveChangesAsync(cancellationToken);
+        return new(AppendIdempotencyApplyStatus.Applied, write.Idempotency);
+    }
+
+    private Task<int> LockSessionAsync(Guid sessionId, CancellationToken cancellationToken) =>
+        db.Database.ExecuteSqlInterpolatedAsync(
+            $"SELECT pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended({sessionId.ToString()},70))",
+            cancellationToken);
+
+    private static AppendIdempotencyApplyResult Compare(AppendIdempotencyRecord prior, AppendIdempotencyRecord attempted) =>
+        new(prior.EndpointKind != attempted.EndpointKind || prior.SubmissionSlot != attempted.SubmissionSlot
+            ? AppendIdempotencyApplyStatus.SlotMismatch
+            : prior.Fingerprint != attempted.Fingerprint ? AppendIdempotencyApplyStatus.PayloadMismatch
+            : AppendIdempotencyApplyStatus.Deduplicated, prior);
 
     private async Task ApplySessionStateAsync(
         Guid verificationSessionId,

@@ -28,7 +28,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
     private const string Migration = "20260724015546_Tip88B1E3ResolverReadBoundary";
     private const string PreviousMigration = "20260723052003_Tip88B33RawExportAuthorizationPersistFunction";
     private const string ExpectedModelSnapshotSha256 =
-        "80A4DE4E70B41804FA32AFC3C29833FC6A27A8D871399F82BB423BC6A6EEFE05";
+        "1B5F09EF3BF78A4D5748021AAEB82AC26A8B00D631F9C071EECEA903A1F17578";
     private const string EligibilityFunction =
         "tagekyc.raw_export_read_authorization_eligibility_inputs(uuid,uuid,integer)";
     private const string PolicyFunction =
@@ -2535,7 +2535,9 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
             "Persistence",
             "Migrations",
             "TagEkycDbContextModelSnapshot.cs");
-        return Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(path)));
+        // Authorized A1 model additions; preserve exact-content pin independent of checkout CRLF/LF.
+        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(
+            Encoding.UTF8.GetString(File.ReadAllBytes(path)).Replace("\r\n", "\n", StringComparison.Ordinal))));
     }
 
     private sealed class CapturingProjectionReader(IRawExportAuthorizationProjectionReader inner)

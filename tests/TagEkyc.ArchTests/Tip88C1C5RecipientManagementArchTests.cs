@@ -1,4 +1,6 @@
 using System.Security.Cryptography;
+using System.Text;
+using System.Text.RegularExpressions;
 using Xunit.Sdk;
 
 namespace TagEkyc.ArchTests;
@@ -13,11 +15,41 @@ public sealed class Tip88C1C5RecipientManagementArchTests : IDisposable
     public void C527_model_snapshot_tripwires_are_platform_independent_and_lockstep()
     {
         var root=Root(); var snapshot=Path.Combine(root,"src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs");
-        var sha=Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(snapshot)));
-        var owners=new[]{"Tip88B1E3ResolverReadBoundaryTests.cs","Tip88C1B2R3VerifiedCiphertextStagingTests.cs","Tip88C1C2RecipientPackageTests.cs"};
-        var count=owners.Count(file=>File.ReadAllText(Path.Combine(root,"tests/TagEkyc.IntegrationTests",file)).Contains(sha,StringComparison.Ordinal));
+        // Homeowner A1 continuation §13 supersedes the C5 pre-A1 snapshot pin.
+        // Only CRLF/LF representation is normalized; every model byte remains pinned.
+        var sha=SnapshotHash(File.ReadAllBytes(snapshot));
+        var owners=new Dictionary<string,string>
+        {
+            ["Tip88B1E3ResolverReadBoundaryTests.cs"] = "ExpectedModelSnapshotSha256",
+            ["Tip88C1B2R3VerifiedCiphertextStagingTests.cs"] = "ExpectedSnapshotSha256",
+            ["Tip88C1C2RecipientPackageTests.cs"] = "Assert.Equal",
+        };
+        var count=owners.Count(owner =>
+        {
+            var source=File.ReadAllText(Path.Combine(root,"tests/TagEkyc.IntegrationTests",owner.Key));
+            var pattern=owner.Value=="Assert.Equal"
+                ? "Assert\\.Equal\\(\\\"(?<sha>[A-F0-9]{64})\\\", snapshotHash\\)"
+                : Regex.Escape(owner.Value)+"\\s*=\\s*\\\"(?<sha>[A-F0-9]{64})\\\"";
+            var matches=Regex.Matches(source,pattern,RegexOptions.CultureInvariant);
+            return matches.Count==1 && matches[0].Groups["sha"].Value==sha;
+        });
         Bite(count==3,"C527-THREE-TRIPWIRE-LOCKSTEP",$"sha={sha};count={count}");
     }
+
+    [Fact]
+    public void C527_snapshot_pin_normalizes_only_line_endings_not_model_content_or_bom()
+    {
+        var lf=Encoding.UTF8.GetBytes("model.Property(1);\nmodel.Index(2);\n");
+        var crlf=Encoding.UTF8.GetBytes("model.Property(1);\r\nmodel.Index(2);\r\n");
+        Assert.Equal(SnapshotHash(lf),SnapshotHash(crlf));
+        Assert.NotEqual(SnapshotHash(lf),SnapshotHash(Encoding.UTF8.GetBytes("model.Property(9);\nmodel.Index(2);\n")));
+        Assert.NotEqual(SnapshotHash(lf),SnapshotHash(new byte[] { 0xef,0xbb,0xbf }.Concat(lf).ToArray()));
+        Assert.NotEqual(SnapshotHash(lf),SnapshotHash(Encoding.UTF8.GetBytes("model.Property(1);\nmodel.Index(2);")));
+    }
+
+    private static string SnapshotHash(byte[] bytes) =>
+        Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(
+            new UTF8Encoding(false,true).GetString(bytes).Replace("\r\n","\n",StringComparison.Ordinal))));
 
     [Fact]
     public void C530_debts_nonclaims_and_product_ready_gates_remain_open()

@@ -85,7 +85,7 @@ public sealed class Tip83E3RetentionConfigTests(PostgresPersistenceFixture postg
     [Fact]
     public async Task Development_starts_without_retention_policy()
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Development");
@@ -115,7 +115,7 @@ public sealed class Tip83E3RetentionConfigTests(PostgresPersistenceFixture postg
     }
 
     private static WebApplicationFactory<Program> ProductionFactory(Action<IWebHostBuilder> configure) =>
-        new WebApplicationFactory<Program>()
+        new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");

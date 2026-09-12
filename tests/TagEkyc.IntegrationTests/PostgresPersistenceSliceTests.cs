@@ -580,7 +580,7 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
     [Fact]
     public void Production_inmemory_configuration_refuses_to_start()
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");

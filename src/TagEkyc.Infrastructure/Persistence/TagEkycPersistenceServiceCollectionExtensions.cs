@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using TagEkyc.Application.Ports;
+using TagEkyc.Infrastructure.CaptureRuntime;
 using TagEkyc.Infrastructure.RawExport;
 
 namespace TagEkyc.Infrastructure.Persistence;
@@ -10,7 +11,8 @@ public static class TagEkycPersistenceServiceCollectionExtensions
 {
     public static IServiceCollection AddTagEkycPostgresPersistence(
         this IServiceCollection services,
-        string connectionString)
+        string connectionString,
+        CaptureRuntimeResolvedDatabaseOptions? captureRuntime = null)
     {
         if (string.IsNullOrWhiteSpace(connectionString))
         {
@@ -40,6 +42,13 @@ public static class TagEkycPersistenceServiceCollectionExtensions
         services.AddScoped<EfAppendIdempotencyBoundary>();
         services.AddScoped<IAppendIdempotencyRepository>(sp => sp.GetRequiredService<EfAppendIdempotencyBoundary>());
         services.AddScoped<IAppendIdempotencyBoundary>(sp => sp.GetRequiredService<EfAppendIdempotencyBoundary>());
+
+        if (captureRuntime is not null)
+        {
+            services.TryAddSingleton(captureRuntime);
+            services.TryAddSingleton<ICaptureRuntimeDbContextFactory, CaptureRuntimeDbContextFactory>();
+            services.TryAddSingleton<ICaptureRuntimeOperatorDbContextFactory, CaptureRuntimeOperatorDbContextFactory>();
+        }
 
         return services;
     }

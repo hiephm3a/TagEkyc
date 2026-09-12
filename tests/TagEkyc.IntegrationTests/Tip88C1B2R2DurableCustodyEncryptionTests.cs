@@ -399,16 +399,17 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionTests
 
         R214AssertFinalFieldCleanup(
             "transient plaintext digest",
-            "<plaintextDigest>5__3",
+            "plaintextDigest",
             typeof(IncrementalHash),
             nameof(IncrementalHash.GetHashAndReset));
         R214AssertFinalFieldCleanup(
             "DATA ciphertext digest",
-            "<dataDigest>5__5",
+            "dataDigest",
             typeof(IncrementalHash),
             nameof(IncrementalHash.GetHashAndReset));
         R214AssertFinalLocalCleanup(
             "computed commitment comparison buffer",
+            "computedCommitment",
             typeof(ReadOnlyMemory<byte>),
             nameof(ReadOnlyMemory<byte>.ToArray));
 
@@ -859,7 +860,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionTests
 
     private static void R214AssertFinalFieldCleanup(
         string family,
-        string fieldName,
+        string sourceLocalName,
         Type producerOwner,
         string producerName)
     {
@@ -867,9 +868,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionTests
             typeof(RawExportR2FramedCiphertextStream),
             "BuildFinalFrameAsync");
         var instructions = R214ReadIl(moveNext);
-        var field = moveNext.DeclaringType!.GetField(
-            fieldName,
-            BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+        var field = R214FindHoistedBuffer(moveNext, sourceLocalName);
         Assert.True(field is not null, $"R214_FIELD_NOT_RESOLVED:{family}");
 
         var producerIndex = -1;
@@ -910,12 +909,21 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionTests
 
     private static void R214AssertFinalLocalCleanup(
         string family,
+        string sourceLocalName,
         Type producerOwner,
         string producerName)
     {
         var moveNext = R206AsyncMoveNext(
             typeof(RawExportR2FramedCiphertextStream),
             "BuildFinalFrameAsync");
+        // Debug hoists this buffer, while Release keeps it as an IL local.
+        // Both representations must prove the same exact producer/storage/
+        // ZeroMemory/finally relationship; neither path accepts a name-only proof.
+        if (R214FindHoistedBuffer(moveNext, sourceLocalName) is not null)
+        {
+            R214AssertFinalFieldCleanup(family, sourceLocalName, producerOwner, producerName);
+            return;
+        }
         var instructions = R214ReadIl(moveNext);
         var producerIndex = R214FindIndex(instructions, instruction =>
             instruction.Operand is MethodBase method
@@ -979,15 +987,32 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionTests
         var producerInsideProtectedTry =
             producerStoreOffset >= clause.TryOffset
             && producerStoreOffset < clause.TryOffset + clause.TryLength;
-        var producerImmediatelyBeforeProtectedTry =
-            storeIndex + 1 < instructions.Count
-            && instructions[storeIndex + 1].Offset == clause.TryOffset;
+        // Debug may insert sequence-point NOPs between assignment and try.
+        // No executable instruction may intervene: accepting arbitrary gaps
+        // would make an unprotected throwing operation invisible to this proof.
+        var intervening = instructions.Skip(storeIndex + 1)
+            .TakeWhile(instruction => instruction.Offset < clause.TryOffset).ToArray();
+        var producerImmediatelyBeforeProtectedTry = producerStoreOffset < clause.TryOffset
+            && instructions.Any(instruction => instruction.Offset == clause.TryOffset)
+            && intervening.All(instruction => instruction.OpCode == System.Reflection.Emit.OpCodes.Nop);
         Assert.True(
             producerInsideProtectedTry || producerImmediatelyBeforeProtectedTry,
             $"R214_PRODUCER_NOT_PROTECTED_BY_FINALLY:{family}");
         Assert.True(
             zeroOffset < clause.HandlerOffset + clause.HandlerLength,
             $"R214_ZERO_OUTSIDE_FINALLY:{family}");
+    }
+
+    private static FieldInfo? R214FindHoistedBuffer(MethodInfo moveNext, string sourceLocalName)
+    {
+        // The numeric suffix is compiler/configuration-dependent. The local
+        // name and byte[] type are not interchangeable with another buffer.
+        var candidates = moveNext.DeclaringType!.GetFields(
+                BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public)
+            .Where(field => field.FieldType == typeof(byte[]) &&
+                field.Name.StartsWith($"<{sourceLocalName}>5__", StringComparison.Ordinal)).ToArray();
+        Assert.True(candidates.Length <= 1, $"R214_AMBIGUOUS_BUFFER_STORAGE:{sourceLocalName}");
+        return candidates.SingleOrDefault();
     }
 
     private static int R214LocalIndex(R214IlInstruction instruction, bool store)

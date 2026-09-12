@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using TagEkyc.Application.Ports;
 using TagEkyc.Domain;
 
@@ -70,47 +71,72 @@ public sealed class EfVerificationFinalizationBoundary(
         VerificationCancellationWrite write,
         CancellationToken cancellationToken = default)
     {
-        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
-        var currentRow = await db.Sessions.SingleOrDefaultAsync(candidate => candidate.Id == write.ExpectedSession.Id, cancellationToken);
-        if (currentRow is null)
-        {
-            return new VerificationFinalizationWriteResult(VerificationFinalizationWriteStatus.NotFound, Session: null);
-        }
-
-        var current = DomainRowMapper.ToDomain(currentRow);
-        if (current.State == VerificationSessionState.Completed)
-        {
-            return new VerificationFinalizationWriteResult(VerificationFinalizationWriteStatus.AlreadyCompleted, current);
-        }
-
-        if (!MatchesExpectedSession(current, write.ExpectedSession) ||
-            current.State is VerificationSessionState.Expired
-                or VerificationSessionState.Cancelled
-                or VerificationSessionState.TechnicalTerminal ||
-            write.CancelledSession.State != VerificationSessionState.Cancelled)
-        {
-            return new VerificationFinalizationWriteResult(VerificationFinalizationWriteStatus.StateMismatch, current);
-        }
-
-        ApplySession(currentRow, write.CancelledSession);
-        db.AuditEvents.Add(DomainRowMapper.ToRow(write.CancellationAuditEvent));
-
         try
         {
-            await db.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
+            return await CancelInTransactionAsync(write, cancellationToken);
         }
-        catch (DbUpdateConcurrencyException)
+        catch (Exception exception) when (exception is NpgsqlException or DbUpdateException)
         {
-            await transaction.RollbackAsync(cancellationToken);
-            return new VerificationFinalizationWriteResult(
-                VerificationFinalizationWriteStatus.StateMismatch,
-                write.ExpectedSession);
+            // Includes failure to open the connection/begin B; no exception details
+            // become public cancellation responses.
+            return new(VerificationFinalizationWriteStatus.NotReady, null);
         }
+    }
 
-        return new VerificationFinalizationWriteResult(
-            VerificationFinalizationWriteStatus.Applied,
-            write.CancelledSession);
+    private async Task<VerificationFinalizationWriteResult> CancelInTransactionAsync(
+        VerificationCancellationWrite write, CancellationToken cancellationToken)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            var audit = write.CancellationAuditEvent;
+            var result = await db.Database.SqlQueryRaw<CancelSqlResult>("""
+                SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(
+                    @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)
+                """, new NpgsqlParameter("client", audit.ClientApplicationId),
+                new NpgsqlParameter("session", write.ExpectedSession.Id),
+                new NpgsqlParameter("reason", audit.EventPayloadRef ?? string.Empty),
+                new NpgsqlParameter("request", write.CancelledSession.RequestId),
+                new NpgsqlParameter("correlation", write.CancelledSession.CorrelationId),
+                new NpgsqlParameter("now", audit.OccurredAt),
+                new NpgsqlParameter("prefix", audit.ActorId ?? string.Empty),
+                new NpgsqlParameter("audit", audit.Id)).SingleAsync(cancellationToken);
+            // SQL owns session/capability/audit mutation. Read fresh database state: a
+            // concurrent loser must return the winner's metadata, never its candidate.
+            var row = await db.Sessions.AsNoTracking().SingleOrDefaultAsync(
+                candidate => candidate.Id == write.ExpectedSession.Id &&
+                    candidate.ClientApplicationId == audit.ClientApplicationId, cancellationToken);
+            var current = row is null ? null : DomainRowMapper.ToDomain(row);
+            var status = result.ResultCode switch
+            {
+                "APPLIED" or "AVAILABLE" when current?.State == VerificationSessionState.Cancelled
+                    => VerificationFinalizationWriteStatus.Applied,
+                "RESOURCE_NOT_AVAILABLE" => VerificationFinalizationWriteStatus.NotFound,
+                "INVALID_INPUT" => VerificationFinalizationWriteStatus.InvalidRequest,
+                "DENIED" => VerificationFinalizationWriteStatus.AccessDenied,
+                "CONFLICT" => VerificationFinalizationWriteStatus.StateMismatch,
+                _ => VerificationFinalizationWriteStatus.NotReady
+            };
+            if (status == VerificationFinalizationWriteStatus.NotReady)
+            {
+                await transaction.RollbackAsync(cancellationToken);
+                return new(status, null);
+            }
+            // In particular, preserve authorized expiry-first work even when the
+            // requested cancellation receives a typed terminal denial.
+            await transaction.CommitAsync(cancellationToken);
+            return new(status, status == VerificationFinalizationWriteStatus.AccessDenied ? null : current);
+        }
+        catch (Exception exception) when (exception is NpgsqlException or DbUpdateException)
+        {
+            await transaction.RollbackAsync(CancellationToken.None);
+            return new(VerificationFinalizationWriteStatus.NotReady, null);
+        }
+    }
+
+    private sealed class CancelSqlResult
+    {
+        public string ResultCode { get; set; } = string.Empty;
     }
 
     private static void ApplySession(Entities.VerificationSessionRow row, VerificationSession session)

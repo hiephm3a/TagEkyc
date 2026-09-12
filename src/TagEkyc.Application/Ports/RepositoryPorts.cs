@@ -113,6 +113,14 @@ public interface IAppendIdempotencyRepository
 
 public interface IAppendIdempotencyBoundary
 {
+    Task<AppendIdempotencyApplyResult> ApplyCaptureArtifactWriteAsync(
+        AppendCaptureArtifactWrite write, CancellationToken cancellationToken = default) =>
+        TryApplyCaptureArtifactAsync(write, cancellationToken);
+
+    Task<AppendIdempotencyApplyResult> ApplyEvidenceResultWriteAsync(
+        AppendEvidenceResultWrite write, CancellationToken cancellationToken = default) =>
+        TryApplyEvidenceResultAsync(write, cancellationToken);
+
     Task<AppendIdempotencyApplyResult> TryApplyCaptureArtifactAsync(
         AppendCaptureArtifactWrite write,
         CancellationToken cancellationToken = default);
@@ -408,6 +416,9 @@ public enum VerificationFinalizationWriteStatus
     AlreadyCompleted = 1,
     StateMismatch = 2,
     NotFound = 3,
+    AccessDenied = 4,
+    NotReady = 5,
+    InvalidRequest = 6,
 }
 
 public sealed record VerificationFinalizationWriteResult(

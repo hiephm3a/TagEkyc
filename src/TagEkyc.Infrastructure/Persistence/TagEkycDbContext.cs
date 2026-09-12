@@ -98,6 +98,34 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportRecipientPackageDeliveryRow> RawExportRecipientPackageDeliveries => Set<RawExportRecipientPackageDeliveryRow>();
     public DbSet<RawExportRecipientPackageDeliveryEventRow> RawExportRecipientPackageDeliveryEvents => Set<RawExportRecipientPackageDeliveryEventRow>();
 
+    public DbSet<PlatformOperatorCredentialsRow> PlatformOperatorCredentials => Set<PlatformOperatorCredentialsRow>();
+    public DbSet<CaptureRuntimeRolePolicyRevisionsRow> CaptureRuntimeRolePolicyRevisions => Set<CaptureRuntimeRolePolicyRevisionsRow>();
+    public DbSet<CaptureRuntimeRolePolicyHeadsRow> CaptureRuntimeRolePolicyHeads => Set<CaptureRuntimeRolePolicyHeadsRow>();
+    public DbSet<CaptureRuntimeTrustProfileRevisionsRow> CaptureRuntimeTrustProfileRevisions => Set<CaptureRuntimeTrustProfileRevisionsRow>();
+    public DbSet<CaptureRuntimeTrustProfileHeadsRow> CaptureRuntimeTrustProfileHeads => Set<CaptureRuntimeTrustProfileHeadsRow>();
+    public DbSet<CaptureRuntimeConfigurationRevisionsRow> CaptureRuntimeConfigurationRevisions => Set<CaptureRuntimeConfigurationRevisionsRow>();
+    public DbSet<CaptureRuntimeConfigurationHeadsRow> CaptureRuntimeConfigurationHeads => Set<CaptureRuntimeConfigurationHeadsRow>();
+    public DbSet<CaptureRuntimeRegistrationsRow> CaptureRuntimeRegistrations => Set<CaptureRuntimeRegistrationsRow>();
+    public DbSet<CaptureRuntimeInstallationsRow> CaptureRuntimeInstallations => Set<CaptureRuntimeInstallationsRow>();
+    public DbSet<CaptureRuntimeCredentialGenerationsRow> CaptureRuntimeCredentialGenerations => Set<CaptureRuntimeCredentialGenerationsRow>();
+    public DbSet<CaptureRuntimeRequestNoncesRow> CaptureRuntimeRequestNonces => Set<CaptureRuntimeRequestNoncesRow>();
+    public DbSet<CaptureRuntimeBootstrapIssuancesRow> CaptureRuntimeBootstrapIssuances => Set<CaptureRuntimeBootstrapIssuancesRow>();
+    public DbSet<CaptureCapabilitiesRow> CaptureCapabilities => Set<CaptureCapabilitiesRow>();
+    public DbSet<CaptureExecutionBindingsRow> CaptureExecutionBindings => Set<CaptureExecutionBindingsRow>();
+    public DbSet<CaptureRuntimeConfigurationOverridesRow> CaptureRuntimeConfigurationOverrides => Set<CaptureRuntimeConfigurationOverridesRow>();
+    public DbSet<CaptureRuntimeRotationAuthorizationsRow> CaptureRuntimeRotationAuthorizations => Set<CaptureRuntimeRotationAuthorizationsRow>();
+    public DbSet<CaptureRuntimeManagementOperationsRow> CaptureRuntimeManagementOperations => Set<CaptureRuntimeManagementOperationsRow>();
+    public DbSet<CaptureRuntimeManagementEventsRow> CaptureRuntimeManagementEvents => Set<CaptureRuntimeManagementEventsRow>();
+    public DbSet<CaptureCapabilityOperationsRow> CaptureCapabilityOperations => Set<CaptureCapabilityOperationsRow>();
+    public DbSet<CaptureCapabilityEventsRow> CaptureCapabilityEvents => Set<CaptureCapabilityEventsRow>();
+    public DbSet<CaptureRuntimeBootstrapRedemptionOperationsRow> CaptureRuntimeBootstrapRedemptionOperations => Set<CaptureRuntimeBootstrapRedemptionOperationsRow>();
+    public DbSet<CaptureRuntimeRotationCompletionOperationsRow> CaptureRuntimeRotationCompletionOperations => Set<CaptureRuntimeRotationCompletionOperationsRow>();
+    public DbSet<CaptureRuntimeBootstrapRedemptionEventsRow> CaptureRuntimeBootstrapRedemptionEvents => Set<CaptureRuntimeBootstrapRedemptionEventsRow>();
+    public DbSet<CaptureRuntimeRotationCompletionEventsRow> CaptureRuntimeRotationCompletionEvents => Set<CaptureRuntimeRotationCompletionEventsRow>();
+    public DbSet<PlatformOperatorRootOperationsRow> PlatformOperatorRootOperations => Set<PlatformOperatorRootOperationsRow>();
+    public DbSet<PlatformOperatorRootEventsRow> PlatformOperatorRootEvents => Set<PlatformOperatorRootEventsRow>();
+    public DbSet<CaptureRuntimeCutoverStateRow> CaptureRuntimeCutoverStates => Set<CaptureRuntimeCutoverStateRow>();
+
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
         configurationBuilder.Conventions.Replace<ForeignKeyIndexConvention>(serviceProvider =>
@@ -131,6 +159,33 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         modelBuilder.ApplyConfiguration(new RawExportRecipientPackageEventConfig());
         modelBuilder.ApplyConfiguration(new RawExportRecipientPackageDeliveryConfig());
         modelBuilder.ApplyConfiguration(new RawExportRecipientPackageDeliveryEventConfig());
+        modelBuilder.ApplyConfiguration(new PlatformOperatorCredentialsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeRolePolicyRevisionsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeRolePolicyHeadsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeTrustProfileRevisionsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeTrustProfileHeadsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeConfigurationRevisionsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeConfigurationHeadsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeRegistrationsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeInstallationsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeCredentialGenerationsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeRequestNoncesRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeBootstrapIssuancesRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureCapabilitiesRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureExecutionBindingsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeConfigurationOverridesRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeRotationAuthorizationsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeManagementOperationsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeManagementEventsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureCapabilityOperationsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureCapabilityEventsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeBootstrapRedemptionOperationsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeRotationCompletionOperationsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeBootstrapRedemptionEventsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeRotationCompletionEventsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new PlatformOperatorRootOperationsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new PlatformOperatorRootEventsRowConfiguration());
+        modelBuilder.ApplyConfiguration(new CaptureRuntimeCutoverStateRowConfiguration());
 
         modelBuilder.Entity<VerificationSessionRow>(entity =>
         {

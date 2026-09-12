@@ -89,8 +89,23 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionArchTests
         Assert.DoesNotContain("RawSourceAdapter", r2Source, StringComparison.Ordinal);
         Assert.DoesNotContain("IServiceCollection", r2Source, StringComparison.Ordinal);
 
-        Assert.DoesNotContain(typeof(AttemptAeadChunkRequest).Assembly.GetTypes(),
-            type => type.Name.Contains("RawExportR2", StringComparison.Ordinal));
+        // C6B's ratified broker/R1 -> R2 handoff supersedes B2-R2's assembly-wide
+        // name ban. Only this closed metadata record is public, not an R2 provider/runtime.
+        // Homeowner A1 continuation §13 authorizes reconciliation, not activation.
+        var publicHandoff = Assert.Single(typeof(AttemptAeadChunkRequest).Assembly.GetTypes()
+            .Where(type => type.Name.Contains("RawExportR2", StringComparison.Ordinal)));
+        Assert.Equal(typeof(RawExportR2Handoff), publicHandoff);
+        Assert.True(publicHandoff.IsSealed);
+        Assert.Equal(new[]
+        {
+            ("AttemptId", typeof(Guid)),
+            ("AttemptKeyReservationId", typeof(Guid)),
+            ("ExpectedEncryptionAttemptRevision", typeof(long)),
+            ("ExpectedFence", typeof(long)),
+            ("SourceArtifactId", typeof(Guid)),
+        }, publicHandoff.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            .OrderBy(property => property.Name, StringComparer.Ordinal)
+            .Select(property => (property.Name, property.PropertyType)).ToArray());
         Assert.DoesNotContain(R2Types(), type => type.Name.Contains("RawSourceAdapter", StringComparison.Ordinal));
     }
 

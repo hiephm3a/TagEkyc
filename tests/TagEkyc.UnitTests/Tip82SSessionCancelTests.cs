@@ -13,6 +13,40 @@ namespace TagEkyc.UnitTests;
 public sealed class Tip82SSessionCancelTests
 {
     [Fact]
+    public async Task R26_concurrent_loser_returns_actual_boundary_winner_metadata()
+    {
+        WinnerBoundary? observed = null;
+        var fixture = CreateFixture(boundary => observed = new WinnerBoundary(boundary));
+        var session = await CreateSessionAsync(fixture);
+        var result = await fixture.CompletionService.CancelAsync(BusinessCaller(), session.VerificationSessionId,
+            new("caller_void", "loser-request", "loser-correlation"));
+        Assert.True(result.IsSuccess, result.Error?.Code);
+        Assert.Equal("winner-request", result.Value!.RequestId);
+        Assert.Equal("winner-correlation", result.Value.CorrelationId);
+        var replay = await fixture.CompletionService.CancelAsync(BusinessCaller(), session.VerificationSessionId,
+            new("another_reason", "changed-request", "changed-correlation"));
+        Assert.True(replay.IsSuccess);
+        Assert.Equal(result.Value, replay.Value);
+        Assert.Equal(2, observed!.CancelCalls);
+        Assert.Single(fixture.Audit.Events.Where(x => x.EventType == "SESSION_CANCELLED"));
+    }
+
+    [Theory]
+    [InlineData(VerificationFinalizationWriteStatus.NotReady, "NOT_READY", 503)]
+    [InlineData(VerificationFinalizationWriteStatus.AccessDenied, "ACCESS_DENIED", 403)]
+    [InlineData(VerificationFinalizationWriteStatus.InvalidRequest, "REQUEST_INVALID", 400)]
+    public async Task R26_typed_boundary_denial_preserves_public_status(
+        VerificationFinalizationWriteStatus status, string code, int httpStatus)
+    {
+        var fixture = CreateFixture(boundary => new WinnerBoundary(boundary, status));
+        var session = await CreateSessionAsync(fixture);
+        var result = await fixture.CompletionService.CancelAsync(BusinessCaller(), session.VerificationSessionId,
+            new(null, null, null));
+        AssertFailure(result, code, httpStatus);
+        Assert.DoesNotContain(fixture.Audit.Events, x => x.EventType == "SESSION_CANCELLED");
+    }
+
+    [Fact]
     public async Task Cancel_requires_business_scope_and_same_business_client()
     {
         var fixture = CreateFixture();
@@ -327,7 +361,7 @@ public sealed class Tip82SSessionCancelTests
             $"sha256:{Guid.NewGuid():N}",
             DateTimeOffset.UtcNow);
 
-    private static TestFixture CreateFixture()
+    private static TestFixture CreateFixture(Func<IVerificationFinalizationBoundary, IVerificationFinalizationBoundary>? decorate = null)
     {
         var sessions = new LocalDevInMemoryVerificationSessionRepository();
         var artifacts = new LocalDevInMemoryCaptureArtifactRepository();
@@ -355,7 +389,7 @@ public sealed class Tip82SSessionCancelTests
             manifests,
             audit,
             new TestEvidenceSigner(),
-            finalization);
+            decorate?.Invoke(finalization) ?? finalization);
 
         return new TestFixture(sessionService, evidenceService, completionService, sessions, artifacts, evidence, audit, idempotency);
     }
@@ -413,4 +447,23 @@ public sealed class Tip82SSessionCancelTests
         LocalDevInMemoryEvidenceResultRepository Evidence,
         LocalDevInMemoryAuditEventRepository Audit,
         LocalDevInMemoryAppendIdempotencyStore Idempotency);
+
+    private sealed class WinnerBoundary(IVerificationFinalizationBoundary inner,
+        VerificationFinalizationWriteStatus? denial = null) : IVerificationFinalizationBoundary
+    {
+        public int CancelCalls;
+        public Task<VerificationFinalizationWriteResult> TryFinalizeAsync(VerificationFinalizationWrite write, CancellationToken ct = default)
+            => inner.TryFinalizeAsync(write, ct);
+        public Task<VerificationFinalizationWriteResult> TryCancelAsync(VerificationCancellationWrite write, CancellationToken ct = default)
+        {
+            CancelCalls++;
+            return denial is { } status ? Task.FromResult(new VerificationFinalizationWriteResult(status, null))
+                : inner.TryCancelAsync(write with
+                {
+                    CancelledSession = write.ExpectedSession.WithCancellation("winner-request", "winner-correlation"),
+                    CancellationAuditEvent = write.CancellationAuditEvent with
+                    { RequestId = "winner-request", CorrelationId = "winner-correlation" }
+                }, ct);
+        }
+    }
 }

@@ -1,0 +1,644 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="4f14d201-a5d3-43ee-85a8-606018ece329" name="3AVNN@LEARNPC 2026-09-12 18:15:06" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-12T18:15:06.5948291+07:00" queuing="2026-09-12T18:15:06.5948297+07:00" start="2026-09-12T18:14:46.4096122+07:00" finish="2026-09-12T18:15:32.1138409+07:00" />
+  <TestSettings name="default" id="1efa82d9-2d53-4e6c-b550-bb235973064d">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-12_18_15_06" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="f28421e7-3255-490e-aa56-d7140affd585" testId="f5980e0e-083b-db65-de2e-c3d7adf8ce88" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1NormativeSqlProofTests.CompleteNormativeSqlFences_ExecuteAgainstCurrentMigration_AndLeaveNoSharedResidue(family: &quot;expiry&quot;)" computerName="LEARNPC" duration="00:00:04.3216682" startTime="2026-09-12T18:15:20.0694532+07:00" endTime="2026-09-12T18:15:20.0694534+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f28421e7-3255-490e-aa56-d7140affd585">
+      <Output>
+        <StdOut>CONSUMED tip_88c1_c6b_a1_expiry_on_denied_proof.md SHA256=5E324200F58B9D0710C5C201942612D2D8B262E1CAD156807FBCD90485591F8F BYTES=18457&#xD;
+MEASURED: expiry; all SQL fences executed; rollback assertions checked; isolated database discarded; shared source has no credential residue.</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0714363c-5c88-4a1f-8994-b627c6cdc067" testId="2b90bcbc-b696-da35-963e-a974ece2258f" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_PreviouslyBoundTerminalCapability_PreservesImmutableBindingAndDeniesAppend(expireFirst: False)" computerName="LEARNPC" duration="00:00:00.3895221" startTime="2026-09-12T18:15:07.9977438+07:00" endTime="2026-09-12T18:15:07.9977441+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0714363c-5c88-4a1f-8994-b627c6cdc067" />
+    <UnitTestResult executionId="c11c633a-6810-43ad-86bb-fa59433d70bd" testId="e0820f94-7a37-a1d0-39e5-099ba9406e0d" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_ElapsedSessionAndCapability_CommitsExpiryOnDeniedAndReplayDoesNotDuplicate(previouslyBound: False)" computerName="LEARNPC" duration="00:00:00.5031702" startTime="2026-09-12T18:15:11.8305074+07:00" endTime="2026-09-12T18:15:11.8305076+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c11c633a-6810-43ad-86bb-fa59433d70bd" />
+    <UnitTestResult executionId="fa4259c9-076b-4e7e-befe-4fb22cbf1433" testId="6170d1d2-6eaa-4b84-89b0-c507b71cbb0d" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1NormativeSqlProofTests.CompleteNormativeSqlFences_ExecuteAgainstCurrentMigration_AndLeaveNoSharedResidue(family: &quot;core_identity&quot;)" computerName="LEARNPC" duration="00:00:04.5317807" startTime="2026-09-12T18:15:24.6011635+07:00" endTime="2026-09-12T18:15:24.6011637+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fa4259c9-076b-4e7e-befe-4fb22cbf1433">
+      <Output>
+        <StdOut>CONSUMED tip_88c1_c6b_a1_postgresql16_mutation_suite.md SHA256=756E2420ED9E8C9480D4F469CC971BDFB847506B8733B602BA84A81663330E5B BYTES=16174&#xD;
+CONSUMED tip_88c1_c6b_a1_identity_audit_mutation_proof.md SHA256=678078E228A299EBA5EA44B0012A891A0A7B45D2FB9F7A95B07574019C08625E BYTES=22732&#xD;
+MEASURED: core_identity; all SQL fences executed; rollback assertions checked; isolated database discarded; shared source has no credential residue.</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="a93f3bc4-0efa-451f-a7a6-d98247e18d43" testId="195192fc-451c-172b-0421-25411453e64d" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_ConcurrentDifferentMetadata_ConvergesWithoutOverwritingWinner" computerName="LEARNPC" duration="00:00:00.3081400" startTime="2026-09-12T18:15:08.5512838+07:00" endTime="2026-09-12T18:15:08.5512840+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a93f3bc4-0efa-451f-a7a6-d98247e18d43" />
+    <UnitTestResult executionId="21c6ec76-465f-436d-871b-c412d86c4951" testId="2bb7dfd0-90e6-15b8-5b63-ce5c3a03f5e0" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_AuditWriter_HasOnlyExactColumnInsertGrant_OnlineA1RolesHaveNone" computerName="LEARNPC" duration="00:00:00.0257663" startTime="2026-09-12T18:15:15.7450181+07:00" endTime="2026-09-12T18:15:15.7450182+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="21c6ec76-465f-436d-871b-c412d86c4951" />
+    <UnitTestResult executionId="aef9a159-e79d-448f-81a1-5f411a56f5c5" testId="517a35a8-1458-26b1-840b-bb0d9c9a1453" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_PreA1CancelledSessionWithoutA1CancelOperation_PreservesHistoricalResult(expiredLiveCapability: True)" computerName="LEARNPC" duration="00:00:00.6420618" startTime="2026-09-12T18:15:14.4288977+07:00" endTime="2026-09-12T18:15:14.4288978+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aef9a159-e79d-448f-81a1-5f411a56f5c5" />
+    <UnitTestResult executionId="0def2d58-9a31-4fa6-8901-891bd09633a7" testId="da04e563-c7e4-9459-2175-ab9393c75f01" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_PreviouslyBoundTerminalCapability_PreservesImmutableBindingAndDeniesAppend(expireFirst: True)" computerName="LEARNPC" duration="00:00:01.0412790" startTime="2026-09-12T18:15:07.6081385+07:00" endTime="2026-09-12T18:15:07.6081388+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0def2d58-9a31-4fa6-8901-891bd09633a7" />
+    <UnitTestResult executionId="e71ef2f4-f827-49f7-815d-3c3d27a95882" testId="e207631c-6ac2-b29b-0e91-1f45f3b1c302" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt(state: &quot;Revoked&quot;, removeBinding: False)" computerName="LEARNPC" duration="00:00:00.2368748" startTime="2026-09-12T18:15:09.8774347+07:00" endTime="2026-09-12T18:15:09.8774349+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e71ef2f4-f827-49f7-815d-3c3d27a95882" />
+    <UnitTestResult executionId="3ca661bd-78c3-4b44-93f4-d7d8961d6251" testId="514d531c-2505-810d-60ea-51d9185adfe3" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_ElapsedSessionAndCapability_CommitsExpiryOnDeniedAndReplayDoesNotDuplicate(previouslyBound: True)" computerName="LEARNPC" duration="00:00:01.9559574" startTime="2026-09-12T18:15:13.7866943+07:00" endTime="2026-09-12T18:15:13.7866945+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3ca661bd-78c3-4b44-93f4-d7d8961d6251" />
+    <UnitTestResult executionId="ddfb803a-19b1-4606-8a7d-c34ee88b8441" testId="32cbb702-fe8f-8bef-db03-4efe13682b4e" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_InternalFingerprintCorruption_IsNotCallerConflictAndCreatesNoReplayRows" computerName="LEARNPC" duration="00:00:00.7214961" startTime="2026-09-12T18:15:11.0728812+07:00" endTime="2026-09-12T18:15:11.0728817+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ddfb803a-19b1-4606-8a7d-c34ee88b8441" />
+    <UnitTestResult executionId="7c58b6c6-f892-406c-8994-4132b4128da1" testId="6c603b60-82e7-fcb3-760e-a0b35fbe384a" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_SqlBoundary_CommitsBoundCancellation" computerName="LEARNPC" duration="00:00:00.2450686" startTime="2026-09-12T18:15:08.2429794+07:00" endTime="2026-09-12T18:15:08.2429797+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7c58b6c6-f892-406c-8994-4132b4128da1" />
+    <UnitTestResult executionId="ecf848e2-235f-4ad2-ab8c-7d1142febfb2" testId="d6e44185-48d4-84b3-748f-54e171351f1f" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt(state: &quot;Revoked&quot;, removeBinding: True)" computerName="LEARNPC" duration="00:00:00.1893414" startTime="2026-09-12T18:15:09.6404029+07:00" endTime="2026-09-12T18:15:09.6404032+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ecf848e2-235f-4ad2-ab8c-7d1142febfb2" />
+    <UnitTestResult executionId="4a499ac0-92d2-4127-a5df-a7acdc4291be" testId="00536cd2-a800-44d1-a041-b747ad3e93c7" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt(state: &quot;Expired&quot;, removeBinding: False)" computerName="LEARNPC" duration="00:00:00.4735192" startTime="2026-09-12T18:15:10.3510782+07:00" endTime="2026-09-12T18:15:10.3510785+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4a499ac0-92d2-4127-a5df-a7acdc4291be" />
+    <UnitTestResult executionId="d1c2efdb-146e-48de-9590-ee4183e09e5f" testId="2bdf4334-d73c-ef68-edbf-894792f2a2a0" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt(state: &quot;Expired&quot;, removeBinding: True)" computerName="LEARNPC" duration="00:00:00.8993974" startTime="2026-09-12T18:15:09.4508407+07:00" endTime="2026-09-12T18:15:09.4508410+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d1c2efdb-146e-48de-9590-ee4183e09e5f" />
+    <UnitTestResult executionId="65202bab-a7e2-4f2e-8636-151f5b16dd84" testId="9ba69566-37c1-c60a-5fb4-b7ce6de96c6a" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_NoHeader_InternalFingerprint_ExactReplay_ChangedMetadataAndHeadersKeepFirstWinner" computerName="LEARNPC" duration="00:00:03.1046198" startTime="2026-09-12T18:15:06.5659631+07:00" endTime="2026-09-12T18:15:06.5659754+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="65202bab-a7e2-4f2e-8636-151f5b16dd84" />
+    <UnitTestResult executionId="b4e3839f-4e7e-45de-9478-b048491e749a" testId="43990ddc-5193-1f1d-a25a-22fadf93f92b" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_BindCancelRace_SessionAndCapabilityTerminalizeAtomically" computerName="LEARNPC" duration="00:00:00.2541221" startTime="2026-09-12T18:15:11.3271500+07:00" endTime="2026-09-12T18:15:11.3271502+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b4e3839f-4e7e-45de-9478-b048491e749a" />
+    <UnitTestResult executionId="e05ebffa-83aa-47d7-9c48-7ee37bec9094" testId="056b24cf-c584-5274-e8a9-d4fbb82b8439" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1NormativeSqlProofTests.CompleteNormativeSqlFences_ExecuteAgainstCurrentMigration_AndLeaveNoSharedResidue(family: &quot;runtime&quot;)" computerName="LEARNPC" duration="00:00:06.5302926" startTime="2026-09-12T18:15:31.1315041+07:00" endTime="2026-09-12T18:15:31.1315041+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e05ebffa-83aa-47d7-9c48-7ee37bec9094">
+      <Output>
+        <StdOut>CONSUMED tip_88c1_c6b_a1_postgresql16_runtime_proof_companion.md SHA256=04A86A6C4F1C2002BAFDCA73CAE1CDF3ADE4BB546D23C14759D387015220BACE BYTES=16827&#xD;
+MEASURED: runtime; all SQL fences executed; rollback assertions checked; isolated database discarded; shared source has no credential residue.</StdOut>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="164357f5-5daf-4024-942b-0bd8ce4da865" testId="fcdd666d-86a9-6be2-6b97-3c5efedef3a8" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_PreA1CancelledSessionWithoutA1CancelOperation_PreservesHistoricalResult(expiredLiveCapability: False)" computerName="LEARNPC" duration="00:00:00.5734522" startTime="2026-09-12T18:15:15.0025218+07:00" endTime="2026-09-12T18:15:15.0025221+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="164357f5-5daf-4024-942b-0bd8ce4da865" />
+    <UnitTestResult executionId="bba10d70-8e56-401b-b8dd-3d4e68e58afa" testId="5b93c9b3-97eb-f85d-e97e-8d0b2573b80a" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_CrossClientCannotCancelOrReplay_NoCancelHistoryFromDeniedActor" computerName="LEARNPC" duration="00:00:00.7163045" startTime="2026-09-12T18:15:15.7190559+07:00" endTime="2026-09-12T18:15:15.7190561+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bba10d70-8e56-401b-b8dd-3d4e68e58afa" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt(state: &quot;Expired&quot;, removeBinding: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2bdf4334-d73c-ef68-edbf-894792f2a2a0">
+      <Execution id="d1c2efdb-146e-48de-9590-ee4183e09e5f" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt(state: &quot;Revoked&quot;, removeBinding: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d6e44185-48d4-84b3-748f-54e171351f1f">
+      <Execution id="ecf848e2-235f-4ad2-ab8c-7d1142febfb2" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_PreA1CancelledSessionWithoutA1CancelOperation_PreservesHistoricalResult(expiredLiveCapability: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="fcdd666d-86a9-6be2-6b97-3c5efedef3a8">
+      <Execution id="164357f5-5daf-4024-942b-0bd8ce4da865" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_PreA1CancelledSessionWithoutA1CancelOperation_PreservesHistoricalResult" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_CrossClientCannotCancelOrReplay_NoCancelHistoryFromDeniedActor" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5b93c9b3-97eb-f85d-e97e-8d0b2573b80a">
+      <Execution id="bba10d70-8e56-401b-b8dd-3d4e68e58afa" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_CrossClientCannotCancelOrReplay_NoCancelHistoryFromDeniedActor" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1NormativeSqlProofTests.CompleteNormativeSqlFences_ExecuteAgainstCurrentMigration_AndLeaveNoSharedResidue(family: &quot;runtime&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="056b24cf-c584-5274-e8a9-d4fbb82b8439">
+      <Execution id="e05ebffa-83aa-47d7-9c48-7ee37bec9094" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1NormativeSqlProofTests" name="CompleteNormativeSqlFences_ExecuteAgainstCurrentMigration_AndLeaveNoSharedResidue" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt(state: &quot;Expired&quot;, removeBinding: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="00536cd2-a800-44d1-a041-b747ad3e93c7">
+      <Execution id="4a499ac0-92d2-4127-a5df-a7acdc4291be" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_AuditWriter_HasOnlyExactColumnInsertGrant_OnlineA1RolesHaveNone" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2bb7dfd0-90e6-15b8-5b63-ce5c3a03f5e0">
+      <Execution id="21c6ec76-465f-436d-871b-c412d86c4951" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_AuditWriter_HasOnlyExactColumnInsertGrant_OnlineA1RolesHaveNone" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_PreviouslyBoundTerminalCapability_PreservesImmutableBindingAndDeniesAppend(expireFirst: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="da04e563-c7e4-9459-2175-ab9393c75f01">
+      <Execution id="0def2d58-9a31-4fa6-8901-891bd09633a7" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_PreviouslyBoundTerminalCapability_PreservesImmutableBindingAndDeniesAppend" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_InternalFingerprintCorruption_IsNotCallerConflictAndCreatesNoReplayRows" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="32cbb702-fe8f-8bef-db03-4efe13682b4e">
+      <Execution id="ddfb803a-19b1-4606-8a7d-c34ee88b8441" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_InternalFingerprintCorruption_IsNotCallerConflictAndCreatesNoReplayRows" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_PreA1CancelledSessionWithoutA1CancelOperation_PreservesHistoricalResult(expiredLiveCapability: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="517a35a8-1458-26b1-840b-bb0d9c9a1453">
+      <Execution id="aef9a159-e79d-448f-81a1-5f411a56f5c5" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_PreA1CancelledSessionWithoutA1CancelOperation_PreservesHistoricalResult" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt(state: &quot;Revoked&quot;, removeBinding: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="e207631c-6ac2-b29b-0e91-1f45f3b1c302">
+      <Execution id="e71ef2f4-f827-49f7-815d-3c3d27a95882" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_TerminalHistoricalGraph_RejectsMissingBindingOrMissingBoundAt" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_BindCancelRace_SessionAndCapabilityTerminalizeAtomically" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="43990ddc-5193-1f1d-a25a-22fadf93f92b">
+      <Execution id="b4e3839f-4e7e-45de-9478-b048491e749a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_BindCancelRace_SessionAndCapabilityTerminalizeAtomically" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_PreviouslyBoundTerminalCapability_PreservesImmutableBindingAndDeniesAppend(expireFirst: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2b90bcbc-b696-da35-963e-a974ece2258f">
+      <Execution id="0714363c-5c88-4a1f-8994-b627c6cdc067" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_PreviouslyBoundTerminalCapability_PreservesImmutableBindingAndDeniesAppend" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_ElapsedSessionAndCapability_CommitsExpiryOnDeniedAndReplayDoesNotDuplicate(previouslyBound: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="e0820f94-7a37-a1d0-39e5-099ba9406e0d">
+      <Execution id="c11c633a-6810-43ad-86bb-fa59433d70bd" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_ElapsedSessionAndCapability_CommitsExpiryOnDeniedAndReplayDoesNotDuplicate" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1NormativeSqlProofTests.CompleteNormativeSqlFences_ExecuteAgainstCurrentMigration_AndLeaveNoSharedResidue(family: &quot;core_identity&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6170d1d2-6eaa-4b84-89b0-c507b71cbb0d">
+      <Execution id="fa4259c9-076b-4e7e-befe-4fb22cbf1433" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1NormativeSqlProofTests" name="CompleteNormativeSqlFences_ExecuteAgainstCurrentMigration_AndLeaveNoSharedResidue" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_SqlBoundary_CommitsBoundCancellation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6c603b60-82e7-fcb3-760e-a0b35fbe384a">
+      <Execution id="7c58b6c6-f892-406c-8994-4132b4128da1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_SqlBoundary_CommitsBoundCancellation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_NoHeader_InternalFingerprint_ExactReplay_ChangedMetadataAndHeadersKeepFirstWinner" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9ba69566-37c1-c60a-5fb4-b7ce6de96c6a">
+      <Execution id="65202bab-a7e2-4f2e-8636-151f5b16dd84" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_NoHeader_InternalFingerprint_ExactReplay_ChangedMetadataAndHeadersKeepFirstWinner" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_ConcurrentDifferentMetadata_ConvergesWithoutOverwritingWinner" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="195192fc-451c-172b-0421-25411453e64d">
+      <Execution id="a93f3bc4-0efa-451f-a7a6-d98247e18d43" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_ConcurrentDifferentMetadata_ConvergesWithoutOverwritingWinner" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests.R26_ElapsedSessionAndCapability_CommitsExpiryOnDeniedAndReplayDoesNotDuplicate(previouslyBound: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="514d531c-2505-810d-60ea-51d9185adfe3">
+      <Execution id="3ca661bd-78c3-4b44-93f4-d7d8961d6251" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1CancellationHttpTests" name="R26_ElapsedSessionAndCapability_CommitsExpiryOnDeniedAndReplayDoesNotDuplicate" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1NormativeSqlProofTests.CompleteNormativeSqlFences_ExecuteAgainstCurrentMigration_AndLeaveNoSharedResidue(family: &quot;expiry&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f5980e0e-083b-db65-de2e-c3d7adf8ce88">
+      <Execution id="f28421e7-3255-490e-aa56-d7140affd585" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1NormativeSqlProofTests" name="CompleteNormativeSqlFences_ExecuteAgainstCurrentMigration_AndLeaveNoSharedResidue" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="f5980e0e-083b-db65-de2e-c3d7adf8ce88" executionId="f28421e7-3255-490e-aa56-d7140affd585" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2b90bcbc-b696-da35-963e-a974ece2258f" executionId="0714363c-5c88-4a1f-8994-b627c6cdc067" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e0820f94-7a37-a1d0-39e5-099ba9406e0d" executionId="c11c633a-6810-43ad-86bb-fa59433d70bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6170d1d2-6eaa-4b84-89b0-c507b71cbb0d" executionId="fa4259c9-076b-4e7e-befe-4fb22cbf1433" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="195192fc-451c-172b-0421-25411453e64d" executionId="a93f3bc4-0efa-451f-a7a6-d98247e18d43" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2bb7dfd0-90e6-15b8-5b63-ce5c3a03f5e0" executionId="21c6ec76-465f-436d-871b-c412d86c4951" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="517a35a8-1458-26b1-840b-bb0d9c9a1453" executionId="aef9a159-e79d-448f-81a1-5f411a56f5c5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="da04e563-c7e4-9459-2175-ab9393c75f01" executionId="0def2d58-9a31-4fa6-8901-891bd09633a7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e207631c-6ac2-b29b-0e91-1f45f3b1c302" executionId="e71ef2f4-f827-49f7-815d-3c3d27a95882" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="514d531c-2505-810d-60ea-51d9185adfe3" executionId="3ca661bd-78c3-4b44-93f4-d7d8961d6251" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="32cbb702-fe8f-8bef-db03-4efe13682b4e" executionId="ddfb803a-19b1-4606-8a7d-c34ee88b8441" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6c603b60-82e7-fcb3-760e-a0b35fbe384a" executionId="7c58b6c6-f892-406c-8994-4132b4128da1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d6e44185-48d4-84b3-748f-54e171351f1f" executionId="ecf848e2-235f-4ad2-ab8c-7d1142febfb2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="00536cd2-a800-44d1-a041-b747ad3e93c7" executionId="4a499ac0-92d2-4127-a5df-a7acdc4291be" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2bdf4334-d73c-ef68-edbf-894792f2a2a0" executionId="d1c2efdb-146e-48de-9590-ee4183e09e5f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9ba69566-37c1-c60a-5fb4-b7ce6de96c6a" executionId="65202bab-a7e2-4f2e-8636-151f5b16dd84" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="43990ddc-5193-1f1d-a25a-22fadf93f92b" executionId="b4e3839f-4e7e-45de-9478-b048491e749a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="056b24cf-c584-5274-e8a9-d4fbb82b8439" executionId="e05ebffa-83aa-47d7-9c48-7ee37bec9094" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fcdd666d-86a9-6be2-6b97-3c5efedef3a8" executionId="164357f5-5daf-4024-942b-0bd8ce4da865" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5b93c9b3-97eb-f85d-e97e-8d0b2573b80a" executionId="bba10d70-8e56-401b-b8dd-3d4e68e58afa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="20" executed="20" passed="20" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:01.65]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.82]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.82]   Starting:    TagEkyc.IntegrationTests&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (8ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (3ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (3ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (4ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (5ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (7ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (4ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (6ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (3ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (8ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (17ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (11ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (6ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (3ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (5ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (5ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (4ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (5ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (4ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (5ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (4ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (6ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (5ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?', @p3='?' (DbType = Guid), @p4='?', @p5='?', @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO tagekyc.audit_events ("Id", "ActorId", "ActorType", "ClientApplicationId", "CorrelationId", "EventPayloadHash", "EventPayloadRef", "EventType", "OccurredAt", "RequestId", "VerificationSessionId")&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (6ms) [Parameters=[client='?' (DbType = Guid), session='?' (DbType = Guid), reason='?', request='?', correlation='?', now='?' (DbType = DateTime), prefix='?', audit='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."ResultCode"&#xD;
+      FROM (&#xD;
+          SELECT result_code AS "ResultCode" FROM tagekyc.capture_runtime_cancel_session_with_capability(&#xD;
+              @client,@session,@reason,@request,@correlation,@now,@prefix,@audit)&#xD;
+      ) AS t&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_write_ExpectedSession_Id_0='?' (DbType = Guid), @__audit_ClientApplicationId_1='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__8__locals1_write_ExpectedSession_Id_0 AND v."ClientApplicationId" = @__audit_ClientApplicationId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (3ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?', @p3='?' (DbType = Guid), @p4='?', @p5='?', @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO tagekyc.audit_events ("Id", "ActorId", "ActorType", "ClientApplicationId", "CorrelationId", "EventPayloadHash", "EventPayloadRef", "EventType", "OccurredAt", "RequestId", "VerificationSessionId")&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10);&#xD;
+[xUnit.net 00:00:43.99]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

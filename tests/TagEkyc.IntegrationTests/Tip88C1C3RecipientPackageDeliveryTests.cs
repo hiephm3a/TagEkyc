@@ -1096,7 +1096,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
     [Fact]
     public async Task C325_apply_down_reapply_pending_model_and_snapshot_tripwires_are_clean()
     {
-        await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("c3_c325");
+        await using var isolated = await IsolatedMigrationPostgres.CreateAsync();
         await using var db = isolated.CreateDbContext(); var migrator = db.GetService<IMigrator>();
         await migrator.MigrateAsync("20260818120000_Tip88C1C2RecipientPackage");
         await migrator.MigrateAsync();
@@ -1141,7 +1141,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
     [Fact] public void C6A15_barrier_uses_post_lock_clock() { var s=Between(MigrationSource(),"raw_export_begin_recipient_package_delivery_stream","raw_export_record_recipient_package_delivery_interrupted"); Assert.True(s.IndexOf("FOR UPDATE",StringComparison.Ordinal)<s.IndexOf("now_utc:=pg_catalog.clock_timestamp()",StringComparison.Ordinal)); }
     [Fact] public void C6A16_profile_error_codes_remain_exact() { var s=File.ReadAllText(ProjectPath("src/TagEkyc.Infrastructure/Persistence/RawExportAuthoritySnapshotReadinessValidator.cs")); Assert.Contains("PROFILE_MISSING",s,StringComparison.Ordinal); Assert.Contains("PROFILE_INVALID",s,StringComparison.Ordinal); Assert.Contains("FIXTURE_ACTIVE",s,StringComparison.Ordinal); }
     [Fact] public void C6A17_no_recipient_management_surface_is_added() => Assert.DoesNotContain("recipient_management",C6AMigrationSource(),StringComparison.OrdinalIgnoreCase);
-    [Fact] public async Task C6A18_down_reapply_is_clean() { await using var isolated=await postgres.CreateDisposableCurrentDatabaseAsync("c6a18"); await using var db=isolated.CreateDbContext(); var m=db.GetService<IMigrator>(); await m.MigrateAsync("20260823120000_Tip88C1C5ManagedRecipientEnrollment"); await m.MigrateAsync(); await m.MigrateAsync("20260823120000_Tip88C1C5ManagedRecipientEnrollment"); await m.MigrateAsync(); Assert.False(db.Database.HasPendingModelChanges()); }
+    [Fact] public async Task C6A18_down_reapply_is_clean() { await using var isolated=await IsolatedMigrationPostgres.CreateAsync(); await using var db=isolated.CreateDbContext(); var m=db.GetService<IMigrator>(); await m.MigrateAsync("20260823120000_Tip88C1C5ManagedRecipientEnrollment"); await m.MigrateAsync(); await m.MigrateAsync("20260823120000_Tip88C1C5ManagedRecipientEnrollment"); await m.MigrateAsync(); Assert.False(db.Database.HasPendingModelChanges()); }
     [Fact] public async Task C6A19_wrong_principal_is_ineligible() { var f=await CreateDeliveryAsync(); var r=await f.Repository.BeginAsync(f.Package.RecipientId,f.DeliveryId,Guid.NewGuid(),Guid.NewGuid(),RandomNumberGenerator.GetBytes(32),default); Assert.Equal("Ineligible",r.Outcome); }
     [Fact] public void C6A20_decision_job_client_and_recipient_are_compared() { var s=C6AMigrationSource(); Assert.Contains("decision_row.\"ClientApplicationId\"",s,StringComparison.Ordinal); Assert.Contains("RecipientClientApplicationId",s,StringComparison.Ordinal); }
     [Fact] public async Task C6A21_fault_after_append_rolls_back_snapshot()
@@ -1353,7 +1353,7 @@ public sealed class Tip88C1C3RecipientPackageDeliveryTests(PostgresPersistenceFi
 
     private static WebApplicationFactory<Program> C3HostFactory(
         IReadOnlyDictionary<string, string?> configuration) =>
-        new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
+        new HistoricalPreparedWebApplicationFactory().WithWebHostBuilder(builder =>
         {
             builder.UseEnvironment("Testing");
             foreach (var setting in configuration)

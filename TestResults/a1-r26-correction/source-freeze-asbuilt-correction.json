@@ -1,0 +1,2506 @@
+{
+  "rows": [
+    {
+      "sha256": "1ECB55CE1DC0F36E581FAE4829902080E6403B6EFD5BB8DC31B6BEEF2935F5FD",
+      "path": "src/TagEkyc.Adapters/AdapterBoundaryPlaceholder.cs"
+    },
+    {
+      "sha256": "B525B714985D704A725A2AB1BF52E29FF355D801B19D12342F9383F389CF143A",
+      "path": "src/TagEkyc.Adapters/AssemblyMarker.cs"
+    },
+    {
+      "sha256": "720142E54FDAD29B50D1D9189779E9AEBDA09869A416BE570BB5F7F2598B41A6",
+      "path": "src/TagEkyc.Api/ApiKeyStoreProductionReadinessHostedService.cs"
+    },
+    {
+      "sha256": "551007017CF00B97DBA9A92C1380FC3B620100D37342A7E0EBFD4F1B99C6FF81",
+      "path": "src/TagEkyc.Api/AssemblyMarker.cs"
+    },
+    {
+      "sha256": "532F4196BE430DCDF877F263D6DB37890E399353DE835D579A63F893616B47A8",
+      "path": "src/TagEkyc.Api/CaptureAgentConfigurationEndpoints.cs"
+    },
+    {
+      "sha256": "831D6032AA4C25105924501D808F5CD3E67498D7F97CAC32157BC6747EBF8A88",
+      "path": "src/TagEkyc.Api/CaptureAgentConfigurationProvider.cs"
+    },
+    {
+      "sha256": "B6DF0DB351DD3428E6474E0C0DE05F832F6C840B90C79BA5660F6690E95557EB",
+      "path": "src/TagEkyc.Api/CaptureRuntimeEndpoints.cs"
+    },
+    {
+      "sha256": "8B9AF9351B9E8577ACF588AABE30004A25092DD284B4A425821B21C7CE70820B",
+      "path": "src/TagEkyc.Api/CaptureRuntimeExecutionEndpoints.cs"
+    },
+    {
+      "sha256": "E728E7052175A7AA53521B90C5F883325EF2DC41F7EC4130E5792A65D9E260D3",
+      "path": "src/TagEkyc.Api/CaptureRuntimeRotationEndpoints.cs"
+    },
+    {
+      "sha256": "EF545A53CC132BD4F5D3A7A2770BF11C93C01698B32BA7F98E6AE43FB406FE2E",
+      "path": "src/TagEkyc.Api/CaptureRuntimeRouteRegistration.cs"
+    },
+    {
+      "sha256": "75AB0E60EC340E4FC2024F9C5CC8DFED160AC2599D0411F88555DB907AB401D9",
+      "path": "src/TagEkyc.Api/EvidenceSignerStartupValidationHostedService.cs"
+    },
+    {
+      "sha256": "72A7E14658FFC4F3990D87CA590CD2A19084FC012C3D0813A2351A12750F9CF4",
+      "path": "src/TagEkyc.Api/IApiKeyAuthenticator.cs"
+    },
+    {
+      "sha256": "1BBB32988AB92BFB32C9027E49EE5E4C4EA7B6382395DA073D756574BB630287",
+      "path": "src/TagEkyc.Api/LocalDev/LocalDevApiKeyAuthenticator.cs"
+    },
+    {
+      "sha256": "60254F4CECC3A2DFF1A7230B70D0D0791DD927A6275997D5F0AA1C04AFBB71FA",
+      "path": "src/TagEkyc.Api/PostgresProductionReadinessHostedService.cs"
+    },
+    {
+      "sha256": "97A41D2C2EE3025C497C203E44ED8B2BD5758CD9EA962D600F65BA412C80C499",
+      "path": "src/TagEkyc.Api/Program.cs"
+    },
+    {
+      "sha256": "C37599AB9D4EE15F666FDBFBF1CCC082342F8D139D14FB37B9BCEA027D548570",
+      "path": "src/TagEkyc.Api/RawExportSourceIngressEndpoints.cs"
+    },
+    {
+      "sha256": "2C24F2148A65B5465CCB5DE3AF2B1B5ECDA78851AA1458F17E12495BCA29C9AD",
+      "path": "src/TagEkyc.Api/RawExportSourceIngressServiceRegistration.cs"
+    },
+    {
+      "sha256": "60208B2D8EC80D789109E6B00DB9676387B018B983A2D786DA561DB527A8FE41",
+      "path": "src/TagEkyc.Api/ReadinessEndpoint.cs"
+    },
+    {
+      "sha256": "8FE3F857BA3F0DE8FA00EA493D96F0719634C789E095DB8DF760357845E20539",
+      "path": "src/TagEkyc.Api/RecipientManagementEndpoints.cs"
+    },
+    {
+      "sha256": "1B802354FA7EFBA5F5FD395F7F1C00F1393E7EA11042A5D9EA3BE3F63C3ADA8B",
+      "path": "src/TagEkyc.Api/RecipientPackageDeliveryEndpoints.cs"
+    },
+    {
+      "sha256": "9093318AC2413C16636CF91D7891B3BA7D87957C31B46944D6C146A0666E3EA9",
+      "path": "src/TagEkyc.Api/RecipientPackageReferenceEndpoints.cs"
+    },
+    {
+      "sha256": "614FB697E93B7F0A2486A4C351FE1090A15264B8447ACCB0AACED470919C762B",
+      "path": "src/TagEkyc.Api/VerificationSessionEndpoints.cs"
+    },
+    {
+      "sha256": "D2D7F33D519D099F0830E027DBB1AE660E32A1452252270C1EE2E121FA2122BE",
+      "path": "src/TagEkyc.Application/AssemblyMarker.cs"
+    },
+    {
+      "sha256": "4F4971FAA92BCDC556B1F4329F7BC9AB7C53F6214FCAD2188ABF13DC5C346401",
+      "path": "src/TagEkyc.Application/AuthenticatedClientContext.cs"
+    },
+    {
+      "sha256": "B80D6C037CC01F18BF1004197E65FC23BB66FB5801509954A5FED1E32A6E12E5",
+      "path": "src/TagEkyc.Application/CaptureRuntime/CaptureRuntimeAppendApplicationService.cs"
+    },
+    {
+      "sha256": "487D16F9D64A2CB83B1B7BB7B8C9F78BD94C6B6BE4D2F9D138B0EE4B538286C5",
+      "path": "src/TagEkyc.Application/CaptureRuntime/CaptureRuntimeControlApplicationService.cs"
+    },
+    {
+      "sha256": "3BD10F17C38B4CD0AB572DC50599B926180FBDE5E347E7CE0107827EE2129FA1",
+      "path": "src/TagEkyc.Application/CaptureRuntime/CaptureRuntimeEnrollmentApplicationService.cs"
+    },
+    {
+      "sha256": "C512FB6DDE8D834E5D67CF68BC28519AB64C66B51A1A59F2FFBB430932D1A274",
+      "path": "src/TagEkyc.Application/CaptureRuntime/CaptureRuntimeExecutionApplicationService.cs"
+    },
+    {
+      "sha256": "7C81BF8E9A8DF7000E0C664835638FCAF4BBF6E72984AFC3E146C33FD28F52F2",
+      "path": "src/TagEkyc.Application/CaptureRuntime/CaptureRuntimeManagementApplicationService.cs"
+    },
+    {
+      "sha256": "5D3626D5D5FB272ABBBEC123C808C57894BD812F6F0241872D364F6B4D59F08D",
+      "path": "src/TagEkyc.Application/CaptureRuntime/CaptureRuntimeRotationApplicationService.cs"
+    },
+    {
+      "sha256": "8AA6A6AEA6F5517FE67B38D29D48F2596C1AC81630FF5F9E69812EE545186CDE",
+      "path": "src/TagEkyc.Application/CaptureRuntime/CaptureRuntimeStartup.cs"
+    },
+    {
+      "sha256": "145B3919D213617AB06D38769A334DB833618E0CA8ECF6BAE44F3EF4A4F207F8",
+      "path": "src/TagEkyc.Application/CaptureRuntime/CaptureRuntimeVerifierCryptography.cs"
+    },
+    {
+      "sha256": "1E0149299BD8549C6397A4308FC715A17DAEBC02B3062B3078BBF63D4F659FA3",
+      "path": "src/TagEkyc.Application/IApplicationBoundary.cs"
+    },
+    {
+      "sha256": "FD844EF3014A9F53994C60AD527E845983A14CBE6D0FFB2A9D7BA74CBA430359",
+      "path": "src/TagEkyc.Application/LocalDev/LocalDevApiKeyStore.cs"
+    },
+    {
+      "sha256": "C9E03F9383CA2991F589ECBA178E2E877231D96DBE7D5D58DE23BC56AC26E9F8",
+      "path": "src/TagEkyc.Application/LocalDev/LocalDevApiKeyValidator.cs"
+    },
+    {
+      "sha256": "C8B18A54FE21833FE8C489AA958153F1F0830C8B8ECAACEF3480AE5A92529CD7",
+      "path": "src/TagEkyc.Application/LocalDev/LocalDevInMemoryMetadataReferenceRegistry.cs"
+    },
+    {
+      "sha256": "B43E52F120A8B2E969242B29F587E955176B188705EF4D87CB1E470EBD967E45",
+      "path": "src/TagEkyc.Application/LocalDev/LocalDevInMemoryRepositories.cs"
+    },
+    {
+      "sha256": "8C19D7529343B8A27D6DAB73A0E7A0E19C27E97E33019CBB27B4D844B7608475",
+      "path": "src/TagEkyc.Application/LocalDev/LocalDevRuntimePolicySource.cs"
+    },
+    {
+      "sha256": "7769EF1CAD0AE1CCE228C66A1CF510BBBB8C937D0D925C7F1F46B68969586678",
+      "path": "src/TagEkyc.Application/Ports/ApiKeyStorePorts.cs"
+    },
+    {
+      "sha256": "5E847930317180B88104CFC7A503C924962E8B1A252B8C67CD460235FE3130BB",
+      "path": "src/TagEkyc.Application/Ports/ApplicationServicePorts.cs"
+    },
+    {
+      "sha256": "16C609A9506998C979997DA32B4B24476220A466ED51E8BF45492B7399ED7CED",
+      "path": "src/TagEkyc.Application/Ports/CaptureRuntimePorts.cs"
+    },
+    {
+      "sha256": "B9CD6B461609FCD75A8452DA1441862D70D9C7E74F9A6A6EA97F1D95CB17AB03",
+      "path": "src/TagEkyc.Application/Ports/DurableMetadataRepositoryPorts.cs"
+    },
+    {
+      "sha256": "8DBD3D53D0CC7C410F674AA84A3126C9249AC5AA9E3CD58D08440F3B91218566",
+      "path": "src/TagEkyc.Application/Ports/EvidenceSignerPorts.cs"
+    },
+    {
+      "sha256": "294E94CF778A716F9345624889FF0539A53FDF5FED0DFBE75E7384B734F79C35",
+      "path": "src/TagEkyc.Application/Ports/MetadataReferencePorts.cs"
+    },
+    {
+      "sha256": "F63CB0521220DEFE50B96E24C7F2F70387F83835DF50344277D5BC456EE286CA",
+      "path": "src/TagEkyc.Application/Ports/RawExportSourceIngressPorts.cs"
+    },
+    {
+      "sha256": "271AD6A23C63ACF6923D1D1C3E4246A21049202280610924335B885896F36555",
+      "path": "src/TagEkyc.Application/Ports/RecipientManagementPorts.cs"
+    },
+    {
+      "sha256": "E3F87534550807DB1A634FC5221A16B4091C328DBFA0266647EE9D3B4D8D2898",
+      "path": "src/TagEkyc.Application/Ports/RecipientPackageDeliveryPorts.cs"
+    },
+    {
+      "sha256": "2118C1F9AD538D69BEE7A346F556F7683B8F3790505A91E3D4CA22F4679077F6",
+      "path": "src/TagEkyc.Application/Ports/RecipientPackageReferencePorts.cs"
+    },
+    {
+      "sha256": "C7879B2ACB04F32E18C6DC6BF9DDEE10CEEBED23E39388CEF3536E1E1DEABFFE",
+      "path": "src/TagEkyc.Application/Ports/RepositoryPorts.cs"
+    },
+    {
+      "sha256": "BFCB70DE0B634B4D40C96136BD41FE1F3BEB678709053725D83C238042949DDC",
+      "path": "src/TagEkyc.Application/Ports/VerificationEnginePorts.cs"
+    },
+    {
+      "sha256": "C996F31D4ADBBE7F33225879807741622CB67DDDD8305E5498C8C6CCC8357195",
+      "path": "src/TagEkyc.Application/RawExport/RawExportSourceIngressApplicationService.cs"
+    },
+    {
+      "sha256": "A21742E8128DF7754A384449A3C3DFBC53B164152CF2B9A59BD7B7ED8F636792",
+      "path": "src/TagEkyc.Application/RawExport/RecipientManagementApplicationService.cs"
+    },
+    {
+      "sha256": "1A5EF013B848565C784443005A4C7601F345A9D58E4FE0F7545C6F30DCE82E15",
+      "path": "src/TagEkyc.Application/RawExport/RecipientPackageDeliveryApplicationService.cs"
+    },
+    {
+      "sha256": "B4689DE3F906F803B3580A7CB0D7920B9791ED9A20B7CC7BCB48897AD3FF74C9",
+      "path": "src/TagEkyc.Application/RawExport/RecipientPackageReferenceApplicationService.cs"
+    },
+    {
+      "sha256": "4213FF0DACC0A39D17A7079C5E4679530F4CB494F146008ED60C312EB8BBE9D3",
+      "path": "src/TagEkyc.Application/SessionBoundaryPlaceholder.cs"
+    },
+    {
+      "sha256": "0D0652B86B5A3F17FE72259A9BA1E3B7773E6109F5AD18B72DB07D63CB76E2B8",
+      "path": "src/TagEkyc.Application/VerificationSessions/ApplicationAuthorization.cs"
+    },
+    {
+      "sha256": "D9A91ABBE011BD5361D2D1A2793D1E5433A038E11B76B7DDF2C0435FFA71447B",
+      "path": "src/TagEkyc.Application/VerificationSessions/AuthorityNeutralVerificationEvidence.cs"
+    },
+    {
+      "sha256": "D2F33D08FD714A16FD7098A41AB8600837BE2E7E0E0FE244E4F6EFB7A2921D22",
+      "path": "src/TagEkyc.Application/VerificationSessions/DecisionThresholdOptions.cs"
+    },
+    {
+      "sha256": "E9B09A5424868F71ECE257F109D4A1A3A1D6739B917255864DA0DC3102C231FD",
+      "path": "src/TagEkyc.Application/VerificationSessions/EvidenceCanonicalization.cs"
+    },
+    {
+      "sha256": "54DE389FD14087B813EB53DE06568A3F79AECEED9A55426B8A6F28E4740B8147",
+      "path": "src/TagEkyc.Application/VerificationSessions/EvidenceSelection.cs"
+    },
+    {
+      "sha256": "F0F166586A218E74429543190C4D4B78BEE7C74EE1D43275D62365801FA7E539",
+      "path": "src/TagEkyc.Application/VerificationSessions/LocalDevClientPolicy.cs"
+    },
+    {
+      "sha256": "F1E809FE69DB344F3FEB8FB44B7E1C7FB9590745EC1BBDFD9163C0D6FCB07EAA",
+      "path": "src/TagEkyc.Application/VerificationSessions/SessionOperationResult.cs"
+    },
+    {
+      "sha256": "8FE4F34C87AE73DC5ED9C73424785ED3C1860A3993D9273DBFBD898840E9E76F",
+      "path": "src/TagEkyc.Application/VerificationSessions/VerificationCompletionApplicationService.cs"
+    },
+    {
+      "sha256": "9313155659C4E4F1E90E327878384FCD8F1F89456298DE75F2E79029AD99AF8C",
+      "path": "src/TagEkyc.Application/VerificationSessions/VerificationEvidenceApplicationService.cs"
+    },
+    {
+      "sha256": "022B98D4875C4225D7AA69E85C79BA861D8C1097DBFE26B041CDD12BC1FFC2FB",
+      "path": "src/TagEkyc.Application/VerificationSessions/VerificationSessionApplicationService.cs"
+    },
+    {
+      "sha256": "956A2105A8C9CAFB0AF3DBA17CEC90E57335043406B5399D09644E5600CEEE78",
+      "path": "src/TagEkyc.Contracts/AssemblyMarker.cs"
+    },
+    {
+      "sha256": "1FA7E3EAA7BE25673340731B7E9FD400D667C1AD27FC113BDD8685F64F38E2E0",
+      "path": "src/TagEkyc.Contracts/BusinessConsumer/BusinessConsumerContracts.cs"
+    },
+    {
+      "sha256": "36EDA8B3CCEBCD3EB8A345B6BF516F441BBE026D88FFF0113D28AE9C153B09E4",
+      "path": "src/TagEkyc.Contracts/CaptureAgent/CaptureAgentContracts.cs"
+    },
+    {
+      "sha256": "8C6C99AE5AFD1AC1F1661B7DAE9FDC99D62BCF714C492242F8C677F9CBA41E57",
+      "path": "src/TagEkyc.Contracts/CaptureRuntime/CaptureRuntimeAuthenticationContracts.cs"
+    },
+    {
+      "sha256": "552159353A8AD877C6E006A541CC5EDFF80E5ABF77BAEA1C9E06633137AB624E",
+      "path": "src/TagEkyc.Contracts/CaptureRuntime/CaptureRuntimeControlContracts.cs"
+    },
+    {
+      "sha256": "249EFD66768F216D1848562D6A21EE06D786136A1693C1441607FE411A9D3135",
+      "path": "src/TagEkyc.Contracts/CaptureRuntime/CaptureRuntimeEnrollmentContracts.cs"
+    },
+    {
+      "sha256": "C52CCB3DB8E523817271F42ACFE53DD94300D0C33FC61246B7932B460D1A1CC0",
+      "path": "src/TagEkyc.Contracts/CaptureRuntime/CaptureRuntimeExecutionContracts.cs"
+    },
+    {
+      "sha256": "BA3CD94888CE59E6A65483CE93233FD40ACEF93980713CF1F10D7FC21586EFFE",
+      "path": "src/TagEkyc.Contracts/CaptureRuntime/CaptureRuntimeManagementContracts.cs"
+    },
+    {
+      "sha256": "13844C7B37D41555E38ADE5DEE0C7EBAA1A7FB5D4EC693EC4C27909B670F00B7",
+      "path": "src/TagEkyc.Contracts/Common/ContractEnums.cs"
+    },
+    {
+      "sha256": "F468DB2C1CD241224B2F74C04D4A94128E33698E833C41A52F6B7D5E0A9AEB4B",
+      "path": "src/TagEkyc.Contracts/InternalAudit/Manifest/ManifestContracts.cs"
+    },
+    {
+      "sha256": "32F225939341B11163938FEB32DD2C5E55CBFC9C5A68DCD6CE1BC68343DF6D97",
+      "path": "src/TagEkyc.Contracts/RawExport/AttemptAeadOperationContracts.cs"
+    },
+    {
+      "sha256": "3C22757A976C2093902D8FB12399A597B7921BD430A97EF949A2A222AAF1FEC4",
+      "path": "src/TagEkyc.Contracts/RawExport/AttemptKeyContracts.cs"
+    },
+    {
+      "sha256": "BE6E2B19774ED713A2B11FE4577DBF854671067F3E7C61A46EB037ED4F262665",
+      "path": "src/TagEkyc.Contracts/RawExport/AttemptKeyReservationContracts.cs"
+    },
+    {
+      "sha256": "AFF21204DC6CEE0245511EEAABB1F96042B242C184283D3536F17A27D22676B8",
+      "path": "src/TagEkyc.Contracts/RawExport/ContentCommitmentContracts.cs"
+    },
+    {
+      "sha256": "169207F925066342BDD938347F88AE5CD7E6DA1FD5B9ED5B4FD5CBB7598C34AB",
+      "path": "src/TagEkyc.Contracts/RawExport/RawExportAssemblyContracts.cs"
+    },
+    {
+      "sha256": "E7F96A3151056D78DDF00FBED3BE6AB4EBECB13318F3C4E3C6DCC89C68E082D0",
+      "path": "src/TagEkyc.Contracts/RawExport/RawExportSourceClaimComparisonContracts.cs"
+    },
+    {
+      "sha256": "4F86BAFC3FE4AD21435B8ACFBE4AA6102DC2CF78615DD3CB83D0696462171D66",
+      "path": "src/TagEkyc.Contracts/RawExport/RawExportSourceIngressContracts.cs"
+    },
+    {
+      "sha256": "34AE01EBD0BD813FF60F8D878F702D0023CA064AD754BB014E04189028912732",
+      "path": "src/TagEkyc.Contracts/RawExport/RecipientManagementContracts.cs"
+    },
+    {
+      "sha256": "175EEB3571C376CCE713E9E41590813E317EAF3F7C6E9E07F8835DD76413F5F3",
+      "path": "src/TagEkyc.Contracts/RawExport/RecipientPackageDeliveryContracts.cs"
+    },
+    {
+      "sha256": "9B329F69E0896C7242C6BE63D688D48CDD8CD8FB9F964F34E1D87FA462249582",
+      "path": "src/TagEkyc.Contracts/RawExport/RecipientPackageReferenceContracts.cs"
+    },
+    {
+      "sha256": "2CDBAC507CA7E8906B8168D995730574F8310D66BC950DE45A404506C55AEA47",
+      "path": "src/TagEkyc.Contracts/RawExport/SubjectRefTokenContracts.cs"
+    },
+    {
+      "sha256": "3A39BB303F88D8A10CA2487E740F441246B2AED4AA3BF24BF919EC0CB0B4F729",
+      "path": "src/TagEkyc.Contracts/SessionStatusPlaceholder.cs"
+    },
+    {
+      "sha256": "AB435A64266FA9B9E85B5CB31E030E31992516D007E6D50BFAF44899F48C430B",
+      "path": "src/TagEkyc.Contracts/SignFlowProfile/SignFlowProfileContracts.cs"
+    },
+    {
+      "sha256": "923CDF0E0204EFFC1A44FC9CC906DDB5D12A8BBD9290A76FD760906B93EC9012",
+      "path": "src/TagEkyc.Contracts/TrustedAdapter/TrustedAdapterContracts.cs"
+    },
+    {
+      "sha256": "B405A6DDD6CAAFE9D00444265CAEA17425C4488A57F6B58A59D80BF00E7A6164",
+      "path": "src/TagEkyc.Domain/ActorReference.cs"
+    },
+    {
+      "sha256": "4A3C08FA4C71EA0D9474E0B152010B7AEDD2DE27F69C1E18D8ADE211BB333732",
+      "path": "src/TagEkyc.Domain/ApiKeyMetadata.cs"
+    },
+    {
+      "sha256": "BE9272D0C381CF90D4399B74BAE1A13EB263B7578750A180804EC6F572AA398A",
+      "path": "src/TagEkyc.Domain/ApiKeyStatus.cs"
+    },
+    {
+      "sha256": "A5DCFE1F6B8EDF16DFDAE283C3FC0DCDA7A0119212AD94B1CDA95C1163CA6E9F",
+      "path": "src/TagEkyc.Domain/AssemblyMarker.cs"
+    },
+    {
+      "sha256": "5C5A870385F6FA53CAA9DBBA73D1A95D232E930F42A73B1C5BAD8B333FBC1C7D",
+      "path": "src/TagEkyc.Domain/AssuranceLevel.cs"
+    },
+    {
+      "sha256": "58DEB07DC5028BFDB4FE7F08AEB8454E93D6A95BD6C09965327F14B5FA6929F0",
+      "path": "src/TagEkyc.Domain/AuditEvent.cs"
+    },
+    {
+      "sha256": "E3494BFF82B6E524663A315FBDAE4CFDA201A1808A71C4AD7273D0A3992A6E97",
+      "path": "src/TagEkyc.Domain/CaptureArtifact.cs"
+    },
+    {
+      "sha256": "85C76B2985974A1F79DA6383B1CD798F912785994D570F886506F5486E70787B",
+      "path": "src/TagEkyc.Domain/CaptureArtifactQualityState.cs"
+    },
+    {
+      "sha256": "8AD8E68832B4FCCC1AC43FB1C8571381EBE2FEB08F4FC4024B2308B8CAB24AE1",
+      "path": "src/TagEkyc.Domain/CaptureArtifactType.cs"
+    },
+    {
+      "sha256": "848B51059CE942BE8E189F4D1F88938ED7BF662304F5EBB774F579A8EF4A2C9B",
+      "path": "src/TagEkyc.Domain/CaptureSource.cs"
+    },
+    {
+      "sha256": "9E530FC1F4C03D13C52712049CF4167A393971C99D4B2EEC2E3734B270056F46",
+      "path": "src/TagEkyc.Domain/ClientApplication.cs"
+    },
+    {
+      "sha256": "A3ACEDC2D0CE629A708662FACD6BFFA69A5E939BDEBCC3994265623DED71F9AF",
+      "path": "src/TagEkyc.Domain/ClientApplicationStatus.cs"
+    },
+    {
+      "sha256": "5960A94ABF86B854D145BFA23C663662C6DF15A6E9D2CC3832E7938CB7C559C0",
+      "path": "src/TagEkyc.Domain/CredentialRef.cs"
+    },
+    {
+      "sha256": "99A954FFC69B8022E90ED5765FB658B5DD042AEDEBDD49C6F9E1FBF4A413F7D8",
+      "path": "src/TagEkyc.Domain/CredentialStatus.cs"
+    },
+    {
+      "sha256": "84B872037AFB51921DDB61688E26EA01764FF6E1DEF7540A8290F700160AD9F7",
+      "path": "src/TagEkyc.Domain/CredentialType.cs"
+    },
+    {
+      "sha256": "B122557459D976A6915BBAAC84B990B17276AFAA6FE8484A82699715FBA2997B",
+      "path": "src/TagEkyc.Domain/DataBoundaryMetadata.cs"
+    },
+    {
+      "sha256": "E68C325221A5425B9AAD7C3922219A8387034DA9AC3E8CDC9F1A65487F63600D",
+      "path": "src/TagEkyc.Domain/DecisionReproducibilityBoundary.cs"
+    },
+    {
+      "sha256": "61819DF8AB82DD5F1BAFB901BC629F204754E87C4D3CF6DC44FBA72192D69507",
+      "path": "src/TagEkyc.Domain/DeletionEligibility.cs"
+    },
+    {
+      "sha256": "FE68BEABFE0110D0B1FA8496D33EC728BA39ACC791A817466402D5FDBB21E6BF",
+      "path": "src/TagEkyc.Domain/EvidencePackage.cs"
+    },
+    {
+      "sha256": "AD5E43FA31C7F583E7DFD65F1B01A7A02B174C026AD59A89A9857184DB7C816C",
+      "path": "src/TagEkyc.Domain/EvidenceResult.cs"
+    },
+    {
+      "sha256": "183203D91E4E080E086478788CA0B89E9AD6C160533C3EAE2E4E66356FC72735",
+      "path": "src/TagEkyc.Domain/EvidenceResultType.cs"
+    },
+    {
+      "sha256": "9D1F3D1F40253A3A033CD12E9ECDE8BC682C8D98A982F1021B40CFF452C54451",
+      "path": "src/TagEkyc.Domain/EvidenceSignatureEnvelope.cs"
+    },
+    {
+      "sha256": "80FD478D835CCBB5E4651DB00FF44C3A7C10448A62D19053C6EC5F3161B054F8",
+      "path": "src/TagEkyc.Domain/HashRef.cs"
+    },
+    {
+      "sha256": "7BCA97508ED72FD15D2C46C59C198D438E0DB958A2140C307F595AB008891A1B",
+      "path": "src/TagEkyc.Domain/LegalHoldStatus.cs"
+    },
+    {
+      "sha256": "DEAFF78C224392DC9BDFF618C5CBA1873103601875FFDA9EF8DC9BAECDCEF29D",
+      "path": "src/TagEkyc.Domain/MetadataReferenceId.cs"
+    },
+    {
+      "sha256": "19C2B26F41096DED7F909531E116F137AEAC2562E46E2AA9D129D6770AA57FCA",
+      "path": "src/TagEkyc.Domain/MetadataReferenceState.cs"
+    },
+    {
+      "sha256": "2AFB27F1F6C26BC6EB4304D86674228CA840C274930EDBC6D615BA7A545BF35E",
+      "path": "src/TagEkyc.Domain/PolicySnapshotId.cs"
+    },
+    {
+      "sha256": "B6837A76A59EB4661D3458D6C76EEBFF88C57E0F7303507C7CFD944B8FDEC382",
+      "path": "src/TagEkyc.Domain/PrincipalId.cs"
+    },
+    {
+      "sha256": "B5FC8D18545956B006908CE1E09C203906538E5B0DCB8020717297FFAB513AA9",
+      "path": "src/TagEkyc.Domain/PurgeBlockReason.cs"
+    },
+    {
+      "sha256": "20038E5F7D3219B7DDD9A96F7DA8520B7AABD59E2AE42ED929FD6CD042620894",
+      "path": "src/TagEkyc.Domain/RawExportAuthorization.cs"
+    },
+    {
+      "sha256": "55F19154BFAA4071FE1FE6C63945C93CB9FCD9AE9048321F71BD6573A8E6EE25",
+      "path": "src/TagEkyc.Domain/RawExportControlPlane.cs"
+    },
+    {
+      "sha256": "F4B7CC15084009F45AD041FE690B7151371500E85C5DDEB11ED394C4500C9C2F",
+      "path": "src/TagEkyc.Domain/RawExportJob.cs"
+    },
+    {
+      "sha256": "E6854EC635F53260569E2E560A11984FEC9CA60135DFBB581BD677C7062E8DC8",
+      "path": "src/TagEkyc.Domain/RawExportPolicyCatalog.cs"
+    },
+    {
+      "sha256": "AA8B44162FC287EEAF668819A81E13773DD5D046F772EB169FBDCD57B73CCEA7",
+      "path": "src/TagEkyc.Domain/RawExportSubjectConsent.cs"
+    },
+    {
+      "sha256": "8ED2939A8D281135903FE5C19F93C2EE7D9FAEA831CFDCA31078A963CCBB5E7F",
+      "path": "src/TagEkyc.Domain/RequiredCheck.cs"
+    },
+    {
+      "sha256": "01BA6367BCEFB2763ED0701DF672F79CD9F75B9145E39D6791FEF4347ADEF077",
+      "path": "src/TagEkyc.Domain/RequiredCheckPolicy.cs"
+    },
+    {
+      "sha256": "AC337A2998FC878FBEADC00C323EDCD772E78E7AA279A1DE020DDB5E0170F414",
+      "path": "src/TagEkyc.Domain/RequiredCheckSetPolicyIdentity.cs"
+    },
+    {
+      "sha256": "C92E7DB8662619859382C7953B30C4BBFD74230C7DAFBFCFA0864D3271F489B8",
+      "path": "src/TagEkyc.Domain/RequiredCheckType.cs"
+    },
+    {
+      "sha256": "A0A18D52D01B62DA9981D79D2F36FD8C0EE0BB05FABF5EDAC219D5C70932CFBC",
+      "path": "src/TagEkyc.Domain/RetentionClass.cs"
+    },
+    {
+      "sha256": "9BA9B9931F67400DE3212DAA4B47741FCEF2EA29C23A1AAE51F58DE44C242133",
+      "path": "src/TagEkyc.Domain/ScopeGrantSetId.cs"
+    },
+    {
+      "sha256": "75757D264CCAB20A9F6CE904186CDA239116000311693EDF767C5B9DF0E47D0C",
+      "path": "src/TagEkyc.Domain/SignaturePlaceholderStatus.cs"
+    },
+    {
+      "sha256": "16B005C90B1337D55DB5A9D06A187E36722CCD5CE0A5BD74D087052BD05374B5",
+      "path": "src/TagEkyc.Domain/VaultRef.cs"
+    },
+    {
+      "sha256": "3EEF880A3FD79B893F31BAB9DEFD00D521FC5F3A8D7D70F32669BE8BEC2688AA",
+      "path": "src/TagEkyc.Domain/VerificationDecision.cs"
+    },
+    {
+      "sha256": "63D3D1CD65E266E182DB2D6D8EB8945F7B706062426C3BB12955231DE3FEEB92",
+      "path": "src/TagEkyc.Domain/VerificationProfile.cs"
+    },
+    {
+      "sha256": "1694019CE9AA9AC342F41FF98DA67A692BE24E9D7C77A184258DE25C88BD0AA0",
+      "path": "src/TagEkyc.Domain/VerificationResult.cs"
+    },
+    {
+      "sha256": "7EBC063A92B8C42E0C9E4DAF311962E8030A39089060BC938B8C7DCBA8B63B90",
+      "path": "src/TagEkyc.Domain/VerificationSession.cs"
+    },
+    {
+      "sha256": "5E7C88C48AE7F9FAEDDBEABFF5B97C0FEA2A0400980E26BBF088724666335AD5",
+      "path": "src/TagEkyc.Domain/VerificationSessionState.cs"
+    },
+    {
+      "sha256": "D7541EEB81BE25DF02B51D545D461D88F4B9FED38479A290E9C9789CED446531",
+      "path": "src/TagEkyc.Infrastructure/AssemblyMarker.cs"
+    },
+    {
+      "sha256": "4F1F1A90CA66279A0FCF63C0B90CDD4260BF42AA79A3FCC84AF7A44B5D555D6A",
+      "path": "src/TagEkyc.Infrastructure/Auth/ApiKeyHasher.cs"
+    },
+    {
+      "sha256": "540A810A10A9099BCD333243BC056228B5AE6AFA95773D87C07FBDFD3552A7D1",
+      "path": "src/TagEkyc.Infrastructure/Auth/ApiKeyProvisioningService.cs"
+    },
+    {
+      "sha256": "82E4EE0B48A8DF67AC17C701CB4A99587F7229B55268F2FB24280533BCD453B0",
+      "path": "src/TagEkyc.Infrastructure/Auth/ApiKeyStoreOptions.cs"
+    },
+    {
+      "sha256": "3D6C1DBA12B9950AAAC42061A38F5526DB89EDA56767AB1F43AB1AEA6894DD4E",
+      "path": "src/TagEkyc.Infrastructure/Auth/ApiKeyStorePepperResolver.cs"
+    },
+    {
+      "sha256": "8B329645FC942EF543E70248D63391926414394954AF0931517AC87ECF608AD7",
+      "path": "src/TagEkyc.Infrastructure/Auth/ApiKeyStoreProductionReadinessValidator.cs"
+    },
+    {
+      "sha256": "FDA563DCCD7414B9704A168660FA1887E1309CC175D1AE384E037D6128EC18AC",
+      "path": "src/TagEkyc.Infrastructure/Auth/CaptureRuntimeRequestAuthenticator.cs"
+    },
+    {
+      "sha256": "B83B4E0F1BFAC2FA39EA6B638614FD4C51E26E5B8B3EEDCBAFACE402287B11B2",
+      "path": "src/TagEkyc.Infrastructure/Auth/ManagedApiKeyParser.cs"
+    },
+    {
+      "sha256": "B0B2BDCF9DE23914BB7027519C1AC40877A788432BAD6B22B97110ED16086228",
+      "path": "src/TagEkyc.Infrastructure/Auth/PlatformOperatorCredentialAuthenticator.cs"
+    },
+    {
+      "sha256": "C5CCFDC3EAE030392EB239218991069ADA64CC3A40CFDF8777D049FA30FFEC6A",
+      "path": "src/TagEkyc.Infrastructure/Auth/PostgresHashedApiKeyStore.cs"
+    },
+    {
+      "sha256": "6966534F2EF435AB1906A6EFFD886AAD3C65746BC3585E9EC33D731CA6313CCF",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeAppendAuthority.cs"
+    },
+    {
+      "sha256": "88C2B5C0273625CD09A022EA1E36F692B63CEB6FC07FC61F9B80453E103063E1",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeControlPersistenceBoundary.cs"
+    },
+    {
+      "sha256": "AAC77AA443B557F66F7477A186C1331EA81A4260779A6F3917C81D0AFE617C68",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeDatabaseOptions.cs"
+    },
+    {
+      "sha256": "DDD7854690C659A5F13849B53A6BCAEE70B0A1D9903AA0CDAC9514C8BE800B2B",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeDatabaseOptionsValidator.cs"
+    },
+    {
+      "sha256": "750053A6086AC03F628F898A68742F12B67C159738F3298A1559DB8DA74DA23A",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeDbContextFactory.cs"
+    },
+    {
+      "sha256": "105BED69F7B5B6D7B1ACEB7A4F7D07621B1904A825C99BF01CA906DAAA83CF44",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeEnrollmentPersistenceBoundary.cs"
+    },
+    {
+      "sha256": "390DB3CC36B74EF9C99007DD4ABAEE7DC003F29E84EF0EE3F3AB2A4282097540",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeExecutionPersistenceBoundary.cs"
+    },
+    {
+      "sha256": "DA54E033C7FF64F436854807F029AF423F242BBC6304E6BB51451C6C538F1E5D",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeManagementPersistenceBoundary.cs"
+    },
+    {
+      "sha256": "FFF8C40807641D12F5972F7D78B42066E9A622FEDBD482A764BE4CDFD356C6FB",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeOperatorDbContextFactory.cs"
+    },
+    {
+      "sha256": "5A928FC3144394BD22BEF67947C13A71F7C578E2F6B9FDC31E62D3662F4D3AB1",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeRotationPersistenceBoundary.cs"
+    },
+    {
+      "sha256": "0CAFDE749E33A596AEA01992410E5572B074F31B6029EC13FF856A81509293C3",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeStartupCatalogue.cs"
+    },
+    {
+      "sha256": "5CDD8716D55C2EB0C140AEAC8C658767217B96C7E2D8F5007B0996FEC3F69779",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeStartupDependencyReader.cs"
+    },
+    {
+      "sha256": "FE50BBD00ED11CF4816CE26F5741BCCBE933A4ACC25E741F1D3EAA3F4D056C6F",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeVerifierPepperOptions.cs"
+    },
+    {
+      "sha256": "697B47C3DCF5182F66C38AF8E2EAC60CAE57F0034CCDE875792E90551A219B28",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/CaptureRuntimeVerifierPepperProvider.cs"
+    },
+    {
+      "sha256": "AD4E9FC821F31609709A01EA2875C6B6E3203E8924D4DB5ACE228A819B582E46",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/ICaptureRuntimeDbContextFactory.cs"
+    },
+    {
+      "sha256": "97F79ED9D206705F4564D16080C9B6D7729F21CEA8A9B066C1B8F45A7A552E41",
+      "path": "src/TagEkyc.Infrastructure/CaptureRuntime/ICaptureRuntimeOperatorDbContextFactory.cs"
+    },
+    {
+      "sha256": "122D51BA84BE53E10C94F16A1FD26FC88E52AE7B950BC01FA2EBF7E20035A2F1",
+      "path": "src/TagEkyc.Infrastructure/InfrastructureBoundaryPlaceholder.cs"
+    },
+    {
+      "sha256": "3585D2FE6545FF0AF2884E3D2C87BB1FA103DDA1BB40CA574303A7117FBFD046",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/CaptureRuntimeEntityConfigurations.cs"
+    },
+    {
+      "sha256": "AD3980F8A37646714F68F38E39081A5B2445F406D700A137A2D47675D939D578",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportAssemblyIdentityConfig.cs"
+    },
+    {
+      "sha256": "E8D51EA2E12B6C224ED101A4B8AFC67E1B4E1F087C840A48E70FE2197460A9B1",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportAssemblyItemConfig.cs"
+    },
+    {
+      "sha256": "B1162C2CA23BD901277818495EA69A4A4307EBF140D66E4E20312C1389B42920",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportAssemblyPreparationDispositionConfig.cs"
+    },
+    {
+      "sha256": "3B878D38607455AB389535E1B76250FE1897D989374763E19CEF20E1BAEFF7E5",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportAttemptKeyPreparationEventConfig.cs"
+    },
+    {
+      "sha256": "150FB4F05D5F9FF96367B23CF9A0CE422EA62C4F92BEBE8788652A4C4FEB3C62",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportAttemptKeyReservationConfig.cs"
+    },
+    {
+      "sha256": "A3DF6F8E09AA914786B7DE44C9A025F6E6D18009C9F6D0F8C2BDC28421A6880E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportFixtureKekWrapJournalConfig.cs"
+    },
+    {
+      "sha256": "7D37723F5E6EBC88B99B5C93244D1DFB443A74FDADA63C786E189F2C5F1206E4",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportJobSourceBindingConfig.cs"
+    },
+    {
+      "sha256": "089D1738EEC0B03BD15B0E9069747138D7EE8C64C37BFCF94217D01F79A4CAA3",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportKeyProviderOperationConfig.cs"
+    },
+    {
+      "sha256": "5425FA87A4AE50D8A32375F4EC8CB2AE981DF576491FFCB5257E3BA82B4E31DD",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportManagedRecipientCredentialConfig.cs"
+    },
+    {
+      "sha256": "94EC0DDDCAA4829186668E5277D5ABDA0564A4CA4B180C86486A0ED87084A246",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportManagedRecipientIdentityConfig.cs"
+    },
+    {
+      "sha256": "C752420D9D53E0B78A33F4D2BD7327A215094655B6CD3BA4B48899FCE583C8E4",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportManagedRecipientPolicyConfig.cs"
+    },
+    {
+      "sha256": "755239A372D22621FC0FECF97B598DECCFDE3EFB1F410A9278FACD42421EFB3B",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportProvisionalObjectConfig.cs"
+    },
+    {
+      "sha256": "A4E5CF6B9E9D18F8D12F660825BA106D6D98A3BE31B87BB943A2C3C4B5347276",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportProvisionalObjectEventConfig.cs"
+    },
+    {
+      "sha256": "3438D183BD37EF3F5224FB1185B8333B4D547056C56C36CC4EE0AD01DE7C211B",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportRecipientKeyRegistrationConfig.cs"
+    },
+    {
+      "sha256": "2567E9E4FB3FC0388083FAA0D0B73D270C9B82BAAFBD8A31ECA4D5C14415D299",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportRecipientManagementEventConfig.cs"
+    },
+    {
+      "sha256": "10F943BDCD1CAAB31C120C4FCF6D3745F0253ED9F8628FCAE15FBD03351EA573",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportRecipientManagementOperationConfig.cs"
+    },
+    {
+      "sha256": "E5FF0CD36DE9CF090A56E6CE239A2E3FFBFEAF0776EBBB1BD7655CEBDBD3AECF",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportRecipientPackageDeliveryConfig.cs"
+    },
+    {
+      "sha256": "8F2C2A2F78220C846F2993EFE8D6A40EF7D6933B24FF4B428C7FDD630F91EA56",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportRecipientPackageDeliveryEventConfig.cs"
+    },
+    {
+      "sha256": "6562A5AEE48850C288FFD51A52A6813D409AC97A15F9C355A6BAB7884664EA48",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportRecipientPackageEventConfig.cs"
+    },
+    {
+      "sha256": "B21F031D492D4BED4F3D63F829B057AA213D4741F653A7476354BF19026212E9",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportRecipientPackagePreparationConfig.cs"
+    },
+    {
+      "sha256": "A170E5938DC553D7A3E7804955C575CDDD4F4681983517275A447FDC29A5A4A0",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportSourceCleanupItemConfig.cs"
+    },
+    {
+      "sha256": "A743C6F68A71E824CB2BD7C64992467790C37258A4DE38791DCFAE7054689EDA",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportSourcePublicationConfig.cs"
+    },
+    {
+      "sha256": "98F1A56093E65F38F643121690D39FA6F9BB8BE135B86DB1EC41B7B42B72CE9D",
+      "path": "src/TagEkyc.Infrastructure/Persistence/DomainRowMapper.cs"
+    },
+    {
+      "sha256": "0BE5058EA8D7799EB9AEDE419077FA328419F14CBC923490E96C4222C7E69D07",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfAppendBusinessTransaction.cs"
+    },
+    {
+      "sha256": "071480B63BB207934DD89CBDD8D791606FFF790B860171855E7BD7A9E20F0679",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfAppendIdempotencyBoundary.cs"
+    },
+    {
+      "sha256": "6CCDF8A2C395F1A38DA1A09729588B135288A72C7AF8B34798A2E618B0B1DB3C",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfAuditEventRepository.cs"
+    },
+    {
+      "sha256": "EDB9D711C6517644821C44D6411BE10F773FFB9CED448A57DD102F9DE7FA690A",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfCaptureArtifactRepository.cs"
+    },
+    {
+      "sha256": "B9485FAF88BC1AB01AB617C24A8C07DEAB870E0C8B189AFDD802BBBCEFE59E18",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfEvidenceManifestRepository.cs"
+    },
+    {
+      "sha256": "83272107E8EEB1EE0297747E2BC59B283042E25FB189264FA2B67C62DCF4BCC5",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfEvidencePackageRepository.cs"
+    },
+    {
+      "sha256": "E3167555B5A83BBB18A174C19A55F87D8B43182301BCB07D651F41D7F2A32334",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfEvidenceResultRepository.cs"
+    },
+    {
+      "sha256": "123A4AA3C0F644E2D51CAE14B086D9062DF2BC9DCFFD4932C3E251225C0C43D2",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfPersistenceFaultInjector.cs"
+    },
+    {
+      "sha256": "CB98CEA1F08E36B5B0A21903AF9A3D512D4B07A218A46041A0A9D369271D1444",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfRawExportAuthorizationProjectionReader.cs"
+    },
+    {
+      "sha256": "21B79DA50F586444061970C074157800488F1DCD0FEB4EE5DA5D4D7084DC2DC6",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfRawExportAuthorizationRepository.cs"
+    },
+    {
+      "sha256": "E243F8631915F54BCF9443D72042F6CAD27717AC1736FAA321F3DD8F5F69ECE2",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfRawExportControlPlaneRepository.cs"
+    },
+    {
+      "sha256": "61D04E177EF62C5FD72349DAC4B94D5DA749F4337FFE86978E3015761D1BE798",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfRawExportJobRepository.cs"
+    },
+    {
+      "sha256": "38036738F9882FDD10D7A0C6D75CAAFFF5991470E17E906C6BDC1513B56B86C6",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfRawExportPolicyRepository.cs"
+    },
+    {
+      "sha256": "EF5D0E625499359B4825C224AFDA685DBDBA6B3869742135F277974CD103D576",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfRawExportSubjectConsentRepository.cs"
+    },
+    {
+      "sha256": "555FFD86669CE20776D95CF856F017B40784E58987BF7FE71098DF41645EEF88",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfVerificationDecisionRepository.cs"
+    },
+    {
+      "sha256": "C68F5BDC55B65B1300795EB9617C17DE68133D047E344D9A3089463BE06A9525",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfVerificationFinalizationBoundary.cs"
+    },
+    {
+      "sha256": "3140D307C95502DA2000FF80B8B857D5D35D7E12C66F8DC3D41C7B669D772274",
+      "path": "src/TagEkyc.Infrastructure/Persistence/EfVerificationSessionRepository.cs"
+    },
+    {
+      "sha256": "5AED6CEDE08E305A4437E7CF6302A67606B6696463A2F272753E638A470FBC15",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/ApiKeyRow.cs"
+    },
+    {
+      "sha256": "AD3C0326F851B8F95CA1F6FF2C6C1EF03F5EE75CDB915A7C27215BB4087E3BD8",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/AppendIdempotencyRecordRow.cs"
+    },
+    {
+      "sha256": "0756DD9F066BD74B85525B1D3D0D9492DEDFB8FDF0DBE732C6539953DCEDE45A",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/AuditEventRow.cs"
+    },
+    {
+      "sha256": "CDA3DE57ACB0743FC62CEC6332D2505915240D71C252B82B96480274CCEC441E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/CaptureArtifactRow.cs"
+    },
+    {
+      "sha256": "B6B58DBA78677B683177036D22547907D8894803BB7D1C12FE5CE7A065382E41",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/CaptureRuntimeEntities.cs"
+    },
+    {
+      "sha256": "40A058A06E65AAC4E93795324085CB82F0697800DB306DC2B835BE62E68B351C",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/EvidenceManifestRow.cs"
+    },
+    {
+      "sha256": "8DE9C25713B56117E47F1005CB0BAA77EB6642BB63CFDC3C97934EB3600D25BA",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/EvidencePackageRow.cs"
+    },
+    {
+      "sha256": "A526F8705E327948FB1322CCA21A016F2800F889EAEE118A62C58DE10C685978",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/EvidenceResultRow.cs"
+    },
+    {
+      "sha256": "91F319CCD213A20E5CC741CDA22458BDDFB33F2D5A1D16DDCF39C63F4D94F17A",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportAssemblyIdentityRow.cs"
+    },
+    {
+      "sha256": "5AB10941D3FFD5383E0703C79CB84EACDA3DE31B515B1429A8CCC76AEB205E29",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportAssemblyItemRow.cs"
+    },
+    {
+      "sha256": "0D7E836C96235F3240CF1A49BF0B7B1254D312AC7FF2D6D9702A5FA44BD33574",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportAssemblyPreparationDispositionRow.cs"
+    },
+    {
+      "sha256": "554781C55B9CFFA071E1B0F07FAEA92FE40CF57074A0D8EA3BB78BF3DA0558B4",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportAttemptKeyPreparationEventRow.cs"
+    },
+    {
+      "sha256": "EFC8B0C99A6B2E5EE930CE749BFB70202AD6EE6770E909C3D51AC79FFF49FC3B",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportAttemptKeyReservationRow.cs"
+    },
+    {
+      "sha256": "F6B6514A708CAE309CF02E820B8DC63376260973C942C37C0FCD5995F1B9E119",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportAuthoritySnapshotRow.cs"
+    },
+    {
+      "sha256": "F8310890821CFF2C249222F66FD5A787B5E70996BD84A9B05425C1EA1CF53D0E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportAuthorizationDecisionRow.cs"
+    },
+    {
+      "sha256": "E70F83414E2BC01690D554E42D2AC9C8482EF488560775A93959A111D6D352FA",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportAuthorizationIdempotencyRow.cs"
+    },
+    {
+      "sha256": "5F584431F82A650693BDF1FE42D14269C96F882EC600BD2A5ED8D8FB866E9730",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportAuthorizationPermitRow.cs"
+    },
+    {
+      "sha256": "33CEE38A16554440074E8994B3B1AB1FBA42270B8A74CEA3F6CCBBEAB7FE22BF",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportCaptureAcceptanceEventRow.cs"
+    },
+    {
+      "sha256": "259F2EC7834D4CD66B0FFDEFB2977632294C4453CCFACB47560F7B944063B185",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportControlAuthorityRow.cs"
+    },
+    {
+      "sha256": "5E8C9DC983AA6AE77D69B65DB23218A30459B9A1EE4A0B303C297E8569504B3D",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportDecisionClassRow.cs"
+    },
+    {
+      "sha256": "A52CED5AC170277B83BF295D0EF123DA70D8EA284A4D0519D9FF7F1A4841797B",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportDecisionEligibilityCauseRow.cs"
+    },
+    {
+      "sha256": "ED264DFF14FF12A71EBACC7DB6E44826AED6E4A7BD2942D8C810247B2B4E2147",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportDecisionFulfillmentRefRow.cs"
+    },
+    {
+      "sha256": "5AB3E11F93425BFBA0C4AF3D38E9324F2B3A7F4DC3BD98FC7AF23C8958A45D58",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportFixtureKekWrapJournalRow.cs"
+    },
+    {
+      "sha256": "E4D60C45E282622D38BE1146A61C961396DB2599E9683627394DEECDD3039E42",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportFulfillmentRow.cs"
+    },
+    {
+      "sha256": "BDCDCA5CC089BDF7FAFA16822E6CBA4B02DDBAC95241C6FD1D8171F689A7E89B",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportGrantRow.cs"
+    },
+    {
+      "sha256": "5F1C55F8102A44DB14C2F049206C7814FF561F3B2B2782087351081EDA1BD2B2",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobAttemptRow.cs"
+    },
+    {
+      "sha256": "842CB5D17B212F9BD6939B293A281F0576FB8F29F9E7CA81B651D704CB8F3A37",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobClassRow.cs"
+    },
+    {
+      "sha256": "AB55D32983A6F1403B12F1B12B9A65F304D4884BA0A273665DCED4694EA96999",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobIdentityRow.cs"
+    },
+    {
+      "sha256": "9B2E4A9B0F0460D3FBA0507F0795897848832BD0614B9DAE93B79003774B0E7D",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobOperationalHeadRow.cs"
+    },
+    {
+      "sha256": "5A3684F7E8E806DF6E79BA45B414025CF366774DFC1D63F19FABE95BD0EF94E7",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobSourceBindingRow.cs"
+    },
+    {
+      "sha256": "3311DAB2794275347436BD423C90E3842D8E0E5069540CD31B052DF2AE4FABBC",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportJobTransitionRow.cs"
+    },
+    {
+      "sha256": "03B3A9323B4B4C8DFAFB0D2C6990D23AD0BA3C12A1DACF6C6B1F32A12E212E54",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportKeyProviderOperationRow.cs"
+    },
+    {
+      "sha256": "ACB505279088AA45CBDC2ADC554EBF6935CE5F7A5FA7BD1FA0EB95FFE19CA7EE",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportManagedRecipientCredentialRow.cs"
+    },
+    {
+      "sha256": "B7289DB0DCBF41214763F0D57BE7C094FEC34C0DAC82AB0064E3280A1FCC69BB",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportManagedRecipientIdentityRow.cs"
+    },
+    {
+      "sha256": "EE8EC4EE483C072EED3EE64E17F83332D88F812D82B5BF793C2D07FB486A05A9",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportManagedRecipientPolicyRow.cs"
+    },
+    {
+      "sha256": "649B39F670D9FCECDB3DC97DED438DE09891D38A2E0153A1729B89E39BA86095",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportPermitClassRow.cs"
+    },
+    {
+      "sha256": "C488ED937D9B14BE12A193B35AAB827300AF69235E84D896C5766234878AF2A5",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportPolicyAllowedClassRow.cs"
+    },
+    {
+      "sha256": "1AE82A75CF1B93026706DE92751E4D86800DBF98A7CFE5CA88980A7D5C0C779A",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportPolicyClosureRow.cs"
+    },
+    {
+      "sha256": "F73DDFF86D7715A21DB4C0B07BF65E3B0A06D2CC00C061882B7FDFF0C2BE79E1",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportPolicyLifecycleRow.cs"
+    },
+    {
+      "sha256": "B20B16D417152B314FEBF1B1AD84DE7A20A7B9FBC26F833D52F78BBA3983BFC1",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportPolicyRequirementRow.cs"
+    },
+    {
+      "sha256": "08CED651A3538D32B5888A2117F5BEB2D125C1F49BCCAE5D2D7A2A3BA0DB1503",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportPolicyVersionRow.cs"
+    },
+    {
+      "sha256": "E3BF02F3C2510ACC09D6B6FBCAF08C0BDEC0F52BAB0F929E820C4DCA4B586059",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportProvisionalObjectEventRow.cs"
+    },
+    {
+      "sha256": "087D7D9DE0469E913BAD226EFB466FAF5E1DEA8E669A7E43A07717D026027A9F",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportProvisionalObjectRow.cs"
+    },
+    {
+      "sha256": "4255F716C615A0C92378461DCB059246BEF4755B7716A8F363E58D74F51DC152",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportRecipientKeyRegistrationRow.cs"
+    },
+    {
+      "sha256": "DE5F14D7D43F5AC9C40DF67F160720E1BBBD83BF0138688942C2D58CE6CD3F5F",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportRecipientManagementEventRow.cs"
+    },
+    {
+      "sha256": "372E8631A70F852374B5FF90B04472459041BEF9ED4F2DB965319F06753FE66C",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportRecipientManagementOperationRow.cs"
+    },
+    {
+      "sha256": "81D840FB51CE52B11FE45F00750695C612E645913E7A85DBA6F6FCF6433EA48F",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportRecipientPackageDeliveryEventRow.cs"
+    },
+    {
+      "sha256": "FAFF3AC460B16C415F238B2E2E7FEFE352484E5F6CCAF704414A4C595A0CB126",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportRecipientPackageDeliveryRow.cs"
+    },
+    {
+      "sha256": "FA051DEA379F887A32A285D382FDFD4CDF21773D9F1526D0FFE77E79888BCBBE",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportRecipientPackageEventRow.cs"
+    },
+    {
+      "sha256": "AAFEAA6DED7D4140B7F02F290EB0BFA1B3ACB7CD8DC89219CE8DCD60D156B62E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportRecipientPackagePreparationRow.cs"
+    },
+    {
+      "sha256": "767CF6F44A76B0BB0064B531B0C4A336D8610989F089D24BBDA0E965124817C2",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportRequirementRuleRow.cs"
+    },
+    {
+      "sha256": "B7176969A5CDE465CEABA25DF723FD639FE892B5A22EA65BA2B8CD541E03C5CF",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportRequirementRuleSetRow.cs"
+    },
+    {
+      "sha256": "5A45BF4D7C6BB6D6BB80CA8B6D9107712AA344DE53994DC1B447641CC7E72449",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSessionCaptureSelectionRow.cs"
+    },
+    {
+      "sha256": "9BB8CAF532DDA50E15AB8D8B0904F8B526EB723EEA319E5B4613195883B7EFF3",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSourceCleanupItemRow.cs"
+    },
+    {
+      "sha256": "DC0F1DF21AF67EB180775CED4451D138B27618FDD77FDCB5DAD39B4D8A0EE84B",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSourceEncryptionAttemptRow.cs"
+    },
+    {
+      "sha256": "66D7EB2B5672211AA83AEF8B4472AAAF51AA687226E7934C321D9C6DEFFFB154",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSourceHeadRow.cs"
+    },
+    {
+      "sha256": "16ECB13D635ACF981F02E9774639B67380F7F70F379ED2A285C8E5B002215BD8",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSourceIngressClaimAliasRow.cs"
+    },
+    {
+      "sha256": "667F1D1C2FAB049785BEE4ACCD67090CAC1F1AD78562087649763BBE30FA27D6",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSourceIngressClaimRow.cs"
+    },
+    {
+      "sha256": "1331A0ED64ECE431B73C607A56833CB0ABD47E0909ED3898763FD8EBEB1EAC7F",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSourcePublicationRow.cs"
+    },
+    {
+      "sha256": "666BB10CD73CDADF59D4F3F47C3DD281DC12C47434BBB22BDA77DDE74B7EA440",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSourceReservationRow.cs"
+    },
+    {
+      "sha256": "FE284432FA97D3CB7E31C326D04DD09E0B32ACC072DEE9C0F5936B2BA78043E7",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSubjectConsentAuthorityRow.cs"
+    },
+    {
+      "sha256": "4A15ABB61AA3552508A9FE2A010F8D492EFDB445666822FF408AD872C27A626F",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSubjectConsentClassRow.cs"
+    },
+    {
+      "sha256": "9A54AEB54C4EBF85234C06780972F2E1E61C8ABAAF037443F59EAB5D3CAD7556",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/RawExportSubjectConsentEventRow.cs"
+    },
+    {
+      "sha256": "167296834D24A7F2AC0F196AD62891A05882A04F5ACA5BB20BA5BC85008307A8",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/VerificationDecisionRow.cs"
+    },
+    {
+      "sha256": "1F4CD6A8AA56B3D90C1E548EDF4948C65CCF91C46F69C96E5EF0741AFCF561E4",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Entities/VerificationSessionRow.cs"
+    },
+    {
+      "sha256": "BD59CE701B27CBC840140C900F084289F02761759C28333E80A18CCA36D6BC9C",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260621075836_InitialPostgresPersistence.cs"
+    },
+    {
+      "sha256": "077D8CFD4F021B6F9C89704CFDCCBE7F9092C4F79549B74704372F6A7C9475DF",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260621075836_InitialPostgresPersistence.Designer.cs"
+    },
+    {
+      "sha256": "2B8249AE0E831EB5B1533B3BF610F4EB3D6F24F4D3D534D19EEE6E7A997C20DE",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260622033429_Tip65EvidenceHashMetadata.cs"
+    },
+    {
+      "sha256": "E19455360FA43283B6A3A747AD5B228A09AD4EF8DC73C79F0EFDCCCE32BC4CD5",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260622033429_Tip65EvidenceHashMetadata.Designer.cs"
+    },
+    {
+      "sha256": "5DDEA920A158BA21988C1DB8FD9698E8E10C04CA04330DE70498C30ED56D2E49",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260622141420_Tip66EvidencePackageSigning.cs"
+    },
+    {
+      "sha256": "BB65C8D9BA5BC261FB0C1FFBFB258A2D610194FD98AEACE062A53FDB50D3D14B",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260622141420_Tip66EvidencePackageSigning.Designer.cs"
+    },
+    {
+      "sha256": "50EDCA021BD475CF93CB76DCF97B1865B72206784194C01CF7545491923142D4",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260623120000_Tip67BNeutralProofPublicKeyMaterial.cs"
+    },
+    {
+      "sha256": "C331F5499C79781D231823295870372B0D7A924E089B6A679766CD10C7D74C0B",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260706144217_Tip80SAppendIdempotency.cs"
+    },
+    {
+      "sha256": "9A44016BF81F88C2C4AF1B46759E740B7E0DE01C5564BCDB018FA599E633FDE5",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260706144217_Tip80SAppendIdempotency.Designer.cs"
+    },
+    {
+      "sha256": "3738845CB8FEE8D1A74B7C532EB716F642426411E7EC8AA56F1EB9068C09B31D",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260709003221_Tip84BApiKeyStore.cs"
+    },
+    {
+      "sha256": "B97FDF7015526FA22F7D091D6D71ACC1055892CB51E78A265BEE210AE0D0CE54",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260709003221_Tip84BApiKeyStore.Designer.cs"
+    },
+    {
+      "sha256": "F2C59EE20334413FE6B384B95F70FD51FE3CD4224A848AC2DA0FDC243A1A957D",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260711132410_Tip88ARawExportPolicyCatalog.cs"
+    },
+    {
+      "sha256": "F9844893F3FAAE8D1C3DC893228F7F4992DECA2F2CBC484E4881871A6E87FA2E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260711132410_Tip88ARawExportPolicyCatalog.Designer.cs"
+    },
+    {
+      "sha256": "88855117C544A0F754BC7773A6442D3DE96127DFED4B139462873EFAFF8A0493",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260712133151_Tip88B1RawExportControlPlane.cs"
+    },
+    {
+      "sha256": "9C97E2015BFAFE29368E5C1BCCBB8CBE47C474A8D95A7315DA0CD2EB261FB940",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260712133151_Tip88B1RawExportControlPlane.Designer.cs"
+    },
+    {
+      "sha256": "AF5B90EA6A7A4956CCD88F8EB4FDACC34CCBFCF5FCBAA66D3221F08490CFA243",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260720022629_Tip88B2SubjectExportConsent.cs"
+    },
+    {
+      "sha256": "1EC0C524130DEB27672F7B70A9181B3F29DA6FEBB5326DB3816E1625147DA064",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260720022629_Tip88B2SubjectExportConsent.Designer.cs"
+    },
+    {
+      "sha256": "1355445AEAC5A1102DE40415329CDA4B8C3871A0C0A0BB0B686945B0A68B4CE2",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260721070118_Tip88AE2PolicyPermitTtlField.cs"
+    },
+    {
+      "sha256": "185429981F53B85625B67377B85DF3191F6DB75628B118F5A43CD6D1842AAA64",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260721070118_Tip88AE2PolicyPermitTtlField.Designer.cs"
+    },
+    {
+      "sha256": "B6E151511CB0DED2C28FCC2304943C28DADCF16D11315C57DDC935A0A3F4AF13",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260722084729_Tip88B31RawExportAuthorizationSchema.cs"
+    },
+    {
+      "sha256": "5344FB0B735F547B7022EBD2BAB8453C267871479ACA07287609C2AEF67A284E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260722084729_Tip88B31RawExportAuthorizationSchema.Designer.cs"
+    },
+    {
+      "sha256": "FE1691D3892841416DD6032517ABEB35F981E2E75BBE2C03A9F10CFA4D2AFB81",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260722163505_Tip88B32RawExportAuthorizationIdempotencyFunctions.cs"
+    },
+    {
+      "sha256": "6427DEE540929DA72DE339CAE92C507092857C818DA1BEDE1FC1686037835409",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260722163505_Tip88B32RawExportAuthorizationIdempotencyFunctions.Designer.cs"
+    },
+    {
+      "sha256": "CF2AB526EC35CB3074C09AF3E18D2A82E0A76310AF59121632CBF13A3AF65527",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260723052003_Tip88B33RawExportAuthorizationPersistFunction.cs"
+    },
+    {
+      "sha256": "194D3BC38955111EDF497B8A78EC8B84145EA3752F05D8DF85970059523A5701",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260723052003_Tip88B33RawExportAuthorizationPersistFunction.Designer.cs"
+    },
+    {
+      "sha256": "BE9C8905096CF06E7DC450BC82529BD6E0411C5B370EBE25B3E1F290F450E5BC",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260724015546_Tip88B1E3ResolverReadBoundary.cs"
+    },
+    {
+      "sha256": "BF9E25702AF812B1AFB627301E9A9EA26B23BC1F9F18483A9EE3A326DDA08E0E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260724015546_Tip88B1E3ResolverReadBoundary.Designer.cs"
+    },
+    {
+      "sha256": "79E288B87C39145B996501A716AE29283034CA7D501E40EA0AD6B4C750C304F7",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260726145547_Tip88B4RawExportJobFoundation.cs"
+    },
+    {
+      "sha256": "8D11878AABA9870AE97967EB0C6517219F8B69DDB94C9CE743DC73A9BD625FA7",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260726145547_Tip88B4RawExportJobFoundation.Designer.cs"
+    },
+    {
+      "sha256": "0C6F5E58706FE414018234B7048D7F48C116A4408A0DD9FDED0E72961C60F66C",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260730090000_Tip88C1ACaptureAcceptanceSurface.cs"
+    },
+    {
+      "sha256": "345094E8E2771F714E5ABA29BF413B9CE0EEA837984519B073B209019658D0B5",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260730090000_Tip88C1ACaptureAcceptanceSurface.Designer.cs"
+    },
+    {
+      "sha256": "4F23C4B90B5472A1F7FBB18A10503DA335FDFF4936BC1928D2FC5A2AE26F805F",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260730214000_Tip88C1B1IngressClaimIdempotencySkeleton.cs"
+    },
+    {
+      "sha256": "28EDB5F55E7254F4E891904982DBE295B83DCAC505A45BD934D3A55A9287560B",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260730214000_Tip88C1B1IngressClaimIdempotencySkeleton.Designer.cs"
+    },
+    {
+      "sha256": "DB0902CBEE0E5AAC6B67A7D64678F968FBE849948EACEDD3FF1EA965A21D39F7",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260731045718_Tip88C1B2AuthoritySnapshotLifecycle.cs"
+    },
+    {
+      "sha256": "CBC5AEAD06050A5F0B0D4CE7F844F1C3D58E556B146844A48212AF66CBABF965",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260731045718_Tip88C1B2AuthoritySnapshotLifecycle.Designer.cs"
+    },
+    {
+      "sha256": "747A4394D65B7DE2DC26208BCBD6EE63229A3C70D9C972A7A491E9D2802ED868",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260731082733_Tip88C1B2CoreNewCandidate.cs"
+    },
+    {
+      "sha256": "9D9A6D96398E8D669696DFCCC95D270FD4CED4D9E2711175D8F2E773E0F0DC16",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260731082733_Tip88C1B2CoreNewCandidate.Designer.cs"
+    },
+    {
+      "sha256": "CB131F4FC8E79B7CD989378E185BF10D960FEA4CCEADD5EBA6384212E0FD13F3",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260731130919_Tip88C1B2BetaExistingCandidates.cs"
+    },
+    {
+      "sha256": "5999C37B0FFECE3C4B276E6D7BFB11C9922321982BAAFC42B452957533F998E5",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260731130919_Tip88C1B2BetaExistingCandidates.Designer.cs"
+    },
+    {
+      "sha256": "34ACF5CDE28ECDC181EAB1E500B7688516FC1079B159B5371322F78108150277",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260802105416_Tip88C1B2DurableKeyProd.cs"
+    },
+    {
+      "sha256": "61BA22897D4C7C5F8573073583EABAE7A4281053712979AFBAAD355715285444",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260802105416_Tip88C1B2DurableKeyProd.Designer.cs"
+    },
+    {
+      "sha256": "D19F2F062D97847F510E7B181E2C6FEF35D3204699832326DFCBC458AFC9B19D",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260803151824_Tip88C1B2DurableKeyFixtureProof.cs"
+    },
+    {
+      "sha256": "D5F04C71E90840A8BAE50760CA33CD638C4BD4F0297A9B82CAAE1EC7A009CDDA",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260803151824_Tip88C1B2DurableKeyFixtureProof.Designer.cs"
+    },
+    {
+      "sha256": "24EB721704EC78C1B925A2E761B2ADF1FF157A3BE1BED957094C30582077AD99",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260804120000_Tip88C1B2DurableObjectCustody.cs"
+    },
+    {
+      "sha256": "31E72F9C292878C80C303CE3E008FC5DE48220ADEB18B9B569E077DF9743CB60",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260804120000_Tip88C1B2DurableObjectCustody.Designer.cs"
+    },
+    {
+      "sha256": "78A55EAAE3A043D14CCCA8BAEF846B59A418426AEF2CF99FE84DB367A4BF6BD7",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260807120000_Tip88C1B2R2DurableCustodyEncryption.cs"
+    },
+    {
+      "sha256": "57E00509BB81A669D3F3D06CC48606FC1C99E0791AE6C4002F8BC889E7AB658E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260807120000_Tip88C1B2R2DurableCustodyEncryption.Designer.cs"
+    },
+    {
+      "sha256": "B0FB2841AEC86FE70847DAAFC42065403E99826550C02C7E9A512E2C78A10D96",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260810120000_Tip88C1B2R3VerifiedCiphertextStaging.cs"
+    },
+    {
+      "sha256": "879DAFAA1E6FAD1753BFCABC227E13B8EF501AF1B9C4C98076D3F6003600F096",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260810120000_Tip88C1B2R3VerifiedCiphertextStaging.Designer.cs"
+    },
+    {
+      "sha256": "06BF054E6333F40CFF5BBD6AEC88FE3819FD3C0146F2AE2DD5C87A307E9684CB",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260812120000_Tip88C1B2R4R6SourceFinalization.cs"
+    },
+    {
+      "sha256": "A58C96ECC8674AA7EF920A62E8BA6E58540273F577DA61D87EC339D1247B047F",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260812120000_Tip88C1B2R4R6SourceFinalization.Designer.cs"
+    },
+    {
+      "sha256": "125EC8B98ED3F95B2504DA59A548C32814A61C497391E29138D4288A8FC5FBEF",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260815120000_Tip88C1C1ResolverAssembly.cs"
+    },
+    {
+      "sha256": "7D768DCE9A93B5D530E51F93D8BCE77E9F99EB8EDE5FFBCB00B151B54717A04D",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260815120000_Tip88C1C1ResolverAssembly.Designer.cs"
+    },
+    {
+      "sha256": "874F11A017588CF015D5523FD135E41BC142DF426FE1D230E50C620801CD1303",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260818120000_Tip88C1C2RecipientPackage.cs"
+    },
+    {
+      "sha256": "4300C92314A6E5C2114FB4463D869113C1D0D96077DC6A3DE56D189DAB73E61F",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260818120000_Tip88C1C2RecipientPackage.Designer.cs"
+    },
+    {
+      "sha256": "93444EE69B3442F72C8052FD8A9894FAB1248761199947E7D966F6934782A9AD",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260819120000_Tip88C1C3AuthenticatedPackageDelivery.cs"
+    },
+    {
+      "sha256": "8499E0F1F89B6D8EBB7890AEA60E7E471FCF3F19499E761CDE54630D32C10FA4",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260819120000_Tip88C1C3AuthenticatedPackageDelivery.Designer.cs"
+    },
+    {
+      "sha256": "0CDD0B352403A04814579EB57BA0224A23E094A2E30D4F85A646F58C8D020844",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260819180000_Tip88C1C4PackageReferenceDistribution.cs"
+    },
+    {
+      "sha256": "A1B6C7981D6F61E0322EEFA7FEF07AD60579C6BC0EBA93AB34D3090D33E3F58C",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260819180000_Tip88C1C4PackageReferenceDistribution.Designer.cs"
+    },
+    {
+      "sha256": "24FD88599766011451C1E6BA757D8DF9AFC75B4F4B1CC5FC93D193224A3006F8",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260823120000_Tip88C1C5ManagedRecipientEnrollment.cs"
+    },
+    {
+      "sha256": "4CA55D92B4B5D5523377E2F95D2B792EC97EC30ED14FAFF8DBBC892DAFA2E82A",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260823120000_Tip88C1C5ManagedRecipientEnrollment.Designer.cs"
+    },
+    {
+      "sha256": "3D4D0106E5CBD568CF3053CA1BFBB529B55070CE975D9561E9F466F9D863F7CF",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260904154848_Tip88C1C6AProductionAuthorityDeliveryBarrier.cs"
+    },
+    {
+      "sha256": "8F4A59A11A2E27FAB59A0200405EE4772B705F83D8E89DEE2AA2A2B2565CFB68",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260904154848_Tip88C1C6AProductionAuthorityDeliveryBarrier.Designer.cs"
+    },
+    {
+      "sha256": "5AC54FCB6F6F5AA7C5799F239E48B535A626E81706CAE4DECD345984DE942126",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260906055502_Tip88C1C6BIngressSqlComposition.cs"
+    },
+    {
+      "sha256": "3003785955C73AD04C3AD85A86B94BA068870D8A83E873363BF760B3A24E1C7A",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260906055502_Tip88C1C6BIngressSqlComposition.Designer.cs"
+    },
+    {
+      "sha256": "BC1EDE3F7F45145F86E117791AA41C00F78450D9CFA0CAB4FCD53F0554D89635",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260908120000_Tip88C1C6BA1Foundation.cs"
+    },
+    {
+      "sha256": "906877AD9E494B64977CDF267177D924F5AF209A2249C880AB747A4035FFFFBA",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/20260908120000_Tip88C1C6BA1Foundation.Designer.cs"
+    },
+    {
+      "sha256": "945FD9C6028CE3B310891F21FF3F20E033928CA8C88CDD3DEBAB09F551C7B92E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs"
+    },
+    {
+      "sha256": "FC05BB973C84714391EF9BEBCEEB3A62DF3C6AF4831AE1B71A0DD43EAD9E84C7",
+      "path": "src/TagEkyc.Infrastructure/Persistence/PersistenceJson.cs"
+    },
+    {
+      "sha256": "546E18A2014AE3ED42E360F253A00418CC094044451199B0AAEBAE3FDE92476E",
+      "path": "src/TagEkyc.Infrastructure/Persistence/PostgresProductionReadinessValidator.cs"
+    },
+    {
+      "sha256": "7395F6DAE7B54302B271905B9105BC6C30301B2FA0AA1C05655C7DD42C624C3C",
+      "path": "src/TagEkyc.Infrastructure/Persistence/RawExportAuthoritySnapshotReadinessValidator.cs"
+    },
+    {
+      "sha256": "02312F6E60FB604E05651A1E9C286C3FDCFFAFAC251C7DDFBBCD6C938169BF46",
+      "path": "src/TagEkyc.Infrastructure/Persistence/RawExportAuthorizationReadinessValidator.cs"
+    },
+    {
+      "sha256": "C9146BED545834648F7A80D319D2569CCE81BC29845563CBA4A5600E7F339FCD",
+      "path": "src/TagEkyc.Infrastructure/Persistence/RawExportConsentScopeCodec.cs"
+    },
+    {
+      "sha256": "AE4408D7B2BF46A3EAFA9F1801D59C37BF3B5950662EBCA73ED1109D147762C7",
+      "path": "src/TagEkyc.Infrastructure/Persistence/RawExportControlPlaneReadinessValidator.cs"
+    },
+    {
+      "sha256": "1A371D5AC023683FF1D430A9A20B61A7E5FB8B65B9D586D72C18CB4331871B36",
+      "path": "src/TagEkyc.Infrastructure/Persistence/RawExportJobReadinessValidator.cs"
+    },
+    {
+      "sha256": "0B9A10FCADA5D901466C8E551AA603A374A15F645A9DA7836EE63DFF9FE42A57",
+      "path": "src/TagEkyc.Infrastructure/Persistence/RawExportRuntimePrivilegeValidator.cs"
+    },
+    {
+      "sha256": "6BF8A54CFE37830C49E7390B1EA1792319095E45BC4EF58EA5A20804ED594886",
+      "path": "src/TagEkyc.Infrastructure/Persistence/RawExportSubjectConsentReadinessValidator.cs"
+    },
+    {
+      "sha256": "C49D4A3C45132BA96ACF26D0CDD6673AC69DD214843BAE0347D376A903EBD293",
+      "path": "src/TagEkyc.Infrastructure/Persistence/TagEkycDbContext.cs"
+    },
+    {
+      "sha256": "BC366CA0A7E93124795A78B313D61C821A36AD0DAE3E590FF5FEC45D1FBFF16A",
+      "path": "src/TagEkyc.Infrastructure/Persistence/TagEkycDesignTimeDbContextFactory.cs"
+    },
+    {
+      "sha256": "51A920EE82D206F8ECE93FFE96E0C6562E75AFF370CF465A97631D4FCECCC3F9",
+      "path": "src/TagEkyc.Infrastructure/Persistence/TagEkycPersistenceOptions.cs"
+    },
+    {
+      "sha256": "3036D2D77286AA9DCCA4D01EB99EAA6D3E4A9D9BB8096C04F876CABCC4576D7C",
+      "path": "src/TagEkyc.Infrastructure/Persistence/TagEkycPersistenceServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "8FF50830A6DCA0FCB7C9446A0DC8C9B310F1F27DD38D77733589737CCA85A00D",
+      "path": "src/TagEkyc.Infrastructure/Properties/AssemblyInfo.cs"
+    },
+    {
+      "sha256": "11EE7B14D34CE003978A089D2B932881FAF51B716F304923403A98152CC9C6F4",
+      "path": "src/TagEkyc.Infrastructure/ProtectedValues/ConfigurationProtectedValueProvider.cs"
+    },
+    {
+      "sha256": "3629F155754C3E2B7016506A43D2B25045D7DCD5A5F194379860474D48A92B8E",
+      "path": "src/TagEkyc.Infrastructure/ProtectedValues/FixtureContentCommitmentCatalog.cs"
+    },
+    {
+      "sha256": "A906C0010B2E0B0456757EB99477C1EE89A2F697027E8052558397212B047131",
+      "path": "src/TagEkyc.Infrastructure/ProtectedValues/FixtureSubjectTokenCatalog.cs"
+    },
+    {
+      "sha256": "2F3BD16CB32326BAC4EEEA2DB8F6673E664101DB917186CC010173FFF33D8AE7",
+      "path": "src/TagEkyc.Infrastructure/ProtectedValues/ProtectedValueContracts.cs"
+    },
+    {
+      "sha256": "FAEDE75089D33B339BB2807599B236A7037ECC8F010747A1907386E530BE3DD8",
+      "path": "src/TagEkyc.Infrastructure/ProtectedValues/ProtectedValueMaterialLease.cs"
+    },
+    {
+      "sha256": "01BD8E4BE73C12AD351F88E2D0E4E186882011627F08628A49AFD2FBFCCD3BCA",
+      "path": "src/TagEkyc.Infrastructure/ProtectedValues/ProtectedValueProviderRegistry.cs"
+    },
+    {
+      "sha256": "2AAF0EBD8E991995221FE03C247C9BE9537823B9324387EE8A58804B08610F7A",
+      "path": "src/TagEkyc.Infrastructure/ProtectedValues/ProtectedValueResolver.cs"
+    },
+    {
+      "sha256": "63F8D0B2259728441CC091417EF623F80AC418E106BE07F22D183CE3269315FF",
+      "path": "src/TagEkyc.Infrastructure/ProtectedValues/RecipientPackageReferenceCursorKeyCatalog.cs"
+    },
+    {
+      "sha256": "D2812E1C7FD6960EBDADFD7567B0F02CBAE93AF4281657D5A98924580F4EE09E",
+      "path": "src/TagEkyc.Infrastructure/RawExport/AttemptAeadOperationService.cs"
+    },
+    {
+      "sha256": "A243A83280ECE8843D193A646F9A888607C12C2CEC2D9E3EFD9FC0C60A1AF4CB",
+      "path": "src/TagEkyc.Infrastructure/RawExport/AttemptDekLease.cs"
+    },
+    {
+      "sha256": "2AD003EF85A52CBDC1C0C0C8E47BE3E2A594FF45A5E6E129E9616B88B646A556",
+      "path": "src/TagEkyc.Infrastructure/RawExport/AttemptKeyReadinessValidator.cs"
+    },
+    {
+      "sha256": "56929FF4CF4CA0BB4AAB128C8346D27B80331A640F97189BBE5AF7FC1B391214",
+      "path": "src/TagEkyc.Infrastructure/RawExport/AttemptKeyRecoveryContextReader.cs"
+    },
+    {
+      "sha256": "920489DC94834F9D6B9261F31BDFCEFA1D543A19677E710246D1A7D3BC542790",
+      "path": "src/TagEkyc.Infrastructure/RawExport/AttemptKeyServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "90952A72FFCA170B824CFAF6ABAF42632A257C5B4A0090D5465BA0DFE8E18A0C",
+      "path": "src/TagEkyc.Infrastructure/RawExport/C1HashCanonical.cs"
+    },
+    {
+      "sha256": "6648387D2D48F810A89A0EBEFF9220A9D2266592B0A256EA86A59491B7AE907D",
+      "path": "src/TagEkyc.Infrastructure/RawExport/ContentCommitmentServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "73D430099E8289C468A212CC505638799D19FB3127369243B251635CF6241DF5",
+      "path": "src/TagEkyc.Infrastructure/RawExport/CsprngReadinessValidator.cs"
+    },
+    {
+      "sha256": "E69C8DB733782B673A5816F2CDFC77855D08020DA7B9B6620F12822A8536EB3F",
+      "path": "src/TagEkyc.Infrastructure/RawExport/CustodyProfileProvider.cs"
+    },
+    {
+      "sha256": "53C324DFBF3D81FB68BD84B99CBF15A2B9F1B1677905618C08DCC1B9C52B16AC",
+      "path": "src/TagEkyc.Infrastructure/RawExport/CustodyProfileReadinessValidator.cs"
+    },
+    {
+      "sha256": "1DF5989C1A9CF2C5BD4F1CBAE2E3156488F8AB5F2A58FB576F4D8B3EF93270D7",
+      "path": "src/TagEkyc.Infrastructure/RawExport/CustodyProfileServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "AB273C0C1AE032119861EA119C439A5DD83902E408BBEF7BBBC1803BB64DF407",
+      "path": "src/TagEkyc.Infrastructure/RawExport/CustodyRoleReadinessValidator.cs"
+    },
+    {
+      "sha256": "7BB372519719B43F2BDD9DB5A957B545CA4AD1010F3D19E5C0398DBF022012E7",
+      "path": "src/TagEkyc.Infrastructure/RawExport/DurableKeyCustodyOptions.cs"
+    },
+    {
+      "sha256": "5024202DE94772302BC1ABCBFC8E598FE7BBECF5E9A912D1A948F7F859C358A4",
+      "path": "src/TagEkyc.Infrastructure/RawExport/DurableKeyCustodyServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "2A498126180680D5BA23FC7DDCCA5C15394803B1E9D8AE1573231CDE7ECD8070",
+      "path": "src/TagEkyc.Infrastructure/RawExport/DurableKeyProviderReadinessValidator.cs"
+    },
+    {
+      "sha256": "0A9C95F0BD08E4BFD558829FFA417568C566CF5161A4E3582121D87BBDBFEB0C",
+      "path": "src/TagEkyc.Infrastructure/RawExport/DurableKeyTopologyOptions.cs"
+    },
+    {
+      "sha256": "F378BBD2B0D7E5588A3D317B51724A9349EEBA7CCBBAC6F13F0758D3F9617D63",
+      "path": "src/TagEkyc.Infrastructure/RawExport/FixtureAttemptKeyProvider.cs"
+    },
+    {
+      "sha256": "66C40C0C3998D9729F625D5E2F21719E08AF48A4CE8A05F43CD623AB86954F2A",
+      "path": "src/TagEkyc.Infrastructure/RawExport/FixtureDurableKekOperationProvider.cs"
+    },
+    {
+      "sha256": "8DE178407CA8FA9D72937AEF890993D45FACFCDB646B548A479C6170AECB27CD",
+      "path": "src/TagEkyc.Infrastructure/RawExport/InProcessContentCommitmentService.cs"
+    },
+    {
+      "sha256": "C93E4C8E2FA94191F3FE746738DBBEEB82F6C395BCA6968819B7ABF3040F7D91",
+      "path": "src/TagEkyc.Infrastructure/RawExport/InProcessSubjectRefTokenService.cs"
+    },
+    {
+      "sha256": "67D7823BAE7B7C2EA5DBB17432B3F9E40E4CFF18EEEB5EA2E3696D527A928360",
+      "path": "src/TagEkyc.Infrastructure/RawExport/KekOperationContracts.cs"
+    },
+    {
+      "sha256": "BD4F7AE57B14AD53BF87E8096F0837FFD161D772169494FAA215C18AE033C68C",
+      "path": "src/TagEkyc.Infrastructure/RawExport/KekProvisioningRecoveryOperation.cs"
+    },
+    {
+      "sha256": "F085EC91E7F505B6C83D637F099FC5F2E5B95B0524A8929280A1649A8C5581A9",
+      "path": "src/TagEkyc.Infrastructure/RawExport/KeyReservationReadinessValidator.cs"
+    },
+    {
+      "sha256": "B54BCBE5EE1402DE5D2B35DBB53D7593AF0E063363CE877B6654BF32B8E33836",
+      "path": "src/TagEkyc.Infrastructure/RawExport/PostgresAttemptKeyReservationProvider.cs"
+    },
+    {
+      "sha256": "979963C30483A33979BEDF87EFADE621D6DB46822E3F13A593A8099E655AEBE7",
+      "path": "src/TagEkyc.Infrastructure/RawExport/PostgresKeyProviderOperationMap.cs"
+    },
+    {
+      "sha256": "8815604ACC33CDD309DBEB941898C39FEC51D4ECC67AE43239FC40779D5B77BE",
+      "path": "src/TagEkyc.Infrastructure/RawExport/ProvisionalObjectCustodyContracts.cs"
+    },
+    {
+      "sha256": "C4D0E73F290A4049E362F04AB39583B9BB0558516ADA168020754041000198C3",
+      "path": "src/TagEkyc.Infrastructure/RawExport/ProvisionalObjectCustodyOptions.cs"
+    },
+    {
+      "sha256": "9E43F7A6DF82A4B2FEC87CB4EC46EA30F0F5E4C12A315FBDDAD8449102ADB444",
+      "path": "src/TagEkyc.Infrastructure/RawExport/ProvisionalObjectCustodyReadinessValidator.cs"
+    },
+    {
+      "sha256": "6E22CE2994D1C4A156498B6BC8A62F0298EEDED06BDC3A30BCF69EE20CDAD45A",
+      "path": "src/TagEkyc.Infrastructure/RawExport/ProvisionalObjectCustodyRepository.cs"
+    },
+    {
+      "sha256": "14AF64BADB507396D1705ADB4E29653D8C2B0521A41857F00A7F0CBC2B0A46A2",
+      "path": "src/TagEkyc.Infrastructure/RawExport/ProvisionalObjectCustodyServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "02C0090A00A1EA8D87FE0F6ECCB6F1BC536C8B7EE691F92D3CBC7753D17727A1",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyAuthenticationService.cs"
+    },
+    {
+      "sha256": "2FF09BCE1B3E57DE086397FA6E4C613A286C2D371385DD08EC46A28A1FCB7402",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyCodec.cs"
+    },
+    {
+      "sha256": "98C75B71A22FD3EF808FCAD07B6C0A5528C0DA97691286C6A5D729477DC413D1",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyOptions.cs"
+    },
+    {
+      "sha256": "5DD6CD25AA92E924CAC0C9955E1F088DE572779F917CBE1F083101158F66573E",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyOrchestrator.cs"
+    },
+    {
+      "sha256": "6293A0DC480C3825E081D15DA6EF1FB253A20C007919D4A4DE85673FAEAEC687",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyRepository.cs"
+    },
+    {
+      "sha256": "C312103918ACFFC64A81720CA1919C88CB6F317116A004F6B5A9A9E4F39DB774",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "6E03A2487FD1D9B0BDA27DC74649379E8D8CFD06743FD10548E69D019F707FCA",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportAssemblySourceResolver.cs"
+    },
+    {
+      "sha256": "5B1893766538924EA32CC4B3D904897C7DD153B80D59B58A919CAE7D83EB3705",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportAuthorizationFingerprintCodec.cs"
+    },
+    {
+      "sha256": "A894E73D3108C5057FB9A3638AADDF9D9EBD365507D68F0805452C7B00FF6380",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportCaptureAcceptanceResolver.cs"
+    },
+    {
+      "sha256": "48F712D677E230C93B49C9EEB8FF80FE0CB841D501A4F88FCFDC0ECE90481FD1",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportFramedSourceVerificationService.cs"
+    },
+    {
+      "sha256": "394B2829A5B86D16BCA55629595A14D802556609E4D229F13335F3D20F2DF806",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportIngressCapacity.cs"
+    },
+    {
+      "sha256": "E944573BE48B41B53FB1A9681586D2AAA5007FC41E098C04E0F9D6C537F30721",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportJobFingerprintCodec.cs"
+    },
+    {
+      "sha256": "13E240F721E9944B428D9FD405F6BA8E4527863AFC2B18A9FE114F9AC4D725DB",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportJobLeaseOptions.cs"
+    },
+    {
+      "sha256": "63FD8A43B5A47F58381BB6F520AC816D071E0F052A65F4E121206D92E3381CA9",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportPermitTtlOptions.cs"
+    },
+    {
+      "sha256": "58AF7E6639382DDF292F080C6E32868F26B83F78ABB86BEF74538391FD4E62A6",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR2CompletionVerifier.cs"
+    },
+    {
+      "sha256": "E3D7EF8BBC55F381D7465530422556C4E9F21BC2294A272EB0F0123043592E4C",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR2Contracts.cs"
+    },
+    {
+      "sha256": "B2FF9A3606D269308F2CDCD1EF7C95D43067CD53C7D42DA5727CFF54D575860D",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR2EncryptionOrchestrator.cs"
+    },
+    {
+      "sha256": "E8DAD1649ACF9D57F654F8D5EFA7874D777D276EA1B00604A983C0016D9BCC2C",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR2FrameCodec.cs"
+    },
+    {
+      "sha256": "BCCBE6AB26C3797E3906CD54ECEC24C0302C1B92222D5FC17B9D8CCD058C9990",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR2FramedCiphertextStream.cs"
+    },
+    {
+      "sha256": "7BE40AC01FE99E5A74B8219258B450C76632906205A06C2D429C7F2514674BF9",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR2Repository.cs"
+    },
+    {
+      "sha256": "6204932A2998764FEDB32B33CCEB084DA2D5111DD523DE67E11F957A18B5B7E6",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR3Contracts.cs"
+    },
+    {
+      "sha256": "2BF887219886A044080239F99C6CE14DAEF0938BD66B72369D571675F4C27F49",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR3Repository.cs"
+    },
+    {
+      "sha256": "1260AFA9F24BE0FAB11EECE67A08BA79FFF07188BDFA0908E5878A08799659F9",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR3StagedCiphertextFingerprintCodec.cs"
+    },
+    {
+      "sha256": "5D047CF6A4C468DBCE44940E5BC002F7436DEDA6B2D22C041D3B5F5688B2F6BF",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportR3StagingService.cs"
+    },
+    {
+      "sha256": "690A9DA49BED1580AB4A3455640A375A85F8A78C3280DAB9FBEDB3239FF8CF89",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportSourceClaimComparisonBroker.cs"
+    },
+    {
+      "sha256": "D2FB25D56E31B83C9369F8FA3C3A70BE5DFB83D61DAEC59E5BC45D9B1F52353D",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportSourceClaimComparisonServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "F723CC51D9FECB2E0CA31891DCCE2028715195F2DDF7FA719240252B78F665B6",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportSourceFinalizationContracts.cs"
+    },
+    {
+      "sha256": "F00E6E6C80E6ADB6E7AD2B1E7BDE962EF03006052E25A101958E2DFEFE5DC92F",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportSourceFinalizationEvidenceCodec.cs"
+    },
+    {
+      "sha256": "B8E0D8B01CA26E320368291D868D135BDB78434E9769B493EB3689AEB8571BC0",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportSourceFinalizationRepository.cs"
+    },
+    {
+      "sha256": "52E12C058CB4294359E2DA7F2836A316E7587D5D07F51C21E8196F508AF15B0B",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RawExportSourceFinalizationServices.cs"
+    },
+    {
+      "sha256": "7AABFEA15E75707BEACB939C40498CA2B30D7ABB81A4E7649997C6DA6762B979",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientManagementCodec.cs"
+    },
+    {
+      "sha256": "B1F6D430B3ABA230B74B94188A773FA18B20D6FD09CF4127430409B1BF1EA990",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientManagementConnectionFactory.cs"
+    },
+    {
+      "sha256": "E1CF3C4A31ACAE2A5D6EA110E8A98529B2DB0EE0BC5EF5CCA56707623540EF21",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientManagementContracts.cs"
+    },
+    {
+      "sha256": "48370FEF9BADFD027E9764EEA8FCF07869FEB87E8FA9A75D32A3CF72E0109A99",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientManagementReadinessValidator.cs"
+    },
+    {
+      "sha256": "3D97BF10C52826D08302DB2D2A7F252B0513958CCE572C6150563D6C064129E5",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientManagementRepository.cs"
+    },
+    {
+      "sha256": "1F3BD4E9D46D0F18FC884F6833AF8C7E3A0FADCA9378633FDFAE51EDD122C685",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientManagementServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "590CAB88131D7B9E61B9A9C5CC0338ECFE5CA3E408217D6705E4A6A83F61ABC8",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageCodec.cs"
+    },
+    {
+      "sha256": "F3882BFCCA3309610F0D46A151131569BF06DC642F30C2A5342D142CDD50B7F5",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageContracts.cs"
+    },
+    {
+      "sha256": "8A6F60057A90A389F4A2A780B073856BA4A681010B47DF5F23F1B1D0D3E79922",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageCryptoService.cs"
+    },
+    {
+      "sha256": "92677C8A4BFA9B7831C81892C73C045EEDBE287175E6CB2D3CB26B62F0A3A44A",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryCodec.cs"
+    },
+    {
+      "sha256": "BB49AA429D95881C837B485ABFCB0A44F53F72E3B000347179354689E193DC66",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryConnectionFactory.cs"
+    },
+    {
+      "sha256": "42218C833659EECD1EA71A217A122A4559E5BC3F6E8441CCB4858D13F54B7C78",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryContracts.cs"
+    },
+    {
+      "sha256": "5CE1F904321D20BE7FE0D1C21C8B8936851B8708764961A8AE209901868E74DB",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryCoordinator.cs"
+    },
+    {
+      "sha256": "4E0F6E98FD26AC7DC177100971A73B4A796FDCFBDA0BA1D371E88C546044BDA4",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryObjectClientFactory.cs"
+    },
+    {
+      "sha256": "322257A3C701159688A0D35A611645E28B913503B010EA0772CD1C0ECA40476C",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryOptions.cs"
+    },
+    {
+      "sha256": "A264121BCFB23A06ED44C25CF787D698CAF4DA9BA704B165E7DE7AA038EAA2D1",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryReadinessValidator.cs"
+    },
+    {
+      "sha256": "32B7151E259FD80423BD7C8D3BEC3618CD38918FF3B0D1702944F96B4CBD5B8E",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryReconciler.cs"
+    },
+    {
+      "sha256": "3652ABC50AA4C088290E30FA29C487FCAD281A4362272ECCDB3984B453999FB9",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryRepository.cs"
+    },
+    {
+      "sha256": "96851F238AC984CA89FE3324736B1CF96A516F28434D1D1DB79EFCEA474C9066",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliveryServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "DD90766F7B3C8EC9206A11466EF8D05839E1682EA572858F535F1FD666559AC7",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageDeliverySpoolPool.cs"
+    },
+    {
+      "sha256": "F0E77785CA6EA91BF904F715FA789AD8B9E9EC708B4496AC12D7A16333B84034",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageEncryptedSpool.cs"
+    },
+    {
+      "sha256": "7A1AF7C02F4EC91CB3A5BEC4E31F00A0A2BE7FEFDABA4F023B6D1B326EBA7E03",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageObjectClientFactory.cs"
+    },
+    {
+      "sha256": "F0BE59B691CD2E8F0C04F4AB1B6AFF7EE82BE9449870A033940B4045CD11DCE3",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageOptions.cs"
+    },
+    {
+      "sha256": "2399E5035823BF28F755F57C91727F19EB5D2AA333B296A6593E8A457EBF6747",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageReadinessValidator.cs"
+    },
+    {
+      "sha256": "F1EED10AF1B221EA9ABFFE275B085504A387B1FF5543FE2C38AA4299A661690E",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageReferenceConnectionFactory.cs"
+    },
+    {
+      "sha256": "BC88DFC582C4E457C564F570DB671E8C4145E2D2A890E322B8FA88E0496DD4CA",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageReferenceContracts.cs"
+    },
+    {
+      "sha256": "732E3E58DB1FE043A0EB9956DC2CC382C1C0E339E029E4058B806E1993672A58",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageReferenceCursorCodec.cs"
+    },
+    {
+      "sha256": "7C82DE984A1E6550C6181B90531D5EE5EB38E5888493E191ED32B3323D65CFF3",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageReferenceCursorKeyService.cs"
+    },
+    {
+      "sha256": "3F82ED69FFC7A8546A0783CCA6DA0E605A7007842B2A5BDCCE6A04B4A52327A3",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageReferenceOptions.cs"
+    },
+    {
+      "sha256": "C95EC5EA7C055E2A77D7720294139DAFDFFBD5FC60CD570B83CECB902A785C99",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageReferenceReadinessValidator.cs"
+    },
+    {
+      "sha256": "9D8617CC0D7620A29C9EE386ED46059DE66E89BBA10D565DC1F04D719A1FBEA6",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageReferenceRepository.cs"
+    },
+    {
+      "sha256": "6C0DB903E5B8C295B91B7191571DDFAE1A37FE097659382C902541BE3326CAC8",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageReferenceServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "BEA775D344B53274546BFC4AB8A0B96D493D4901390D5CAF681F1614BDAF97F1",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageRepository.cs"
+    },
+    {
+      "sha256": "83D5F304081C6847B3DE6C61AEB183ABAAC275493C83D1B9BFC03680EB017BF0",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPackageServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "DB836178BAF7957DE1E0A20549F2551686612EDC646FC4D7435A8FDB901DACB7",
+      "path": "src/TagEkyc.Infrastructure/RawExport/RecipientPublicKeyProfileValidator.cs"
+    },
+    {
+      "sha256": "96137B71D3B13BE99BCAB32BF0EBDDA4574EC0553352D38F0823A3FC7A36BBEB",
+      "path": "src/TagEkyc.Infrastructure/RawExport/S3CompatibleProvisionalObjectProvider.cs"
+    },
+    {
+      "sha256": "0912703066FF78324EEB6EA98C6CD0289BAED6B9FB52C5CA6B7F2D2D9BFEB1CC",
+      "path": "src/TagEkyc.Infrastructure/RawExport/S3CompatibleRecipientPackageDeliveryReader.cs"
+    },
+    {
+      "sha256": "0F5D1CA658CA62D6B2B261FDC3FEEABE438ABEF8839F9FAA6634E5407321502D",
+      "path": "src/TagEkyc.Infrastructure/RawExport/S3CompatibleRecipientPackageProvider.cs"
+    },
+    {
+      "sha256": "AFFB550CD7876B19F18212F64EDBF44FE0D544987875C665F02F793C23D52934",
+      "path": "src/TagEkyc.Infrastructure/RawExport/SubjectRefTokenServiceCollectionExtensions.cs"
+    },
+    {
+      "sha256": "AF0C083F8DE6EF534F942C1BFDBBED0924FB345447B8A693B4063D33ECECE14A",
+      "path": "src/TagEkyc.Infrastructure/Retention/RetentionOptions.cs"
+    },
+    {
+      "sha256": "24F12F9734BAD9FE7F3AC63105BF13A2583404E735C284BF57B178648F5F146F",
+      "path": "src/TagEkyc.Infrastructure/Secrets/SecretRefResolver.cs"
+    },
+    {
+      "sha256": "7A734A1F6F098F19AF834668E9DA0BD7DCADF7094DBC0EF80E5E15A11762145E",
+      "path": "src/TagEkyc.Infrastructure/Signing/Es256JwksProvider.cs"
+    },
+    {
+      "sha256": "67EAE6511907860409F23E0FD4717582449E67B3C49F3DEFC638F0268306E073",
+      "path": "src/TagEkyc.Infrastructure/Signing/Es256JwsEvidenceSignatureBuilder.cs"
+    },
+    {
+      "sha256": "5641ADD57F63E6EFF673F36290E7192CF263F5B3CDD9CB803B1BC09A3668F250",
+      "path": "src/TagEkyc.Infrastructure/Signing/EvidenceSigningOptions.cs"
+    },
+    {
+      "sha256": "57887FDCF065B56CFA985E2C19C4F18093375A5F35A0A95F3C28544BB021CE67",
+      "path": "src/TagEkyc.Infrastructure/Signing/LocalDevEs256JwsEvidenceSigner.cs"
+    },
+    {
+      "sha256": "952B6D8105AC45CC0BD8246751B245150AFD9CB7E595D4E29621DF7714733197",
+      "path": "src/TagEkyc.Infrastructure/Signing/LocalDevEs256JwsEvidenceSignerOptions.cs"
+    },
+    {
+      "sha256": "BCEE77CD719CF3BCF8F04CFC2B77F09019549852A6CFAC2C662DF33DE448ACBB",
+      "path": "src/TagEkyc.Infrastructure/Signing/Pkcs11Es256JwsEvidenceSigner.cs"
+    },
+    {
+      "sha256": "01F8B314F2523A1CC8AE76B64D7BBB2774C9CC5A21843AA180EEC6B7C8826095",
+      "path": "src/TagEkyc.Infrastructure/Signing/Pkcs11Es256JwsEvidenceSignerOptions.cs"
+    },
+    {
+      "sha256": "A58CAB3C58914BABF758FDD48B83813B7D9F8B9C68F2BCAAB8CF631595B29118",
+      "path": "src/TagEkyc.Infrastructure/Signing/ProductionTrialP12Es256JwsEvidenceSigner.cs"
+    },
+    {
+      "sha256": "C1E6E3BBE5C8C49CF93AA140FB88D4AEDB84711AAA15C76C013E8F428AE526EE",
+      "path": "src/TagEkyc.SignFlow/AssemblyMarker.cs"
+    },
+    {
+      "sha256": "62B5D370F2FEE66B2908AD10F32BD1D6E15DE0BE431C7E0742F5949AC5548804",
+      "path": "src/TagEkyc.SignFlow/SigningAuthorizationBindingPlaceholder.cs"
+    },
+    {
+      "sha256": "55DAE81D6A957CB26A8EFD9FDB77F0F960147901D29D64FD5092EA162607B1D1",
+      "path": "tests/TagEkyc.ArchTests/A1CatalogueJoinProof.cs"
+    },
+    {
+      "sha256": "DD85F95DF1573AC22FC7490EC37C958398A74D782235E8438E949F389A871835",
+      "path": "tests/TagEkyc.ArchTests/DockerTestResourceLifecycleTests.cs"
+    },
+    {
+      "sha256": "5FD00185F76B083F96BA3735DCAD7891980FD6666FDF29C67D1C8AAB00649617",
+      "path": "tests/TagEkyc.ArchTests/PersistenceBoundaryTests.cs"
+    },
+    {
+      "sha256": "97AD55D5EDC911BC2ECF2B756B7039D3E779A4CDA626EB73B35EF7E138DA01A7",
+      "path": "tests/TagEkyc.ArchTests/ProjectDependencyTests.cs"
+    },
+    {
+      "sha256": "474A7D2273EB0F9F8E2ADFD79FACF3EC46EC0BB91FAA0434D79A592C00469B22",
+      "path": "tests/TagEkyc.ArchTests/Tip03BoundaryTests.cs"
+    },
+    {
+      "sha256": "931A47FF98648B24965B40DAF40E6A7A0E4AE8474171192AEA4CCFAEDE3FA9FF",
+      "path": "tests/TagEkyc.ArchTests/Tip04BoundaryTests.cs"
+    },
+    {
+      "sha256": "F6D5885374C6D78D3E58665989992D686BB488F28EFF37BDDDB9994528B613FE",
+      "path": "tests/TagEkyc.ArchTests/Tip06BoundaryTests.cs"
+    },
+    {
+      "sha256": "8FACE62A4D287E4772A90C4EE40FDC03799810CA78F23B15B84699CBB492947C",
+      "path": "tests/TagEkyc.ArchTests/Tip11BoundaryTests.cs"
+    },
+    {
+      "sha256": "70AB7531445B81E9FA6DE9421DC17DD64B7FE745894E598858475A33EB989AB7",
+      "path": "tests/TagEkyc.ArchTests/Tip13AuthorizationBoundaryTests.cs"
+    },
+    {
+      "sha256": "0265189890752F927AF09D73DAC4F25AFDF3C152F62622140CF0755683FB0CAF",
+      "path": "tests/TagEkyc.ArchTests/Tip17DurableMetadataBoundaryTests.cs"
+    },
+    {
+      "sha256": "D06E745FC032DB395F48CD3C3852B93373F77F7E84B84864F24CCC840E007B1F",
+      "path": "tests/TagEkyc.ArchTests/Tip55MetadataReferenceBoundaryTests.cs"
+    },
+    {
+      "sha256": "87C3BAF549EDA0ED5CD9CDEAD8D9E77FD029037EDC8ACB433734F74824752001",
+      "path": "tests/TagEkyc.ArchTests/Tip57MetadataReferenceQuerySemanticsBoundaryTests.cs"
+    },
+    {
+      "sha256": "CDA181BC3870785FA616B05F19F3C233BF39BB6A48A92E78A73B718ED4ACED5D",
+      "path": "tests/TagEkyc.ArchTests/Tip60LocalDevMetadataReferenceRegistryBoundaryTests.cs"
+    },
+    {
+      "sha256": "1BCF0C704DF0E5A86FF7E07944BCCF7F17B72B580B7B67146E43A3B060EE4D76",
+      "path": "tests/TagEkyc.ArchTests/Tip72LivenessBoundaryTests.cs"
+    },
+    {
+      "sha256": "C13BB121C9FA8C61DE972CB4517C2EF1EE3E302CE2BB2ACAA66B9E84393930F0",
+      "path": "tests/TagEkyc.ArchTests/Tip83E2AuditDurabilityBoundaryTests.cs"
+    },
+    {
+      "sha256": "275BC028E3A6E3EE6BC80857AD2363DC4DA141688E202693E57BDC9B4BA2C624",
+      "path": "tests/TagEkyc.ArchTests/Tip88APolicyCatalogBoundaryTests.cs"
+    },
+    {
+      "sha256": "157A5D34F15502D9A66A1F194260F7CB77C2DDD738DFF24DFCA24297139BB057",
+      "path": "tests/TagEkyc.ArchTests/Tip88B1ControlPlaneBoundaryTests.cs"
+    },
+    {
+      "sha256": "CC8E8BF7F77921AB0BD36AD576B37C6B57948FE6B99E14758888E08E95B39442",
+      "path": "tests/TagEkyc.ArchTests/Tip88B34AuthorizationBoundaryTests.cs"
+    },
+    {
+      "sha256": "ED737C2AC8E47FC227575E5FAA0DC8BE744EDA0671600534FE259E7ED6EDCEB0",
+      "path": "tests/TagEkyc.ArchTests/Tip88B4RawExportJobBoundaryTests.cs"
+    },
+    {
+      "sha256": "AAE0DBAEA8295C2BF864E5B00B47F421F97BA99EB2FA8CB0557484CF4D48E337",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1AAcceptanceSurfaceArchitectureTests.cs"
+    },
+    {
+      "sha256": "7BC39A255E91FB7F85F1E2DD563434CD39047E2288E95FEBDC1AA6B3160C589C",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B1IngressClaimArchitectureTests.cs"
+    },
+    {
+      "sha256": "F87EAD6EA112B75C96C1982577734AC420EB46603D0CFAAF29F98AB697492B7D",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B2AttemptKeyProviderTests.cs"
+    },
+    {
+      "sha256": "BD34DE40A558FF976B2B43E0BB3201C6F053AB93B5B507B161620BB6E1D28CAD",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B2CoreArchitectureTests.cs"
+    },
+    {
+      "sha256": "C1B434F5720416076014F8BB876A0AB64695B79C7B43FB07E6CBFB8A8912518C",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B2CustodyProfileTests.cs"
+    },
+    {
+      "sha256": "92B6CD6A48584E7164F2CE600A945F36501EF55BFA6EEA983A7E9EBFC9A2C011",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B2DurableKeyFixtureProofArchTests.cs"
+    },
+    {
+      "sha256": "3EEAD82CC2E2E1D3906BFA723F8D4788CE3252EAC14AF37CD25BFB172EEC6AA3",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B2DurableKeyProdArchTests.cs"
+    },
+    {
+      "sha256": "AAE59A3FA7D5EC0AF129DE79B67BFD99463D7F8D5F037347B42804E74F0576CC",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B2DurableObjectCustodyArchTests.cs"
+    },
+    {
+      "sha256": "FD6CF2DB0493A7AA835DFD8CFF564639163F72990476C7019C20DE67695EEA7E",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B2R2DurableCustodyEncryptionArchTests.cs"
+    },
+    {
+      "sha256": "DB444B6F55B0EA8858A78D45C25E7E9AD1F4260E96CECCE11971D6D0B85D0CCA",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B2R3VerifiedCiphertextStagingArchTests.cs"
+    },
+    {
+      "sha256": "B3B081A9338B20B38D7B3DFD56B54EB16D81FD8458B25D432F0D1BA23FD36740",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1B2SourceFinalizationArchTests.cs"
+    },
+    {
+      "sha256": "25E8901F9FBE60B00668FE05E894E10DF76F74DFFF3E540E50DE5E4AE9267B84",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C1ResolverAssemblyArchTests.cs"
+    },
+    {
+      "sha256": "B47A5AE5C8488EB55832AE9848F1E22CDF0B9E0A8DAD5E072D793C9C6F9CE85C",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C2RecipientPackageArchTests.cs"
+    },
+    {
+      "sha256": "C55F7C62DBEA5D489734AC9B710D27F13789FC68BEA8F5B551243C68D446309B",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C3RecipientPackageDeliveryArchTests.cs"
+    },
+    {
+      "sha256": "417DBB8E8453C4188EE5FE28CB2A43289BDF9C6D70012ADA617EF9417C5330E9",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C4RecipientPackageReferenceArchTests.cs"
+    },
+    {
+      "sha256": "698E364D866FAD248FC971CDB62C594C297B3B2210FC8F58BE487D38595A5EF9",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C5RecipientManagementArchTests.cs"
+    },
+    {
+      "sha256": "D9E13128E303D4D7E8D9B93B45DA015FEE71657D3C11124DA238FA9DB552F482",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C6BA1ArchitectureTests.cs"
+    },
+    {
+      "sha256": "A12D58DC24815239F42C371B4EFC1B2B52FC7BF83BD01ACD5735795A6D605270",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1C6BA1DispatchCatalogueTests.cs"
+    },
+    {
+      "sha256": "A8E8A4C3A2AEE2DFA091203E6BC02A74DD7C3140AC82C77693DF2F6F7A623FD8",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1Key1ContentCommitmentTests.cs"
+    },
+    {
+      "sha256": "1EAE61665DACA1F4EFF8D023082E2B24ADABAD992915C0B93CB3521F24BF531F",
+      "path": "tests/TagEkyc.ArchTests/Tip88C1Key2SubjectRefTokenTests.cs"
+    },
+    {
+      "sha256": "1755537FC5AEBE28C86A8C51302377C4F67E35F3C96A69D734D9A76DFAD5379D",
+      "path": "tests/TagEkyc.ContractTests/ContractPlaceholderTests.cs"
+    },
+    {
+      "sha256": "CA11CB4E26E7202535EAC4DBE051B7745C07B9E749E017DEB4E3712387B64AB6",
+      "path": "tests/TagEkyc.ContractTests/ProjectionBoundaryTests.cs"
+    },
+    {
+      "sha256": "1D695562176BDD4D9E4FD6CBB293D3988D8580F2B191A83502E38A5D270E99E4",
+      "path": "tests/TagEkyc.ContractTests/Tip88C1C5RecipientManagementContractTests.cs"
+    },
+    {
+      "sha256": "483A63F88EB52E1149C45D3B49C97D0BDCF5B6EB0BC877E95CEA8D71D94BAFCE",
+      "path": "tests/TagEkyc.IntegrationTests/A1SyntheticDbFailureInterceptor.cs"
+    },
+    {
+      "sha256": "E84BD6D78686FDE9249FD448AE691DE0E61DACFB982CB0275C35C5DB8C98FD86",
+      "path": "tests/TagEkyc.IntegrationTests/DurableObjectMinioFixture.cs"
+    },
+    {
+      "sha256": "D9B7C770A35DBA15398FE1D27651F5EFF6C14730EF60F4AE851BCB511138371A",
+      "path": "tests/TagEkyc.IntegrationTests/HistoricalPreparedWebApplicationFactory.cs"
+    },
+    {
+      "sha256": "49E03979D81D31343E06FCEA02FB51E0CEDAB6B721756E2C7CB5B43077F15542",
+      "path": "tests/TagEkyc.IntegrationTests/IsolatedMigrationPostgres.cs"
+    },
+    {
+      "sha256": "3335955BF9318678DD775C685DAB80B894CAABF159FC842537D966E372C3C9CA",
+      "path": "tests/TagEkyc.IntegrationTests/PostgresPersistenceFixture.cs"
+    },
+    {
+      "sha256": "5BCEBCCCE8CD6FA27A60F433132745CFD8381F574403DBE61EBF8AD86521032B",
+      "path": "tests/TagEkyc.IntegrationTests/PostgresPersistenceSliceTests.cs"
+    },
+    {
+      "sha256": "7E389EF908DCF1CACC703BCDC3FDF7D43422C52665E2BA213AE5CCB382AE8291",
+      "path": "tests/TagEkyc.IntegrationTests/Tip66EvidenceSignatureTestVerifier.cs"
+    },
+    {
+      "sha256": "736929850ADA5436A963BFB46E9994D95FF2673F1FBB912000D2286E279D0170",
+      "path": "tests/TagEkyc.IntegrationTests/Tip66EvidenceSigningTests.cs"
+    },
+    {
+      "sha256": "1F435B6B760743D3A42BA6BEBC7AA88D85232BCF48A2D44678FEDF989E0741BF",
+      "path": "tests/TagEkyc.IntegrationTests/Tip67BNeutralProofVerificationTests.cs"
+    },
+    {
+      "sha256": "16144A48FADC93B220026F68DECC2D5D8EC22071339DAFEABB6E4C07BEB1F872",
+      "path": "tests/TagEkyc.IntegrationTests/Tip67GGoldenNeutralProofVectorTests.cs"
+    },
+    {
+      "sha256": "6D9613F1D29CE24A6BB45C0C1CD9B695CBC55769086CBE0B3B642CF638FF374F",
+      "path": "tests/TagEkyc.IntegrationTests/Tip68ProdHsmSigningTests.cs"
+    },
+    {
+      "sha256": "7073DF500258BF89CB4473E25900B26948E3A6255FEC8C475D42991CF7D0A3B7",
+      "path": "tests/TagEkyc.IntegrationTests/Tip68SoftHsmE2ETests.cs"
+    },
+    {
+      "sha256": "6E5B99848186F3A2DD9F0AF1853106229599F08765A1D2065C27CC345F77DCE8",
+      "path": "tests/TagEkyc.IntegrationTests/Tip83ASigningKeyJwksTests.cs"
+    },
+    {
+      "sha256": "501C393287D262C9290B38E76E68116E93DAFD9FE18DD15C25E41BCA432D383D",
+      "path": "tests/TagEkyc.IntegrationTests/Tip83BPostgresProductionInfraTests.cs"
+    },
+    {
+      "sha256": "461E1C796BB58E4BB5E28B01B91D01BD68674866B6BFAACAB33996F306FD5384",
+      "path": "tests/TagEkyc.IntegrationTests/Tip83E1ReadinessEndpointTests.cs"
+    },
+    {
+      "sha256": "616B005575F2A56E216CBEF1E046CEACB2C0D23D093FEE6F2779FDD6D2F37DEB",
+      "path": "tests/TagEkyc.IntegrationTests/Tip83E3RetentionConfigTests.cs"
+    },
+    {
+      "sha256": "D4629D8C8FE2DD1FE081C9B74770CB65E3607630095DA102C37A3A6DF70970D4",
+      "path": "tests/TagEkyc.IntegrationTests/Tip84BHashedApiKeyStoreTests.cs"
+    },
+    {
+      "sha256": "191AE00D2E35449474BDF5D6E03B312C358D268BB8084A5F836C0FCFE1B8E0B0",
+      "path": "tests/TagEkyc.IntegrationTests/Tip86DecisionThresholdConfigTests.cs"
+    },
+    {
+      "sha256": "B90DBBC074DD45030DF715723A512A82D44FEF7687A772C8044C6C26F79CDCF6",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88AE2PolicyPermitTtlConfigTests.cs"
+    },
+    {
+      "sha256": "911885AD7FF0D8572C1CB17EC9E4F8D5369D8275B4FA7E879C670A02C9BF07C0",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88ARawExportPolicyCatalogTests.cs"
+    },
+    {
+      "sha256": "A9B5F8E0568CD952D4AC0A77334BFC8CFC652E8618D8BC1AEB4803C4C2C58F88",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B1E3ResolverReadBoundaryTests.cs"
+    },
+    {
+      "sha256": "B95272DEB9330A0672D785230A3CFE1E24C2570D85B19CA1D1715BBC2D4381FD",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B1RawExportControlPlaneTests.cs"
+    },
+    {
+      "sha256": "B78ADFFA2E68A6992F0E525335B07C6901088550F509BE8853083A3E8900D44B",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B2SubjectExportConsentTests.cs"
+    },
+    {
+      "sha256": "0614A14404AAEBFA7ADEABFD0F237BEF013FAF3B55A55205532326FC63D442BC",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B31RawExportAuthorizationSchemaTests.cs"
+    },
+    {
+      "sha256": "E961CCAF7B825E7A1B8D4A3794EE0C225F48332B1C71C7FA722342E5F671F750",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B32AuthorizationCodecTests.cs"
+    },
+    {
+      "sha256": "419EA9A50C6537A417493693479DAAD9ECFE860B6FFE9B0378997AFA5F779101",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B32AuthorizationIdentityFunctionTests.cs"
+    },
+    {
+      "sha256": "31932B44EDE6FF671214A5933C8C5F42C8B68E9766A0671A9F33824FF83BCD66",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B33AuthorizationOracleTests.cs"
+    },
+    {
+      "sha256": "E22CB3C90A4CECB9377650D9E3EF9FD7FCEF558D71D7471C1CFE8DDB1FABD142",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B33AuthorizationPersistTests.cs"
+    },
+    {
+      "sha256": "6EDB5C15A86CD9FCD13A384776878CFBE3E866C98E2D891C39CB02C9C1C0DB05",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B34AuthorizationEngineTests.cs"
+    },
+    {
+      "sha256": "CDF4D75867C6E367953BAA372206FB9CEDC15D2A8395491FE336011B0322AD93",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88B4RawExportJobFoundationTests.cs"
+    },
+    {
+      "sha256": "B4655A1562C6B3414066D638BD4682F0D736E94877415D967674477B5FA2D2BF",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1AAcceptanceSurfaceTests.cs"
+    },
+    {
+      "sha256": "BEECF0C5959C737EE39F440F53C42954D23E188144686C7EEEDD9547EA5DA536",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B1IngressClaimTests.cs"
+    },
+    {
+      "sha256": "6A2556D19C655E12B3BC665A13FBEB5BAEE91FDC939ADB89B0DD0FC9AEEAA9B2",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B2AuthoritySnapshotTests.cs"
+    },
+    {
+      "sha256": "3BE18993CC5D5EF22BCE0EAC32CED816FE63D425DD8E91B6CA52AF163FF966C5",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B2BetaExistingCandidateTests.cs"
+    },
+    {
+      "sha256": "97CA434EFB5066A0CEF888B3E4FA03E6E22FC3559BA031C0DFF1C4F3598E8766",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B2CoreTests.cs"
+    },
+    {
+      "sha256": "C8F5653315B2F049CF911135FAAEF14694ED280FDDA8EF8A72971059401A5970",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B2DurableKeyFixtureProofTests.cs"
+    },
+    {
+      "sha256": "1D6C20794FFDBFD211D08B8E2A3233A22FD6F82F6BA4DCD2FB92B99E195E447D",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B2DurableKeyProdTests.cs"
+    },
+    {
+      "sha256": "F3668CC427E034EE53BF535674CFF2B025FD645DCC97B3D868B60AC26A75DA50",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B2DurableObjectCustodyTests.cs"
+    },
+    {
+      "sha256": "01EBEE71120ADBA0EE61255108B3B7A2AB055CCE9751D10CCFF629CD4758CA32",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B2R2DurableCustodyEncryptionTests.cs"
+    },
+    {
+      "sha256": "3BEAFB922B5E16DDC0D7C122FC52E405A485926871EB6552D17A25960187B5AA",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B2R3VerifiedCiphertextStagingTests.cs"
+    },
+    {
+      "sha256": "D293AE48CAD98F9CC8BA5E5D3770A87C1750FCD0348A9E862F1F97BB876F37C1",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1B2SourceFinalizationTests.cs"
+    },
+    {
+      "sha256": "C2203FBCDDB970FBCC8921993347D47D9D25AA75CD07B6713C828A9E1D2DFBDC",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs"
+    },
+    {
+      "sha256": "B3509F403CAE91149E996C4F5C204F6E1231A0A5CB2DFC837EC17D0C7E2816CA",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C2RecipientPackageTests.cs"
+    },
+    {
+      "sha256": "66A3C41A7C1ED310E41508DAFD5ED244E3467CE68E5B140E3D4F1FDD79BD5968",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C3RecipientPackageDeliveryTests.cs"
+    },
+    {
+      "sha256": "1B75079D96A999C5B75FAC25F79873887D615FD54992F88A040B24F3579F30EE",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C4RecipientPackageReferenceTests.cs"
+    },
+    {
+      "sha256": "0C1527834D864E80F23537EB839012FF7CF07B4B282312CD5877C000BDE51CED",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C5RecipientManagementTests.cs"
+    },
+    {
+      "sha256": "C5C3BC3C86ED7B4B1357B806CC9A83B1A7DF7263D3B51C63DB3193DC518FCEB3",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1AclTests.cs"
+    },
+    {
+      "sha256": "5F8A91CD78A87E5782AEC75BA463546C771AA01FBFD9BC5EA7FB1718C11E0966",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1AppendAuthorityTests.cs"
+    },
+    {
+      "sha256": "8171A9569618B0E82E67C655DA2DF773E5ED980FBD0D9D53E5CADCC9D22F5CC1",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1CancellationHttpTests.cs"
+    },
+    {
+      "sha256": "BDD11CED2852FCF7524BBC303BB85A2BDB34E027A28FF14365A1C0933F5E470E",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1CanonicalDdlProjectionTests.cs"
+    },
+    {
+      "sha256": "300AFD1068C5241F2312745F64B264D3D58A23766256E42AA8E8C634632892CC",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1EnrollmentTests.cs"
+    },
+    {
+      "sha256": "46588810D7674312945FC6DB3ED97AC958597CAD8A133C7CC0615970B4BD9CC9",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1ExecutionHttpTests.cs"
+    },
+    {
+      "sha256": "958FD52EE1F5BDEEFAA76BE96D9792447FF6A8FF58F7EEB639F69F14B2F52296",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1LifecycleRaceTests.cs"
+    },
+    {
+      "sha256": "8B949614638321B3BCF1CBF293B514AE99FE01293B39FF64092BE794256C7EAE",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1ManagementTests.cs"
+    },
+    {
+      "sha256": "BD0DB0B5E5C86D90DEA97BF166941C0AA9D4607FC96F7B31936297418C34B76C",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1NormativeSqlProofTests.cs"
+    },
+    {
+      "sha256": "67A981401789C014DCF73E4F5BC7A4F18AEC955E2E35F9F3E42093616E9EDA4A",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1PersistenceTests.cs"
+    },
+    {
+      "sha256": "15BE580CDDFAC894876066F41AA298B4FC4C9F9123F0AAEA8E3A23BBA9711BD6",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1PlatformAuthenticationTests.cs"
+    },
+    {
+      "sha256": "D489CBB077A9A8984FAD87ECFB5B070C55BB73CFCF4CBD3CBACE25C7941B18C9",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RawIngressBoundaryTests.cs"
+    },
+    {
+      "sha256": "EA085067F952FEF7B05B69DA0AE4DD89C3756245574D7B8AB864D8563A89F084",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RootCliTests.cs"
+    },
+    {
+      "sha256": "29664DDA506EF7FC8103D5E725D72B3368F3DD4B541BE900F79782058B42594C",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RotationHttpTests.cs"
+    },
+    {
+      "sha256": "B1CBC54424EBBBBFD6DEC90B3A30539B973A70183B3D577F98026975DC2AED75",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RotationTests.cs"
+    },
+    {
+      "sha256": "857522F1BC213A1BC04B81C3A030E1117265E63ED85C4AB541507295BD985E68",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RuntimeAppendTransactionTests.cs"
+    },
+    {
+      "sha256": "856D8E47440E52F79261FDBF5942355E70C13E6649E60B3A36FB7FBA3DED5899",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1StartupCompositionTests.cs"
+    },
+    {
+      "sha256": "590B00DE5F37AABF01597CD1B1C66B48B36E8CD0E3DDB9417B3FD3FFA8AEB67C",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1StartupReadinessDiagnosticTests.cs"
+    },
+    {
+      "sha256": "94AFB543F6228A8A7DF4AE53D684279A64A4A2D8186CDB182F4F19F30D2FB1F8",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88C1C6BA1TransitionCoverageTests.cs"
+    },
+    {
+      "sha256": "041B0B883BDE61E8D13B5BBE1BEC5955BE2FB58632F67BA765387A6BBE5FD7E4",
+      "path": "tests/TagEkyc.IntegrationTests/Tip88M1ModelSnapshotDriftTests.cs"
+    },
+    {
+      "sha256": "2A013FB395A165F791C354BDABF71530D515B21BE24775BD0B2C3162797F3076",
+      "path": "tests/TagEkyc.UnitTests/AssemblySmokeTests.cs"
+    },
+    {
+      "sha256": "DD3608E5F7FAACD10C692A066FDF9DEB2D2BA1CE9EA1C41EB6B0D8BF3FA02ED4",
+      "path": "tests/TagEkyc.UnitTests/DomainInvariantTests.cs"
+    },
+    {
+      "sha256": "3F4EDB38D4B7E518C7C369808904FBB9B628C3AED0F00B76CA1CDF6F9A44A7D9",
+      "path": "tests/TagEkyc.UnitTests/TestEvidenceSigner.cs"
+    },
+    {
+      "sha256": "B2C57935D3507B2FCE7F44A91E531D4297E2CFF4D8F42FEB0697B47933123D2C",
+      "path": "tests/TagEkyc.UnitTests/Tip04ApiEndpointTests.cs"
+    },
+    {
+      "sha256": "D0401F5BD4F9E4EB583B119D12C940854F388C25EC5FF1CFD87AB94D91E3CD5C",
+      "path": "tests/TagEkyc.UnitTests/Tip04SessionApplicationTests.cs"
+    },
+    {
+      "sha256": "BEE9072CFEDDAF15138795820E95AD2A0CF8BD530C67C9965CCE918D655BAD0A",
+      "path": "tests/TagEkyc.UnitTests/Tip05ApiPipelineTests.cs"
+    },
+    {
+      "sha256": "737221BA1DA5954B4917D66F5AF3D57F982A39AACC0B7E573ADFF385495A0BCD",
+      "path": "tests/TagEkyc.UnitTests/Tip05EvidenceApplicationTests.cs"
+    },
+    {
+      "sha256": "7DAEE6AB89FCB5139F539D6A80473D1825D324CB0BA7E611260B1912D54453BC",
+      "path": "tests/TagEkyc.UnitTests/Tip06ApiPipelineTests.cs"
+    },
+    {
+      "sha256": "99EC5B1A9E052C5EADD7D651435697942DBA71AAE4942E9F47822C776543FF5C",
+      "path": "tests/TagEkyc.UnitTests/Tip06CompletionApplicationTests.cs"
+    },
+    {
+      "sha256": "FF889061E0E95CEE2B7778736AA4BE650BF5360034F732D9EAB9FC342749E42F",
+      "path": "tests/TagEkyc.UnitTests/Tip07CompletionNotificationApplicationTests.cs"
+    },
+    {
+      "sha256": "ECF115DF350FE4B32F2999EF2D036C894B0AB4314270702471AB8980C3438362",
+      "path": "tests/TagEkyc.UnitTests/Tip08TransactionBoundE2eProofTests.cs"
+    },
+    {
+      "sha256": "859BF8574B169BC3E483C8F5028D3F907F118F5D85F4D59C9F935A5F52880BBE",
+      "path": "tests/TagEkyc.UnitTests/Tip11DataBoundaryMetadataTests.cs"
+    },
+    {
+      "sha256": "9E5264FD8C2A1730C9370C55EE01BB19BE8BD28C9BD1D9D2E2381F8A51CA2E35",
+      "path": "tests/TagEkyc.UnitTests/Tip13ApplicationAuthorizationBoundaryTests.cs"
+    },
+    {
+      "sha256": "0BD275E6BC9FF5F73A3BAD176C0E10A57CB3BAEB7F39B5037A7B94C23D823189",
+      "path": "tests/TagEkyc.UnitTests/Tip17DurableMetadataRepositoryBoundaryTests.cs"
+    },
+    {
+      "sha256": "00820B8CFA9F19D5083D54F89A5F13CAD9A5086482318A7359307178A4E7F9C3",
+      "path": "tests/TagEkyc.UnitTests/Tip55MetadataReferenceFoundationTests.cs"
+    },
+    {
+      "sha256": "156FF89D4D4DC6C4D93B933D54AF09DCDD1AD80303E64712FC05D8660F0EF64F",
+      "path": "tests/TagEkyc.UnitTests/Tip57MetadataReferenceQuerySemanticsTests.cs"
+    },
+    {
+      "sha256": "C82DD15C8D55D0898A18C2BF8FDB6C18A65AD2242028251E37DDF384E89BD65B",
+      "path": "tests/TagEkyc.UnitTests/Tip60LocalDevMetadataReferenceRegistryTests.cs"
+    },
+    {
+      "sha256": "D04F0D8DF21A6C02A23D3C1438953CD1F4355ABF8DE110287E256B13B91D7640",
+      "path": "tests/TagEkyc.UnitTests/Tip65EvidenceCanonicalizationTests.cs"
+    },
+    {
+      "sha256": "F48457EA2530B2ABBB2D95E0366E5859D627FCE0AA437700C29DDEF25A1516EF",
+      "path": "tests/TagEkyc.UnitTests/Tip73EvidenceEngineProofBindingTests.cs"
+    },
+    {
+      "sha256": "E1D505A2B7A9F6CB209F2CBE4A7E5DCC9AAC5EB6E647231BE019C1D322D380CA",
+      "path": "tests/TagEkyc.UnitTests/Tip80SAppendIdempotencyTests.cs"
+    },
+    {
+      "sha256": "270B166C4558CC73B20BC86A60520AAC59A76E22C5533AC33381FDD669B67BD8",
+      "path": "tests/TagEkyc.UnitTests/Tip80SLedgerTests.cs"
+    },
+    {
+      "sha256": "FFB31A88ABD7F32592381B1252417A9476F619AD59171558F8FC5B9D6E32438F",
+      "path": "tests/TagEkyc.UnitTests/Tip82SSessionCancelTests.cs"
+    },
+    {
+      "sha256": "3063D33376B49D7C1A1458715955E6F36B36A46B15DB05DF6269DE84AFED5D22",
+      "path": "tests/TagEkyc.UnitTests/Tip88B4RawExportJobTests.cs"
+    },
+    {
+      "sha256": "BAE18A140467DB8BEEF04D8EC8125EC738FACA8B86D105823CAAC27D41D2653D",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C1AssemblyCodecTests.cs"
+    },
+    {
+      "sha256": "B5C36A4B6A8E11DE7EEDB85740F2D470A7DEB933F0D750AC706C76258E680250",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C2RecipientPackageCodecTests.cs"
+    },
+    {
+      "sha256": "C54326D225C9F57A7BD2DA305A7C3DCC58D99DDB678243E5C8F9DA8053B0C0F3",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C3RecipientPackageDeliveryApplicationTests.cs"
+    },
+    {
+      "sha256": "9D4070467D904294F8DF5D24DA7B4786D3C1065523D3B9D325E84A9849BA5084",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C3RecipientPackageDeliveryCodecTests.cs"
+    },
+    {
+      "sha256": "4122422AE1B9651BAA79ABCC736424DCFA2309ABA59E3627AAB30A305374D67F",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C4RecipientPackageReferenceApplicationTests.cs"
+    },
+    {
+      "sha256": "5166CBDF5A9F46FC76523FD8F881B15465FAD5875C3E021FB722B923D106FB82",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C4RecipientPackageReferenceCodecTests.cs"
+    },
+    {
+      "sha256": "A3101502D2AD6B989680ACA4320D25CAD1865D8CB3625CD3ACE97287F5B41625",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C5RecipientManagementApplicationTests.cs"
+    },
+    {
+      "sha256": "53D1B7B79C1657C51BCD35E787266A19B75560434462440F215087D9E0EC5DF5",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C5RecipientManagementCodecTests.cs"
+    },
+    {
+      "sha256": "05FD4F1487906782013DE12F6A3823B5E85A04475C854480E650D3FA8AB2BDDB",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1AppendHttpLimitTests.cs"
+    },
+    {
+      "sha256": "776496D1FA6AFD5DCA4D4EA28F9A169584360646F8EFAA709C417539289B8865",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ClosedJsonTests.cs"
+    },
+    {
+      "sha256": "D545A2B3B4BB622742E35DBF7E55BAA44D81E80C65C38152DDF88A5A1F0C5BA5",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ConfigurationSerializationTests.cs"
+    },
+    {
+      "sha256": "8EBD1A0627C799B9CA13B7B1F3A9640528C3DD1F924398B94E13AA521F7C8DD5",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ContractTests.cs"
+    },
+    {
+      "sha256": "45F021A9FE5CED4E0E8EA01F490FC92A8D89B7060216A8330D5FC42C19CFB7C2",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1EnrollmentHttpTests.cs"
+    },
+    {
+      "sha256": "92E08B7215E2473656E9B39F98AE5AA80C0B52D39C8F84708A3C39B838C5CF7F",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1EnrollmentTests.cs"
+    },
+    {
+      "sha256": "5CA63AF2DCF9109FEE643DF8A5065B2FD3B84CEC865C0680A8B377D4FD714E92",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ExecutionTests.cs"
+    },
+    {
+      "sha256": "01703DC2D57AA571E67FA6AFFAB937AF364EB4A19B4C65AB705AEDD327CA8862",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ManagementHttpContractTests.cs"
+    },
+    {
+      "sha256": "4DE4D9C9E9A65BC86B06E399BB8B4581AB613B257E784A38E83DD8EEFE8C87CB",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1ResponseWireTests.cs"
+    },
+    {
+      "sha256": "B3BF814240E61D6CB9062EA2AC3914759971A181CB4DF662F29231370533074C",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1RotationTests.cs"
+    },
+    {
+      "sha256": "B2590753440D0C36526ADFC6E71A0ACD7FB288F2301F6AD086A65B812AA78BE3",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1RouteRegistrationTests.cs"
+    },
+    {
+      "sha256": "966F43124226AC1D7F38D2B0712D4E7DF6B7D4854D3DAC58D3C21CFF6F5FB8F3",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1RuntimeAppendTests.cs"
+    },
+    {
+      "sha256": "A92E29A11F578BDFC2F83C860E0CA05447E95CA6E3BAC42996D7F3D230229870",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BA1StartupTests.cs"
+    },
+    {
+      "sha256": "89AD752FC0A583B2B2E79394DAD773C7D22F7CB73850B414040768A4871163DC",
+      "path": "tests/TagEkyc.UnitTests/Tip88C1C6BRawIngressTransportTests.cs"
+    },
+    {
+      "sha256": "CCD59FBA99CC072249D26176448BC049B9CEB70CB601384F03695463336EEF73",
+      "path": "tools/TagEkyc.ApiKeyProvisioner/Program.cs"
+    },
+    {
+      "sha256": "C7F801B9E24DF3AA8CFAE88CA12FAF9B7DF2261EF8800841DBB00EBCB8351D02",
+      "path": "tools/TagEkyc.GDriveSync/Program.cs"
+    }
+  ],
+  "sha256": "B3517A6F2E632301FCF9CE28A3764E656A77228AC4C927CCF479257785CE181B",
+  "count": 625
+}

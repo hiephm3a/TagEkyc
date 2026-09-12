@@ -842,11 +842,12 @@ public sealed class VerificationCompletionApplicationService(
         bool RetryOnNonTerminalStateMismatch,
         CancellationToken cancellationToken)
     {
-        var terminal = ClassifyCancellationTerminal(session);
-        if (terminal is not null)
-        {
-            return terminal;
-        }
+        // B must observe terminal sessions too: an authorized capability expiry
+        // commits before the requested cancellation returns its unchanged 409.
+        // Already-cancelled replay still crosses the owning B boundary. Production
+        // verifies the internally derived operation fingerprint under its session
+        // lock and returns frozen winner metadata; the unused candidate audit ID
+        // never becomes another audit row.
 
         var effectiveRequestId = FirstNonEmpty(request.RequestId, session.RequestId, $"req-{session.Id:N}");
         var effectiveCorrelationId = FirstNonEmpty(request.CorrelationId, session.CorrelationId, $"corr-{session.Id:N}");
@@ -858,8 +859,15 @@ public sealed class VerificationCompletionApplicationService(
 
         if (writeResult.Status == VerificationFinalizationWriteStatus.Applied)
         {
-            return SessionOperationResult<CancelVerificationSessionResponseDto>.Success(ToCancelResponse(cancelledSession));
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Success(ToCancelResponse(writeResult.Session ?? cancelledSession));
         }
+
+        if (writeResult.Status == VerificationFinalizationWriteStatus.NotReady)
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Failure("NOT_READY", "Cancellation is not ready.", 503);
+        if (writeResult.Status == VerificationFinalizationWriteStatus.AccessDenied)
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Failure("ACCESS_DENIED", "Access denied.", 403);
+        if (writeResult.Status == VerificationFinalizationWriteStatus.InvalidRequest)
+            return SessionOperationResult<CancelVerificationSessionResponseDto>.Failure("REQUEST_INVALID", "Cancellation request is invalid.", 400);
 
         if (writeResult.Status == VerificationFinalizationWriteStatus.NotFound)
         {
@@ -917,25 +925,6 @@ public sealed class VerificationCompletionApplicationService(
         character is >= 'a' and <= 'z' ||
         character is >= '0' and <= '9' ||
         character is '_' or '.' or ':' or '-';
-
-    private static SessionOperationResult<CancelVerificationSessionResponseDto>? ClassifyCancellationTerminal(VerificationSession session)
-    {
-        if (session.State == VerificationSessionState.Cancelled)
-        {
-            return SessionOperationResult<CancelVerificationSessionResponseDto>.Success(ToCancelResponse(session));
-        }
-
-        if (session.State is VerificationSessionState.Completed or VerificationSessionState.Expired or VerificationSessionState.TechnicalTerminal ||
-            session.ExpiresAt <= DateTimeOffset.UtcNow)
-        {
-            return SessionOperationResult<CancelVerificationSessionResponseDto>.Failure(
-                "SESSION_TERMINAL",
-                "Verification session is terminal.",
-                409);
-        }
-
-        return null;
-    }
 
     private static CancelVerificationSessionResponseDto ToCancelResponse(VerificationSession session) =>
         new(

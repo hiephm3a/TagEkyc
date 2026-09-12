@@ -22,7 +22,7 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
     [InlineData(null)]
     public void Production_refuses_inmemory_or_missing_persistence_provider(string? provider)
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");
@@ -39,7 +39,7 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
     [Fact]
     public async Task Development_inmemory_persistence_still_starts()
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Development");
@@ -56,7 +56,7 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
     public void Production_rejects_plaintext_connection_string()
     {
         const string connectionString = "Host=localhost;Database=unused;Username=unused;Password=plain-secret";
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");
@@ -75,7 +75,7 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
     [MemberData(nameof(SecretRefCases))]
     public void Production_connection_secret_ref_taxonomy_is_fail_closed_and_sanitized(string secretRef, string expectedCode, string? forbiddenText)
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");
@@ -261,7 +261,7 @@ public sealed class Tip83BPostgresProductionInfraTests(PostgresPersistenceFixtur
     }
 
     private static WebApplicationFactory<Program> ProductionFactory(Action<IWebHostBuilder> configure) =>
-        new WebApplicationFactory<Program>()
+        new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");

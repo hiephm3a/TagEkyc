@@ -151,7 +151,7 @@ public sealed class Tip88AE2PolicyPermitTtlConfigTests(PostgresPersistenceFixtur
         Action<IWebHostBuilder> configure,
         Action<IServiceCollection>? inspectServices = null,
         string? connectionString = null) =>
-        new WebApplicationFactory<Program>()
+        new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");

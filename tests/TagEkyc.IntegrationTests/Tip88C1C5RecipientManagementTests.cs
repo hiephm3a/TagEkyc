@@ -1807,7 +1807,7 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
         {
             await target.DisposeAsync();
         }
-        Bite(!await DatabaseExistsAsync(targetDatabase),
+        Bite(await target.ResourceIsAbsentAsync(),
             "C528-DISPOSABLE-MIGRATION-ONLY", $"database {targetDatabase} dropped");
 
         var dispatch = Source(
@@ -3325,7 +3325,7 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
     {
         if (!createDisposable)
             return new(postgres.CreateDbContext(), null);
-        var disposable = await postgres.CreateDisposableCurrentDatabaseAsync("c5_down_reapply");
+        var disposable = await IsolatedMigrationPostgres.CreateAsync();
         return new(disposable.CreateDbContext(), disposable);
     }
     private static async Task<string[]> AppliedMigrationsAsync(TagEkycDbContext database)
@@ -3798,9 +3798,11 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
         string? ComponentCode);
     private sealed class C528MigrationTarget(
         TagEkycDbContext database,
-        PostgresPersistenceFixture.DisposableCurrentDatabase? disposable) : IAsyncDisposable
+        IsolatedMigrationPostgres? disposable) : IAsyncDisposable
     {
         public TagEkycDbContext Database { get; } = database;
+
+        public Task<bool> ResourceIsAbsentAsync() => disposable?.IsAbsentAsync() ?? Task.FromResult(false);
 
         public async ValueTask DisposeAsync()
         {

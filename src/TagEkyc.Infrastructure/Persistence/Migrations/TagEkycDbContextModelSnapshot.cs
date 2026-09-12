@@ -274,6 +274,1477 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.ToTable("capture_artifacts", "tagekyc");
                 });
 
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureCapabilitiesRow", b =>
+                {
+                    b.Property<Guid>("CaptureCapabilityId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureCapabilityId");
+
+                    b.Property<string>("Audience")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("Audience");
+
+                    b.Property<DateTimeOffset?>("BoundAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("BoundAtUtc");
+
+                    b.Property<string>("Challenge")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("Challenge");
+
+                    b.Property<Guid>("ClientApplicationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ClientApplicationId");
+
+                    b.Property<DateTimeOffset?>("ExpiredAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExpiredAtUtc");
+
+                    b.Property<DateTimeOffset>("ExpiresAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExpiresAtUtc");
+
+                    b.Property<DateTimeOffset>("IssuedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("IssuedAtUtc");
+
+                    b.Property<string>("KeyLookupPrefix")
+                        .IsRequired()
+                        .HasColumnType("varchar(12)")
+                        .HasColumnName("KeyLookupPrefix");
+
+                    b.Property<Guid?>("PredecessorCapabilityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("PredecessorCapabilityId");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<DateTimeOffset?>("RevokedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RevokedAtUtc");
+
+                    b.Property<byte[]>("SecretDigest")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("SecretDigest");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("State");
+
+                    b.Property<Guid?>("SuccessorCapabilityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("SuccessorCapabilityId");
+
+                    b.Property<string>("TerminalReason")
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("TerminalReason");
+
+                    b.Property<Guid>("VerificationSessionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("VerificationSessionId");
+
+                    b.Property<int>("VerifierPepperVersion")
+                        .HasColumnType("integer")
+                        .HasColumnName("VerifierPepperVersion");
+
+                    b.HasKey("CaptureCapabilityId");
+
+                    b.ToTable("capture_capabilities", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureCapabilityEventsRow", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("EventId");
+
+                    b.Property<long?>("AfterRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("AfterRevision");
+
+                    b.Property<long?>("BeforeRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("BeforeRevision");
+
+                    b.Property<Guid?>("CaptureCapabilityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureCapabilityId");
+
+                    b.Property<Guid>("ClientApplicationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ClientApplicationId");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("EventType");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid")
+                        .HasColumnName("IdempotencyKey");
+
+                    b.Property<string>("OperationKind")
+                        .IsRequired()
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("OperationKind");
+
+                    b.Property<DateTimeOffset>("RecordedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RecordedAtUtc");
+
+                    b.Property<Guid?>("RuntimeCaptureAgentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RuntimeCaptureAgentId");
+
+                    b.Property<Guid?>("RuntimeInstallationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RuntimeInstallationId");
+
+                    b.Property<Guid>("VerificationSessionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("VerificationSessionId");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("capture_capability_events", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureCapabilityOperationsRow", b =>
+                {
+                    b.Property<Guid>("ClientApplicationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ClientApplicationId");
+
+                    b.Property<Guid>("VerificationSessionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("VerificationSessionId");
+
+                    b.Property<string>("OperationKind")
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("OperationKind");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid")
+                        .HasColumnName("IdempotencyKey");
+
+                    b.Property<DateTimeOffset>("CompletedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CompletedAtUtc");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CreatedAtUtc");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("RequestFingerprint");
+
+                    b.Property<Guid?>("ResultBindingId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ResultBindingId");
+
+                    b.Property<Guid?>("ResultCapabilityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ResultCapabilityId");
+
+                    b.Property<string>("ResultCode")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("ResultCode");
+
+                    b.Property<long?>("ResultRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ResultRevision");
+
+                    b.Property<Guid?>("RuntimeCaptureAgentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RuntimeCaptureAgentId");
+
+                    b.Property<long?>("RuntimeCredentialGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RuntimeCredentialGeneration");
+
+                    b.Property<Guid?>("RuntimeCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RuntimeCredentialId");
+
+                    b.Property<Guid?>("RuntimeInstallationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RuntimeInstallationId");
+
+                    b.HasKey("ClientApplicationId", "VerificationSessionId", "OperationKind", "IdempotencyKey");
+
+                    b.ToTable("capture_capability_operations", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureExecutionBindingsRow", b =>
+                {
+                    b.Property<Guid>("CaptureExecutionBindingId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureExecutionBindingId");
+
+                    b.Property<Guid>("BindOperationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BindOperationId");
+
+                    b.Property<DateTimeOffset>("BoundAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("BoundAtUtc");
+
+                    b.Property<Guid>("CaptureAgentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureAgentId");
+
+                    b.Property<Guid>("CaptureCapabilityId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureCapabilityId");
+
+                    b.Property<string>("Challenge")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)")
+                        .HasColumnName("Challenge");
+
+                    b.Property<Guid>("ClientApplicationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ClientApplicationId");
+
+                    b.Property<Guid>("ConfigurationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ConfigurationId");
+
+                    b.Property<long>("ConfigurationRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ConfigurationRevision");
+
+                    b.Property<long>("CredentialGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CredentialGeneration");
+
+                    b.Property<Guid>("CredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<long>("CredentialRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CredentialRevision");
+
+                    b.Property<Guid>("DeviceInstallationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeviceInstallationId");
+
+                    b.Property<DateTimeOffset>("ExecutionExpiresAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExecutionExpiresAtUtc");
+
+                    b.Property<long>("InstallationRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("InstallationRevision");
+
+                    b.Property<byte[]>("PublicKeyThumbprint")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("PublicKeyThumbprint");
+
+                    b.Property<Guid>("RolePolicyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RolePolicyId");
+
+                    b.Property<long>("RolePolicyRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RolePolicyRevision");
+
+                    b.Property<long>("RuntimeRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RuntimeRevision");
+
+                    b.Property<Guid>("TrustProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TrustProfileId");
+
+                    b.Property<long>("TrustProfileRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("TrustProfileRevision");
+
+                    b.Property<Guid>("VerificationSessionId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("VerificationSessionId");
+
+                    b.HasKey("CaptureExecutionBindingId");
+
+                    b.ToTable("capture_execution_bindings", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeBootstrapIssuancesRow", b =>
+                {
+                    b.Property<Guid>("BootstrapIssuanceId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("BootstrapIssuanceId");
+
+                    b.Property<byte[]>("AttestationRequirementDigest")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("AttestationRequirementDigest");
+
+                    b.Property<Guid?>("CaptureAgentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureAgentId");
+
+                    b.Property<Guid>("ConfigurationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ConfigurationId");
+
+                    b.Property<long>("ConfigurationRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ConfigurationRevision");
+
+                    b.Property<long?>("CredentialGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CredentialGeneration");
+
+                    b.Property<Guid?>("CredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<Guid?>("DeviceInstallationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeviceInstallationId");
+
+                    b.Property<DateTimeOffset?>("ExpiredAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExpiredAtUtc");
+
+                    b.Property<DateTimeOffset>("ExpiresAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExpiresAtUtc");
+
+                    b.Property<Guid>("IssueOperationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("IssueOperationId");
+
+                    b.Property<DateTimeOffset>("IssuedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("IssuedAtUtc");
+
+                    b.Property<Guid>("IssuedByCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("IssuedByCredentialId");
+
+                    b.Property<string>("KeyLookupPrefix")
+                        .IsRequired()
+                        .HasColumnType("varchar(12)")
+                        .HasColumnName("KeyLookupPrefix");
+
+                    b.Property<DateTimeOffset?>("RedeemedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RedeemedAtUtc");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("RequestFingerprint");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<DateTimeOffset?>("RevokedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RevokedAtUtc");
+
+                    b.Property<Guid>("RolePolicyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RolePolicyId");
+
+                    b.Property<long>("RolePolicyRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RolePolicyRevision");
+
+                    b.Property<string>("RuntimeType")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("RuntimeType");
+
+                    b.Property<byte[]>("SecretDigest")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("SecretDigest");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("State");
+
+                    b.Property<string>("TerminalReason")
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("TerminalReason");
+
+                    b.Property<Guid>("TrustProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TrustProfileId");
+
+                    b.Property<long>("TrustProfileRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("TrustProfileRevision");
+
+                    b.Property<int>("VerifierPepperVersion")
+                        .HasColumnType("integer")
+                        .HasColumnName("VerifierPepperVersion");
+
+                    b.HasKey("BootstrapIssuanceId");
+
+                    b.ToTable("capture_runtime_bootstrap_issuances", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeBootstrapRedemptionEventsRow", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("EventId");
+
+                    b.Property<Guid>("BootstrapIssuanceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BootstrapIssuanceId");
+
+                    b.Property<Guid?>("CaptureAgentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureAgentId");
+
+                    b.Property<Guid?>("CredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<Guid?>("DeviceInstallationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeviceInstallationId");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("EventType");
+
+                    b.Property<long?>("Generation")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Generation");
+
+                    b.Property<DateTimeOffset>("RecordedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RecordedAtUtc");
+
+                    b.Property<Guid>("RedeemOperationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RedeemOperationId");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("capture_runtime_bootstrap_redemption_events", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeBootstrapRedemptionOperationsRow", b =>
+                {
+                    b.Property<Guid>("BootstrapIssuanceId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BootstrapIssuanceId");
+
+                    b.Property<Guid>("RedeemOperationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RedeemOperationId");
+
+                    b.Property<Guid>("CandidateKeyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CandidateKeyId");
+
+                    b.Property<Guid?>("CaptureAgentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureAgentId");
+
+                    b.Property<DateTimeOffset>("CompletedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CompletedAtUtc");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CreatedAtUtc");
+
+                    b.Property<Guid?>("CredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<Guid?>("DeviceInstallationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeviceInstallationId");
+
+                    b.Property<long?>("Generation")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Generation");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("RequestFingerprint");
+
+                    b.Property<string>("ResultCode")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("ResultCode");
+
+                    b.HasKey("BootstrapIssuanceId", "RedeemOperationId");
+
+                    b.ToTable("capture_runtime_bootstrap_redemption_operations", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeConfigurationHeadsRow", b =>
+                {
+                    b.Property<Guid>("CatalogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("CatalogId");
+
+                    b.Property<long>("CurrentRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CurrentRevision");
+
+                    b.Property<long>("HeadRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("HeadRevision");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("UpdatedAtUtc");
+
+                    b.HasKey("CatalogId");
+
+                    b.ToTable("capture_runtime_configuration_heads", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeConfigurationOverridesRow", b =>
+                {
+                    b.Property<Guid>("ConfigurationOverrideId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("ConfigurationOverrideId");
+
+                    b.Property<Guid>("BaseConfigurationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BaseConfigurationId");
+
+                    b.Property<long>("BaseConfigurationRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("BaseConfigurationRevision");
+
+                    b.Property<int?>("CaptureAgentConfigurationPollingIntervalSeconds")
+                        .HasColumnType("integer")
+                        .HasColumnName("CaptureAgentConfigurationPollingIntervalSeconds");
+
+                    b.Property<Guid>("CaptureAgentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureAgentId");
+
+                    b.Property<int?>("PlaintextBudgetSeconds")
+                        .HasColumnType("integer")
+                        .HasColumnName("PlaintextBudgetSeconds");
+
+                    b.Property<long?>("RawExportCaptureMaximumAggregatePlaintextBytesPerHost")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RawExportCaptureMaximumAggregatePlaintextBytesPerHost");
+
+                    b.Property<long?>("RawExportCustodyMaxAggregatePlaintextWindowBytesPerDeployment")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RawExportCustodyMaxAggregatePlaintextWindowBytesPerDeployment");
+
+                    b.Property<int?>("RawExportCustodyMaximumPlaintextWindowBytesPerStream")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportCustodyMaximumPlaintextWindowBytesPerStream");
+
+                    b.Property<bool?>("RawExportEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("RawExportEnabled");
+
+                    b.Property<int?>("RawExportIngressMaximumPreAdmissionBufferedBytes")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportIngressMaximumPreAdmissionBufferedBytes");
+
+                    b.Property<int?>("RawExportSourceClaimSafetyMarginMilliseconds")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportSourceClaimSafetyMarginMilliseconds");
+
+                    b.Property<int?>("RawExportSourceMaximumChipDg2PortraitBytes")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportSourceMaximumChipDg2PortraitBytes");
+
+                    b.Property<int?>("RawExportSourceMaximumLiveSelfieImageBytes")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportSourceMaximumLiveSelfieImageBytes");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("UpdatedAtUtc");
+
+                    b.HasKey("ConfigurationOverrideId");
+
+                    b.ToTable("capture_runtime_configuration_overrides", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeConfigurationRevisionsRow", b =>
+                {
+                    b.Property<Guid>("CatalogId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CatalogId");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<int>("CaptureAgentConfigurationPollingIntervalSeconds")
+                        .HasColumnType("integer")
+                        .HasColumnName("CaptureAgentConfigurationPollingIntervalSeconds");
+
+                    b.Property<DateTimeOffset>("EffectiveAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("EffectiveAtUtc");
+
+                    b.Property<DateTimeOffset>("ExpiresAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExpiresAtUtc");
+
+                    b.Property<int>("PlaintextBudgetSeconds")
+                        .HasColumnType("integer")
+                        .HasColumnName("PlaintextBudgetSeconds");
+
+                    b.Property<DateTimeOffset>("PublishedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("PublishedAtUtc");
+
+                    b.Property<Guid>("PublishedByCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("PublishedByCredentialId");
+
+                    b.Property<long>("RawExportCaptureMaximumAggregatePlaintextBytesPerHost")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RawExportCaptureMaximumAggregatePlaintextBytesPerHost");
+
+                    b.Property<long>("RawExportCustodyMaxAggregatePlaintextWindowBytesPerDeployment")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RawExportCustodyMaxAggregatePlaintextWindowBytesPerDeployment");
+
+                    b.Property<int>("RawExportCustodyMaximumPlaintextWindowBytesPerStream")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportCustodyMaximumPlaintextWindowBytesPerStream");
+
+                    b.Property<bool>("RawExportEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("RawExportEnabled");
+
+                    b.Property<int>("RawExportIngressMaximumPreAdmissionBufferedBytes")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportIngressMaximumPreAdmissionBufferedBytes");
+
+                    b.Property<int>("RawExportSourceClaimSafetyMarginMilliseconds")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportSourceClaimSafetyMarginMilliseconds");
+
+                    b.Property<int>("RawExportSourceMaximumChipDg2PortraitBytes")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportSourceMaximumChipDg2PortraitBytes");
+
+                    b.Property<int>("RawExportSourceMaximumLiveSelfieImageBytes")
+                        .HasColumnType("integer")
+                        .HasColumnName("RawExportSourceMaximumLiveSelfieImageBytes");
+
+                    b.HasKey("CatalogId", "Revision");
+
+                    b.ToTable("capture_runtime_configuration_revisions", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeCredentialGenerationsRow", b =>
+                {
+                    b.Property<Guid>("CredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<long>("Generation")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Generation");
+
+                    b.Property<string>("Algorithm")
+                        .IsRequired()
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("Algorithm");
+
+                    b.Property<Guid>("CandidateKeyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CandidateKeyId");
+
+                    b.Property<Guid>("DeviceInstallationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeviceInstallationId");
+
+                    b.Property<byte[]>("PublicKeyThumbprint")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("PublicKeyThumbprint");
+
+                    b.Property<byte[]>("PublicVerifierSpki")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("PublicVerifierSpki");
+
+                    b.Property<DateTimeOffset?>("RetiredAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RetiredAtUtc");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<DateTimeOffset?>("RevokedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RevokedAtUtc");
+
+                    b.Property<Guid>("RolePolicyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RolePolicyId");
+
+                    b.Property<long>("RolePolicyRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RolePolicyRevision");
+
+                    b.Property<DateTimeOffset?>("RotatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RotatedAtUtc");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("State");
+
+                    b.Property<string>("TerminalReason")
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("TerminalReason");
+
+                    b.Property<DateTimeOffset>("ValidFromUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ValidFromUtc");
+
+                    b.Property<DateTimeOffset>("ValidUntilUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ValidUntilUtc");
+
+                    b.HasKey("CredentialId", "Generation");
+
+                    b.ToTable("capture_runtime_credential_generations", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeCutoverStateRow", b =>
+                {
+                    b.Property<string>("Profile")
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("Profile");
+
+                    b.Property<DateTimeOffset?>("ActivatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ActivatedAtUtc");
+
+                    b.Property<Guid?>("ActivatedByCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ActivatedByCredentialId");
+
+                    b.Property<DateTimeOffset>("PreparedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("PreparedAtUtc");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("State");
+
+                    b.HasKey("Profile");
+
+                    b.ToTable("capture_runtime_cutover_state", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeInstallationsRow", b =>
+                {
+                    b.Property<Guid>("DeviceInstallationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeviceInstallationId");
+
+                    b.Property<Guid>("CaptureAgentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureAgentId");
+
+                    b.Property<long?>("CurrentCredentialGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CurrentCredentialGeneration");
+
+                    b.Property<Guid?>("CurrentCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CurrentCredentialId");
+
+                    b.Property<DateTimeOffset>("EnrolledAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("EnrolledAtUtc");
+
+                    b.Property<string>("LifecycleReason")
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("LifecycleReason");
+
+                    b.Property<string>("LifecycleState")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("LifecycleState");
+
+                    b.Property<DateTimeOffset?>("RetiredAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RetiredAtUtc");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<DateTimeOffset?>("RevokedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RevokedAtUtc");
+
+                    b.Property<DateTimeOffset?>("SuspendedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("SuspendedAtUtc");
+
+                    b.HasKey("DeviceInstallationId");
+
+                    b.ToTable("capture_runtime_installations", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeManagementEventsRow", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("EventId");
+
+                    b.Property<Guid>("ActorCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ActorCredentialId");
+
+                    b.Property<long?>("AfterRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("AfterRevision");
+
+                    b.Property<long?>("BeforeRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("BeforeRevision");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("EventType");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid")
+                        .HasColumnName("IdempotencyKey");
+
+                    b.Property<string>("OperationKind")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("OperationKind");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("Reason");
+
+                    b.Property<DateTimeOffset>("RecordedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RecordedAtUtc");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TargetId");
+
+                    b.Property<string>("TargetKind")
+                        .IsRequired()
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("TargetKind");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("capture_runtime_management_events", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeManagementOperationsRow", b =>
+                {
+                    b.Property<Guid>("ActorCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ActorCredentialId");
+
+                    b.Property<string>("OperationKind")
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("OperationKind");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid")
+                        .HasColumnName("IdempotencyKey");
+
+                    b.Property<DateTimeOffset>("CompletedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CompletedAtUtc");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CreatedAtUtc");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("RequestFingerprint");
+
+                    b.Property<string>("ResultCode")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("ResultCode");
+
+                    b.Property<Guid?>("ResultId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ResultId");
+
+                    b.Property<long?>("ResultRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ResultRevision");
+
+                    b.Property<Guid>("TargetId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TargetId");
+
+                    b.Property<string>("TargetKind")
+                        .IsRequired()
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("TargetKind");
+
+                    b.HasKey("ActorCredentialId", "OperationKind", "IdempotencyKey");
+
+                    b.ToTable("capture_runtime_management_operations", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeRegistrationsRow", b =>
+                {
+                    b.Property<Guid>("CaptureAgentId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureAgentId");
+
+                    b.Property<Guid>("ConfigurationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ConfigurationId");
+
+                    b.Property<Guid?>("ConfigurationOverrideId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("ConfigurationOverrideId");
+
+                    b.Property<long>("ConfigurationRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ConfigurationRevision");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CreatedAtUtc");
+
+                    b.Property<string>("LifecycleReason")
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("LifecycleReason");
+
+                    b.Property<string>("LifecycleState")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("LifecycleState");
+
+                    b.Property<Guid?>("NextRolePolicyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("NextRolePolicyId");
+
+                    b.Property<long?>("NextRolePolicyRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("NextRolePolicyRevision");
+
+                    b.Property<DateTimeOffset?>("RetiredAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RetiredAtUtc");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<DateTimeOffset?>("RevokedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RevokedAtUtc");
+
+                    b.Property<string>("RuntimeType")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("RuntimeType");
+
+                    b.Property<DateTimeOffset?>("SuspendedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("SuspendedAtUtc");
+
+                    b.Property<Guid>("TrustProfileId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TrustProfileId");
+
+                    b.Property<long>("TrustProfileRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("TrustProfileRevision");
+
+                    b.HasKey("CaptureAgentId");
+
+                    b.ToTable("capture_runtime_registrations", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeRequestNoncesRow", b =>
+                {
+                    b.Property<Guid>("CredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<long>("CredentialGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CredentialGeneration");
+
+                    b.Property<byte[]>("Nonce")
+                        .HasColumnType("bytea")
+                        .HasColumnName("Nonce");
+
+                    b.Property<DateTimeOffset>("AdmittedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("AdmittedAtUtc");
+
+                    b.Property<DateTimeOffset>("PurgeAfterUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("PurgeAfterUtc");
+
+                    b.Property<DateTimeOffset>("SignedTimestampUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("SignedTimestampUtc");
+
+                    b.HasKey("CredentialId", "CredentialGeneration", "Nonce");
+
+                    b.ToTable("capture_runtime_request_nonces", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeRolePolicyHeadsRow", b =>
+                {
+                    b.Property<Guid>("CatalogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("CatalogId");
+
+                    b.Property<long>("CurrentRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CurrentRevision");
+
+                    b.Property<long>("HeadRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("HeadRevision");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("UpdatedAtUtc");
+
+                    b.HasKey("CatalogId");
+
+                    b.ToTable("capture_runtime_role_policy_heads", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeRolePolicyRevisionsRow", b =>
+                {
+                    b.Property<Guid>("CatalogId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CatalogId");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<DateTimeOffset>("EffectiveAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("EffectiveAtUtc");
+
+                    b.Property<DateTimeOffset>("PublishedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("PublishedAtUtc");
+
+                    b.Property<Guid>("PublishedByCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("PublishedByCredentialId");
+
+                    b.Property<string[]>("Roles")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("Roles");
+
+                    b.HasKey("CatalogId", "Revision");
+
+                    b.ToTable("capture_runtime_role_policy_revisions", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeRotationAuthorizationsRow", b =>
+                {
+                    b.Property<Guid>("RotationAuthorizationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("RotationAuthorizationId");
+
+                    b.Property<Guid>("AuthorizeOperationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("AuthorizeOperationId");
+
+                    b.Property<DateTimeOffset>("AuthorizedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("AuthorizedAtUtc");
+
+                    b.Property<Guid>("AuthorizedByCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("AuthorizedByCredentialId");
+
+                    b.Property<Guid?>("CandidateKeyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CandidateKeyId");
+
+                    b.Property<Guid>("CaptureAgentId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CaptureAgentId");
+
+                    b.Property<DateTimeOffset?>("CompletedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CompletedAtUtc");
+
+                    b.Property<Guid>("CredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<long>("CurrentGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CurrentGeneration");
+
+                    b.Property<Guid>("DeviceInstallationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeviceInstallationId");
+
+                    b.Property<DateTimeOffset?>("ExpiredAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExpiredAtUtc");
+
+                    b.Property<DateTimeOffset>("ExpiresAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExpiresAtUtc");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("RequestFingerprint");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<DateTimeOffset?>("RevokedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RevokedAtUtc");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("State");
+
+                    b.Property<long?>("SuccessorGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SuccessorGeneration");
+
+                    b.Property<byte[]>("SuccessorPublicKeyThumbprint")
+                        .HasColumnType("bytea")
+                        .HasColumnName("SuccessorPublicKeyThumbprint");
+
+                    b.Property<byte[]>("SuccessorPublicVerifierSpki")
+                        .HasColumnType("bytea")
+                        .HasColumnName("SuccessorPublicVerifierSpki");
+
+                    b.Property<string>("TerminalReason")
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("TerminalReason");
+
+                    b.HasKey("RotationAuthorizationId");
+
+                    b.ToTable("capture_runtime_rotation_authorizations", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeRotationCompletionEventsRow", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("EventId");
+
+                    b.Property<Guid>("BusinessIdempotencyKey")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BusinessIdempotencyKey");
+
+                    b.Property<Guid>("CredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("EventType");
+
+                    b.Property<long>("PredecessorGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PredecessorGeneration");
+
+                    b.Property<DateTimeOffset>("RecordedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RecordedAtUtc");
+
+                    b.Property<Guid>("RotationAuthorizationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RotationAuthorizationId");
+
+                    b.Property<long?>("SuccessorGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SuccessorGeneration");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("capture_runtime_rotation_completion_events", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeRotationCompletionOperationsRow", b =>
+                {
+                    b.Property<Guid>("RotationAuthorizationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("RotationAuthorizationId");
+
+                    b.Property<Guid>("BusinessIdempotencyKey")
+                        .HasColumnType("uuid")
+                        .HasColumnName("BusinessIdempotencyKey");
+
+                    b.Property<Guid>("CandidateKeyId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CandidateKeyId");
+
+                    b.Property<DateTimeOffset>("CompletedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CompletedAtUtc");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CreatedAtUtc");
+
+                    b.Property<Guid>("CredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<long?>("CredentialRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CredentialRevision");
+
+                    b.Property<Guid>("DeviceInstallationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("DeviceInstallationId");
+
+                    b.Property<long?>("InstallationRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("InstallationRevision");
+
+                    b.Property<long>("PredecessorGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("PredecessorGeneration");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("RequestFingerprint");
+
+                    b.Property<string>("ResultCode")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("ResultCode");
+
+                    b.Property<long?>("RotationRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("RotationRevision");
+
+                    b.Property<long?>("SuccessorGeneration")
+                        .HasColumnType("bigint")
+                        .HasColumnName("SuccessorGeneration");
+
+                    b.HasKey("RotationAuthorizationId", "BusinessIdempotencyKey");
+
+                    b.ToTable("capture_runtime_rotation_completion_operations", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeTrustProfileHeadsRow", b =>
+                {
+                    b.Property<Guid>("CatalogId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("CatalogId");
+
+                    b.Property<long>("CurrentRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("CurrentRevision");
+
+                    b.Property<long>("HeadRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("HeadRevision");
+
+                    b.Property<DateTimeOffset>("UpdatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("UpdatedAtUtc");
+
+                    b.HasKey("CatalogId");
+
+                    b.ToTable("capture_runtime_trust_profile_heads", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.CaptureRuntimeTrustProfileRevisionsRow", b =>
+                {
+                    b.Property<Guid>("CatalogId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("CatalogId");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<bool>("AllowTrustedEvidence")
+                        .HasColumnType("boolean")
+                        .HasColumnName("AllowTrustedEvidence");
+
+                    b.Property<DateTimeOffset>("EffectiveAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("EffectiveAtUtc");
+
+                    b.Property<DateTimeOffset>("ExpiresAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExpiresAtUtc");
+
+                    b.Property<DateTimeOffset>("PublishedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("PublishedAtUtc");
+
+                    b.Property<Guid>("PublishedByCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("PublishedByCredentialId");
+
+                    b.Property<bool>("RequireHandoffAttestation")
+                        .HasColumnType("boolean")
+                        .HasColumnName("RequireHandoffAttestation");
+
+                    b.Property<bool>("RetainedRawEnabled")
+                        .HasColumnType("boolean")
+                        .HasColumnName("RetainedRawEnabled");
+
+                    b.Property<string>("RuntimeType")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("RuntimeType");
+
+                    b.HasKey("CatalogId", "Revision");
+
+                    b.ToTable("capture_runtime_trust_profile_revisions", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
             modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.EvidenceManifestRow", b =>
                 {
                     b.Property<Guid>("EvidencePackageId")
@@ -506,6 +1977,163 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.HasIndex("VerificationSessionId");
 
                     b.ToTable("evidence_results", "tagekyc");
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.PlatformOperatorCredentialsRow", b =>
+                {
+                    b.Property<Guid>("CredentialId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("CredentialId");
+
+                    b.Property<DateTimeOffset>("ExpiresAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("ExpiresAtUtc");
+
+                    b.Property<DateTimeOffset>("IssuedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("IssuedAtUtc");
+
+                    b.Property<string>("KeyLookupPrefix")
+                        .IsRequired()
+                        .HasColumnType("varchar(12)")
+                        .HasColumnName("KeyLookupPrefix");
+
+                    b.Property<Guid>("PrincipalId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("PrincipalId");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("Revision");
+
+                    b.Property<string>("RevocationReason")
+                        .HasColumnType("varchar(64)")
+                        .HasColumnName("RevocationReason");
+
+                    b.Property<DateTimeOffset?>("RevokedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RevokedAtUtc");
+
+                    b.Property<string[]>("Scopes")
+                        .IsRequired()
+                        .HasColumnType("text[]")
+                        .HasColumnName("Scopes");
+
+                    b.Property<byte[]>("SecretDigest")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("SecretDigest");
+
+                    b.Property<string>("State")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("State");
+
+                    b.Property<int>("VerifierPepperVersion")
+                        .HasColumnType("integer")
+                        .HasColumnName("VerifierPepperVersion");
+
+                    b.HasKey("CredentialId");
+
+                    b.ToTable("platform_operator_credentials", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.PlatformOperatorRootEventsRow", b =>
+                {
+                    b.Property<Guid>("EventId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("EventId");
+
+                    b.Property<long?>("AfterRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("AfterRevision");
+
+                    b.Property<long?>("BeforeRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("BeforeRevision");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("varchar(24)")
+                        .HasColumnName("EventType");
+
+                    b.Property<Guid>("OperationId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("OperationId");
+
+                    b.Property<Guid>("OperatorPrincipalId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("OperatorPrincipalId");
+
+                    b.Property<DateTimeOffset>("RecordedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("RecordedAtUtc");
+
+                    b.Property<Guid?>("TargetCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TargetCredentialId");
+
+                    b.HasKey("EventId");
+
+                    b.ToTable("platform_operator_root_events", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.PlatformOperatorRootOperationsRow", b =>
+                {
+                    b.Property<Guid>("OperationId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid")
+                        .HasColumnName("OperationId");
+
+                    b.Property<DateTimeOffset>("CompletedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CompletedAtUtc");
+
+                    b.Property<DateTimeOffset>("CreatedAtUtc")
+                        .HasColumnType("timestamptz")
+                        .HasColumnName("CreatedAtUtc");
+
+                    b.Property<string>("OperationKind")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)")
+                        .HasColumnName("OperationKind");
+
+                    b.Property<Guid>("OperatorPrincipalId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("OperatorPrincipalId");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea")
+                        .HasColumnName("RequestFingerprint");
+
+                    b.Property<string>("ResultCode")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)")
+                        .HasColumnName("ResultCode");
+
+                    b.Property<long?>("ResultRevision")
+                        .HasColumnType("bigint")
+                        .HasColumnName("ResultRevision");
+
+                    b.Property<Guid?>("TargetCredentialId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("TargetCredentialId");
+
+                    b.HasKey("OperationId");
+
+                    b.ToTable("platform_operator_root_operations", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
                 });
 
             modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportAssemblyIdentityRow", b =>

@@ -16,6 +16,9 @@ using TagEkyc.Infrastructure.Signing;
 using ApplicationMarker = TagEkyc.Application.AssemblyMarker;
 using TagEkyc.Contracts;
 using TagEkyc.Contracts.Common;
+using TagEkyc.Application.RawExport;
+using TagEkyc.Application.CaptureRuntime;
+using TagEkyc.Infrastructure.CaptureRuntime;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -84,15 +87,42 @@ builder.Services.AddScoped(sp => new VerificationEvidenceApplicationService(
     sp.GetRequiredService<IAppendIdempotencyRepository>(),
     sp.GetRequiredService<IAppendIdempotencyBoundary>(),
     sp.GetService<IMetadataReferenceRegistry>(),
-    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<DecisionThresholdOptions>>().Value));
+    sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<DecisionThresholdOptions>>().Value,
+    sp.GetService<IAppendBusinessTransaction>()));
+builder.Services.AddScoped<IAuthorityNeutralVerificationEvidencePlanner>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
+builder.Services.AddScoped<IAuthorityNeutralVerificationEvidenceWriter>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
 builder.Services.AddScoped<ICaptureArtifactCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
 builder.Services.AddScoped<ITrustedEvidenceResultCommands>(sp => sp.GetRequiredService<VerificationEvidenceApplicationService>());
 builder.Services.AddScoped<VerificationCompletionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCompletionCommands>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
 builder.Services.AddScoped<IEvidencePackageQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
 builder.Services.AddScoped<ICompletionNotificationQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
+builder.Services.AddPreparedRawExportSourceIngressServices();
+builder.Services.AddSingleton<ICaptureAgentConfigurationProvider, CaptureAgentConfigurationProvider>();
+builder.Services.AddSingleton<IRawExportIngressCapacity>(sp =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    static long RequiredLong(IConfiguration c, string key) =>
+        long.TryParse(c[key], NumberStyles.None, CultureInfo.InvariantCulture, out var value) && value > 0
+            ? value
+            : throw new InvalidOperationException("RAW_EXPORT_SOURCE_CAPACITY_CONFIGURATION_INVALID");
+    return new RawExportIngressCapacity(
+        checked((int)RequiredLong(config, "TagEkyc:RawExport:RawExportCustodyMaximumConcurrentStreamsPerProducer")),
+        checked((int)RequiredLong(config, "TagEkyc:RawExport:RawExportCustodyMaximumConcurrentStreamsPerDeployment")),
+        RequiredLong(config, "TagEkyc:RawExport:RawExportCustodyMaximumAggregatePlaintextWindowBytesPerDeployment"),
+        RequiredLong(config, "TagEkyc:RawExport:RawExportCustodyMaximumPlaintextWindowBytesPerStream"));
+});
 
 var app = builder.Build();
+
+// Select once before mapping/listener startup. There is no synthetic Agent selector,
+// per-request mode probe, or automatic Prepared -> Activated transition.
+CaptureRuntimeRouteSelection captureRuntimeRoutes;
+await using (var startupScope = app.Services.CreateAsyncScope())
+{
+    captureRuntimeRoutes = await startupScope.ServiceProvider.GetRequiredService<CaptureRuntimeStartup>()
+        .SelectAsync(DateTimeOffset.UtcNow, CancellationToken.None);
+}
 
 app.UseHttpsRedirection();
 
@@ -124,7 +154,7 @@ app.MapGet("/", () => Results.Ok(new SessionStatusPlaceholder(
     "CREATED",
     "NOT_AVAILABLE")));
 
-app.MapVerificationSessionEndpoints();
+app.MapCaptureRuntimeSelectedEndpoints(captureRuntimeRoutes);
 app.MapRecipientPackageDeliveryEndpoints();
 app.MapRecipientPackageReferenceEndpoints();
 app.MapRecipientManagementEndpoints();
@@ -145,7 +175,46 @@ static void ConfigurePersistence(WebApplicationBuilder builder)
     if (options.IsPostgres)
     {
         var connectionString = ResolvePersistenceConnectionString(options, builder.Environment.IsProduction());
-        builder.Services.AddTagEkycPostgresPersistence(connectionString);
+        var captureRuntimeOptions = builder.Configuration
+            .GetSection(CaptureRuntimeDatabaseOptions.SectionName)
+            .Get<CaptureRuntimeDatabaseOptions>() ?? new CaptureRuntimeDatabaseOptions();
+        var captureRuntimeConnections = CaptureRuntimeDatabaseOptionsValidator.Resolve(
+            captureRuntimeOptions,
+            connectionString,
+            builder.Environment.IsProduction());
+        builder.Services.AddTagEkycPostgresPersistence(connectionString, captureRuntimeConnections);
+
+        var pepperOptions = builder.Configuration
+            .GetSection(CaptureRuntimeVerifierPepperOptions.SectionName)
+            .Get<CaptureRuntimeVerifierPepperOptions>() ?? new CaptureRuntimeVerifierPepperOptions();
+        builder.Services.AddSingleton(pepperOptions);
+        builder.Services.AddSingleton<ICaptureRuntimeVerifierPepperSource, CaptureRuntimeVerifierPepperProvider>();
+        builder.Services.AddScoped<IPlatformOperatorCredentialAuthenticator, PlatformOperatorCredentialAuthenticator>();
+        builder.Services.AddScoped<ICaptureRuntimeRequestAuthenticator, CaptureRuntimeRequestAuthenticator>();
+        builder.Services.AddScoped<ICaptureRuntimeRotationCompletionAuthenticator, CaptureRuntimeRequestAuthenticator>();
+        builder.Services.AddScoped<ICaptureRuntimeRotationService, CaptureRuntimeRotationApplicationService>();
+        builder.Services.AddScoped<ICaptureRuntimeRotationGateway, CaptureRuntimeRotationPersistenceBoundary>();
+        builder.Services.AddScoped<ICaptureRuntimeEnrollmentGateway, CaptureRuntimeEnrollmentPersistenceBoundary>();
+        builder.Services.AddScoped<ICaptureRuntimeManagementGateway, CaptureRuntimeManagementPersistenceBoundary>();
+        builder.Services.AddScoped<ICaptureRuntimeControlGateway, CaptureRuntimeControlPersistenceBoundary>();
+        builder.Services.AddScoped<ICaptureRuntimeExecutionGateway, CaptureRuntimeExecutionPersistenceBoundary>();
+        builder.Services.AddScoped<IAppendBusinessTransaction, EfAppendBusinessTransaction>();
+        builder.Services.AddScoped<ICaptureRuntimeAppendAuthority, CaptureRuntimeAppendAuthority>();
+        builder.Services.AddScoped<ICaptureRuntimeAppendGateway, CaptureRuntimeAppendApplicationService>();
+        builder.Services.AddScoped<ICaptureRuntimeStartupDependencyReader, CaptureRuntimeStartupDependencyReader>();
+        builder.Services.AddScoped<CaptureRuntimeStartup>();
+        builder.Services.AddScoped<CaptureRuntimeEnrollmentApplicationService>();
+        builder.Services.AddScoped<ICaptureRuntimeEnrollmentService>(sp =>
+            sp.GetRequiredService<CaptureRuntimeEnrollmentApplicationService>());
+        builder.Services.AddScoped<CaptureRuntimeManagementApplicationService>();
+        builder.Services.AddScoped<ICaptureRuntimeManagementService>(sp =>
+            sp.GetRequiredService<CaptureRuntimeManagementApplicationService>());
+        builder.Services.AddScoped<CaptureRuntimeControlApplicationService>();
+        builder.Services.AddScoped<ICaptureRuntimeControlService>(sp =>
+            sp.GetRequiredService<CaptureRuntimeControlApplicationService>());
+        builder.Services.AddScoped<CaptureRuntimeExecutionApplicationService>();
+        builder.Services.AddScoped<ICaptureRuntimeExecutionService>(sp =>
+            sp.GetRequiredService<CaptureRuntimeExecutionApplicationService>());
         if (builder.Environment.IsProduction())
         {
             builder.Services.AddScoped<PostgresProductionReadinessValidator>();

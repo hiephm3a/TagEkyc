@@ -18,7 +18,7 @@ public sealed class Tip88C1B2R3VerifiedCiphertextStagingTests(
     private const string PreviousMigration = "20260807120000_Tip88C1B2R2DurableCustodyEncryption";
     private const string R3Migration = "20260810120000_Tip88C1B2R3VerifiedCiphertextStaging";
     private const string ExpectedSnapshotSha256 =
-        "80A4DE4E70B41804FA32AFC3C29833FC6A27A8D871399F82BB423BC6A6EEFE05";
+        "1B5F09EF3BF78A4D5748021AAEB82AC26A8B00D631F9C071EECEA903A1F17578";
 
     public Task InitializeAsync() => postgres.ResetDatabaseAsync();
     public Task DisposeAsync() => Task.CompletedTask;
@@ -421,8 +421,9 @@ public sealed class Tip88C1B2R3VerifiedCiphertextStagingTests(
     public async Task R316_model_snapshot_catalog_and_E3_tripwire_are_synchronized()
     {
         Assert.Equal(ExpectedSnapshotSha256, Convert.ToHexString(SHA256.HashData(
-            File.ReadAllBytes(ProjectPath(
-                "src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs")))));
+            Encoding.UTF8.GetBytes(Encoding.UTF8.GetString(File.ReadAllBytes(ProjectPath(
+                "src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs")))
+                .Replace("\r\n", "\n", StringComparison.Ordinal)))));
         await using var db = postgres.CreateDbContext();
         var entity = db.Model.FindEntityType("TagEkyc.Infrastructure.Persistence.Entities.RawExportSourceEncryptionAttemptRow");
         Assert.NotNull(entity);

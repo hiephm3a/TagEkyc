@@ -28,6 +28,7 @@ public sealed class DockerTestResourceLifecycleTests
 
         Assert.Equal(
             [
+                "IsolatedMigrationPostgres.cs",
                 "Tip83E1ReadinessEndpointTests.cs",
                 "Tip88B1E3ResolverReadBoundaryTests.cs",
             ],
@@ -43,11 +44,15 @@ public sealed class DockerTestResourceLifecycleTests
             Assert.Contains("\"--rm\"", dockerRun, StringComparison.Ordinal);
             Assert.Contains("\"--tmpfs\"", dockerRun, StringComparison.Ordinal);
             Assert.Contains("\"/var/lib/postgresql/data\"", dockerRun, StringComparison.Ordinal);
+            // Both success disposal and startup failure remove the exact isolated container.
+            var cleanupCall = Path.GetFileName(path) == "IsolatedMigrationPostgres.cs"
+                ? "DockerAsync(\"rm\", \"-f\""
+                : "RunDockerAsync(allowFailure: true, \"rm\", \"-f\"";
             Assert.Equal(
                 2,
                 CountOccurrences(
                     source,
-                    "RunDockerAsync(allowFailure: true, \"rm\", \"-f\""));
+                    cleanupCall));
         }
     }
 

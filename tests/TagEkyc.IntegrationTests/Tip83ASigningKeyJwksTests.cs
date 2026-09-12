@@ -70,7 +70,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
     [Fact]
     public void Production_rejects_localdev_signing_backend()
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");
@@ -86,7 +86,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
     [Fact]
     public void RequireHardwareSigner_still_forces_pkcs11()
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");
@@ -142,7 +142,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
     [Fact]
     public void ProductionTrialP12_rejects_plaintext_p12_password_config()
     {
-        using var factory = new WebApplicationFactory<Program>()
+        using var factory = new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");
@@ -267,7 +267,7 @@ public sealed class Tip83ASigningKeyJwksTests(PostgresPersistenceFixture postgre
         string? secretRef,
         string keyId,
         string? previousKeysPath) =>
-        new WebApplicationFactory<Program>()
+        new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");

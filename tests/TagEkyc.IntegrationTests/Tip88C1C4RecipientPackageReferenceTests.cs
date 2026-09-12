@@ -732,7 +732,9 @@ public sealed class Tip88C1C4RecipientPackageReferenceTests(PostgresPersistenceF
         Assert.True(string.Equals("\"State\" = 'Finalized' AND \"FinalizedAtUtc\" IS NOT NULL", actualFilter, StringComparison.Ordinal),
             $"C416-INDEX-FILTER actual={actualFilter ?? "<null>"}");
         var snapshot = PathOf("src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs");
-        var hash = Convert.ToHexString(SHA256.HashData(File.ReadAllBytes(snapshot)));
+        // Same A1-authorized canonical-content pin as the three tripwire owners; no content is removed.
+        var hash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(
+            Encoding.UTF8.GetString(File.ReadAllBytes(snapshot)).Replace("\r\n", "\n", StringComparison.Ordinal))));
         var tripwires = new Dictionary<string, string>(StringComparer.Ordinal)
         {
             ["tests/TagEkyc.IntegrationTests/Tip88C1C2RecipientPackageTests.cs"] =
@@ -769,7 +771,7 @@ public sealed class Tip88C1C4RecipientPackageReferenceTests(PostgresPersistenceF
         await using (var shared = postgres.CreateDbContext())
             sharedBefore = (await shared.Database.GetAppliedMigrationsAsync()).ToArray();
 
-        var isolated = await CreateC4DisposableDatabaseAsync("c4down");
+        var isolated = await IsolatedMigrationPostgres.CreateAsync();
         var previous = "20260819120000_Tip88C1C3AuthenticatedPackageDelivery";
         try
         {
@@ -800,12 +802,12 @@ public sealed class Tip88C1C4RecipientPackageReferenceTests(PostgresPersistenceF
                 $"C417-SHARED-MIGRATION-STATE before=[{string.Join(",", sharedBefore)}] after=[{string.Join(",", sharedAfter)}]");
 
             await isolated.DisposeAsync();
-            Assert.False(await C4DatabaseExistsAsync(isolated.AdminConnectionString, isolated.DatabaseName),
+            Assert.True(await isolated.IsAbsentAsync(),
                 $"C417-POST-DISPOSE-DATABASE-ABSENCE=[{isolated.DatabaseName}]");
         }
         finally
         {
-            await ForceDropC4DatabaseAsync(isolated.AdminConnectionString, isolated.DatabaseName);
+            await isolated.DisposeAsync();
         }
     }
 

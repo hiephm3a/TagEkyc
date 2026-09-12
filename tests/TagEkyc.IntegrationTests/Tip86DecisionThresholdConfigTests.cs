@@ -153,7 +153,7 @@ public sealed class Tip86DecisionThresholdConfigTests(PostgresPersistenceFixture
     }
 
     private static WebApplicationFactory<Program> ProductionFactory(Action<IWebHostBuilder> configure) =>
-        new WebApplicationFactory<Program>()
+        new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
                 builder.UseSetting("environment", "Production");

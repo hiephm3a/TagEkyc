@@ -166,14 +166,14 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         new(
             "tagekyc.raw_export_append_capture_acceptance(verification_session_id uuid, client_application_id uuid, raw_class text, capture_artifact_id uuid, capture_revision integer, session_challenge_hash text, accepted_evidence_ref text, acceptance_policy_id text, acceptance_policy_version integer)",
             true,
-            true,
+            false,
             false,
             "uuid",
             "plpgsql"),
         new(
             "tagekyc.raw_export_select_session_capture_acceptance(verification_session_id uuid, raw_class text, capture_acceptance_id uuid)",
             true,
-            true,
+            false,
             false,
             "uuid",
             "plpgsql"),
