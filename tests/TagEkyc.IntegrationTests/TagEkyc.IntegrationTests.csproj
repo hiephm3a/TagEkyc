@@ -7,6 +7,7 @@
 
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <EnableCaptureAgentA2Acceptance Condition="'$(EnableCaptureAgentA2Acceptance)' == ''">false</EnableCaptureAgentA2Acceptance>
   </PropertyGroup>
 
   <ItemGroup>
@@ -17,6 +18,19 @@
     <PackageReference Include="xunit" Version="2.5.3" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.3" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Tip88C1C6BA2ClientServerAcceptanceTests.cs" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(EnableCaptureAgentA2Acceptance)' == 'true'">
+    <ProjectReference Include="../../../TagEkyc.CaptureAgent/src/TagEkyc.CaptureAgent.Client/TagEkyc.CaptureAgent.Client.csproj" />
+    <Compile Include="Tip88C1C6BA2ClientServerAcceptanceTests.cs" />
+  </ItemGroup>
+  <Target Name="RequireCaptureAgentA2AcceptanceSibling" BeforeTargets="CollectPackageReferences;ResolveProjectReferences"
+          Condition="'$(EnableCaptureAgentA2Acceptance)' == 'true'">
+    <Error Condition="!Exists('../../../TagEkyc.CaptureAgent/src/TagEkyc.CaptureAgent.Client/TagEkyc.CaptureAgent.Client.csproj')"
+           Text="A2 acceptance explicitly requires the exact sibling CaptureAgent.Client project; it cannot be skipped." />
+  </Target>
 
   <ItemGroup>
     <Using Include="Xunit" />

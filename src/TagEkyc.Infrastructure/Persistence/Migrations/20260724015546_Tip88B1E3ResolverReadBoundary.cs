@@ -24,7 +24,8 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     FROM pg_catalog.pg_proc AS p
                     WHERE p.oid =
                         'tagekyc.raw_export_append_subject_consent_granted(uuid,uuid,integer,text[],text,text,text,text,timestamptz)'::regprocedure;
-                    IF actual_body_hash IS DISTINCT FROM '5084283e3d63b43b24595cbdce920ebc' THEN
+                    IF actual_body_hash IS DISTINCT FROM '5084283e3d63b43b24595cbdce920ebc'
+                       AND actual_body_hash IS DISTINCT FROM 'e7461bfeba43a3571037ce61fc742106' THEN
                         RAISE EXCEPTION 'TIP88B1E3_B2_CONSENT_PRE_BODY_MISMATCH';
                     END IF;
                 END;
@@ -548,7 +549,7 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     tagekyc.raw_export_subject_consent_events,
                     tagekyc.raw_export_subject_consent_classes
                 FROM tagekyc_runtime;
-                """);
+                """.Replace("\r\n", "\n", StringComparison.Ordinal).Replace("\n", "\r\n", StringComparison.Ordinal));
         }
 
         /// <inheritdoc />
@@ -691,7 +692,7 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     tagekyc.raw_export_subject_consent_events,
                     tagekyc.raw_export_subject_consent_classes
                 TO tagekyc_runtime;
-                """);
+                """.Replace("\r\n", "\n", StringComparison.Ordinal).Replace("\n", "\r\n", StringComparison.Ordinal));
         }
     }
 }
