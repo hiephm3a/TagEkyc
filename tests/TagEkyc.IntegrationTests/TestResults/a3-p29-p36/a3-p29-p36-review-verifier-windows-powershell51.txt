@@ -1,10 +1,10 @@
-Command:
-powershell.exe -NoProfile -ExecutionPolicy Bypass -Command '$PSVersionTable.PSVersion.ToString()'
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\a3_p29_p36_review_verify.ps1
+Command at HEAD 25204e8f59cb7177f60d85b9eb8880f567a1726f:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command '$PSVersionTable.PSVersion.ToString(); & .\scripts\a3_p29_p36_review_verify.ps1; $code = if ($?) { 0 } else { 1 }; "POWERSHELL51_EXIT_CODE=$code"; exit $code'
 
 Transcript:
 5.1.19041.6456
 partition_rows=8
+evidence_commit=c7b7eb9b1738b4134edcc4e34538aab025e43f0a
 evidence_map_rows=8
 manifest_entries=24
 manifest_mismatch=0
@@ -12,5 +12,4 @@ failed_runs=9
 unclassified_failed_runs=0
 manifest_sha256=CF9D0D6061E46919996205DA8708FDE6576090E8191D49ECE8AF813017B1646B
 A3_P29_P36_REVIEW_VERIFY=PASS
-VERSION_EXIT_CODE=0
 POWERSHELL51_EXIT_CODE=0
