@@ -4,7 +4,7 @@
 
 **Date:** 2026-09-24
 
-**Manifest SHA-256:** `65CAE75C1F61C491FC1712A7BAA323DDF300943921FEF06F1D2981AD1517E3F0`
+**Manifest SHA-256:** `18BAED0415FBE7ACC70C51A60E3D15977D5DD47A0129633E776093764202CB25`
 
 This successor keeps the accepted v1 evidence, closes the three review defects in a3/a4/F1, and fixes the real C5 product blocker that prevented the independent client from reaching the authorization and job APIs with a production-issued credential.
 

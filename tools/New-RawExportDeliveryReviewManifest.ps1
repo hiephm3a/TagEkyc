@@ -8,6 +8,42 @@ $ErrorActionPreference = 'Stop'
 $outputPath = Join-Path $TagEkycRoot 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v2.tsv'
 $rows = [System.Collections.Generic.List[object]]::new()
 
+function Get-GitNormalizedSha256 {
+    param(
+        [string]$Root,
+        [string]$Path,
+        [string]$FullPath
+    )
+
+    # Hash the exact blob bytes Git will retain, including clean filters and
+    # text normalization. This keeps the manifest clone-verifiable even when
+    # the Windows working tree uses CRLF for a tracked source file.
+    $objectId = (& git -C $Root hash-object -w "--path=$Path" -- $FullPath).Trim()
+    if ($LASTEXITCODE -ne 0 -or [string]::IsNullOrWhiteSpace($objectId)) {
+        throw "Unable to materialize Git blob for $Root/$Path"
+    }
+
+    $startInfo = [Diagnostics.ProcessStartInfo]::new('git')
+    $startInfo.WorkingDirectory = $Root
+    $startInfo.ArgumentList.Add('cat-file')
+    $startInfo.ArgumentList.Add('blob')
+    $startInfo.ArgumentList.Add($objectId)
+    $startInfo.RedirectStandardOutput = $true
+    $startInfo.RedirectStandardError = $true
+    $startInfo.UseShellExecute = $false
+
+    $process = [Diagnostics.Process]::Start($startInfo)
+    $content = [IO.MemoryStream]::new()
+    $process.StandardOutput.BaseStream.CopyTo($content)
+    $process.WaitForExit()
+    if ($process.ExitCode -ne 0) {
+        throw "Unable to read Git blob for $Root/$Path`: $($process.StandardError.ReadToEnd())"
+    }
+
+    return [Convert]::ToHexString(
+        [Security.Cryptography.SHA256]::HashData($content.ToArray()))
+}
+
 function Add-ManifestFile {
     param(
         [string]$Repository,
@@ -24,7 +60,7 @@ function Add-ManifestFile {
     $rows.Add([pscustomobject]@{
         repository = $Repository
         disposition = $Disposition
-        sha256 = (Get-FileHash -LiteralPath $fullPath -Algorithm SHA256).Hash
+        sha256 = Get-GitNormalizedSha256 $Root $Path $fullPath
         path = $Path.Replace('\', '/')
     })
 }
