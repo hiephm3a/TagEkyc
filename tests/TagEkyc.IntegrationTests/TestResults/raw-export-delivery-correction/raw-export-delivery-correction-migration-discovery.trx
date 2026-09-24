@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="23893b6a-5308-4314-ba61-1956fc6df7e9" name="3AVNN@LEARNPC 2026-09-24 10:13:22" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-24T10:13:22.7990498+07:00" queuing="2026-09-24T10:13:22.7990501+07:00" start="2026-09-24T10:13:02.9915837+07:00" finish="2026-09-24T10:13:25.0943482+07:00" />
+  <TestSettings name="default" id="395921f2-9133-4ef3-98f8-987b6734f48d">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-24_10_13_22" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="e8f9991a-ab7e-4477-9b48-b25c6d7420ec" testId="b63c57af-0669-799d-537a-08dee63c9421" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory" computerName="LEARNPC" duration="00:00:06.8621759" startTime="2026-09-24T10:13:22.1422082+07:00" endTime="2026-09-24T10:13:22.1422430+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e8f9991a-ab7e-4477-9b48-b25c6d7420ec">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+                 ↓ (pos 6)&#xD;
+Expected: "20260913120000_Tip88C1C6BA3RetainedIngres"···&#xD;
+Actual:   "20260924120000_RawExportDeliveryRecipient"···&#xD;
+                 ↑ (pos 6)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 28&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 48&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b63c57af-0669-799d-537a-08dee63c9421">
+      <Execution id="e8f9991a-ab7e-4477-9b48-b25c6d7420ec" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests" name="A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="b63c57af-0669-799d-537a-08dee63c9421" executionId="e8f9991a-ab7e-4477-9b48-b25c6d7420ec" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.46]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.60]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.61]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:18.81]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:18.81]                        ↓ (pos 6)&#xD;
+[xUnit.net 00:00:18.81]       Expected: "20260913120000_Tip88C1C6BA3RetainedIngres"···&#xD;
+[xUnit.net 00:00:18.81]       Actual:   "20260924120000_RawExportDeliveryRecipient"···&#xD;
+[xUnit.net 00:00:18.81]                        ↑ (pos 6)&#xD;
+[xUnit.net 00:00:18.81]       Stack Trace:&#xD;
+[xUnit.net 00:00:18.81]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(28,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory()&#xD;
+[xUnit.net 00:00:18.81]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(48,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory()&#xD;
+[xUnit.net 00:00:18.81]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:21.63]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T10:13:22.1391852+07:00">
+        <Text>[xUnit.net 00:00:18.81]     TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

@@ -1,6 +1,7 @@
 using System.Data;
 using System.Diagnostics;
 using System.Net;
+using System.Net.Http.Json;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -102,6 +103,8 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
         var declaredScopes = Regex.Matches(activationBlock, "\"(?<scope>[^\"]+)\"")
             .Select(match => match.Groups["scope"].Value).ToArray();
         Bite(declaredScopes.SequenceEqual([
+                "business.raw-export.authorize",
+                "business.raw-export.job.manage",
                 "business.raw-export.package.download",
                 "business.raw-export.package.references.read",
             ], StringComparer.Ordinal)
@@ -1730,16 +1733,29 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
                     new PostgresHashedApiKeyStore(db,
                         new ApiKeyStorePepper(SHA256.HashData("c5-integration-pepper"u8.ToArray()))),
                     policyTrap);
-                var http = new DefaultHttpContext();
-                http.Request.Headers["X-TagEkyc-Api-Key"] = presentedKey;
-                var authenticated = await authenticator.AuthenticateAsync(http,
-                    "business.raw-export.package.references.read", default);
-                Bite(authenticated.IsSuccess
-                    && authenticated.Value!.ClientApplicationId == recipient
-                    && authenticated.Value.PrincipalId == workflow.Principal
-                    && policyTrap.Calls == 0,
-                    "C526-RATIFIED-CANONICAL-SEQUENCE",
-                    $"auth={authenticated.Error?.Code ?? "success"};policyCalls={policyTrap.Calls}");
+                string[] deliveryScopes =
+                [
+                    "business.raw-export.authorize",
+                    "business.raw-export.job.manage",
+                    "business.raw-export.package.download",
+                    "business.raw-export.package.references.read",
+                ];
+                foreach (var requiredScope in deliveryScopes)
+                {
+                    var http = new DefaultHttpContext();
+                    http.Request.Headers["X-TagEkyc-Api-Key"] = presentedKey;
+                    var authenticated = await authenticator.AuthenticateAsync(
+                        http, requiredScope, default);
+                    Bite(authenticated.IsSuccess
+                        && authenticated.Value!.ClientApplicationId == recipient
+                        && authenticated.Value.PrincipalId == workflow.Principal
+                        && authenticated.Value.Scopes.SetEquals(deliveryScopes)
+                        && policyTrap.Calls == 0,
+                        "C526-RATIFIED-CANONICAL-SEQUENCE",
+                        $"scope={requiredScope};auth={authenticated.Error?.Code ?? "success"};policyCalls={policyTrap.Calls}");
+                }
+                await ExerciseDeliveryControlPlaneAsync(
+                    presentedKey, recipient, workflow.Principal, policyTrap);
             });
         }
         catch (Exception exception) when (exception is not XunitException
@@ -1769,6 +1785,96 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
             $"managedCallback={managedCallbackReached};newPreparations={newPreparationIds.Length};realC2EventChain={realC2EventChain}");
         Bite(await ManagedLifecycleAuthoritiesAreSeparateAsync(),
             "C526-LIFECYCLE-SEPARATE-AUTHORITIES", "credential ApiKeyId and encryption RecipientKeyId remain separate");
+    }
+
+    private async Task ExerciseDeliveryControlPlaneAsync(
+        string presentedKey,
+        Guid recipient,
+        Guid principal,
+        CountingPolicyProvider policyTrap)
+    {
+        await using (var setup = postgres.CreateDbContext())
+        {
+            var policyId = Guid.NewGuid();
+            var classes = new[]
+            {
+                RawExportRawClass.ChipDg2Portrait,
+                RawExportRawClass.LiveSelfieImage,
+            };
+            var sessionId = await Tip88B34AuthorizationEngineTests.SeedCompletedSessionAsync(
+                setup, recipient, $"subject:c526-delivery:{Guid.NewGuid():N}");
+            await Tip88B34AuthorizationEngineTests.SeedActivePolicyAsync(
+                setup, policyId, classes, permitTtlSeconds: 300, principalId: principal);
+            await Tip88B34AuthorizationEngineTests.SeedEffectiveConsentAsync(
+                setup, sessionId, policyId, classes,
+                validUntilUtc: DateTimeOffset.UtcNow.AddMinutes(5),
+                clientApplicationId: recipient);
+
+            var builder = WebApplication.CreateBuilder();
+            builder.WebHost.UseTestServer();
+            builder.Services.AddTagEkycPostgresPersistence(postgres.ConnectionString);
+            builder.Services.AddScoped<IApiKeyAuthenticator>(provider =>
+                new C5CredentialAwareApiKeyAuthenticator(
+                    new PostgresHashedApiKeyStore(
+                        provider.GetRequiredService<TagEkycDbContext>(),
+                        new ApiKeyStorePepper(
+                            SHA256.HashData("c5-integration-pepper"u8.ToArray()))),
+                    policyTrap));
+            builder.Services.AddScoped<IRawExportControlPlaneApplicationService,
+                RawExportControlPlaneApplicationService>();
+            await using var app = builder.Build();
+            app.MapRawExportControlPlaneEndpoints();
+            await app.StartAsync();
+            var client = app.GetTestClient();
+
+            using var authorize = new HttpRequestMessage(
+                HttpMethod.Post, "/api/ekyc/raw-export/authorizations")
+            {
+                Content = JsonContent.Create(new AuthorizeRawExportRequestDto(
+                    sessionId, policyId, 1,
+                    ["ChipDg2Portrait", "LiveSelfieImage"])),
+            };
+            authorize.Headers.Add("X-TagEkyc-Api-Key", presentedKey);
+            authorize.Headers.Add("Idempotency-Key", $"c526-auth-{Guid.NewGuid():N}");
+            using var authorizeResponse = await client.SendAsync(authorize);
+            var decision = await authorizeResponse.Content
+                .ReadFromJsonAsync<RawExportAuthorizationDecisionDto>();
+            Bite(authorizeResponse.StatusCode == HttpStatusCode.OK
+                && decision?.Outcome == "Authorized"
+                && decision.PermitId is not null,
+                "C526-DELIVERY-CONTROL-PLANE-HTTP",
+                $"authorization={(int)authorizeResponse.StatusCode};outcome={decision?.Outcome}");
+            Prerequisite(decision?.PermitId is not null,
+                "C526-DELIVERY-CONTROL-PLANE-HTTP", "authorization permit");
+
+            using var bind = new HttpRequestMessage(HttpMethod.Post, "/api/ekyc/raw-export/jobs")
+            {
+                Content = JsonContent.Create(new BindRawExportJobRequestDto(decision!.PermitId!.Value)),
+            };
+            bind.Headers.Add("X-TagEkyc-Api-Key", presentedKey);
+            bind.Headers.Add("Idempotency-Key", $"c526-job-{Guid.NewGuid():N}");
+            using var bindResponse = await client.SendAsync(bind);
+            var binding = await bindResponse.Content.ReadFromJsonAsync<RawExportJobBindingDto>();
+            Bite(bindResponse.StatusCode == HttpStatusCode.Created
+                && binding?.BindStatus == "NewJob",
+                "C526-DELIVERY-CONTROL-PLANE-HTTP",
+                $"bind={(int)bindResponse.StatusCode};status={binding?.BindStatus}");
+            Prerequisite(binding is not null,
+                "C526-DELIVERY-CONTROL-PLANE-HTTP", "job binding");
+
+            using var read = new HttpRequestMessage(
+                HttpMethod.Get, $"/api/ekyc/raw-export/jobs/{binding!.JobId:D}");
+            read.Headers.Add("X-TagEkyc-Api-Key", presentedKey);
+            using var readResponse = await client.SendAsync(read);
+            var job = await readResponse.Content.ReadFromJsonAsync<RawExportJobStatusDto>();
+            Bite(readResponse.StatusCode == HttpStatusCode.OK
+                && job?.JobId == binding.JobId
+                && job.RecipientClientApplicationId == recipient
+                && job.VerificationSessionId == sessionId
+                && policyTrap.Calls == 0,
+                "C526-DELIVERY-CONTROL-PLANE-HTTP",
+                $"read={(int)readResponse.StatusCode};job={job?.JobId};policyCalls={policyTrap.Calls}");
+        }
     }
 
     [Fact]

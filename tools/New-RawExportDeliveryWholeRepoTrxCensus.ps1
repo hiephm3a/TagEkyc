@@ -39,6 +39,26 @@ $expected = @{
     'raw-export-delivery-a17.trx'=42; 'raw-export-delivery-a18.trx'=8
     'raw-export-delivery-a19.trx'=107; 'raw-export-delivery-a20.trx'=2
     'raw-export-delivery-a21.trx'=107
+    'raw-export-delivery-correction-a3-fence-mutant.trx'=1
+    'raw-export-delivery-correction-a4-valid-actor-mutant.trx'=1
+    'raw-export-delivery-correction-c5-authorize-scope-mutant.trx'=1
+    'raw-export-delivery-correction-c5-b3-b4-c1-c4-http-chain.trx'=1
+    'raw-export-delivery-correction-c5-c1-c4-managed-chain-a2.trx'=1
+    'raw-export-delivery-correction-c5-c1-c4-managed-chain.trx'=1
+    'raw-export-delivery-correction-c5-full-restored.trx'=25
+    'raw-export-delivery-correction-c5-scope-successor-a2.trx'=1
+    'raw-export-delivery-correction-c5-scope-successor-a3.trx'=1
+    'raw-export-delivery-correction-c5-scope-successor-baseline.trx'=1
+    'raw-export-delivery-correction-credential-migration-roundtrip.trx'=1
+    'raw-export-delivery-correction-f1-baseline.trx'=1
+    'raw-export-delivery-correction-f1-client-isolation-mutant.trx'=1
+    'raw-export-delivery-correction-http-routes.trx'=2
+    'raw-export-delivery-correction-migration-discovery-a2.trx'=1
+    'raw-export-delivery-correction-migration-discovery.trx'=1
+    'raw-export-delivery-correction-restored-joined.trx'=6
+    'raw-export-delivery-correction-restored-joined-v2.trx'=6
+    'raw-export-delivery-correction-standalone-client-decrypt.trx'=1
+    'raw-export-delivery-correction-c5-unit.trx'=1
 }
 
 $currentFailures = @{
@@ -56,6 +76,15 @@ $currentFailures = @{
     'raw-export-delivery-a15.trx' = @('SUPERSEDED_FIXTURE_RED','All 107 current-byte cases exposed missing site-qualification fixture setup and the obsolete expected-last-migration helper.','raw-export-delivery-a21.trx')
     'raw-export-delivery-a16.trx' = @('SUPERSEDED_FIXTURE_RED','The first fixture correction lacked the runtime gate/seal registration and left the Kestrel harness unqualified.','raw-export-delivery-a21.trx')
     'raw-export-delivery-a19.trx' = @('SUPERSEDED_FIXTURE_RED','The shared fixture correction left two terminal-projection TestServer cases without qualification services.','raw-export-delivery-a21.trx')
+    'raw-export-delivery-correction-a3-fence-mutant.trx' = @('EVIDENCE_RED','Increasing only the durable candidate fencing token reaches the B4 comparator and fails with RAW_EXPORT_JOB_FENCE_STALE.','raw-export-delivery-correction-restored-joined.trx')
+    'raw-export-delivery-correction-a4-valid-actor-mutant.trx' = @('EVIDENCE_RED','Replacing only the durable principal with a different valid GUID passes input validation and makes acquisition return null.','raw-export-delivery-correction-restored-joined.trx')
+    'raw-export-delivery-correction-f1-client-isolation-mutant.trx' = @('EVIDENCE_RED','Removing only the ClientApplicationId arm from the B4 read SQL changes a cross-client read from NotFound to Found.','raw-export-delivery-correction-restored-joined.trx')
+    'raw-export-delivery-correction-c5-authorize-scope-mutant.trx' = @('EVIDENCE_RED','Removing only business.raw-export.authorize from the successor scope set fails the exact four-scope contract.','raw-export-delivery-correction-c5-scope-successor-a3.trx')
+    'raw-export-delivery-correction-c5-scope-successor-baseline.trx' = @('SUPERSEDED_RED','The first successor migration used the entity property name UpdatedAt instead of the mapped UpdatedAtUtc database column.','raw-export-delivery-correction-c5-scope-successor-a3.trx')
+    'raw-export-delivery-correction-c5-scope-successor-a2.trx' = @('SUPERSEDED_RED','The second successor attempt carried one incorrect predecessor digest literal and therefore did not rewrite every managed-credential function.','raw-export-delivery-correction-c5-scope-successor-a3.trx')
+    'raw-export-delivery-correction-c5-c1-c4-managed-chain.trx' = @('PRODUCT_DEFECT_PREDECESSOR','The C5 authentication policy still recognized only the two delivery scopes, so the newly issued four-scope credential fell through to disabled-client policy.','raw-export-delivery-correction-c5-c1-c4-managed-chain-a2.trx')
+    'raw-export-delivery-correction-migration-discovery.trx' = @('SUPERSEDED_RED','The migration discovery assertion still named the prior migration as the last current migration.','raw-export-delivery-correction-migration-discovery-a2.trx')
+    'raw-export-delivery-correction-c5-full-restored.trx' = @('EXCLUDED_HISTORICAL_OUTSIDE_SLICE','Twenty-four C5 cases pass; the legacy C528 rollback crosses the later A3 guarded migration and fails its independent current-body guard. The bounded successor down/up proof is retained separately.','raw-export-delivery-correction-credential-migration-roundtrip.trx')
 }
 
 $inventory = [Collections.Generic.List[object]]::new()
@@ -72,7 +101,7 @@ foreach ($entry in $roots) {
         $trx = Read-Trx $file
         $relative = [IO.Path]::GetRelativePath($entry.Root,$file.FullName).Replace('\','/')
         $name = $file.Name
-        $scope = if ($relative -match 'TestResults/raw-export-delivery/') { 'RAW_EXPORT_DELIVERY_SLICE' } else { 'WHOLE_REPO_HISTORICAL_INVENTORY' }
+        $scope = if ($relative -match 'TestResults/raw-export-delivery(?:-correction)?/') { 'RAW_EXPORT_DELIVERY_SLICE' } else { 'WHOLE_REPO_HISTORICAL_INVENTORY' }
         $expectedCount = if ($expected.ContainsKey($name) -and $scope -eq 'RAW_EXPORT_DELIVERY_SLICE') { [int]$expected[$name] } else { $trx.Total }
         $inventory.Add([pscustomobject][ordered]@{
             repo=$entry.Repo; path=$relative
@@ -99,8 +128,8 @@ foreach ($entry in $roots) {
     }
 }
 
-$inventoryPath=Join-Path $OutputDirectory 'raw_export_delivery_whole_repo_trx_inventory_v1.tsv'
-$failedPath=Join-Path $OutputDirectory 'raw_export_delivery_failed_run_census_v1.tsv'
+$inventoryPath=Join-Path $OutputDirectory 'raw_export_delivery_whole_repo_trx_inventory_v2.tsv'
+$failedPath=Join-Path $OutputDirectory 'raw_export_delivery_failed_run_census_v2.tsv'
 $inventory | Export-Csv -LiteralPath $inventoryPath -Delimiter "`t" -NoTypeInformation -Encoding utf8
 $failedRows | Export-Csv -LiteralPath $failedPath -Delimiter "`t" -NoTypeInformation -Encoding utf8
 

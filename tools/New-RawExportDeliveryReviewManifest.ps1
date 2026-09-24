@@ -5,7 +5,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$outputPath = Join-Path $TagEkycRoot 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v1.tsv'
+$outputPath = Join-Path $TagEkycRoot 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v2.tsv'
 $rows = [System.Collections.Generic.List[object]]::new()
 
 function Add-ManifestFile {
@@ -33,15 +33,21 @@ $productPaths = @(
     'src/TagEkyc.Api/Program.cs',
     'src/TagEkyc.Api/RawExportControlPlaneEndpoints.cs',
     'src/TagEkyc.Application/Ports/RawExportControlPlanePorts.cs',
+    'src/TagEkyc.Application/Ports/RecipientManagementPorts.cs',
     'src/TagEkyc.Application/RawExport/RawExportControlPlaneApplicationService.cs',
     'src/TagEkyc.Contracts/RawExport/RawExportControlPlaneContracts.cs',
     'src/TagEkyc.Infrastructure/Persistence/EfRawExportJobPackageProjectionReader.cs',
+    'src/TagEkyc.Infrastructure/Auth/PostgresHashedApiKeyStore.cs',
+    'src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportManagedRecipientPolicyConfig.cs',
+    'src/TagEkyc.Infrastructure/Persistence/Migrations/20260924120000_RawExportDeliveryRecipientCredential.cs',
+    'src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs',
     'src/TagEkyc.Infrastructure/Persistence/TagEkycPersistenceServiceCollectionExtensions.cs',
     'src/TagEkyc.Infrastructure/Persistence/Migrations/20260923090000_RawExportAssemblyDurableWorkSource.cs',
     'src/TagEkyc.Infrastructure/ProtectedValues/ProtectedValueContracts.cs',
     'src/TagEkyc.Infrastructure/ProtectedValues/SecretRefProtectedValueProvider.cs',
     'src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyRuntimeInfrastructure.cs',
-    'src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyServiceCollectionExtensions.cs'
+    'src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyServiceCollectionExtensions.cs',
+    'src/TagEkyc.Infrastructure/RawExport/RecipientManagementCodec.cs'
 )
 foreach ($path in $productPaths) {
     Add-ManifestFile TagEkyc PRODUCT_SOURCE_AUTHORIZED $TagEkycRoot $path
@@ -51,13 +57,17 @@ $testPaths = @(
     'tests/TagEkyc.UnitTests/RawExportControlPlaneApplicationTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportControlPlaneHttpTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportAssemblyDurableWorkSourceTests.cs',
+    'tests/TagEkyc.IntegrationTests/RawExportDeliveryCredentialMigrationTests.cs',
+    'tests/TagEkyc.IntegrationTests/RawExportJobClientIsolationTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportClientProductionCodecCompatibilityTests.cs',
     'tests/TagEkyc.IntegrationTests/SiteQualificationTestServices.cs',
     'tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RawIngressBoundaryTests.cs',
     'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3ClientServerAcceptanceTests.cs',
     'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3ConsentRetentionTests.cs',
     'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3R2R6ClusterHttpTests.cs',
-    'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3R2TerminalProjectionTests.cs'
+    'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3R2TerminalProjectionTests.cs',
+    'tests/TagEkyc.IntegrationTests/Tip88C1C5RecipientManagementTests.cs',
+    'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3MigrationTests.cs'
 )
 foreach ($path in $testPaths) {
     Add-ManifestFile TagEkyc TEST_SOURCE $TagEkycRoot $path
@@ -71,8 +81,10 @@ $authorityAndGovernance = @(
     @('GOVERNANCE_FROZEN', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_activation_scope_deferred_backlog_v1.tsv'),
     @('SEAL_NOT_REMINTED', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_activation_evidence_seal_v1.tsv'),
     @('CURRENT_EMPTY_PARTITION', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_activation_scope_partition_v1.tsv'),
-    @('WHOLE_REPO_INVENTORY', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_whole_repo_trx_inventory_v1.tsv'),
-    @('FAILED_RUN_CENSUS', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_failed_run_census_v1.tsv'),
+    @('PREDECESSOR_PACKET', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_packet_v1.md'),
+    @('PREDECESSOR_MANIFEST', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v1.tsv'),
+    @('WHOLE_REPO_INVENTORY', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_whole_repo_trx_inventory_v2.tsv'),
+    @('FAILED_RUN_CENSUS', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_failed_run_census_v2.tsv'),
     @('REPRODUCIBLE_TOOLING', 'tools/New-RawExportDeliveryWholeRepoTrxCensus.ps1'),
     @('REPRODUCIBLE_TOOLING', 'tools/New-RawExportDeliveryReviewManifest.ps1')
 )
@@ -82,7 +94,9 @@ foreach ($entry in $authorityAndGovernance) {
 
 $serverResultRoots = @(
     'tests/TagEkyc.IntegrationTests/TestResults/raw-export-delivery',
-    'tests/TagEkyc.UnitTests/TestResults/raw-export-delivery'
+    'tests/TagEkyc.UnitTests/TestResults/raw-export-delivery',
+    'tests/TagEkyc.IntegrationTests/TestResults/raw-export-delivery-correction',
+    'tests/TagEkyc.UnitTests/TestResults/raw-export-delivery-correction'
 )
 foreach ($relativeRoot in $serverResultRoots) {
     $fullRoot = Join-Path $TagEkycRoot ($relativeRoot -replace '/', [IO.Path]::DirectorySeparatorChar)
@@ -98,6 +112,14 @@ foreach ($relativeRoot in $serverResultRoots) {
             'EXCLUDED_INFRASTRUCTURE_DIAGNOSTIC'
         } elseif ($file.Name -match '^a3-raw-export-work-source-current-v[2-5]\.trx$') {
             'SUPERSEDED_RED'
+        } elseif ($file.Name -match '^raw-export-delivery-correction-(a3-fence-mutant|a4-valid-actor-mutant|f1-client-isolation-mutant|c5-authorize-scope-mutant)\.trx$') {
+            'EVIDENCE_RED'
+        } elseif ($file.Name -match '^raw-export-delivery-correction-(c5-scope-successor-baseline|c5-scope-successor-a2|migration-discovery)\.trx$') {
+            'SUPERSEDED_RED'
+        } elseif ($file.Name -eq 'raw-export-delivery-correction-c5-c1-c4-managed-chain.trx') {
+            'PRODUCT_DEFECT_PREDECESSOR'
+        } elseif ($file.Name -eq 'raw-export-delivery-correction-c5-full-restored.trx') {
+            'EXCLUDED_HISTORICAL_OUTSIDE_SLICE'
         } else {
             'PASS_EVIDENCE'
         }

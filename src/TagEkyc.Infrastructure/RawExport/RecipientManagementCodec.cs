@@ -8,6 +8,8 @@ namespace TagEkyc.Infrastructure.RawExport;
 
 public static class RecipientManagementCodec
 {
+    public const string ActivationProfile = "RawExportDeliveryRecipientV2";
+
     private const string IdempotencyLabel = "tip-88c1-c5-idempotency-v1";
     private const string PayloadLabel = "tip-88c1-c5-payload-v1";
     private const string EqualityLabel = "tip-88c1-c5-equality-v1";
@@ -17,6 +19,8 @@ public static class RecipientManagementCodec
 
     public static readonly string[] ActivationScopes =
     [
+        "business.raw-export.authorize",
+        "business.raw-export.job.manage",
         "business.raw-export.package.download",
         "business.raw-export.package.references.read",
     ];

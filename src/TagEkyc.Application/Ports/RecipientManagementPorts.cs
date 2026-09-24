@@ -21,10 +21,14 @@ public sealed class RecipientCredentialAuthenticationPolicy(
     ILocalDevClientPolicyProvider globalPolicies)
 {
     private const string ManagementScope = "operator.raw-export.recipient.manage";
+    private const string AuthorizeScope = "business.raw-export.authorize";
+    private const string JobScope = "business.raw-export.job.manage";
     private const string DeliveryScope = "business.raw-export.package.download";
     private const string ReferenceScope = "business.raw-export.package.references.read";
     private static readonly HashSet<string> ActivationScopes = new(StringComparer.Ordinal)
     {
+        AuthorizeScope,
+        JobScope,
         DeliveryScope,
         ReferenceScope,
     };
@@ -48,7 +52,8 @@ public sealed class RecipientCredentialAuthenticationPolicy(
 
         var recipientCredential = apiKey.CallerCategory == AuthenticatedCallerCategory.BusinessConsumer
             && apiKey.Scopes.SetEquals(ActivationScopes)
-            && requiredScope is DeliveryScope or ReferenceScope;
+            && requiredScope is not null
+            && ActivationScopes.Contains(requiredScope);
         var managementCredential = apiKey.CallerCategory == AuthenticatedCallerCategory.OperatorAdmin
             && apiKey.Scopes.Contains(ManagementScope)
             && string.Equals(requiredScope, ManagementScope, StringComparison.Ordinal);

@@ -38,8 +38,7 @@ public sealed class PostgresHashedApiKeyStore(TagEkycDbContext dbContext, ApiKey
         }
 
         var scopes = DeserializeSet<string>(row.ScopesJson);
-        var hasActivationScope = scopes.Contains("business.raw-export.package.download")
-            || scopes.Contains("business.raw-export.package.references.read");
+        var hasActivationScope = scopes.Overlaps(RecipientManagementCodec.ActivationScopes);
         if (hasActivationScope)
         {
             if (!scopes.SetEquals(RecipientManagementCodec.ActivationScopes)
@@ -63,7 +62,7 @@ public sealed class PostgresHashedApiKeyStore(TagEkycDbContext dbContext, ApiKey
                         && credential.State == "Active"
                         && identity.State == "Active"
                         && policy.State == "Active"
-                        && policy.ActivationProfile == "C3C4RecipientV1"
+                        && policy.ActivationProfile == RecipientManagementCodec.ActivationProfile
                     select policy.ActivationScopesDigest)
                     .SingleOrDefaultAsync(cancellationToken).ConfigureAwait(false);
                 if (companion is null

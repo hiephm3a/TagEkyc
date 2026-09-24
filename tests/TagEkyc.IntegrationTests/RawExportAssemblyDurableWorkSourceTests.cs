@@ -46,6 +46,8 @@ public sealed class RawExportAssemblyDurableWorkSourceTests(PostgresPersistenceF
         var firstRequest = await first.TryAcquireAsync();
         Assert.NotNull(firstRequest);
         Assert.Equal(job.JobId, firstRequest.JobId);
+        Assert.Equal(Tip88B34AuthorizationEngineTests.Actor.PrincipalId, firstRequest.ActorPrincipalId);
+        Assert.True(firstRequest.ExpectedFence >= 1);
 
         await using var contenderDb = postgres.CreateDbContext();
         var contender = Source(contenderDb, Guid.NewGuid());

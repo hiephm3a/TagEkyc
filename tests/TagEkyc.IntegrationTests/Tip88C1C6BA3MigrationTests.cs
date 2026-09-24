@@ -14,6 +14,7 @@ namespace TagEkyc.IntegrationTests;
 public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgres)
 {
     internal const string MigrationId = "20260913120000_Tip88C1C6BA3RetainedIngressComposition";
+    private const string CurrentMigrationId = "20260924120000_RawExportDeliveryRecipientCredential";
     private const string PredecessorId = "20260908120000_Tip88C1C6BA1Foundation";
     private const string R20 = "tagekyc.capture_runtime_issue_or_replace_capability(uuid,uuid,text,uuid,bigint,uuid,uuid,text,bytea,integer,bytea,timestamptz,uuid,uuid,jsonb)";
 
@@ -25,7 +26,7 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
         await using var db = postgres.CreateDbContext();
         var discovered = db.Database.GetMigrations().ToArray();
         Assert.Equal(1, discovered.Count(id => id == MigrationId));
-        Assert.Equal(MigrationId, discovered.Last());
+        Assert.Equal(CurrentMigrationId, discovered.Last());
         Assert.Equal(discovered, (await db.Database.GetAppliedMigrationsAsync()).ToArray());
         Assert.False(db.Database.HasPendingModelChanges());
         // Materialize every column, not COUNT(*), so missing mapped fields fail on PostgreSQL.
