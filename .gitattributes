@@ -9,3 +9,4 @@ src/TagEkyc.Infrastructure/Persistence/Migrations/20260823120000_Tip88C1C5Manage
 # Evidence TRX runs are byte-exact artifacts hashed by review manifests.
 *.trx binary
 docs/tips/tip_88c1_secure_raw_source_sealed_assembly/*.tsv binary
+docs/tips/tip_88c1_secure_raw_source_sealed_assembly/*.md binary
