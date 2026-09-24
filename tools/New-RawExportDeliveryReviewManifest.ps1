@@ -4,7 +4,7 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$outputPath = Join-Path $TagEkycRoot 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v3.tsv'
+$outputPath = Join-Path $TagEkycRoot 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v4.tsv'
 $rows = [System.Collections.Generic.List[object]]::new()
 
 function Get-GitNormalizedSha256 {
@@ -98,6 +98,7 @@ $testPaths = @(
     'tests/TagEkyc.IntegrationTests/RawExportControlPlaneHttpTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportAssemblyDurableWorkSourceTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportDeliveryCredentialMigrationTests.cs',
+    'tests/TagEkyc.IntegrationTests/RawExportLegacyConsentClassFenceMigrationTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportJobClientIsolationTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportClientProductionCodecCompatibilityTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportDeliverySameJobEndToEndTests.cs',
@@ -128,6 +129,8 @@ $authorityAndGovernance = @(
     @('CURRENT_EMPTY_PARTITION', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_activation_scope_partition_v1.tsv'),
     @('PREDECESSOR_PACKET', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_packet_v1.md'),
     @('PREDECESSOR_MANIFEST', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v1.tsv'),
+    @('PREDECESSOR_PACKET', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_packet_v3.md'),
+    @('PREDECESSOR_MANIFEST', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v3.tsv'),
     @('WHOLE_REPO_INVENTORY', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_whole_repo_trx_inventory_v2.tsv'),
     @('FAILED_RUN_CENSUS', 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_failed_run_census_v2.tsv'),
     @('REPRODUCIBLE_TOOLING', 'tools/New-RawExportDeliveryWholeRepoTrxCensus.ps1'),
@@ -143,6 +146,7 @@ $serverResultRoots = @(
     'tests/TagEkyc.IntegrationTests/TestResults/raw-export-delivery',
     'tests/TagEkyc.UnitTests/TestResults/raw-export-delivery',
     'tests/TagEkyc.IntegrationTests/TestResults/raw-export-delivery-correction',
+    'tests/TagEkyc.IntegrationTests/TestResults/raw-export-delivery-correction-v4',
     'tests/TagEkyc.UnitTests/TestResults/raw-export-delivery-correction',
     'tests/TagEkyc.RawExport.Client.Tests/TestResults/raw-export-delivery-correction'
 )
@@ -176,6 +180,8 @@ foreach ($relativeRoot in $serverResultRoots) {
             'SUPERSEDED_FIXTURE_RED'
         } elseif ($file.Name -eq 'raw-export-delivery-consent-class-mutant.trx') {
             'EVIDENCE_RED'
+        } elseif ($file.Name -in @('raw-export-delivery-migration-hygiene.trx', 'raw-export-delivery-migration-hygiene-final.trx')) {
+            'SUPERSEDED_RED'
         } else {
             'PASS_EVIDENCE'
         }

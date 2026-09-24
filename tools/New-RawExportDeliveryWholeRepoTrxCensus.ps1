@@ -70,6 +70,9 @@ $expected = @{
     'raw-export-delivery-c5-profile-final.trx'=3
     'raw-export-delivery-consent-class-mutant.trx'=1
     'raw-export-delivery-restored-final.trx'=1
+    'raw-export-delivery-migration-hygiene.trx'=2
+    'raw-export-delivery-migration-hygiene-final.trx'=2
+    'raw-export-delivery-migration-hygiene-final-v2.trx'=2
 }
 
 $currentFailures = @{
@@ -102,6 +105,8 @@ $currentFailures = @{
     'raw-export-delivery-same-job-e2e-a4.trx' = @('SUPERSEDED_FIXTURE_RED','The diagnostic predecessor still used a no-retain policy rather than the existing encrypted-packet policy fixture.','raw-export-delivery-same-job-e2e-final.trx')
     'raw-export-delivery-same-job-e2e-a5.trx' = @('PRODUCT_DEFECT_PREDECESSOR','The joined run reached C3 and exposed that the SDK decoded the server base64url package digest as hexadecimal.','raw-export-delivery-same-job-e2e-final.trx')
     'raw-export-delivery-consent-class-mutant.trx' = @('EVIDENCE_RED','Changing only the consent class comparison from equality to inequality makes the same-job joined proof fail at R3 staging with SourceRetentionNotAuthorized.','raw-export-delivery-restored-final.trx')
+    'raw-export-delivery-migration-hygiene.trx' = @('SUPERSEDED_RED','The first Down/Reapply proof compared an unsorted expected function-name list with the deliberately sorted PostgreSQL catalogue result and stopped before exercising rollback.','raw-export-delivery-migration-hygiene-final-v2.trx')
+    'raw-export-delivery-migration-hygiene-final.trx' = @('SUPERSEDED_RED','The second command used --no-build and therefore reran the predecessor test binary with the same stale expected ordering.','raw-export-delivery-migration-hygiene-final-v2.trx')
 }
 
 $inventory = [Collections.Generic.List[object]]::new()
@@ -118,7 +123,7 @@ foreach ($entry in $roots) {
         $trx = Read-Trx $file
         $relative = [IO.Path]::GetRelativePath($entry.Root,$file.FullName).Replace('\','/')
         $name = $file.Name
-        $scope = if ($relative -match 'TestResults/raw-export-delivery(?:-correction)?/') { 'RAW_EXPORT_DELIVERY_SLICE' } else { 'WHOLE_REPO_HISTORICAL_INVENTORY' }
+        $scope = if ($relative -match 'TestResults/raw-export-delivery(?:-correction(?:-v4)?)?/') { 'RAW_EXPORT_DELIVERY_SLICE' } else { 'WHOLE_REPO_HISTORICAL_INVENTORY' }
         $expectedCount = if ($expected.ContainsKey($name) -and $scope -eq 'RAW_EXPORT_DELIVERY_SLICE') { [int]$expected[$name] } else { $trx.Total }
         $inventory.Add([pscustomobject][ordered]@{
             repo=$entry.Repo; path=$relative
