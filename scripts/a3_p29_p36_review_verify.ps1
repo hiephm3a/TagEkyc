@@ -1,5 +1,6 @@
 param(
-    [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot)
+    [string]$RepoRoot = (Split-Path -Parent $PSScriptRoot),
+    [string]$AtCommit = 'c7b7eb9b1738b4134edcc4e34538aab025e43f0a'
 )
 
 $ErrorActionPreference = 'Stop'
@@ -17,7 +18,7 @@ function Get-GitBlobEvidence([string]$Path) {
     $start.UseShellExecute = $false
     $start.RedirectStandardOutput = $true
     $start.RedirectStandardError = $true
-    $start.Arguments = 'cat-file blob "HEAD:' + $gitPath.Replace('"', '\"') + '"'
+    $start.Arguments = 'cat-file blob "' + $AtCommit + ':' + $gitPath.Replace('"', '\"') + '"'
 
     $process = [Diagnostics.Process]::Start($start)
     $errorRead = $process.StandardError.ReadToEndAsync()
@@ -44,16 +45,39 @@ function Get-GitBlobEvidence([string]$Path) {
     }
 }
 
-$evidenceRoot = Join-Path $RepoRoot 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly'
-$partitionPath = Join-Path $evidenceRoot 'a3_activation_scope_partition_v1.tsv'
-$mapPath = Join-Path $evidenceRoot 'a3_p29_p36_row_evidence_map_v1.tsv'
-$censusPath = Join-Path $evidenceRoot 'a3_p29_p36_failed_run_census_v1.tsv'
-$manifestPath = Join-Path $evidenceRoot 'a3_p29_p36_review_manifest_v1.tsv'
-$packetPath = Join-Path $evidenceRoot 'a3_p29_p36_durable_worker_review_packet_v1.md'
-$testSourcePath = Join-Path $RepoRoot 'tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs'
+function Get-GitBlobText([string]$Path) {
+    $gitPath = $Path.Replace('\', '/')
+    $start = New-Object Diagnostics.ProcessStartInfo
+    $start.FileName = 'git'
+    $start.WorkingDirectory = $RepoRoot
+    $start.UseShellExecute = $false
+    $start.RedirectStandardOutput = $true
+    $start.RedirectStandardError = $true
+    $start.Arguments = 'cat-file blob "' + $AtCommit + ':' + $gitPath.Replace('"', '\"') + '"'
 
-$partition = @(Import-Csv -Delimiter "`t" -LiteralPath $partitionPath)
-$map = @(Import-Csv -Delimiter "`t" -LiteralPath $mapPath)
+    $process = [Diagnostics.Process]::Start($start)
+    try {
+        $text = $process.StandardOutput.ReadToEnd()
+        $errorText = $process.StandardError.ReadToEnd()
+        $process.WaitForExit()
+        Assert-True ($process.ExitCode -eq 0) "git blob is unavailable for $gitPath at $AtCommit`: $errorText"
+        return $text
+    }
+    finally {
+        $process.Dispose()
+    }
+}
+
+$evidenceRoot = 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly'
+$partitionPath = "$evidenceRoot/a3_activation_scope_partition_v1.tsv"
+$mapPath = "$evidenceRoot/a3_p29_p36_row_evidence_map_v1.tsv"
+$censusPath = "$evidenceRoot/a3_p29_p36_failed_run_census_v1.tsv"
+$manifestPath = "$evidenceRoot/a3_p29_p36_review_manifest_v1.tsv"
+$packetPath = "$evidenceRoot/a3_p29_p36_durable_worker_review_packet_v1.md"
+$testSourcePath = 'tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs'
+
+$partition = @((Get-GitBlobText $partitionPath) | ConvertFrom-Csv -Delimiter "`t")
+$map = @((Get-GitBlobText $mapPath) | ConvertFrom-Csv -Delimiter "`t")
 Assert-True ($partition.Count -eq 8) "partition row count must be 8, found $($partition.Count)"
 Assert-True ($map.Count -eq 8) "evidence-map row count must be 8, found $($map.Count)"
 
@@ -64,14 +88,14 @@ Assert-True ((@($map.PublicOutcome | Sort-Object -Unique)).Count -eq 8) 'public 
 Assert-True ((@($map.ExecutionOutcome | Sort-Object -Unique)).Count -eq 8) 'execution outcomes are not one-to-one'
 Assert-True ((@($map.NamedAssertion | Sort-Object -Unique)).Count -eq 8) 'named row assertions are not one-to-one'
 
-$testSource = Get-Content -Raw -LiteralPath $testSourcePath
+$testSource = Get-GitBlobText $testSourcePath
 foreach ($row in $map) {
     foreach ($assertion in ($row.NamedAssertion -split ' \+ ')) {
         Assert-True ($testSource.Contains($assertion)) "named assertion is absent from test source: $assertion"
     }
 }
 
-$manifest = @(Import-Csv -Delimiter "`t" -LiteralPath $manifestPath)
+$manifest = @((Get-GitBlobText $manifestPath) | ConvertFrom-Csv -Delimiter "`t")
 Assert-True ((@($manifest | Where-Object { $_.HashBasis -cne 'GIT_OBJECT_CONTENT' })).Count -eq 0) `
     'manifest contains a non-Git-object hash basis'
 $mismatch = 0
@@ -85,13 +109,13 @@ Assert-True ($mismatch -eq 0) "manifest mismatches: $mismatch"
 
 $manifestRelativePath = 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_p29_p36_review_manifest_v1.tsv'
 $manifestHash = (Get-GitBlobEvidence $manifestRelativePath).Sha256
-$packet = Get-Content -Raw -LiteralPath $packetPath
+$packet = Get-GitBlobText $packetPath
 Assert-True ($packet.Contains($manifestHash)) 'review packet does not pin the current manifest SHA-256'
 
-$census = @(Import-Csv -Delimiter "`t" -LiteralPath $censusPath)
+$census = @((Get-GitBlobText $censusPath) | ConvertFrom-Csv -Delimiter "`t")
 $failedArtifacts = @()
 foreach ($entry in $manifest | Where-Object { $_.Path.EndsWith('.trx', [StringComparison]::OrdinalIgnoreCase) }) {
-    [xml]$trx = Get-Content -LiteralPath (Join-Path $RepoRoot $entry.Path)
+    [xml]$trx = Get-GitBlobText $entry.Path
     if ([int]$trx.TestRun.ResultSummary.Counters.failed -gt 0) {
         $failedArtifacts += [IO.Path]::GetFileName($entry.Path)
     }
@@ -102,6 +126,7 @@ Assert-True (($censusArtifacts -join "`n") -ceq ($failedArtifacts -join "`n")) '
 Assert-True ((@($census | Where-Object { [string]::IsNullOrWhiteSpace($_.Classification) })).Count -eq 0) 'unclassified failed run exists'
 
 Write-Output "partition_rows=$($partition.Count)"
+Write-Output "evidence_commit=$AtCommit"
 Write-Output "evidence_map_rows=$($map.Count)"
 Write-Output "manifest_entries=$($manifest.Count)"
 Write-Output "manifest_mismatch=$mismatch"
