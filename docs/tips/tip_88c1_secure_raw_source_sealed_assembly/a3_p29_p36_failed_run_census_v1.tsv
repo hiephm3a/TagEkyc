@@ -1,0 +1,10 @@
+Artifact	Classification	Reason
+a3-p29-p36-durable-worker-joined-a1.trx	SUPERSEDED_RED	Initial join used the non-packet permit fixture, so the production DurableRawExportAssemblyWorkSource correctly found no eligible packet job; replaced by packet-mode fixture.
+a3-p29-p36-durable-worker-joined-a2.trx	SUPERSEDED_RED	The first packet-mode join allowed prior jobs to compete for acquisition and timed out/mismatched JobId; replaced by isolated per-test database reset and deterministic scheduling of the exact request acquired by the real work-source.
+a3-p33-durable-worker-diagnostic-a3.trx	SUPERSEDED_RED	Diagnostic isolated an ObjectDisposedException caused by the work-source DbContext lifetime; the fixture now owns that context through completion.
+a3-p29-p36-durable-record-mutant-a7.trx	EVIDENCE_RED	Deliberately bypassing DurableRawExportAssemblyWorkSource.RecordAsync for P29-P36 left jobs in LeaseAcquired/Assembling instead of the required retryable or terminal durable residue; 0/5 PASS.
+a3-p29-p36-exact-outcome-mutant-a9.trx	SUPERSEDED_RED	First exact-outcome mutation run reached durable residue assertions but used the pre-correction residue expectation for the mutant StateConflict result; retained as superseded mutation-development evidence.
+a3-p29-p36-exact-outcome-mutant-a10.trx	SUPERSEDED_RED	Repeated exact-outcome mutation run while stabilizing scenario cleanup; exact expected/actual outcome assertions failed, but this run is superseded by retained final mutant a13.
+a3-p29-p36-exact-outcome-mutant-a11.trx	SUPERSEDED_RED	Repeated exact-outcome mutation run while stabilizing scenario cleanup; exact expected/actual outcome assertions failed, but this run is superseded by retained final mutant a13.
+a3-p29-p36-exact-outcome-mutant-a12.trx	SUPERSEDED_RED	Repeated exact-outcome mutation run while stabilizing scenario cleanup; exact expected/actual outcome assertions failed, but this run is superseded by retained final mutant a13.
+a3-p29-p36-exact-outcome-mutant-a13.trx	EVIDENCE_RED	Deliberately remapping all eight production outcomes made every one-to-one named assertion fail with the mutated outcome; 0/5 PASS.

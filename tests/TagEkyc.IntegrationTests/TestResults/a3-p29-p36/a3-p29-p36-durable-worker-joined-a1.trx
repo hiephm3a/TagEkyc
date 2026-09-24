@@ -1,0 +1,195 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="4fe17b06-56ae-49ca-ae07-5e99ec8e3a55" name="3AVNN@LEARNPC 2026-09-24 15:57:15" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-24T15:57:15.6668082+07:00" queuing="2026-09-24T15:57:15.6668086+07:00" start="2026-09-24T15:56:57.9432353+07:00" finish="2026-09-24T15:57:31.9407497+07:00" />
+  <TestSettings name="default" id="582f4da6-a4ee-441e-8467-71b13dd9efe9">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-24_15_57_15" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="d918d9cc-d04b-49a7-8ce6-388591648828" testId="d8ea26f4-8314-b487-efcb-53d24b0f547e" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" computerName="LEARNPC" duration="00:00:06.4923662" startTime="2026-09-24T15:57:22.1348617+07:00" endTime="2026-09-24T15:57:22.1348619+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d918d9cc-d04b-49a7-8ce6-388591648828">
+      <Output>
+        <ErrorInfo>
+          <Message>P31-selection-ambiguous: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+Actual:   null&#xD;
+P32-binding-conflict: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+Actual:   null&#xD;
+P34-integrity-evidence: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+Actual:   null&#xD;
+P35-prepare-abort: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+Actual:   null&#xD;
+P36-class-set-abort: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+Actual:   null</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 687&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 687&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0c906c77-e991-4a14-972f-81c92fb5e9b5" testId="52ab1157-e8e5-ef13-639a-0e38781cc9e0" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare" computerName="LEARNPC" duration="00:00:04.4030672" startTime="2026-09-24T15:57:30.6174814+07:00" endTime="2026-09-24T15:57:30.6174816+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0c906c77-e991-4a14-972f-81c92fb5e9b5">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.IsType() Failure: Value is null&#xD;
+Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+Actual:   null</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 214&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 270&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 601&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="9a12d754-204b-4e69-b1a4-291b69815cf9" testId="5fba6443-d442-0239-166b-473977c58daa" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" computerName="LEARNPC" duration="00:00:05.3265120" startTime="2026-09-24T15:57:15.6447596+07:00" endTime="2026-09-24T15:57:15.6447831+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9a12d754-204b-4e69-b1a4-291b69815cf9">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.IsType() Failure: Value is null&#xD;
+Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+Actual:   null</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 214&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 270&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 640&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="7a3636c1-3788-4a63-b148-b97dace9dcf1" testId="0b2aab3c-b6d4-0a94-0977-d700fb770da8" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings" computerName="LEARNPC" duration="00:00:00.0775692" startTime="2026-09-24T15:57:30.6950524+07:00" endTime="2026-09-24T15:57:30.6950524+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7a3636c1-3788-4a63-b148-b97dace9dcf1">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.IsType() Failure: Value is null&#xD;
+Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+Actual:   null</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 392&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 418&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="b6c3070d-f6da-4977-bc75-0984da618105" testId="40439020-0b9a-5ba1-6bb8-d00b33795342" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read" computerName="LEARNPC" duration="00:00:04.0787943" startTime="2026-09-24T15:57:26.2136227+07:00" endTime="2026-09-24T15:57:26.2136228+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b6c3070d-f6da-4977-bc75-0984da618105">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.IsType() Failure: Value is null&#xD;
+Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+Actual:   null</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 214&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 270&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 579&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0b2aab3c-b6d4-0a94-0977-d700fb770da8">
+      <Execution id="7a3636c1-3788-4a63-b148-b97dace9dcf1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C102_missing_duplicate_or_mismatched_source_has_zero_bindings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="52ab1157-e8e5-ef13-639a-0e38781cc9e0">
+      <Execution id="0c906c77-e991-4a14-972f-81c92fb5e9b5" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C113_second_fresh_barrier_immediately_precedes_prepare" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40439020-0b9a-5ba1-6bb8-d00b33795342">
+      <Execution id="b6c3070d-f6da-4977-bc75-0984da618105" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C112_first_fresh_barrier_precedes_source_read" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5fba6443-d442-0239-166b-473977c58daa">
+      <Execution id="9a12d754-204b-4e69-b1a4-291b69815cf9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d8ea26f4-8314-b487-efcb-53d24b0f547e">
+      <Execution id="d918d9cc-d04b-49a7-8ce6-388591648828" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="d8ea26f4-8314-b487-efcb-53d24b0f547e" executionId="d918d9cc-d04b-49a7-8ce6-388591648828" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="52ab1157-e8e5-ef13-639a-0e38781cc9e0" executionId="0c906c77-e991-4a14-972f-81c92fb5e9b5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5fba6443-d442-0239-166b-473977c58daa" executionId="9a12d754-204b-4e69-b1a4-291b69815cf9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0b2aab3c-b6d4-0a94-0977-d700fb770da8" executionId="7a3636c1-3788-4a63-b148-b97dace9dcf1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40439020-0b9a-5ba1-6bb8-d00b33795342" executionId="b6c3070d-f6da-4977-bc75-0984da618105" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="5" executed="5" passed="0" failed="5" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.27]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.43]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.44]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:17.36]       Assert.IsType() Failure: Value is null&#xD;
+[xUnit.net 00:00:17.36]       Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+[xUnit.net 00:00:17.36]       Actual:   null&#xD;
+[xUnit.net 00:00:17.36]       Stack Trace:&#xD;
+[xUnit.net 00:00:17.36]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(214,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:00:17.36]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(270,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:00:17.36]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(640,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead()&#xD;
+[xUnit.net 00:00:17.36]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:23.85]       P31-selection-ambiguous: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+[xUnit.net 00:00:23.85]       Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+[xUnit.net 00:00:23.85]       Actual:   null&#xD;
+[xUnit.net 00:00:23.85]       P32-binding-conflict: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+[xUnit.net 00:00:23.85]       Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+[xUnit.net 00:00:23.85]       Actual:   null&#xD;
+[xUnit.net 00:00:23.85]       P34-integrity-evidence: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+[xUnit.net 00:00:23.85]       Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+[xUnit.net 00:00:23.85]       Actual:   null&#xD;
+[xUnit.net 00:00:23.85]       P35-prepare-abort: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+[xUnit.net 00:00:23.85]       Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+[xUnit.net 00:00:23.85]       Actual:   null&#xD;
+[xUnit.net 00:00:23.85]       P36-class-set-abort: IsTypeException: Assert.IsType() Failure: Value is null&#xD;
+[xUnit.net 00:00:23.85]       Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+[xUnit.net 00:00:23.85]       Actual:   null&#xD;
+[xUnit.net 00:00:23.85]       Stack Trace:&#xD;
+[xUnit.net 00:00:23.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(687,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture()&#xD;
+[xUnit.net 00:00:23.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(687,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture()&#xD;
+[xUnit.net 00:00:23.85]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:27.93]       Assert.IsType() Failure: Value is null&#xD;
+[xUnit.net 00:00:27.93]       Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+[xUnit.net 00:00:27.93]       Actual:   null&#xD;
+[xUnit.net 00:00:27.93]       Stack Trace:&#xD;
+[xUnit.net 00:00:27.93]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(214,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:00:27.93]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(270,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:00:27.93]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(579,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read()&#xD;
+[xUnit.net 00:00:27.93]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:32.34]       Assert.IsType() Failure: Value is null&#xD;
+[xUnit.net 00:00:32.34]       Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+[xUnit.net 00:00:32.34]       Actual:   null&#xD;
+[xUnit.net 00:00:32.34]       Stack Trace:&#xD;
+[xUnit.net 00:00:32.34]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(214,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:00:32.34]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(270,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:00:32.34]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(601,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare()&#xD;
+[xUnit.net 00:00:32.34]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:32.41]       Assert.IsType() Failure: Value is null&#xD;
+[xUnit.net 00:00:32.41]       Expected: typeof(TagEkyc.Contracts.RawExport.RawExportAssemblyExecutionRequest)&#xD;
+[xUnit.net 00:00:32.41]       Actual:   null&#xD;
+[xUnit.net 00:00:32.41]       Stack Trace:&#xD;
+[xUnit.net 00:00:32.41]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(392,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings()&#xD;
+[xUnit.net 00:00:32.41]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(418,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings()&#xD;
+[xUnit.net 00:00:32.41]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:33.52]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T15:57:15.6424564+07:00">
+        <Text>[xUnit.net 00:00:17.36]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T15:57:22.1343333+07:00">
+        <Text>[xUnit.net 00:00:23.85]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T15:57:26.2139753+07:00">
+        <Text>[xUnit.net 00:00:27.93]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T15:57:30.6170502+07:00">
+        <Text>[xUnit.net 00:00:32.34]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T15:57:30.6950209+07:00">
+        <Text>[xUnit.net 00:00:32.41]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

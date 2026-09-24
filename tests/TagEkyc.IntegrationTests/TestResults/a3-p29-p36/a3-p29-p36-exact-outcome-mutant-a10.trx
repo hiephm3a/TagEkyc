@@ -1,0 +1,189 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="1ac450ad-d35b-477c-be6d-b5d2c3169d0a" name="3AVNN@LEARNPC 2026-09-24 16:09:35" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-24T16:09:35.2862106+07:00" queuing="2026-09-24T16:09:35.2862117+07:00" start="2026-09-24T16:08:59.1973224+07:00" finish="2026-09-24T16:10:14.1434261+07:00" />
+  <TestSettings name="default" id="b36c35c9-63df-4f79-b72b-aa53937a6a09">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-24_16_09_35" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="3d42bc02-b56d-43f6-8ada-d740931d8afa" testId="0b2aab3c-b6d4-0a94-0977-d700fb770da8" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings" computerName="LEARNPC" duration="00:00:09.0584872" startTime="2026-09-24T16:10:13.0027967+07:00" endTime="2026-09-24T16:10:13.0027969+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3d42bc02-b56d-43f6-8ada-d740931d8afa">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: SelectionNone&#xD;
+Actual:   StateConflict</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 451&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 455&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 455&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 455&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2682078c-0be6-4179-b9f2-0b9a496ee39b" testId="52ab1157-e8e5-ef13-639a-0e38781cc9e0" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare" computerName="LEARNPC" duration="00:00:09.2692229" startTime="2026-09-24T16:10:03.9436186+07:00" endTime="2026-09-24T16:10:03.9436189+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2682078c-0be6-4179-b9f2-0b9a496ee39b">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: AuthorityInvalid&#xD;
+Actual:   StateConflict</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 654&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 673&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="86664562-a326-4da4-a64b-2486e42ead03" testId="5fba6443-d442-0239-166b-473977c58daa" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" computerName="LEARNPC" duration="00:00:23.3775745" startTime="2026-09-24T16:09:35.2579490+07:00" endTime="2026-09-24T16:09:35.2579739+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="86664562-a326-4da4-a64b-2486e42ead03">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: SourceUnavailable&#xD;
+Actual:   StateConflict</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 689&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 701&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f8cf4e31-3db9-4e48-96be-5d1261256b98" testId="d8ea26f4-8314-b487-efcb-53d24b0f547e" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" computerName="LEARNPC" duration="00:00:10.3372507" startTime="2026-09-24T16:09:45.5930064+07:00" endTime="2026-09-24T16:09:45.5930067+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f8cf4e31-3db9-4e48-96be-5d1261256b98">
+      <Output>
+        <ErrorInfo>
+          <Message>P31-selection-ambiguous: EqualException: Assert.Equal() Failure: Values differ&#xD;
+Expected: SelectionAmbiguous&#xD;
+Actual:   StateConflict&#xD;
+P32-binding-conflict: EqualException: Assert.Equal() Failure: Values differ&#xD;
+Expected: SourceBindingInvalid&#xD;
+Actual:   StateConflict&#xD;
+P34-integrity-evidence: RawExportJobException: RAW_EXPORT_JOB_LEASE_NOT_HELD&#xD;
+P35-prepare-abort: EqualException: Assert.Equal() Failure: Values differ&#xD;
+Expected: 85937f88-b4c6-4fc3-b19a-f05966a04a87&#xD;
+Actual:   6269f390-c053-4247-8a2f-daa503af9120&#xD;
+P36-class-set-abort: EqualException: Assert.Equal() Failure: Values differ&#xD;
+Expected: f0de0581-0a7c-43ed-b667-e4cf202552ff&#xD;
+Actual:   85937f88-b4c6-4fc3-b19a-f05966a04a87</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 728&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 728&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="fedbeda4-5901-4ee9-a6e4-1742712bd28f" testId="40439020-0b9a-5ba1-6bb8-d00b33795342" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read" computerName="LEARNPC" duration="00:00:09.0806687" startTime="2026-09-24T16:09:54.6737339+07:00" endTime="2026-09-24T16:09:54.6737340+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fedbeda4-5901-4ee9-a6e4-1742712bd28f">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: AuthorityInvalid&#xD;
+Actual:   StateConflict</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 623&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 630&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0b2aab3c-b6d4-0a94-0977-d700fb770da8">
+      <Execution id="3d42bc02-b56d-43f6-8ada-d740931d8afa" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C102_missing_duplicate_or_mismatched_source_has_zero_bindings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="52ab1157-e8e5-ef13-639a-0e38781cc9e0">
+      <Execution id="2682078c-0be6-4179-b9f2-0b9a496ee39b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C113_second_fresh_barrier_immediately_precedes_prepare" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40439020-0b9a-5ba1-6bb8-d00b33795342">
+      <Execution id="fedbeda4-5901-4ee9-a6e4-1742712bd28f" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C112_first_fresh_barrier_precedes_source_read" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5fba6443-d442-0239-166b-473977c58daa">
+      <Execution id="86664562-a326-4da4-a64b-2486e42ead03" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d8ea26f4-8314-b487-efcb-53d24b0f547e">
+      <Execution id="f8cf4e31-3db9-4e48-96be-5d1261256b98" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="0b2aab3c-b6d4-0a94-0977-d700fb770da8" executionId="3d42bc02-b56d-43f6-8ada-d740931d8afa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="52ab1157-e8e5-ef13-639a-0e38781cc9e0" executionId="2682078c-0be6-4179-b9f2-0b9a496ee39b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5fba6443-d442-0239-166b-473977c58daa" executionId="86664562-a326-4da4-a64b-2486e42ead03" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d8ea26f4-8314-b487-efcb-53d24b0f547e" executionId="f8cf4e31-3db9-4e48-96be-5d1261256b98" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40439020-0b9a-5ba1-6bb8-d00b33795342" executionId="fedbeda4-5901-4ee9-a6e4-1742712bd28f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="5" executed="5" passed="0" failed="5" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.26]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.50]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.51]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:35.64]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:35.64]       Expected: SourceUnavailable&#xD;
+[xUnit.net 00:00:35.64]       Actual:   StateConflict&#xD;
+[xUnit.net 00:00:35.64]       Stack Trace:&#xD;
+[xUnit.net 00:00:35.64]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(689,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead()&#xD;
+[xUnit.net 00:00:35.64]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(701,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead()&#xD;
+[xUnit.net 00:00:35.64]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:45.97]       P31-selection-ambiguous: EqualException: Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:45.97]       Expected: SelectionAmbiguous&#xD;
+[xUnit.net 00:00:45.97]       Actual:   StateConflict&#xD;
+[xUnit.net 00:00:45.97]       P32-binding-conflict: EqualException: Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:45.97]       Expected: SourceBindingInvalid&#xD;
+[xUnit.net 00:00:45.97]       Actual:   StateConflict&#xD;
+[xUnit.net 00:00:45.97]       P34-integrity-evidence: RawExportJobException: RAW_EXPORT_JOB_LEASE_NOT_HELD&#xD;
+[xUnit.net 00:00:45.97]       P35-prepare-abort: EqualException: Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:45.97]       Expected: 85937f88-b4c6-4fc3-b19a-f05966a04a87&#xD;
+[xUnit.net 00:00:45.97]       Actual:   6269f390-c053-4247-8a2f-daa503af9120&#xD;
+[xUnit.net 00:00:45.97]       P36-class-set-abort: EqualException: Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:45.97]       Expected: f0de0581-0a7c-43ed-b667-e4cf202552ff&#xD;
+[xUnit.net 00:00:45.97]       Actual:   85937f88-b4c6-4fc3-b19a-f05966a04a87&#xD;
+[xUnit.net 00:00:45.97]       Stack Trace:&#xD;
+[xUnit.net 00:00:45.97]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(728,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture()&#xD;
+[xUnit.net 00:00:45.97]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(728,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture()&#xD;
+[xUnit.net 00:00:45.97]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:55.05]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:55.05]       Expected: AuthorityInvalid&#xD;
+[xUnit.net 00:00:55.05]       Actual:   StateConflict&#xD;
+[xUnit.net 00:00:55.05]       Stack Trace:&#xD;
+[xUnit.net 00:00:55.05]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(623,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read()&#xD;
+[xUnit.net 00:00:55.05]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(630,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read()&#xD;
+[xUnit.net 00:00:55.05]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:01:04.32]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:01:04.32]       Expected: AuthorityInvalid&#xD;
+[xUnit.net 00:01:04.32]       Actual:   StateConflict&#xD;
+[xUnit.net 00:01:04.32]       Stack Trace:&#xD;
+[xUnit.net 00:01:04.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(654,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare()&#xD;
+[xUnit.net 00:01:04.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(673,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare()&#xD;
+[xUnit.net 00:01:04.32]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:01:13.38]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:01:13.38]       Expected: SelectionNone&#xD;
+[xUnit.net 00:01:13.38]       Actual:   StateConflict&#xD;
+[xUnit.net 00:01:13.38]       Stack Trace:&#xD;
+[xUnit.net 00:01:13.38]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(451,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings()&#xD;
+[xUnit.net 00:01:13.38]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(455,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings()&#xD;
+[xUnit.net 00:01:13.38]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(455,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings()&#xD;
+[xUnit.net 00:01:13.38]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(455,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings()&#xD;
+[xUnit.net 00:01:13.38]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:01:14.38]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T16:09:35.2548672+07:00">
+        <Text>[xUnit.net 00:00:35.64]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T16:09:45.5923517+07:00">
+        <Text>[xUnit.net 00:00:45.97]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T16:09:54.6738647+07:00">
+        <Text>[xUnit.net 00:00:55.05]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T16:10:03.9432479+07:00">
+        <Text>[xUnit.net 00:01:04.32]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T16:10:13.0023592+07:00">
+        <Text>[xUnit.net 00:01:13.38]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

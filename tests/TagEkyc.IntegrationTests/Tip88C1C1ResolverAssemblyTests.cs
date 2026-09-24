@@ -11,6 +11,7 @@ using TagEkyc.Api;
 using TagEkyc.Application.Ports;
 using TagEkyc.Contracts.RawExport;
 using TagEkyc.Domain;
+using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.RawExport;
 
 namespace TagEkyc.IntegrationTests;
@@ -153,14 +154,19 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         RawExportJobLeaseState? leaseOverride = null,
         Func<Guid, Guid, Task<IC2AssemblyPreparationProvider>>? c2Factory = null,
         bool publishSource = true,
-        DurableObjectMinioFixture? sharedMinio = null)
+        DurableObjectMinioFixture? sharedMinio = null,
+        bool acquireThroughDurableWorkSource = false)
     {
         var plaintext = plaintextOverride ?? Encoding.UTF8.GetBytes("c1-end-to-end-synthetic-selfie");
         var minio = sharedMinio ?? await DurableObjectMinioFixture.StartAsync();
         await using var setup = postgres.CreateDbContext();
-        var permit = await Tip88B4RawExportJobFoundationTests.CreateAuthorizedPermitAsync(
-            setup,
-            [RawExportRawClass.LiveSelfieImage]);
+        var permit = acquireThroughDurableWorkSource
+            ? await Tip88B4RawExportJobFoundationTests.CreateAuthorizedPacketPermitAsync(
+                setup,
+                [RawExportRawClass.LiveSelfieImage])
+            : await Tip88B4RawExportJobFoundationTests.CreateAuthorizedPermitAsync(
+                setup,
+                [RawExportRawClass.LiveSelfieImage]);
         var actor = Tip88B34AuthorizationEngineTests.Actor;
         var r2 = new Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(postgres);
         var source = await r2.CreateR3VerifiedSourceForExistingSessionAsync(
@@ -201,9 +207,37 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var jobs = Tip88B4RawExportJobFoundationTests.CreateJobRepository(setup, leaseOverride);
         var bound = await jobs.BindAsync(new(actor, permit.PermitId, $"c1-e2e-{Guid.NewGuid():N}"));
         Assert.Equal(RawExportJobBindStatus.NewJob, bound.Status);
-        var acquired = await jobs.AcquireOrReclaimLeaseAsync(new(
-            actor, bound.JobId, 0, 0, Guid.NewGuid()));
-        Assert.Equal(RawExportJobLeaseStatus.Acquired, acquired.Status);
+        DurableRawExportAssemblyWorkSource? durableWorkSource = null;
+        TagEkycDbContext? durableWorkSourceDb = null;
+        RawExportAssemblyExecutionRequest request;
+        DateTimeOffset leaseExpiresAt;
+        if (acquireThroughDurableWorkSource)
+        {
+            durableWorkSourceDb = postgres.CreateDbContext();
+            durableWorkSource = new DurableRawExportAssemblyWorkSource(
+                new RoleConnectionFactory(postgres.ConnectionString),
+                Tip88B4RawExportJobFoundationTests.CreateJobRepository(
+                    durableWorkSourceDb, leaseOverride),
+                new RawExportAssemblyWorkerIdentity(Guid.NewGuid()));
+            request = Assert.IsType<RawExportAssemblyExecutionRequest>(
+                await durableWorkSource.TryAcquireAsync());
+            Assert.Equal(bound.JobId, request.JobId);
+            var acquiredView = await jobs.ReadAsync(new(actor, bound.JobId));
+            leaseExpiresAt = Assert.IsType<DateTimeOffset>(acquiredView.Job!.Head.LeaseExpiresAt);
+        }
+        else
+        {
+            var acquired = await jobs.AcquireOrReclaimLeaseAsync(new(
+                actor, bound.JobId, 0, 0, Guid.NewGuid()));
+            Assert.Equal(RawExportJobLeaseStatus.Acquired, acquired.Status);
+            request = new RawExportAssemblyExecutionRequest(
+                bound.JobId,
+                acquired.AttemptId!.Value,
+                acquired.Revision!.Value,
+                acquired.FencingToken!.Value,
+                actor.PrincipalId);
+            leaseExpiresAt = acquired.LeaseExpiresAt!.Value;
+        }
 
         var verifyDb = postgres.CreateDbContext();
         var lookupDb = postgres.CreateDbContext();
@@ -236,27 +270,23 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             new RawExportAssemblyAuthenticationService(new FixtureAssemblyAuthenticator(
                 beforeAuthenticate is null ? null : () => beforeAuthenticate(source))),
             effectiveC2);
-        var request = new RawExportAssemblyExecutionRequest(
-            bound.JobId,
-            acquired.AttemptId!.Value,
-            acquired.Revision!.Value,
-            acquired.FencingToken!.Value,
-            actor.PrincipalId);
         var ownedResources = new List<IAsyncDisposable>
         {
             verifyDb, lookupDb, contentScope, contentProvider,
         };
+        if (durableWorkSourceDb is not null) ownedResources.Add(durableWorkSourceDb);
         if (sharedMinio is null) ownedResources.Add(minio);
         return new(
             ownedResources,
             minio,
             bound.JobId,
             request,
-            acquired.LeaseExpiresAt!.Value,
+            leaseExpiresAt,
             orchestrator,
             c2,
             objectReads,
-            source);
+            source,
+            durableWorkSource);
     }
 
     private OwnedAssemblyOrchestrator CreateIndependentOrchestrator(
@@ -289,22 +319,122 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                 c2),
             [verifyDb, lookupDb, contentScope, contentProvider]);
     }
+
+    private async Task<RawExportAssemblyExecutionResult> ExecuteThroughDurableWorkerAsync(
+        PreparedAssemblyFixture prepared)
+    {
+        var durable = Assert.IsType<DurableRawExportAssemblyWorkSource>(prepared.DurableWorkSource);
+        return await ExecuteThroughDurableWorkerAsync(
+            durable, prepared.Request, prepared.Orchestrator, prepared.JobId);
+    }
+
+    private async Task<RawExportAssemblyExecutionResult> ExecuteThroughDurableWorkerAsync(
+        DurableRawExportAssemblyWorkSource durable,
+        RawExportAssemblyExecutionRequest request,
+        IRawExportAssemblyOrchestrator orchestrator,
+        Guid jobId)
+    {
+        var scheduled = new ScheduledDurableWorkSource(durable, request);
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton<IRawExportAssemblyWorkSource>(scheduled);
+        services.AddSingleton(orchestrator);
+        await using var provider = services.BuildServiceProvider();
+        var worker = new RawExportAssemblyHostedService(
+            provider.GetRequiredService<IServiceScopeFactory>(),
+            new(RawExportAssemblyTopology.DurableWorker, 10));
+
+        await worker.StartAsync(default);
+        var recorded = await scheduled.Recorded.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        await worker.StopAsync(default);
+
+        Assert.Equal(request, recorded.Request);
+        Assert.Equal(1, scheduled.RecordCalls);
+        await AssertDurableWorkSourceResidueAsync(jobId, recorded.Result.Outcome);
+        if (IsRetryableAssemblyOutcome(recorded.Result.Outcome))
+            await RetireRetryableJobAfterProofAsync(jobId);
+        return recorded.Result;
+    }
+
+    private async Task AssertDurableWorkSourceResidueAsync(
+        Guid jobId,
+        RawExportAssemblyExecutionOutcome outcome)
+    {
+        await using var db = postgres.CreateDbContext();
+        var read = await Tip88B4RawExportJobFoundationTests.CreateJobRepository(db)
+            .ReadAsync(new(Tip88B34AuthorizationEngineTests.Actor, jobId));
+        var job = Assert.IsType<RawExportJobView>(read.Job);
+        if (IsRetryableAssemblyOutcome(outcome))
+        {
+            Assert.Equal(RawExportJobState.Assembling, job.Head.CurrentState);
+            Assert.Equal(RawExportJobEventType.AttemptFailedRetryable, job.LatestTransition.LatestEventType);
+            Assert.Equal(
+                RawExportJobAttemptFailureCode.ATTEMPT_EXECUTION_FAILED_RETRYABLE.ToString(),
+                job.LatestTransition.LatestFailureCode);
+            return;
+        }
+
+        Assert.Equal(RawExportJobState.TerminalFailed, job.Head.CurrentState);
+        Assert.Equal(RawExportJobEventType.JobTerminalFailed, job.LatestTransition.LatestEventType);
+        var reason = outcome switch
+        {
+            RawExportAssemblyExecutionOutcome.AuthorityInvalid =>
+                RawExportJobTerminalReasonCode.AUTHORITY_REVALIDATION_FAILED,
+            RawExportAssemblyExecutionOutcome.AssemblyClassSetMismatch or
+                RawExportAssemblyExecutionOutcome.StateConflict =>
+                RawExportJobTerminalReasonCode.JOB_GRAPH_INVARIANT_FAILURE,
+            _ => RawExportJobTerminalReasonCode.ATTEMPT_EXECUTION_FAILED_NON_RETRYABLE,
+        };
+        Assert.Equal(reason.ToString(), job.LatestTransition.LatestFailureCode);
+    }
+
+    private static bool IsRetryableAssemblyOutcome(RawExportAssemblyExecutionOutcome outcome) =>
+        outcome is RawExportAssemblyExecutionOutcome.ProviderUnavailable
+            or RawExportAssemblyExecutionOutcome.ProviderOutcomeUnknown
+            or RawExportAssemblyExecutionOutcome.SourceUnavailable
+            or RawExportAssemblyExecutionOutcome.VerificationIndeterminate;
+
+    private async Task RetireRetryableJobAfterProofAsync(Guid jobId)
+    {
+        await using var connection = new NpgsqlConnection(postgres.ConnectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await using (var replica = new NpgsqlCommand(
+                         "SET LOCAL session_replication_role=replica;",
+                         connection,
+                         transaction))
+            await replica.ExecuteNonQueryAsync();
+        await using (var expire = new NpgsqlCommand(
+                         "UPDATE tagekyc.raw_export_job_identities SET \"JobExpiresAt\"=statement_timestamp()-interval '1 millisecond',\"PermitExpiresAt\"=statement_timestamp()-interval '1 millisecond' WHERE \"JobId\"=@job;",
+                         connection,
+                         transaction))
+        {
+            expire.Parameters.AddWithValue("job", jobId);
+            Assert.Equal(1, await expire.ExecuteNonQueryAsync());
+        }
+        await transaction.CommitAsync();
+    }
+
     [Fact]
     public async Task C102_missing_duplicate_or_mismatched_source_has_zero_bindings()
     {
+        await postgres.ResetDatabaseAsync();
         await using var db = postgres.CreateDbContext();
-        var permit = await Tip88B4RawExportJobFoundationTests.CreateAuthorizedPermitAsync(
+        var permit = await Tip88B4RawExportJobFoundationTests.CreateAuthorizedPacketPermitAsync(
             db, [RawExportRawClass.LiveSelfieImage]);
         var actor = Tip88B34AuthorizationEngineTests.Actor;
         var jobs = Tip88B4RawExportJobFoundationTests.CreateJobRepository(db);
         var bound = await jobs.BindAsync(new(actor, permit.PermitId, $"c1-missing-{Guid.NewGuid():N}"));
-        var acquired = await jobs.AcquireOrReclaimLeaseAsync(new(
-            actor, bound.JobId, 0, 0, Guid.NewGuid()));
+        var durable = new DurableRawExportAssemblyWorkSource(
+            new RoleConnectionFactory(postgres.ConnectionString),
+            jobs,
+            new RawExportAssemblyWorkerIdentity(Guid.NewGuid()));
+        var request = Assert.IsType<RawExportAssemblyExecutionRequest>(
+            await durable.TryAcquireAsync());
+        Assert.Equal(bound.JobId, request.JobId);
         var repository = new RawExportAssemblyRepository(new RoleConnectionFactory(postgres.ConnectionString));
 
-        var result = await repository.FreezeAsync(new(
-            bound.JobId, acquired.AttemptId!.Value, acquired.Revision!.Value,
-            acquired.FencingToken!.Value, actor.PrincipalId), default);
+        var result = await repository.FreezeAsync(request, default);
 
         Assert.Equal("SelectionNone", result.Outcome);
         Assert.Equal(0, result.RowRevision);
@@ -313,25 +443,19 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         await using var minio = await DurableObjectMinioFixture.StartAsync();
         var c2 = new BoundedFixtureC2Provider();
         await using var owned = CreateIndependentOrchestrator(minio, c2);
-        var orchestrated = await owned.Orchestrator.ExecuteAsync(
-            new(
-                bound.JobId,
-                acquired.AttemptId.Value,
-                acquired.Revision.Value,
-                acquired.FencingToken.Value,
-                actor.PrincipalId),
+        var wrongFence = await repository.FreezeAsync(
+            request with { ExpectedFence = request.ExpectedFence + 1 },
             default);
+        Assert.Equal("LeaseLost", wrongFence.Outcome);
+        Assert.Equal(0, await db.RawExportJobSourceBindings.CountAsync(row => row.JobId == bound.JobId));
+
+        var orchestrated = await ExecuteThroughDurableWorkerAsync(
+            durable, request, owned.Orchestrator, bound.JobId);
         Assert.Equal(RawExportAssemblyExecutionOutcome.SelectionNone, orchestrated.Outcome);
         Assert.Equal(0, c2.PrepareCount);
         Assert.Equal(0, await db.RawExportAssemblyPreparationDispositions.CountAsync(row => row.JobId == bound.JobId));
         Assert.Equal(0, await db.RawExportAssemblyIdentities.CountAsync(row => row.JobId == bound.JobId));
         Assert.Equal(0, await db.RawExportAssemblyItems.CountAsync());
-
-        var mismatched = await repository.FreezeAsync(new(
-            bound.JobId, acquired.AttemptId.Value, acquired.Revision.Value,
-            acquired.FencingToken.Value + 1, actor.PrincipalId), default);
-        Assert.Equal("LeaseLost", mismatched.Outcome);
-        Assert.Equal(0, await db.RawExportJobSourceBindings.CountAsync(row => row.JobId == bound.JobId));
     }
     [Fact]
     public async Task C103_source_eligibility_is_closed_and_fail_closed()
@@ -492,10 +616,12 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     [Fact]
     public async Task C112_first_fresh_barrier_precedes_source_read()
     {
-        await using var prepared = await PrepareAssemblyExecutionAsync(null, null, null);
+        await postgres.ResetDatabaseAsync();
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            null, null, null, acquireThroughDurableWorkSource: true);
         await WithdrawAuthorityAsync(prepared.Source);
 
-        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var result = await ExecuteThroughDurableWorkerAsync(prepared);
 
         Assert.Equal(RawExportAssemblyExecutionOutcome.AuthorityInvalid, result.Outcome);
         Assert.Equal(0, prepared.ObjectReads.OpenReadCount);
@@ -510,6 +636,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     [Fact]
     public async Task C113_second_fresh_barrier_immediately_precedes_prepare()
     {
+        await postgres.ResetDatabaseAsync();
         var callbackCount = 0;
         string? frozenBindings = null;
         PreparedAssemblyFixture? prepared = null;
@@ -521,9 +648,10 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                 callbackCount++;
                 frozenBindings = await ReadBindingsJsonAsync(prepared!.JobId);
                 await WithdrawAuthorityAsync(source);
-            }))
+            },
+            acquireThroughDurableWorkSource: true))
         {
-            var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+            var result = await ExecuteThroughDurableWorkerAsync(prepared);
 
             Assert.Equal(1, callbackCount);
             Assert.Equal(RawExportAssemblyExecutionOutcome.AuthorityInvalid, result.Outcome);
@@ -551,13 +679,15 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     [Fact]
     public async Task A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead()
     {
+        await postgres.ResetDatabaseAsync();
         await using var prepared = await PrepareAssemblyExecutionAsync(
             null,
             null,
             null,
-            publishSource: false);
+            publishSource: false,
+            acquireThroughDurableWorkSource: true);
 
-        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var result = await ExecuteThroughDurableWorkerAsync(prepared);
 
         Assert.Equal(RawExportAssemblyExecutionOutcome.SourceUnavailable, result.Outcome);
         Assert.Equal(0, prepared.ObjectReads.OpenReadCount);
@@ -577,6 +707,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     [Fact]
     public async Task A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture()
     {
+        await postgres.ResetDatabaseAsync();
         await using var minio = await DurableObjectMinioFixture.StartAsync();
         var failures = new List<string>();
         foreach (var scenario in new (string Name, Func<Task> Run)[]
@@ -603,10 +734,10 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     private async Task AssertP31SelectionAmbiguousAsync(DurableObjectMinioFixture minio)
     {
         await using var prepared = await PrepareAssemblyExecutionAsync(
-            null, null, null, sharedMinio: minio);
+            null, null, null, sharedMinio: minio, acquireThroughDurableWorkSource: true);
         await InsertAmbiguousIngressClaimAsync(prepared.Source);
 
-        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var result = await ExecuteThroughDurableWorkerAsync(prepared);
 
         Assert.Equal(RawExportAssemblyExecutionOutcome.SelectionAmbiguous, result.Outcome);
         Assert.Equal(0, prepared.ObjectReads.OpenReadCount);
@@ -617,7 +748,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     private async Task AssertP32BindingConflictAsync(DurableObjectMinioFixture minio)
     {
         await using var prepared = await PrepareAssemblyExecutionAsync(
-            null, null, null, sharedMinio: minio);
+            null, null, null, sharedMinio: minio, acquireThroughDurableWorkSource: true);
         var repository = new RawExportAssemblyRepository(
             new RoleConnectionFactory(postgres.ConnectionString));
         var frozen = await repository.FreezeAsync(prepared.Request, default);
@@ -625,7 +756,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var before = await ReadBindingsJsonAsync(prepared.JobId);
         await MutateReservationCommitmentAsync(prepared.Source.SourceArtifactId);
 
-        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var result = await ExecuteThroughDurableWorkerAsync(prepared);
 
         Assert.Equal(RawExportAssemblyExecutionOutcome.SourceBindingInvalid, result.Outcome);
         Assert.Equal(before, await ReadBindingsJsonAsync(prepared.JobId));
@@ -637,13 +768,13 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     private async Task AssertP34IntegrityEvidenceAsync(DurableObjectMinioFixture minio)
     {
         await using var prepared = await PrepareAssemblyExecutionAsync(
-            null, null, null, sharedMinio: minio);
+            null, null, null, sharedMinio: minio, acquireThroughDurableWorkSource: true);
         var repository = new RawExportAssemblyRepository(
             new RoleConnectionFactory(postgres.ConnectionString));
         Assert.Equal("Frozen", (await repository.FreezeAsync(prepared.Request, default)).Outcome);
         await TamperExactObjectAsync(prepared.Source.ObjectCustodyId, minio);
 
-        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var result = await ExecuteThroughDurableWorkerAsync(prepared);
 
         Assert.Equal(RawExportAssemblyExecutionOutcome.SourceIntegrityInvalid, result.Outcome);
         Assert.Equal(1, prepared.ObjectReads.OpenReadCount);
@@ -666,9 +797,9 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     {
         var provider = new BoundedFixtureC2Provider(conflictAfterPrepare: true);
         await using var prepared = await PrepareAssemblyExecutionAsync(
-            provider, null, null, sharedMinio: minio);
+            provider, null, null, sharedMinio: minio, acquireThroughDurableWorkSource: true);
 
-        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var result = await ExecuteThroughDurableWorkerAsync(prepared);
 
         Assert.Equal(RawExportAssemblyExecutionOutcome.AssemblyPrepareFailed, result.Outcome);
         Assert.Equal(1, provider.PrepareCount);
@@ -686,9 +817,9 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var provider = new BoundedFixtureC2Provider(afterPrepare: () =>
             MutateJobClassAsync(holder!.JobId));
         await using (holder = await PrepareAssemblyExecutionAsync(
-            provider, null, null, sharedMinio: minio))
+            provider, null, null, sharedMinio: minio, acquireThroughDurableWorkSource: true))
         {
-            var result = await holder.Orchestrator.ExecuteAsync(holder.Request, default);
+            var result = await ExecuteThroughDurableWorkerAsync(holder);
 
             Assert.Equal(RawExportAssemblyExecutionOutcome.AssemblyClassSetMismatch, result.Outcome);
             Assert.Equal(1, provider.PrepareCount);
@@ -1688,7 +1819,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         RawExportAssemblyOrchestrator Orchestrator,
         BoundedFixtureC2Provider C2,
         CountingReconciler ObjectReads,
-        Tip88C1B2R2DurableCustodyEncryptionDatabaseTests.R3VerifiedSourceFixture Source) : IAsyncDisposable
+        Tip88C1B2R2DurableCustodyEncryptionDatabaseTests.R3VerifiedSourceFixture Source,
+        DurableRawExportAssemblyWorkSource? DurableWorkSource) : IAsyncDisposable
     {
         public async ValueTask DisposeAsync()
         {
@@ -1952,6 +2084,43 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             left is not null && left.Length == right.Length && CryptographicOperations.FixedTimeEquals(left, right);
 
         private enum State { None, Prepared, Finalized, Aborted }
+    }
+
+    private sealed class ScheduledDurableWorkSource(
+        DurableRawExportAssemblyWorkSource inner,
+        RawExportAssemblyExecutionRequest request) : IRawExportAssemblyWorkSource
+    {
+        private int issued;
+        internal int RecordCalls;
+        internal TaskCompletionSource<(RawExportAssemblyExecutionRequest Request,
+            RawExportAssemblyExecutionResult Result)> Recorded { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public async ValueTask<RawExportAssemblyExecutionRequest?> TryAcquireAsync(
+            CancellationToken cancellationToken)
+        {
+            if (Interlocked.Exchange(ref issued, 1) == 0) return request;
+            await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+            return null;
+        }
+
+        public async ValueTask RecordAsync(
+            RawExportAssemblyExecutionRequest completedRequest,
+            RawExportAssemblyExecutionResult result,
+            CancellationToken cancellationToken)
+        {
+            RecordCalls++;
+            try
+            {
+                await inner.RecordAsync(completedRequest, result, cancellationToken);
+                Recorded.TrySetResult((completedRequest, result));
+            }
+            catch (Exception exception)
+            {
+                Recorded.TrySetException(exception);
+                throw;
+            }
+        }
     }
 
     private sealed class RecordingAssemblyWorkSource(RawExportAssemblyExecutionRequest request)

@@ -1,0 +1,25 @@
+Path	Sha256	Bytes	Role
+src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyRuntimeInfrastructure.cs	AB3995E38321824FBF2CABF224894C651CD515E54DA6757F470CEA01CE81B2E5	11103	Production DurableWorker hosted service and durable work-source
+src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyOrchestrator.cs	5EDC9B2A79EA7CB98567B779A7A454BC62C478AC927C734489AE966716C235A0	24336	Production exact assembly outcome mapping
+tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs	CE6C95F54800AE8FD3A766041EE3080CF2C768CC5E448EC6285C815F9C5D9139	117675	P29-P36 production DurableWorker joined assertions
+docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_activation_scope_partition_v1.tsv	A3BEAD4A0CABC47DF24B5227EE8C1DAE1999E4EC287299959DF6F8A3C537DC2E	1256	Current eight-row active partition
+docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_outcome_ownership_table_v1.tsv	54746345950D27A1BB716DDFDC4648963AE6559444339AF4F2F17D24972BB932	65002	Canonical ownership and exit conditions
+docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	4269341453674733478D90019B55F11403A01F2CE30825FF9DA5D44B3250ABE1	248672	Current governance reconciliation ledger
+docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_p29_p36_failed_run_census_v1.tsv	AF2A53B1923FFE558A49891B5E1FAF06EE3ADE90573F435035DBDAE2A59A59CF	2143	Complete failed-run classification
+docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_p29_p36_row_evidence_map_v1.tsv	23A9837B86C8AFACDA9C5758352C716DBDB38A908D14D08C99C1BE60474BBEEB	2499	Exact one-to-one eight-row evidence map
+scripts/a3_p29_p36_review_verify.ps1	40395AF853FD3FB5ACD321B4F0F82F4FBBAE2D22AC0AF15124A758049EA9EA20	3878	Strict manifest row-map and failed-run verifier
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-adjacent-restored-a15.trx	8CB44B1C4EC6D110B4D5E8B83B5E0F0AF902E9E80F5DDD7922EF6B28CAE78D82	4604	Adjacent production work-source/worker gate 2/2 PASS
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-durable-record-mutant-a7.trx	10DBC69F1EA5A1DB4196FAE0D53E829950132FC338749AE5ADE2BCC1E64247EC	32855	Mutation A EVIDENCE_RED 0/5
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-durable-worker-final-a14.trx	A1FE7EE625890E5C6C9C3A87F6E36E1F7B0E570BCF7B9BC0F6C8782D3C24F087	8858	Final restored joined gate 5/5 PASS
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-durable-worker-joined-a1.trx	0244A23F014B0F0FFDDE6FEF7928631CF24FF77B2A4FDC1759D576730051C3F9	25037	SUPERSEDED_RED
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-durable-worker-joined-a2.trx	C5AE8D3C57EA07D76D259C465D2A38B1B9CB16488A59AC78F130EDB5DEDF06FC	25099	SUPERSEDED_RED
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-durable-worker-joined-a6.trx	F441289C7059D8A1E29AD99D41FEE209BAB5AC74ABDBAFA44AF02B6F9FE2678F	8858	First complete joined gate 5/5 PASS
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-durable-worker-restored-a8.trx	C0C831E4CFBC4F8B57C2C48FAD69133BCB1C7EA0E2BF650D4BC45B99CE7BF57D	8858	Restored gate after mutation A 5/5 PASS
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-exact-outcome-mutant-a10.trx	E1A3BAD30C6FBB149FAB7B91F1E5C732692CA5DCBBA6F7DE496EE81ADF64871A	21104	SUPERSEDED_RED
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-exact-outcome-mutant-a11.trx	987BCC72018D6B02819886FFF376BB07CE792BBCE177BE0D74DDE63CCDFBF125	22710	SUPERSEDED_RED
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-exact-outcome-mutant-a12.trx	A64A5FACB6DA82BC3DF78437ACF2D024717C13365C503CA96A6BC3D24F07DC37	22712	SUPERSEDED_RED
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-exact-outcome-mutant-a13.trx	DBA286A3D4B58AF1974E7FC3AB3D723B39B63FDB5F6AB68F60A72635F2553425	21196	Mutation B EVIDENCE_RED 0/5
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-exact-outcome-mutant-a9.trx	347D4FAF3F6328EE4B877439CF1DEF2AD889162C536F613F055B89D422187536	34609	SUPERSEDED_RED
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p29-p36-predecessor-component.trx	FDE2BFCA27D1704584CC89961D7231F14F69F8E5E58AEC21880DE98E6ECFA289	8858	Predecessor component baseline 5/5 PASS
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p33-durable-worker-a5.trx	ED67B2439D07B003EA1C1B74586F615C225BD26EC277BDCCAC76364356FF496C	3110	Focused P33 join 1/1 PASS
+tests/TagEkyc.IntegrationTests/TestResults/a3-p29-p36/a3-p33-durable-worker-diagnostic-a3.trx	CD301A4183324CDF6C7B8395E1D1D22138F27EE7AA8493AFF4F440B931BDECD5	10258	SUPERSEDED_RED
