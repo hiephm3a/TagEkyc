@@ -8,6 +8,11 @@ namespace TagEkyc.ArchTests;
 
 internal static class A1CatalogueJoinProof
 {
+    private const string A1CapabilitySignature =
+        "tagekyc.capture_runtime_issue_or_replace_capability(uuid, uuid, text, uuid, bigint, uuid, uuid, text, bytea, integer, bytea, timestamp with time zone)";
+    private const string A3CapabilitySignature =
+        "tagekyc.capture_runtime_issue_or_replace_capability(uuid, uuid, text, uuid, bigint, uuid, uuid, text, bytea, integer, bytea, timestamp with time zone, uuid, uuid, jsonb)";
+
     public static void Verify(string root)
     {
         const string folder = "docs/tips/tip_88c1_secure_raw_source_sealed_assembly/";
@@ -22,19 +27,26 @@ internal static class A1CatalogueJoinProof
         string[] Rows(string name) => (string[])catalogue.GetField(name, BindingFlags.Static | BindingFlags.NonPublic)!.GetValue(null)!;
         var functions = Rows("Functions"); var tables = Rows("Tables"); var grants = Rows("Grants");
         Assert.Equal(47, functions.Length); Assert.Equal(27, tables.Length);
-        Equal(functions, Regex.Matches(sql, @"CREATE FUNCTION\s+(tagekyc\.\w+)\(([\s\S]*?)\)\s+RETURNS", RegexOptions.IgnoreCase)
-            .Select(m => Signature(m.Groups[1].Value, m.Groups[2].Value, true)));
+        var a1Functions = Regex.Matches(sql, @"CREATE FUNCTION\s+(tagekyc\.\w+)\(([\s\S]*?)\)\s+RETURNS", RegexOptions.IgnoreCase)
+            .Select(m => Signature(m.Groups[1].Value, m.Groups[2].Value, true)).ToArray();
+        Assert.Equal(47, a1Functions.Length);
+        Assert.Single(a1Functions, value => value == A1CapabilitySignature);
+        Assert.DoesNotContain(A3CapabilitySignature, a1Functions);
+        var currentFunctions = a1Functions.Select(CurrentSignature).ToArray();
+        Equal(functions, currentFunctions);
+        Assert.Single(functions, value => value == A3CapabilitySignature);
+        Assert.DoesNotContain(A1CapabilitySignature, functions);
         IEnumerable<string> Tables(string text) => Regex.Matches(text, @"CREATE TABLE\s+tagekyc\.(\w+)\s*\(", RegexOptions.IgnoreCase).Select(m => m.Groups[1].Value);
         Equal(tables, Tables(sql)); Equal(tables, Tables(ddl));
         Equal(functions, grants.Select(row => row.Split('|')[0]));
         var owners = Regex.Matches(sql, @"ALTER FUNCTION\s+(tagekyc\.\w+)\(([^)]*)\)\s+OWNER TO\s+(\w+)", RegexOptions.IgnoreCase)
             .Select(m => (Key: Signature(m.Groups[1].Value, m.Groups[2].Value, false), Owner: m.Groups[3].Value)).ToArray();
-        Equal(functions, owners.Select(row => row.Key));
+        Equal(functions, owners.Select(row => CurrentSignature(row.Key)));
         Assert.All(owners, row => Assert.Equal("tagekyc_raw_export_deployer", row.Owner));
         var edges = Regex.Matches(sql, @"GRANT EXECUTE ON FUNCTION\s+([^;]+?)\s+TO\s+([^;]+);", RegexOptions.IgnoreCase)
             .SelectMany(grant => Regex.Matches(grant.Groups[1].Value, @"(tagekyc\.\w+)\(([^)]*)\)")
                 .SelectMany(function => grant.Groups[2].Value.Split(',').Select(role =>
-                    Signature(function.Groups[1].Value, function.Groups[2].Value, false) + "|" + role.Trim()))).ToArray();
+                    CurrentSignature(Signature(function.Groups[1].Value, function.Groups[2].Value, false)) + "|" + role.Trim()))).ToArray();
         Equal(grants.SelectMany(row => row.Split('|')[1].Split(',', StringSplitOptions.RemoveEmptyEntries).Select(role => row.Split('|')[0] + "|" + role)), edges);
         var operations = Regex.Matches(master, @"(?m)^### (R\d{2}[ab]?) —[^\r\n]*[\s\S]*?(?=^### |^## |\z)")
             .ToDictionary(m => m.Groups[1].Value, m => m.Value, StringComparer.Ordinal);
@@ -77,6 +89,9 @@ internal static class A1CatalogueJoinProof
         Assert.False(Declares(mapping[0].Path, mapping[0].Method + "_MissingMutation"));
         // This verifies declaration joins, not execution or all required assertions.
     }
+    private static string CurrentSignature(string signature) =>
+        signature == A1CapabilitySignature ? A3CapabilitySignature : signature;
+
     private static string Signature(string name, string arguments, bool named)
     {
         var types = arguments.Split(',', StringSplitOptions.RemoveEmptyEntries).Select(argument =>

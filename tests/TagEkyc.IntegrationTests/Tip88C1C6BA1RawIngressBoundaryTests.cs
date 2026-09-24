@@ -68,6 +68,66 @@ public sealed class Tip88C1C6BA1RawIngressBoundaryTests(PostgresPersistenceFixtu
         Assert.Equal(1, await NonceCountAsync(identity.Credential));
     }
 
+    [Fact]
+    public async Task P04_AuthenticatedContentEncodingReturnsExactO04WithoutR1OrBodyRead()
+    {
+        await AssertAuthenticatedP04Async("Content-Encoding", "gzip");
+    }
+
+    [Fact]
+    public async Task P04_AuthenticatedTrailerReturnsExactO04WithoutR1OrBodyRead()
+    {
+        await AssertAuthenticatedP04Async("Trailer", "X-TagEkyc-Trailer-Probe");
+    }
+
+    [Fact]
+    public async Task P04_TransferEncodingIsGenericPreAuthenticationRejectionWithoutCommittedNonce()
+    {
+        using var signer = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        var identity = await SeedAsync(signer);
+        var body = new CountingBody();
+        var admission = new CountingAdmission(postgres.ConnectionString, body);
+        await using var app = await StartAsync(admission);
+        var request = SignedRequest(identity.Credential, signer);
+
+        var result = await SendAsync(app, request, body,
+            context => context.Request.Headers["Transfer-Encoding"] = "chunked");
+
+        Assert.Equal(400, result.Response.StatusCode);
+        Assert.Equal(0, admission.Calls);
+        Assert.Equal(0, body.ReadCalls);
+        Assert.Equal(0, body.BytesRead);
+        // Read through an independent PostgreSQL connection. This is the
+        // committed nonce transaction, not an authenticator/test-double flag.
+        Assert.Equal(0, await NonceCountAsync(identity.Credential));
+        using var json = await JsonDocument.ParseAsync(result.Response.Body);
+        Assert.Equal("REQUEST_INVALID", json.RootElement.GetProperty("code").GetString());
+    }
+
+    private async Task AssertAuthenticatedP04Async(string headerName, string headerValue)
+    {
+        using var signer = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        var identity = await SeedAsync(signer);
+        var body = new CountingBody();
+        var admission = new CountingAdmission(postgres.ConnectionString, body);
+        await using var app = await StartAsync(admission);
+        var request = SignedRequest(identity.Credential, signer);
+
+        var result = await SendAsync(app, request, body,
+            context => context.Request.Headers[headerName] = headerValue);
+
+        Assert.Equal(400, result.Response.StatusCode);
+        Assert.Equal(0, admission.Calls); // no admission means no B/R1 producer was reached
+        Assert.Equal(0, body.ReadCalls);
+        Assert.Equal(0, body.BytesRead);
+        Assert.Equal(1, await NonceCountAsync(identity.Credential));
+        using var json = await JsonDocument.ParseAsync(result.Response.Body);
+        Assert.Equal(new[] { "outcomeCode" },
+            json.RootElement.EnumerateObject().Select(property => property.Name).ToArray());
+        Assert.Equal("RAW_EXPORT_SOURCE_TRANSPORT_PROTOCOL_INVALID",
+            json.RootElement.GetProperty("outcomeCode").GetString());
+    }
+
     [Theory]
     [InlineData("malformed-metadata", 400, true)]
     [InlineData("invalid-signature", 403, true)]
@@ -114,13 +174,29 @@ public sealed class Tip88C1C6BA1RawIngressBoundaryTests(PostgresPersistenceFixtu
     }
 
     [Theory]
-    [InlineData(CaptureRuntimeRawIngressOutcome.Available, 200)]
-    [InlineData(CaptureRuntimeRawIngressOutcome.AlreadyAvailable, 200)]
-    [InlineData(CaptureRuntimeRawIngressOutcome.EvaluationInProgress, 409)]
-    [InlineData(CaptureRuntimeRawIngressOutcome.BindingInvalid, 403)]
-    [InlineData(CaptureRuntimeRawIngressOutcome.CapacityUnavailable, 503)]
-    [InlineData(CaptureRuntimeRawIngressOutcome.TransportProtocolInvalid, 400)]
-    public async Task RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, int status)
+    [InlineData(CaptureRuntimeRawIngressOutcome.BindingInvalid, 403, "RAW_EXPORT_SOURCE_BINDING_INVALID")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.NotFoundOrNotAllowed, 403, "NOT_FOUND_OR_NOT_ALLOWED")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.TransportProtocolInvalid, 400, "RAW_EXPORT_SOURCE_TRANSPORT_PROTOCOL_INVALID")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.CapabilityUnavailable, 503, "RAW_EXPORT_SOURCE_CAPABILITY_UNAVAILABLE")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.ArtifactSizeLimitExceeded, 413, "RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.PlaintextRetentionInvalid, 422, "RAW_EXPORT_SOURCE_PLAINTEXT_RETENTION_INVALID")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.CapacityUnavailable, 503, "RAW_EXPORT_SOURCE_CAPACITY_UNAVAILABLE")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.IdempotencyBusy, 409, "RAW_EXPORT_SOURCE_IDEMPOTENCY_BUSY")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.EvaluationInProgress, 409, "RAW_EXPORT_SOURCE_CLAIM_EVALUATION_IN_PROGRESS")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.ClaimTokenInvalid, 403, "RAW_EXPORT_SOURCE_CLAIM_TOKEN_INVALID")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.ClaimRestartRequired, 409, "RAW_EXPORT_SOURCE_CLAIM_RESTART_REQUIRED")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.SourceRetentionNotAuthorized, 403, "SOURCE_RETENTION_NOT_AUTHORIZED")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.HistoricCommitmentKeyUnavailable, 503, "RAW_EXPORT_SOURCE_HISTORIC_COMMITMENT_KEY_UNAVAILABLE")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.FingerprintConflict, 409, "RAW_EXPORT_SOURCE_FINGERPRINT_CONFLICT")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.ReservationBusy, 409, "RAW_EXPORT_SOURCE_RESERVATION_BUSY")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.AlreadyAvailable, 200, "RAW_EXPORT_SOURCE_ALREADY_AVAILABLE")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.TemporarilyUnavailable, 503, "RAW_EXPORT_SOURCE_TEMPORARILY_UNAVAILABLE")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.ContentCommitmentMismatch, 422, "CONTENT_COMMITMENT_MISMATCH")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.RecaptureRequired, 409, "RECAPTURE_REQUIRED")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.ResumePending, 202, "RAW_EXPORT_SOURCE_RESUME_PENDING")]
+    [InlineData(CaptureRuntimeRawIngressOutcome.Available, 200, "RAW_EXPORT_SOURCE_AVAILABLE")]
+    public async Task RawIngressA3Outcome_MapsWithoutReadingBody(
+        CaptureRuntimeRawIngressOutcome outcome, int status, string code)
     {
         using var signer = ECDsa.Create(ECCurve.NamedCurves.nistP256);
         var identity = await SeedAsync(signer);
@@ -129,19 +205,25 @@ public sealed class Tip88C1C6BA1RawIngressBoundaryTests(PostgresPersistenceFixtu
         await using var app = await StartAsync(admission);
         var result = await SendAsync(app, SignedRequest(identity.Credential, signer), body);
         Assert.Equal(status, result.Response.StatusCode);
+        Assert.Equal("application/json; charset=utf-8", result.Response.ContentType);
         Assert.Equal(1, admission.Calls);
         Assert.Equal(1, admission.CommittedNonceCountAtEntry);
         Assert.Equal(0, body.ReadCalls);
-        using var json = await JsonDocument.ParseAsync(result.Response.Body);
-        Assert.Equal(outcome switch
+        using var responseBody = new MemoryStream();
+        await result.Response.Body.CopyToAsync(responseBody);
+        Assert.Equal(responseBody.Length, result.Response.ContentLength);
+        using var json = JsonDocument.Parse(responseBody.ToArray());
+        Assert.Equal(code, json.RootElement.GetProperty("outcomeCode").GetString());
+        var expectedFields = outcome switch
         {
-            CaptureRuntimeRawIngressOutcome.Available => "RAW_EXPORT_SOURCE_AVAILABLE",
-            CaptureRuntimeRawIngressOutcome.AlreadyAvailable => "RAW_EXPORT_SOURCE_ALREADY_AVAILABLE",
-            CaptureRuntimeRawIngressOutcome.EvaluationInProgress => "RAW_EXPORT_SOURCE_CLAIM_EVALUATION_IN_PROGRESS",
-            CaptureRuntimeRawIngressOutcome.BindingInvalid => "RAW_EXPORT_SOURCE_BINDING_INVALID",
-            CaptureRuntimeRawIngressOutcome.CapacityUnavailable => "RAW_EXPORT_SOURCE_CAPACITY_UNAVAILABLE",
-            _ => "RAW_EXPORT_SOURCE_TRANSPORT_PROTOCOL_INVALID"
-        }, json.RootElement.GetProperty("outcomeCode").GetString());
+            CaptureRuntimeRawIngressOutcome.Available or CaptureRuntimeRawIngressOutcome.AlreadyAvailable =>
+                new[] { "outcomeCode", "sourceArtifactId", "currentSourceState", "currentDisposition" },
+            CaptureRuntimeRawIngressOutcome.EvaluationInProgress =>
+                new[] { "outcomeCode", "retryNotBeforeUtc" },
+            _ => ["outcomeCode"]
+        };
+        Assert.Equal(expectedFields.Order(StringComparer.Ordinal),
+            json.RootElement.EnumerateObject().Select(property => property.Name).Order(StringComparer.Ordinal));
     }
 
     [Fact]
@@ -162,15 +244,15 @@ public sealed class Tip88C1C6BA1RawIngressBoundaryTests(PostgresPersistenceFixtu
         using var json = await JsonDocument.ParseAsync(result.Response.Body);
         Assert.Equal("RAW_EXPORT_SOURCE_CLAIM_EVALUATION_IN_PROGRESS", json.RootElement.GetProperty("outcomeCode").GetString());
         Assert.Equal(retry, json.RootElement.GetProperty("retryNotBeforeUtc").GetDateTimeOffset());
-        Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("sourceArtifactId").ValueKind);
-        Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("currentSourceState").ValueKind);
-        Assert.Equal(JsonValueKind.Null, json.RootElement.GetProperty("currentDisposition").ValueKind);
+        Assert.Equal(new[] { "outcomeCode", "retryNotBeforeUtc" },
+            json.RootElement.EnumerateObject().Select(property => property.Name).Order(StringComparer.Ordinal));
     }
 
     private async Task<WebApplication> StartAsync(CountingAdmission? admission, string? scenario = null)
     {
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
+        builder.Services.AddCurrentSiteQualificationForRawIngressTests();
         var connection = new NpgsqlConnectionStringBuilder(postgres.ConnectionString)
         {
             Options = "-c role=tagekyc_capture_runtime_authenticator", Pooling = false
@@ -222,7 +304,8 @@ public sealed class Tip88C1C6BA1RawIngressBoundaryTests(PostgresPersistenceFixtu
         Assert.Equal("NOT_READY", json.RootElement.GetProperty("code").GetString());
     }
 
-    private static Task<HttpContext> SendAsync(WebApplication app, SignedEnvelope envelope, CountingBody body) =>
+    private static Task<HttpContext> SendAsync(WebApplication app, SignedEnvelope envelope, CountingBody body,
+        Action<HttpContext>? configure = null) =>
         app.GetTestServer().SendAsync(context =>
         {
             context.Request.Method = "POST";
@@ -231,6 +314,7 @@ public sealed class Tip88C1C6BA1RawIngressBoundaryTests(PostgresPersistenceFixtu
             context.Request.ContentLength = 17;
             context.Request.Body = body;
             foreach (var header in envelope.Headers) context.Request.Headers[header.Key] = header.Value;
+            configure?.Invoke(context);
         });
 
     private static SignedEnvelope SignedRequest(Guid credential, ECDsa signer, long generation = 1)
@@ -390,8 +474,11 @@ public sealed class Tip88C1C6BA1RawIngressBoundaryTests(PostgresPersistenceFixtu
                 };
                 return new(invalidOutcome, null, InvalidScenario.EndsWith("forbidden-field", StringComparison.Ordinal) ? "must-not-leak" : null, null, null);
             }
-            return new(Outcome, Outcome is CaptureRuntimeRawIngressOutcome.Available or CaptureRuntimeRawIngressOutcome.AlreadyAvailable
-                ? Guid.NewGuid() : null, null, null, RetryNotBeforeUtc);
+            var success = Outcome is CaptureRuntimeRawIngressOutcome.Available or CaptureRuntimeRawIngressOutcome.AlreadyAvailable;
+            return new(Outcome, success ? Guid.NewGuid() : null,
+                success ? "Available" : null, success ? "Available" : null,
+                Outcome == CaptureRuntimeRawIngressOutcome.EvaluationInProgress
+                    ? RetryNotBeforeUtc ?? DateTimeOffset.UtcNow.AddMinutes(1) : null);
         }
     }
 

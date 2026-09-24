@@ -11,8 +11,8 @@ namespace TagEkyc.IntegrationTests;
 internal sealed class DurableObjectMinioFixture : IAsyncDisposable
 {
     private const string StartupNotInitializedMessage = "Server not initialized yet, please try again.";
-    internal const string Image = "minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e";
-    private const string McImage = "minio/mc@sha256:eb4ea9884b77704230e2423e9004d2fa738dc272876b9cc41a297d29443b8780";
+    internal const string Image = "quay.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e";
+    private const string McImage = "quay.io/minio/mc@sha256:eb4ea9884b77704230e2423e9004d2fa738dc272876b9cc41a297d29443b8780";
     private const string ObjectPrefix = "raw-export/c1/v1/";
     private const string RecipientPackagePrefix = "raw-export/c2-package/v1/";
     private readonly string containerName = $"tagekyc-durable-object-{Guid.NewGuid():N}";

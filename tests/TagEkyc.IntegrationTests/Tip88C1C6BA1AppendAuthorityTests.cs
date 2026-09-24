@@ -7,6 +7,7 @@ namespace TagEkyc.IntegrationTests;
 public sealed class Tip88C1C6BA1AppendAuthorityTests(PostgresPersistenceFixture postgres)
 {
     private const string Identity = "tagekyc.capture_runtime_validate_append_authority(uuid,uuid,uuid,bigint,uuid,text,timestamptz)";
+    private const string Principal = "00000000-0000-4000-8000-000000000001";
 
     [Fact]
     public async Task Exact47Manifest_RejectsOldOverloadAndMissingNewIdentity()
@@ -116,11 +117,13 @@ public sealed class Tip88C1C6BA1AppendAuthorityTests(PostgresPersistenceFixture 
             RequestId = "r", CorrelationId = "c", BindingNonceHash = "synthetic-challenge"
         });
         await db.SaveChangesAsync();
+        await db.Database.ExecuteSqlRawAsync($"SELECT pg_catalog.set_config('tagekyc.actor_principal_id','{Principal}',true)");
         var issue = await db.Database.SqlQueryRaw<string>($"""
             SELECT result_code AS "Value" FROM tagekyc.capture_runtime_issue_or_replace_capability(
             '91000000-0000-4000-8000-000000000001','90000000-0000-4000-8000-000000000001','Issue',NULL,NULL,
             '92000000-0000-4000-8000-000000000001','93000000-0000-4000-8000-000000000001','mnopqrstuvwx',
-            decode(repeat('11',32),'hex'),{capabilityPepperVersion},decode(repeat('22',32),'hex'),now())
+            decode(repeat('11',32),'hex'),{capabilityPepperVersion},decode(repeat('22',32),'hex'),now(),
+            '{Principal}',NULL::uuid,NULL::jsonb)
             """).SingleAsync();
         Assert.Equal("CREATED", issue);
         var binding = await db.Database.SqlQueryRaw<Guid>("""

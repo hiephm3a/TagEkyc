@@ -52,6 +52,7 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         "ApprovedPurpose",
         "AuthorityArtifactId",
         "AuthorityArtifactVersion",
+        "AuthorityKind",
         "AuthoritySnapshotEventId",
         "AuthoritySnapshotId",
         "AuthoritySnapshotSchemaVersion",
@@ -59,6 +60,7 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         "CaptureAcceptanceId",
         "ClientApplicationId",
         "ControllerIdentity",
+        "ConsentBindingId",
         "ConsentPolicyId",
         "ConsentPolicyVersion",
         "EvaluatedAtUtc",
@@ -68,6 +70,8 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         "PurgePolicyId",
         "RawClass",
         "RecordedAtUtc",
+        "RetentionAuthorityId",
+        "RetentionAuthorityRevision",
         "RetentionClass",
         "RetentionPolicyId",
         "RetentionPolicyVersion",
@@ -77,10 +81,12 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         "RevocationPolicyId",
         "RevokedByPrincipalId",
         "StableDataScopeId",
+        "CustodyPrincipalId",
         "TargetRevision",
         "ValidFromUtc",
         "ValidUntilUtc",
         "VerificationSessionId",
+        "RuntimeBindingId",
         "WithdrawnByPrincipalId",
     ];
 
@@ -388,10 +394,11 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
             Assert.Contains(
                 exception.ConstraintName,
                 new[]
-                {
-                    "ck_raw_export_authority_snapshot_event_shape",
-                    "ck_raw_export_authority_snapshot_values",
-                });
+                 {
+                     "ck_a3_snapshot_retention_shape",
+                     "ck_raw_export_authority_snapshot_event_shape",
+                     "ck_raw_export_authority_snapshot_values",
+                 });
         }
 
         foreach (var eventType in new[] { "Withdrawn", "Revoked" })

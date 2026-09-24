@@ -18,7 +18,7 @@ public sealed class Tip88C1B2R3VerifiedCiphertextStagingTests(
     private const string PreviousMigration = "20260807120000_Tip88C1B2R2DurableCustodyEncryption";
     private const string R3Migration = "20260810120000_Tip88C1B2R3VerifiedCiphertextStaging";
     private const string ExpectedSnapshotSha256 =
-        "1B5F09EF3BF78A4D5748021AAEB82AC26A8B00D631F9C071EECEA903A1F17578";
+        "7DC276ED9F1E44F840DB5680940D55F0F7C652316E2A0DA6BD2CEAF221930F5B";
 
     public Task InitializeAsync() => postgres.ResetDatabaseAsync();
     public Task DisposeAsync() => Task.CompletedTask;

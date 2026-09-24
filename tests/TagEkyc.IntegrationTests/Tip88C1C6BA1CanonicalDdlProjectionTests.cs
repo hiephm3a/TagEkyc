@@ -10,6 +10,31 @@ namespace TagEkyc.IntegrationTests;
 public sealed class Tip88C1C6BA1CanonicalDdlProjectionTests(PostgresPersistenceFixture postgres)
 {
     private const string ExpectedSchema = "a1_expected_catalogue";
+    private static readonly string[] A3SuccessorProjection =
+    [
+        """["column", "capture_capabilities", "AuthorityMode", 19, "character varying(24)", true, "'HistoricalNonRetained'::character varying", "", "", "pg_catalog.default"]""",
+        """["column", "capture_capabilities", "ConsentBindingId", 23, "uuid", false, null, "", "", null]""",
+        """["column", "capture_capabilities", "PrincipalId", 20, "uuid", false, null, "", "", null]""",
+        """["column", "capture_capabilities", "RetentionAuthorityId", 21, "uuid", false, null, "", "", null]""",
+        """["column", "capture_capabilities", "RetentionAuthorityRevision", 22, "bigint", false, null, "", "", null]""",
+        """["column", "capture_execution_bindings", "AuthorityMode", 23, "character varying(24)", true, "'HistoricalNonRetained'::character varying", "", "", "pg_catalog.default"]""",
+        """["column", "capture_execution_bindings", "ConsentBindingId", 27, "uuid", false, null, "", "", null]""",
+        """["column", "capture_execution_bindings", "PrincipalId", 24, "uuid", false, null, "", "", null]""",
+        """["column", "capture_execution_bindings", "RetentionAuthorityId", 25, "uuid", false, null, "", "", null]""",
+        """["column", "capture_execution_bindings", "RetentionAuthorityRevision", 26, "bigint", false, null, "", "", null]""",
+        """["constraint", "capture_capabilities", "ck_a3_capability_authority_shape", "c", "CHECK ((((\"PrincipalId\" IS NULL) OR (\"PrincipalId\" <> '00000000-0000-0000-0000-000000000000'::uuid)) AND ((\"RetentionAuthorityId\" IS NULL) OR (\"RetentionAuthorityId\" <> '00000000-0000-0000-0000-000000000000'::uuid)) AND ((\"RetentionAuthorityRevision\" IS NULL) OR (\"RetentionAuthorityRevision\" > 0)) AND ((\"ConsentBindingId\" IS NULL) OR (\"ConsentBindingId\" <> '00000000-0000-0000-0000-000000000000'::uuid)) AND ((((\"AuthorityMode\")::text = 'HistoricalNonRetained'::text) AND (\"PrincipalId\" IS NULL) AND (\"RetentionAuthorityId\" IS NULL) AND (\"RetentionAuthorityRevision\" IS NULL) AND (\"ConsentBindingId\" IS NULL)) OR (((\"AuthorityMode\")::text = 'NonRetained'::text) AND (\"PrincipalId\" IS NOT NULL) AND (\"RetentionAuthorityId\" IS NULL) AND (\"RetentionAuthorityRevision\" IS NULL) AND (\"ConsentBindingId\" IS NULL)) OR (((\"AuthorityMode\")::text = 'SourceRetention'::text) AND (\"PrincipalId\" IS NOT NULL) AND (\"RetentionAuthorityId\" IS NOT NULL) AND (\"RetentionAuthorityRevision\" IS NOT NULL) AND (\"ConsentBindingId\" IS NOT NULL)))))", false, false, true]""",
+        """["constraint", "capture_capabilities", "fk_a3_capability_consent_binding", "f", "FOREIGN KEY (\"ConsentBindingId\") REFERENCES tagekyc.raw_source_consent_bindings(\"ConsentBindingId\") ON DELETE RESTRICT", false, false, true]""",
+        """["constraint", "capture_capabilities", "fk_a3_capability_retention_authority", "f", "FOREIGN KEY (\"RetentionAuthorityId\", \"RetentionAuthorityRevision\") REFERENCES tagekyc.raw_source_retention_permits(\"RetentionAuthorityId\", \"Revision\") ON DELETE RESTRICT", false, false, true]""",
+        """["constraint", "capture_execution_bindings", "ck_a3_binding_authority_shape", "c", "CHECK ((((\"PrincipalId\" IS NULL) OR (\"PrincipalId\" <> '00000000-0000-0000-0000-000000000000'::uuid)) AND ((\"RetentionAuthorityId\" IS NULL) OR (\"RetentionAuthorityId\" <> '00000000-0000-0000-0000-000000000000'::uuid)) AND ((\"RetentionAuthorityRevision\" IS NULL) OR (\"RetentionAuthorityRevision\" > 0)) AND ((\"ConsentBindingId\" IS NULL) OR (\"ConsentBindingId\" <> '00000000-0000-0000-0000-000000000000'::uuid)) AND ((((\"AuthorityMode\")::text = 'HistoricalNonRetained'::text) AND (\"PrincipalId\" IS NULL) AND (\"RetentionAuthorityId\" IS NULL) AND (\"RetentionAuthorityRevision\" IS NULL) AND (\"ConsentBindingId\" IS NULL)) OR (((\"AuthorityMode\")::text = 'NonRetained'::text) AND (\"PrincipalId\" IS NOT NULL) AND (\"RetentionAuthorityId\" IS NULL) AND (\"RetentionAuthorityRevision\" IS NULL) AND (\"ConsentBindingId\" IS NULL)) OR (((\"AuthorityMode\")::text = 'SourceRetention'::text) AND (\"PrincipalId\" IS NOT NULL) AND (\"RetentionAuthorityId\" IS NOT NULL) AND (\"RetentionAuthorityRevision\" IS NOT NULL) AND (\"ConsentBindingId\" IS NOT NULL)))))", false, false, true]""",
+        """["constraint", "capture_execution_bindings", "fk_a3_binding_consent_binding", "f", "FOREIGN KEY (\"ConsentBindingId\") REFERENCES tagekyc.raw_source_consent_bindings(\"ConsentBindingId\") ON DELETE RESTRICT", false, false, true]""",
+        """["constraint", "capture_execution_bindings", "fk_a3_binding_retention_authority", "f", "FOREIGN KEY (\"RetentionAuthorityId\", \"RetentionAuthorityRevision\") REFERENCES tagekyc.raw_source_retention_permits(\"RetentionAuthorityId\", \"Revision\") ON DELETE RESTRICT", false, false, true]""",
+        """["index", "capture_capabilities", "ix_a3_capability_consent_binding", "CREATE INDEX ix_a3_capability_consent_binding ON tagekyc.capture_capabilities USING btree (\"ConsentBindingId\")", false, false, true, true]""",
+        """["index", "capture_capabilities", "ix_a3_capability_retention_authority", "CREATE INDEX ix_a3_capability_retention_authority ON tagekyc.capture_capabilities USING btree (\"RetentionAuthorityId\", \"RetentionAuthorityRevision\")", false, false, true, true]""",
+        """["index", "capture_execution_bindings", "ix_a3_binding_consent_binding", "CREATE INDEX ix_a3_binding_consent_binding ON tagekyc.capture_execution_bindings USING btree (\"ConsentBindingId\")", false, false, true, true]""",
+        """["index", "capture_execution_bindings", "ix_a3_binding_retention_authority", "CREATE INDEX ix_a3_binding_retention_authority ON tagekyc.capture_execution_bindings USING btree (\"RetentionAuthorityId\", \"RetentionAuthorityRevision\")", false, false, true, true]""",
+        """["trigger", "capture_capabilities", "tr_a3_capability_authority_lineage", "CREATE TRIGGER tr_a3_capability_authority_lineage BEFORE INSERT OR UPDATE ON tagekyc.capture_capabilities FOR EACH ROW EXECUTE FUNCTION tagekyc.enforce_a3_capture_authority_lineage()", "O", false, false]""",
+        """["trigger", "capture_execution_bindings", "tr_a3_binding_authority_lineage", "CREATE TRIGGER tr_a3_binding_authority_lineage BEFORE INSERT OR UPDATE ON tagekyc.capture_execution_bindings FOR EACH ROW EXECUTE FUNCTION tagekyc.enforce_a3_capture_authority_lineage()", "O", false, false]""",
+    ];
 
     [Fact]
     public async Task CanonicalDdl_IndependentExpectedSchema_ExactColumnsConstraintsIndexes_ThreeMutationsAreRed()
@@ -71,8 +96,10 @@ public sealed class Tip88C1C6BA1CanonicalDdlProjectionTests(PostgresPersistenceF
         var expected = await Project(db, ExpectedSchema, tables);
         var actual = await Project(db, "tagekyc", tables);
         Assert.NotEmpty(expected);
-        Assert.Equal(expected.Length, actual.Length);
-        Assert.Equal(expected, actual);
+        Assert.Equal(631, expected.Length);
+        Assert.Equal(22, A3SuccessorProjection.Length);
+        var currentExpected = expected.Concat(A3SuccessorProjection).Order(StringComparer.Ordinal).ToArray();
+        Assert.Equal(currentExpected, actual);
 
         string[] mutations =
         [
@@ -85,10 +112,10 @@ public sealed class Tip88C1C6BA1CanonicalDdlProjectionTests(PostgresPersistenceF
             await tx.CreateSavepointAsync("projection_negative");
             await ExecuteExactSql(db, mutation);
             var corrupted = await Project(db, "tagekyc", tables);
-            Assert.False(expected.SequenceEqual(corrupted, StringComparer.Ordinal), mutation);
+            Assert.False(currentExpected.SequenceEqual(corrupted, StringComparer.Ordinal), mutation);
             await tx.RollbackToSavepointAsync("projection_negative");
             await tx.ReleaseSavepointAsync("projection_negative");
-            Assert.Equal(expected, await Project(db, "tagekyc", tables));
+            Assert.Equal(currentExpected, await Project(db, "tagekyc", tables));
         }
         await tx.RollbackAsync();
     }

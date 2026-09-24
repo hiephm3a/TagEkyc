@@ -1316,6 +1316,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
             ("OwnershipLeaseExpiresAtUtc", "timestamp with time zone"),
             ("EffectivePlaintextRetentionExpiresAtUtc", "timestamp with time zone"),
             ("ReservationExpiresAtUtc", "timestamp with time zone"),
+            ("AuthorityKind", "text"),
         };
         var verificationColumns = encryptionColumns
             .Where(column => column.Item1 is not
@@ -1323,7 +1324,8 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
                 or "NonceDerivationSeedCommitment"
                 or "OwnershipLeaseExpiresAtUtc"
                 or "EffectivePlaintextRetentionExpiresAtUtc"
-                or "ReservationExpiresAtUtc"))
+                or "ReservationExpiresAtUtc"
+                or "AuthorityKind"))
             .ToArray();
 
         Assert.Equal(encryptionColumns, await ReadProjectionColumnsAsync(encryptionSignature));
@@ -2810,6 +2812,14 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
 
         await using var readDb = postgres.CreateDbContext();
         var attempt = await readDb.RawExportSourceEncryptionAttempts.AsNoTracking()
+            .Select(row => new
+            {
+                row.AttemptId,
+                row.SourceArtifactId,
+                row.AttemptKeyReservationId,
+                row.EncryptionAttemptRevision,
+                row.Fence,
+            })
             .SingleAsync(row => row.AttemptId == written.Source.AttemptId);
         var head = await readDb.RawExportSourceHeads.AsNoTracking()
             .SingleAsync(row => row.SourceArtifactId == written.Source.SourceArtifactId);
@@ -3849,8 +3859,16 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         var sourceArtifactId = completed.SourceArtifactId!.Value;
         var reservation = await db.RawExportSourceReservations.SingleAsync(
             row => row.SourceArtifactId == sourceArtifactId);
-        var attempt = await db.RawExportSourceEncryptionAttempts.SingleAsync(
-            row => row.SourceArtifactId == sourceArtifactId);
+        var attempt = await db.RawExportSourceEncryptionAttempts
+            .Where(row => row.SourceArtifactId == sourceArtifactId)
+            .Select(row => new
+            {
+                row.AttemptId,
+                row.AttemptKeyReservationId,
+                row.EncryptionAttemptRevision,
+                row.Fence,
+            })
+            .SingleAsync();
         return new(
             candidate.ActorPrincipalId,
             sourceArtifactId,

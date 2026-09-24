@@ -27,6 +27,7 @@ public sealed class Tip88C1C6BA1CancellationHttpTests(PostgresPersistenceFixture
 {
     private static readonly Guid Session = Guid.Parse("90000000-0000-4000-8000-000000000001");
     private static readonly Guid Client = Guid.Parse("91000000-0000-4000-8000-000000000001");
+    private static readonly Guid Principal = Guid.Parse("00000000-0000-4000-8000-000000000001");
 
     [Fact]
     public async Task R26_SqlBoundary_CommitsBoundCancellation()
@@ -122,11 +123,7 @@ public sealed class Tip88C1C6BA1CancellationHttpTests(PostgresPersistenceFixture
         await seed.SaveChangesAsync();
         if (expiredLiveCapability)
         {
-            Assert.Equal("CREATED", await seed.Database.SqlQueryRaw<string>($"""
-                SELECT result_code AS "Value" FROM tagekyc.capture_runtime_issue_or_replace_capability(
-                '{Client}','{sessionId}','Issue',NULL,NULL,'{Guid.NewGuid()}','{Guid.NewGuid()}','r26history01',
-                decode(repeat('11',32),'hex'),1,decode(repeat('22',32),'hex'),now())
-                """).SingleAsync());
+            Assert.Equal("CREATED", await IssueCapability(seed, sessionId, Guid.NewGuid(), "r26history01"));
             await seed.Database.ExecuteSqlRawAsync($"""
                 UPDATE tagekyc.capture_capabilities SET "ExpiresAtUtc"=clock_timestamp()+interval '50 milliseconds'
                 WHERE "VerificationSessionId"='{sessionId}'
@@ -283,11 +280,7 @@ public sealed class Tip88C1C6BA1CancellationHttpTests(PostgresPersistenceFixture
         var sessionId = Guid.NewGuid(); var capability = Guid.NewGuid();
         var template = await seed.Sessions.AsNoTracking().SingleAsync(x => x.Id == Session);
         template.Id = sessionId; seed.Sessions.Add(template); await seed.SaveChangesAsync();
-        Assert.Equal("CREATED", await seed.Database.SqlQueryRaw<string>($"""
-            SELECT result_code AS "Value" FROM tagekyc.capture_runtime_issue_or_replace_capability(
-            '{Client}','{sessionId}','Issue',NULL,NULL,'{Guid.NewGuid()}','{capability}','r26racesecrt',
-            decode(repeat('11',32),'hex'),1,decode(repeat('22',32),'hex'),now())
-            """).SingleAsync());
+        Assert.Equal("CREATED", await IssueCapability(seed, sessionId, capability, "r26racesecrt"));
         await using var app = await Start(seed.Database.GetConnectionString()!);
         using var http = app.GetTestClient();
         async Task<string> Bind()
@@ -375,11 +368,7 @@ public sealed class Tip88C1C6BA1CancellationHttpTests(PostgresPersistenceFixture
             sessionId = Guid.NewGuid();
             var template = await seed.Sessions.AsNoTracking().SingleAsync(x => x.Id == Session);
             template.Id = sessionId; seed.Sessions.Add(template); await seed.SaveChangesAsync();
-            Assert.Equal("CREATED", await seed.Database.SqlQueryRaw<string>($"""
-                SELECT result_code AS "Value" FROM tagekyc.capture_runtime_issue_or_replace_capability(
-                '{Client}','{sessionId}','Issue',NULL,NULL,'{Guid.NewGuid()}','{Guid.NewGuid()}','r26expired01',
-                decode(repeat('11',32),'hex'),1,decode(repeat('22',32),'hex'),now())
-                """).SingleAsync());
+            Assert.Equal("CREATED", await IssueCapability(seed, sessionId, Guid.NewGuid(), "r26expired01"));
         }
         var frozenBindings = await seed.Database.SqlQueryRaw<string>($"""
             SELECT pg_catalog.to_jsonb(b)::text AS "Value" FROM tagekyc.capture_execution_bindings b
@@ -487,6 +476,20 @@ public sealed class Tip88C1C6BA1CancellationHttpTests(PostgresPersistenceFixture
         row.LegalHoldStatus = nameof(LegalHoldStatus.None);
         row.PurgeBlockReason = nameof(PurgeBlockReason.None);
         await db.SaveChangesAsync(); await tx.CommitAsync(); db.ChangeTracker.Clear();
+    }
+
+    private static async Task<string> IssueCapability(TagEkycDbContext db, Guid sessionId, Guid capabilityId, string prefix)
+    {
+        await using var tx = await db.Database.BeginTransactionAsync();
+        await db.Database.ExecuteSqlRawAsync($"SELECT pg_catalog.set_config('tagekyc.actor_principal_id','{Principal:D}',true)");
+        var result = await db.Database.SqlQueryRaw<string>($"""
+            SELECT result_code AS "Value" FROM tagekyc.capture_runtime_issue_or_replace_capability(
+            '{Client}','{sessionId}','Issue',NULL,NULL,'{Guid.NewGuid()}','{capabilityId}','{prefix}',
+            decode(repeat('11',32),'hex'),1,decode(repeat('22',32),'hex'),now(),
+            '{Principal}',NULL::uuid,NULL::jsonb)
+            """).SingleAsync();
+        await tx.CommitAsync();
+        return result;
     }
 
     private static async Task AssertHistory(PostgresPersistenceFixture.DisposableCurrentDatabase isolated,

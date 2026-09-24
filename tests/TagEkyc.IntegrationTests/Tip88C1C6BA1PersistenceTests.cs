@@ -40,11 +40,16 @@ public sealed class Tip88C1C6BA1PersistenceTests(PostgresPersistenceFixture post
     [Fact]
     public async Task FoundationMigration_ApplyRollbackReapplyEnforcesAllShapes()
     {
-        await using var db = postgres.CreateDbContext();
+        // A1 Down owns cluster-wide roles. A successor-era shared cluster has A3
+        // memberships by design, so the historical A1 roundtrip must use the
+        // established dedicated-cluster harness rather than mutate shared roles.
+        await using var isolated = await IsolatedMigrationPostgres.CreateAsync();
+        await using var db = isolated.CreateDbContext();
         var migrator = db.GetService<IMigrator>();
+        await migrator.MigrateAsync(FoundationMigration);
         Assert.Equal(FoundationMigration, (await db.Database.GetAppliedMigrationsAsync()).Last());
-        await A1CatalogueProof.AssertOwnersAndRolesAsync(db);
-        await A1CatalogueProof.AssertGrantsAsync(db);
+        await A1CatalogueProof.AssertOwnersAndRolesAsync(db, preA3: true);
+        await A1CatalogueProof.AssertGrantsAsync(db, preA3: true);
         var before = await A1CatalogueProof.ReadAsync(db);
         await A1CatalogueProof.WriteMeasuredEvidenceAsync(db, output);
         foreach (var injectFailureAfterDown in new[] { false, true })
@@ -58,8 +63,8 @@ public sealed class Tip88C1C6BA1PersistenceTests(PostgresPersistenceFixture post
             if (injectFailureAfterDown)
                 throw new InvalidOperationException("A1_PROOF_INJECTED_FAILURE_AFTER_DOWN");
             await migrator.MigrateAsync(FoundationMigration);
-            await A1CatalogueProof.AssertOwnersAndRolesAsync(db);
-            await A1CatalogueProof.AssertGrantsAsync(db);
+            await A1CatalogueProof.AssertOwnersAndRolesAsync(db, preA3: true);
+            await A1CatalogueProof.AssertGrantsAsync(db, preA3: true);
             Assert.Equal(before, await A1CatalogueProof.ReadAsync(db));
         }
         catch (InvalidOperationException error) when (injectFailureAfterDown && error.Message == "A1_PROOF_INJECTED_FAILURE_AFTER_DOWN")
@@ -307,7 +312,7 @@ internal static class A1CatalogueProof
         "tagekyc.capture_runtime_assign_role_policy(uuid, uuid, uuid, uuid, bigint, bigint, bytea, timestamp with time zone)",
         "tagekyc.capture_runtime_assign_configuration(uuid, uuid, uuid, uuid, bigint, bigint, uuid, bytea, timestamp with time zone)",
         "tagekyc.capture_runtime_publish_configuration(uuid, uuid, uuid, bigint, timestamp with time zone, timestamp with time zone, boolean, integer, integer, integer, integer, integer, bigint, integer, bigint, integer, bytea, timestamp with time zone)",
-        "tagekyc.capture_runtime_issue_or_replace_capability(uuid, uuid, text, uuid, bigint, uuid, uuid, text, bytea, integer, bytea, timestamp with time zone)",
+        "tagekyc.capture_runtime_issue_or_replace_capability(uuid, uuid, text, uuid, bigint, uuid, uuid, text, bytea, integer, bytea, timestamp with time zone, uuid, uuid, jsonb)",
         "tagekyc.capture_runtime_resolve_capability_verifier(uuid)",
         "tagekyc.capture_runtime_bind_capability(uuid, uuid, uuid, bigint, uuid, boolean, uuid, bytea, timestamp with time zone)",
         "tagekyc.capture_runtime_reconcile_binding(uuid, uuid, uuid, bigint, uuid, uuid, timestamp with time zone)",
@@ -357,7 +362,7 @@ internal static class A1CatalogueProof
         "tagekyc.capture_runtime_assign_role_policy(uuid, uuid, uuid, uuid, bigint, bigint, bytea, timestamp with time zone)|tagekyc_capture_runtime_operator",
         "tagekyc.capture_runtime_assign_configuration(uuid, uuid, uuid, uuid, bigint, bigint, uuid, bytea, timestamp with time zone)|tagekyc_capture_runtime_operator",
         "tagekyc.capture_runtime_publish_configuration(uuid, uuid, uuid, bigint, timestamp with time zone, timestamp with time zone, boolean, integer, integer, integer, integer, integer, bigint, integer, bigint, integer, bytea, timestamp with time zone)|tagekyc_capture_runtime_operator",
-        "tagekyc.capture_runtime_issue_or_replace_capability(uuid, uuid, text, uuid, bigint, uuid, uuid, text, bytea, integer, bytea, timestamp with time zone)|tagekyc_capture_runtime_application,tagekyc_runtime",
+        "tagekyc.capture_runtime_issue_or_replace_capability(uuid, uuid, text, uuid, bigint, uuid, uuid, text, bytea, integer, bytea, timestamp with time zone, uuid, uuid, jsonb)|tagekyc_capture_runtime_application,tagekyc_runtime",
         "tagekyc.capture_runtime_resolve_capability_verifier(uuid)|tagekyc_capture_runtime_application",
         "tagekyc.capture_runtime_bind_capability(uuid, uuid, uuid, bigint, uuid, boolean, uuid, bytea, timestamp with time zone)|tagekyc_capture_runtime_application",
         "tagekyc.capture_runtime_reconcile_binding(uuid, uuid, uuid, bigint, uuid, uuid, timestamp with time zone)|tagekyc_capture_runtime_application",
@@ -400,7 +405,7 @@ internal static class A1CatalogueProof
     internal static void Exact(IEnumerable<string> expected, IEnumerable<string> actual) =>
         Assert.Equal(expected.Order(StringComparer.Ordinal).ToArray(), actual.Order(StringComparer.Ordinal).ToArray());
 
-    internal static async Task AssertOwnersAndRolesAsync(DbContext db)
+    internal static async Task AssertOwnersAndRolesAsync(DbContext db, bool preA3 = false)
     {
         Assert.Equal(27, Tables.Length);
         Assert.Equal(47, Functions.Length);
@@ -416,7 +421,7 @@ internal static class A1CatalogueProof
         var functions = await db.Database.SqlQueryRaw<string>(FunctionCte + """
             SELECT identity || '|' || pg_catalog.pg_get_userbyid(proowner) AS "Value" FROM a1
             """).ToListAsync();
-        Exact(Functions.Select(function => function + "|" + Owner), functions);
+        Exact(ExpectedFunctions(preA3).Select(function => function + "|" + Owner), functions);
         var badRoles = await db.Database.SqlQueryRaw<string>($"""
             SELECT rolname::text AS "Value" FROM pg_catalog.pg_authid r
             WHERE rolname IN ({Literals(Roles.Append(Owner))}) AND (
@@ -432,7 +437,7 @@ internal static class A1CatalogueProof
         Exact(Roles, roles);
     }
 
-    internal static async Task AssertGrantsAsync(DbContext db)
+    internal static async Task AssertGrantsAsync(DbContext db, bool preA3 = false)
     {
         var actual = await db.Database.SqlQueryRaw<string>(FunctionCte + """
             SELECT identity || '|' || COALESCE((
@@ -443,8 +448,23 @@ internal static class A1CatalogueProof
             """).ToListAsync();
         Assert.Equal(47, actual.Count);
         Assert.Equal(12, Grants.Count(value => value.EndsWith('|')));
-        Exact(Grants, actual);
+        Exact(ExpectedGrants(preA3), actual);
     }
+
+    private const string PreA3CapabilityFunction =
+        "tagekyc.capture_runtime_issue_or_replace_capability(uuid, uuid, text, uuid, bigint, uuid, uuid, text, bytea, integer, bytea, timestamp with time zone)";
+    private const string CurrentCapabilityFunction =
+        "tagekyc.capture_runtime_issue_or_replace_capability(uuid, uuid, text, uuid, bigint, uuid, uuid, text, bytea, integer, bytea, timestamp with time zone, uuid, uuid, jsonb)";
+
+    private static IEnumerable<string> ExpectedFunctions(bool preA3) => preA3
+        ? Functions.Select(value => value == CurrentCapabilityFunction ? PreA3CapabilityFunction : value)
+        : Functions;
+
+    private static IEnumerable<string> ExpectedGrants(bool preA3) => preA3
+        ? Grants.Select(value => value.StartsWith(CurrentCapabilityFunction + "|", StringComparison.Ordinal)
+            ? PreA3CapabilityFunction + value[CurrentCapabilityFunction.Length..]
+            : value)
+        : Grants;
 
     internal static async Task<List<string>> ReadAsync(DbContext db)
     {
@@ -474,9 +494,12 @@ internal static class A1CatalogueProof
             JOIN pg_catalog.pg_trigger t ON t.tgrelid=c.oid AND NOT t.tgisinternal WHERE {TablePredicate}
             """).ToListAsync();
         result.AddRange(await db.Database.SqlQueryRaw<string>(FunctionCte + """
+            -- A3's checkout-representation contract deliberately executes every
+            -- multiline migration body as CRLF. Compare the historical A1
+            -- catalogue using its established platform-independent LF form.
             SELECT 'function:' || identity || ':' ||
               pg_catalog.pg_get_userbyid(proowner) || ':' || COALESCE(proacl::text,'') || ':' ||
-              pg_catalog.pg_get_functiondef(oid) AS "Value" FROM a1
+              pg_catalog.replace(pg_catalog.pg_get_functiondef(oid), E'\r\n', E'\n') AS "Value" FROM a1
             """).ToListAsync());
         result.Sort(StringComparer.Ordinal);
         return result;

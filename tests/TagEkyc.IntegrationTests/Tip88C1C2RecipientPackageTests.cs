@@ -25,7 +25,7 @@ public sealed class Tip88C1C2RecipientPackageTests(PostgresPersistenceFixture po
         // Homeowner A1 continuation §13: authorized additive A1 model, strict content pin with CRLF/LF normalization only.
         var snapshotHash = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(
             Encoding.UTF8.GetString(await File.ReadAllBytesAsync(snapshotPath)).Replace("\r\n", "\n", StringComparison.Ordinal))));
-        Assert.Equal("1B5F09EF3BF78A4D5748021AAEB82AC26A8B00D631F9C071EECEA903A1F17578", snapshotHash);
+        Assert.Equal("7DC276ED9F1E44F840DB5680940D55F0F7C652316E2A0DA6BD2CEAF221930F5B", snapshotHash);
         var pinPaths = new[]
         {
             "tests/TagEkyc.IntegrationTests/Tip88B1E3ResolverReadBoundaryTests.cs",

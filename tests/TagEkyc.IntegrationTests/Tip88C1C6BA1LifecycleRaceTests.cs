@@ -196,10 +196,10 @@ public sealed class Tip88C1C6BA1LifecycleRaceTests(PostgresPersistenceFixture po
             RequestId = "race-r", CorrelationId = "race-c", BindingNonceHash = "challenge"
         });
         await db.SaveChangesAsync();
-        var issue = $"tagekyc.capture_runtime_issue_or_replace_capability('{client}','{session}','Issue',NULL,NULL,'{Guid.NewGuid()}','{capability}','racecap00001',{Digest},1,{Digest},now())";
+        var issue = $"tagekyc.capture_runtime_issue_or_replace_capability('{client}','{session}','Issue',NULL,NULL,'{Guid.NewGuid()}','{capability}','racecap00001',{Digest},1,{Digest},now(),'{Actor}',NULL::uuid,NULL::jsonb)";
         Assert.Equal("CREATED", Code(await Execute(cs, issue)));
         var bind = $"tagekyc.capture_runtime_bind_capability('{Agent}','{Installation}','{Credential}',1,'{capability}',true,'{Guid.NewGuid()}',{Digest},now())";
-        var competitor = replace ? $"tagekyc.capture_runtime_issue_or_replace_capability('{client}','{session}','Replace','{capability}',1,'{Guid.NewGuid()}','{Guid.NewGuid()}','racecap00002',{Digest},1,{Digest},now())" : bind;
+        var competitor = replace ? $"tagekyc.capture_runtime_issue_or_replace_capability('{client}','{session}','Replace','{capability}',1,'{Guid.NewGuid()}','{Guid.NewGuid()}','racecap00002',{Digest},1,{Digest},now(),'{Actor}',NULL::uuid,NULL::jsonb)" : bind;
         var pair = await BlockedRace(cs, bind, competitor);
         Assert.Equal("CREATED", Code(pair.First));
         Assert.Equal(replace ? "CONFLICT" : "AVAILABLE", Code(pair.Second));
@@ -258,6 +258,9 @@ public sealed class Tip88C1C6BA1LifecycleRaceTests(PostgresPersistenceFixture po
     }
     private static async Task<JsonElement> Query(NpgsqlConnection c, NpgsqlTransaction t, string call)
     {
+        await using (var actor = new NpgsqlCommand(
+            $"SELECT pg_catalog.set_config('tagekyc.actor_principal_id','{Actor}',true)", c, t))
+            await actor.ExecuteNonQueryAsync();
         await using var command = new NpgsqlCommand("SELECT to_jsonb(r)::text FROM " + call + " r", c, t) { CommandTimeout = 15 };
         using var json = JsonDocument.Parse((string)(await command.ExecuteScalarAsync())!);
         return json.RootElement.Clone();

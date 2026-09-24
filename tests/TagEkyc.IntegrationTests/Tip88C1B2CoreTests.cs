@@ -377,6 +377,62 @@ public sealed class Tip88C1B2CoreTests(PostgresPersistenceFixture postgres)
                 fixture.IngressClaimId))!.ClaimState);
     }
 
+    [Theory]
+    [InlineData(30, true)]
+    [InlineData(31, true)]
+    [InlineData(32, false)]
+    public async Task C1B2CORE_server_cap_requires_strictly_more_than_deadline_plus_safety(
+        int maximumContinuationSeconds,
+        bool expectRetentionInvalid)
+    {
+        // The production deadline is 30 seconds and the safety margin is one
+        // second. Because the SQL derives the server cap from its own
+        // statement_timestamp(), 31 seconds is an exact equality boundary,
+        // not a client-clock approximation.
+        var fixture = await SeedCandidateAsync();
+        await using var provider = CreateProvider(maximumContinuationSeconds);
+        await using var scope = provider.CreateAsyncScope();
+        var broker = scope.ServiceProvider
+            .GetRequiredService<IRawExportSourceClaimComparisonBroker>();
+
+        var result = await broker.CompleteNewCandidateAsync(
+            fixture.Command,
+            CancellationToken.None);
+
+        Assert.Equal(
+            expectRetentionInvalid
+                ? RawExportSourceClaimComparisonOutcome.PlaintextRetentionInvalid
+                : RawExportSourceClaimComparisonOutcome.NewReservation,
+            result.Outcome);
+        await using var db = postgres.CreateDbContext();
+        Assert.Equal(
+            expectRetentionInvalid ? 0 : 1,
+            db.RawExportSourceReservations.Count(
+                row => row.IngressClaimId == fixture.IngressClaimId));
+    }
+
+    [Fact]
+    public async Task C1B2CORE_postgres_boundary_is_microsecond_exact()
+    {
+        await using var connection = await OpenAsync();
+        await using var command = new NpgsqlCommand(
+            """
+            WITH boundary AS (
+                SELECT interval '31 seconds' AS required
+            )
+            SELECT ARRAY[
+                required - interval '1 microsecond' > required,
+                required > required,
+                required + interval '1 microsecond' > required
+            ]
+            FROM boundary;
+            """,
+            connection);
+        var actual = (bool[])(await command.ExecuteScalarAsync()
+            ?? throw new InvalidOperationException("P07_BOUNDARY_EMPTY"));
+        Assert.Equal([false, false, true], actual);
+    }
+
     [Fact]
     public async Task C1B2CORE_reserved_claim_requires_a_source_reservation()
     {
@@ -822,7 +878,7 @@ public sealed class Tip88C1B2CoreTests(PostgresPersistenceFixture postgres)
         return id;
     }
 
-    private ServiceProvider CreateProvider()
+    private ServiceProvider CreateProvider(int maximumContinuationSeconds = 1800)
     {
         var configuration = new ConfigurationManager
         {
@@ -832,7 +888,9 @@ public sealed class Tip88C1B2CoreTests(PostgresPersistenceFixture postgres)
                 "abcdef0123456789abcdef0123456789",
             ["TagEkyc:RawExport:CustodyProfile:Profile"] = "Fixture",
             ["RawExportSourceClaimSafetyMarginMilliseconds"] = "1000",
-            ["RawExportSourceMaximumRemainingContinuationWindowSeconds"] = "1800",
+            ["RawExportSourceMaximumRemainingContinuationWindowSeconds"] =
+                maximumContinuationSeconds.ToString(
+                    System.Globalization.CultureInfo.InvariantCulture),
             ["RawExportSourceEncryptionAttemptDeadlineSeconds"] = "30",
             ["RawExportSourceOwnershipLeaseDurationSeconds"] = "300",
         };

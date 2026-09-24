@@ -96,7 +96,7 @@ public sealed class Tip88C1C6BA1TransitionCoverageTests(PostgresPersistenceFixtu
             await tx.CommitAsync();
         }
         string Replace(string session, string current, long revision) =>
-            $"tagekyc.capture_runtime_issue_or_replace_capability('{Client}','{session}','Replace','{current}',{revision},gen_random_uuid(),gen_random_uuid(),'replaceproof',decode(repeat('51',32),'hex'),1,decode(repeat('52',32),'hex'),now())";
+            $"tagekyc.capture_runtime_issue_or_replace_capability('{Client}','{session}','Replace','{current}',{revision},gen_random_uuid(),gen_random_uuid(),'replaceproof',decode(repeat('51',32),'hex'),1,decode(repeat('52',32),'hex'),now(),'{Actor}',NULL::uuid,NULL::jsonb)";
         Assert.Equal("CONFLICT", await Result(db, Replace(Session, Capability, 2), "tagekyc_capture_runtime_application"));
         Assert.Equal(0, await Scalar(db, "SELECT count(*)::integer FROM tagekyc.capture_capability_operations WHERE \"OperationKind\"='Replace'"));
         // A separate ActiveUnbound capability is the positive control for replacement.
@@ -109,7 +109,7 @@ public sealed class Tip88C1C6BA1TransitionCoverageTests(PostgresPersistenceFixtu
             RequestId = "r", CorrelationId = "c", BindingNonceHash = "challenge"
         });
         await db.SaveChangesAsync();
-        Assert.Equal("CREATED", await Result(db, $"tagekyc.capture_runtime_issue_or_replace_capability('{Client}','{session2}','Issue',NULL,NULL,gen_random_uuid(),'{capability2}','issueproofxx',decode(repeat('53',32),'hex'),1,decode(repeat('54',32),'hex'),now())", "tagekyc_capture_runtime_application"));
+        Assert.Equal("CREATED", await Result(db, $"tagekyc.capture_runtime_issue_or_replace_capability('{Client}','{session2}','Issue',NULL,NULL,gen_random_uuid(),'{capability2}','issueproofxx',decode(repeat('53',32),'hex'),1,decode(repeat('54',32),'hex'),now(),'{Actor}',NULL::uuid,NULL::jsonb)", "tagekyc_capture_runtime_application"));
         Assert.Equal("CONFLICT", await Result(db, Replace(session2.ToString(), capability2.ToString(), 2), "tagekyc_capture_runtime_application"));
         Assert.Equal("CREATED", await Result(db, Replace(session2.ToString(), capability2.ToString(), 1), "tagekyc_capture_runtime_application"));
         Assert.Equal(1, await Scalar(db, "SELECT count(*)::integer FROM tagekyc.capture_capability_operations WHERE \"OperationKind\"='Replace'"));
@@ -151,6 +151,7 @@ public sealed class Tip88C1C6BA1TransitionCoverageTests(PostgresPersistenceFixtu
     {
         await using var tx = await db.Database.BeginTransactionAsync();
         await db.Database.ExecuteSqlRawAsync("SET LOCAL ROLE " + role);
+        await db.Database.ExecuteSqlRawAsync($"SELECT pg_catalog.set_config('tagekyc.actor_principal_id','{Actor}',true)");
         string result;
         if (denyShape)
         {

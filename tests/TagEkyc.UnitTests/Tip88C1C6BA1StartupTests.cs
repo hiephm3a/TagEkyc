@@ -1,11 +1,41 @@
 using TagEkyc.Application.CaptureRuntime;
 using TagEkyc.Application.Ports;
+using TagEkyc.Api;
+using Microsoft.Extensions.Configuration;
 
 namespace TagEkyc.UnitTests;
 
 public sealed class Tip88C1C6BA1StartupTests
 {
     private static readonly DateTimeOffset Now = new(2026, 9, 11, 0, 0, 0, TimeSpan.Zero);
+    [Fact]
+    public void SiteQualificationFileProviderParsesExactRecordAndRejectsUnknownFields()
+    {
+        var path = Path.Combine(Path.GetTempPath(), $"tagekyc-site-qualification-{Guid.NewGuid():N}.json");
+        const string key = "TagEkyc:CaptureRuntime:SiteRawIngressTransportQualificationRecordPath";
+        try
+        {
+            var record = $$"""
+                {"formatVersion":1,"qualificationId":"q1","siteId":"site1","endpointOrigin":"https://127.0.0.1:8443","deploymentRevision":"d1","status":"PASS","observedAtUtc":"{{Now.AddMinutes(-1):O}}","validUntilUtc":"{{Now.AddMinutes(30):O}}","agentBodySendsWhileBOrR1Held":0,"serverApplicationBodyReadsWhileBOrR1Held":0,"rawPostCount":1,"kestrelContinueRelayedAfterCommit":true,"earlyOrIntermediaryContinueObserved":false,"applicationPrebufferObserved":false,"hiddenRetryObserved":false}
+                """;
+            File.WriteAllText(path, record);
+            var configuration = new ConfigurationManager { [key] = path };
+            var provider = new SiteRawIngressTransportQualificationFileProvider(configuration);
+            Assert.NotNull(provider.Current);
+            Assert.Equal(Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path))),
+                provider.Current!.RecordSha256);
+
+            File.WriteAllText(path, record[..^1] + ",\"unknown\":true}");
+            Assert.Null(provider.Current);
+            File.WriteAllText(path, record.Replace(Now.AddMinutes(30).ToString("O"),
+                Now.AddMinutes(60).ToString("O"), StringComparison.Ordinal));
+            Assert.Equal(Now.AddMinutes(60), provider.Current!.ValidUntilUtc);
+        }
+        finally
+        {
+            if (File.Exists(path)) File.Delete(path);
+        }
+    }
     [Fact]
     public void StartupCatalogue_IsExactProjectionOfCanonicalMigrationProofManifest()
     {
@@ -61,15 +91,167 @@ public sealed class Tip88C1C6BA1StartupTests
     public async Task ActivatedRequiresActualA3Readiness_PreparedNeverCallsA3()
     {
         var a3 = new A3();
+        var evidence = new Evidence();
+        var assemblyTopology = new CaptureRuntimeAssemblyTopology("Disabled");
+        var qualification = new Qualification();
         var activated = Row([]) with { State = "Activated", ActivatedAtUtc = Now, ActivatedByCredentialId = Guid.NewGuid() };
-        await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(new Reader(activated), new Peppers(1)).SelectAsync(Now, default));
-        await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(new Reader(activated), new Peppers(1), a3).SelectAsync(Now, default));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
+            new Reader(activated), new Peppers(1), activationEvidence: evidence,
+            assemblyTopology: assemblyTopology,
+            siteTransportQualification: qualification,
+            siteTransportSettings: new Settings()).SelectAsync(Now, default));
+        await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
+            new Reader(activated), new Peppers(1), a3, activationEvidence: evidence,
+            assemblyTopology: assemblyTopology,
+            siteTransportQualification: qualification,
+            siteTransportSettings: new Settings()).SelectAsync(Now, default));
         a3.Ready = true;
-        await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(new Reader(activated), new Peppers(1), a3).SelectAsync(Now, default));
-        Assert.Equal(CaptureRuntimeRouteState.Activated, (await new CaptureRuntimeStartup(new Reader(activated), new Peppers(1), a3, new Admission()).SelectAsync(Now, default)).State);
+        await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
+            new Reader(activated), new Peppers(1), a3, activationEvidence: evidence,
+            assemblyTopology: assemblyTopology,
+            siteTransportQualification: qualification,
+            siteTransportSettings: new Settings()).SelectAsync(Now, default));
+        Assert.Equal(CaptureRuntimeRouteState.Activated, (await new CaptureRuntimeStartup(
+            new Reader(activated), new Peppers(1), a3, new Admission(), evidence,
+            assemblyTopology, qualification, new Settings()).SelectAsync(Now, default)).State);
         var count = a3.Calls;
         await new CaptureRuntimeStartup(new Reader(Row([])), new Peppers(1), a3).SelectAsync(Now, default);
         Assert.Equal(count, a3.Calls);
+    }
+    [Theory]
+    [InlineData("DurableWorker")]
+    [InlineData("FixtureProof")]
+    [InlineData("Invalid")]
+    public async Task ActivatedExcludedAssemblyTopologyFailsBeforePepperOrRoutes(string topology)
+    {
+        var source = new Peppers(1);
+        var activated = Row([]) with { State = "Activated", ActivatedAtUtc = Now,
+            ActivatedByCredentialId = Guid.NewGuid() };
+        var failure = await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
+            new Reader(activated), source, new A3 { Ready = true }, new Admission(), new Evidence(),
+            new CaptureRuntimeAssemblyTopology(topology)).SelectAsync(Now, default));
+        Assert.Equal("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INVALID", failure.Message);
+        Assert.Empty(source.Calls);
+    }
+    [Theory]
+    [InlineData("Disabled")]
+    [InlineData("DurableWorker")]
+    public async Task ActivatedUsesApprovedTopologyValueRatherThanHardCodedDisabled(string topology)
+    {
+        var activated = Row([]) with { State = "Activated", ActivatedAtUtc = Now,
+            ActivatedByCredentialId = Guid.NewGuid() };
+        var currentSeal = new Evidence().Current;
+        var approvedSeal = new Evidence(currentSeal with {
+            ApprovedAssemblyTopology = topology, BuildAssemblyTopology = topology });
+        var selection = await new CaptureRuntimeStartup(
+            new Reader(activated), new Peppers(1), new A3 { Ready = true }, new Admission(),
+            approvedSeal, new CaptureRuntimeAssemblyTopology(topology), new Qualification(), new Settings())
+            .SelectAsync(Now, default);
+        Assert.Equal(CaptureRuntimeRouteState.Activated, selection.State);
+    }
+
+    [Theory]
+    [InlineData("missing")]
+    [InlineData("stale")]
+    [InlineData("failed")]
+    public async Task ActivatedHostStartsForSiteQualificationButRawIngressPolicyRemainsClosed(string mutation)
+    {
+        var activated = Row([]) with { State = "Activated", ActivatedAtUtc = Now,
+            ActivatedByCredentialId = Guid.NewGuid() };
+        ICaptureRuntimeSiteTransportQualificationProvider? qualification = mutation switch
+        {
+            "missing" => null,
+            "stale" => new Qualification(new Qualification().Current! with { ValidUntilUtc = Now }),
+            _ => new Qualification(new Qualification().Current! with { Status = "FAIL" })
+        };
+        var selection = await new CaptureRuntimeStartup(
+            new Reader(activated), new Peppers(1), new A3 { Ready = true }, new Admission(),
+            new Evidence(), new CaptureRuntimeAssemblyTopology("Disabled"), qualification, new Settings())
+            .SelectAsync(Now, default);
+        Assert.Equal(CaptureRuntimeRouteState.Activated, selection.State);
+
+        var site = CaptureRuntimeSiteTransportQualificationPolicy.Evaluate(new Evidence().Current,
+            new Settings().Current, qualification?.Current, Now);
+        Assert.False(site.AllowsRawIngress);
+        Assert.Equal(mutation == "stale"
+            ? CaptureRuntimeSiteTransportQualificationPolicy.ExpiredCode
+            : CaptureRuntimeSiteTransportQualificationPolicy.InvalidCode, site.Code);
+    }
+    [Theory]
+    [InlineData("site")]
+    [InlineData("origin")]
+    [InlineData("revision")]
+    public void SiteQualificationMustMatchLiveDeploymentIdentity(string mutation)
+    {
+        var settings = new Settings().Current;
+        settings = mutation switch
+        {
+            "site" => settings with { SiteId = "other-site" },
+            "origin" => settings with { EndpointOrigin = "https://127.0.0.1:9443" },
+            _ => settings with { DeploymentRevision = "other-revision" }
+        };
+        var result = CaptureRuntimeSiteTransportQualificationPolicy.Evaluate(new Evidence().Current,
+            settings, new Qualification().Current, Now);
+        Assert.Equal(CaptureRuntimeSiteTransportQualificationState.Invalid, result.State);
+        Assert.False(result.AllowsRawIngress);
+    }
+    [Fact]
+    public void SiteQualificationWarnsBeforeExpiryAndFailsClosedAtExpiry()
+    {
+        var qualification = new Qualification().Current! with { ValidUntilUtc = Now.AddMinutes(4) };
+        var warning = CaptureRuntimeSiteTransportQualificationPolicy.Evaluate(new Evidence().Current,
+            new Settings().Current, qualification, Now);
+        Assert.Equal(CaptureRuntimeSiteTransportQualificationState.Expiring, warning.State);
+        Assert.True(warning.AllowsRawIngress);
+        Assert.Equal(CaptureRuntimeSiteTransportQualificationPolicy.ExpiringCode, warning.Code);
+
+        var expired = CaptureRuntimeSiteTransportQualificationPolicy.Evaluate(new Evidence().Current,
+            new Settings().Current, qualification, Now.AddMinutes(4));
+        Assert.Equal(CaptureRuntimeSiteTransportQualificationState.Expired, expired.State);
+        Assert.False(expired.AllowsRawIngress);
+    }
+    [Fact]
+    public async Task ZeroOpenSealWithoutSitePolicyCannotActivate()
+    {
+        var activated = Row([]) with { State = "Activated", ActivatedAtUtc = Now,
+            ActivatedByCredentialId = Guid.NewGuid() };
+        var invalid = new Evidence(new Evidence().Current with
+        {
+            ApprovedSiteTransportQualificationRequired = false,
+            BuildSiteTransportQualificationRequired = false,
+            ApprovedSiteTransportQualificationPolicyVersion = 0,
+            BuildSiteTransportQualificationPolicyVersion = 0
+        });
+        var failure = await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
+            new Reader(activated), new Peppers(1), new A3 { Ready = true }, new Admission(), invalid,
+            new CaptureRuntimeAssemblyTopology("Disabled"), new Qualification(), new Settings())
+            .SelectAsync(Now, default));
+        Assert.Equal("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INVALID", failure.Message);
+    }
+    [Fact]
+    public async Task ActivatedRejectsMatchingNonShippingTopology()
+    {
+        var activated = Row([]) with { State = "Activated", ActivatedAtUtc = Now,
+            ActivatedByCredentialId = Guid.NewGuid() };
+        var currentSeal = new Evidence().Current;
+        var invalidSeal = new Evidence(currentSeal with {
+            ApprovedAssemblyTopology = "FixtureProof", BuildAssemblyTopology = "FixtureProof" });
+        var failure = await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
+            new Reader(activated), new Peppers(1), new A3 { Ready = true }, new Admission(),
+            invalidSeal, new CaptureRuntimeAssemblyTopology("FixtureProof")).SelectAsync(Now, default));
+        Assert.Equal("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INVALID", failure.Message);
+    }
+    [Fact]
+    public async Task ActivatedLegacyZeroOpenSealCannotBypassAssemblyScopeBinding()
+    {
+        var activated = Row([]) with { State = "Activated", ActivatedAtUtc = Now,
+            ActivatedByCredentialId = Guid.NewGuid() };
+        var currentSeal = new Evidence().Current;
+        var legacyZero = new Evidence(currentSeal with { FormatVersion = 1 });
+        var failure = await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
+            new Reader(activated), new Peppers(1), new A3 { Ready = true }, new Admission(),
+            legacyZero, new CaptureRuntimeAssemblyTopology("Disabled")).SelectAsync(Now, default));
+        Assert.Equal("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INVALID", failure.Message);
     }
     [Theory]
     [InlineData("state")]
@@ -109,6 +291,32 @@ public sealed class Tip88C1C6BA1StartupTests
         public ValueTask<CaptureRuntimeRawIngressAdmissionResult> AdmitAsync(
             CaptureRuntimeRawIngressAdmissionContext context, Stream body, CancellationToken cancellationToken) =>
             throw new InvalidOperationException("Startup must never admit a body.");
+    }
+    private sealed class Evidence : ICaptureRuntimeActivationEvidenceSealProvider
+    {
+        private const string A = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        private const string B = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
+        private const string C = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
+        private const string D = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD";
+        private const string E = "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
+        public Evidence(CaptureRuntimeActivationEvidenceSeal? seal = null) => Current = seal ??
+            new CaptureRuntimeActivationEvidenceSeal(2, 1, A, B, 0, A, B, 0, C, D,
+                "Disabled", "Disabled", A, B, E, E, true, true, 1, 1);
+        public CaptureRuntimeActivationEvidenceSeal Current { get; }
+    }
+    private sealed class Qualification : ICaptureRuntimeSiteTransportQualificationProvider
+    {
+        private const string E = "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
+        public Qualification(CaptureRuntimeSiteTransportQualification? current = null) => Current = current ??
+            new CaptureRuntimeSiteTransportQualification(1, "test-qualification", "test-site",
+                "https://127.0.0.1:8443", "test-deployment-1", "PASS", Now.AddMinutes(-1),
+                Now.AddMinutes(30), 0, 0, 1, true, false, false, false, E);
+        public CaptureRuntimeSiteTransportQualification? Current { get; }
+    }
+    private sealed class Settings : ICaptureRuntimeSiteTransportQualificationSettingsProvider
+    {
+        public CaptureRuntimeSiteTransportQualificationSettings Current { get; } = new(
+            "test-site", "https://127.0.0.1:8443", "test-deployment-1", TimeSpan.FromMinutes(5));
     }
     private sealed class Peppers(int current) : ICaptureRuntimeVerifierPepperSource
     {

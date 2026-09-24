@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using TagEkyc.Api;
+using TagEkyc.Application.Ports;
 using TagEkyc.Contracts.RawExport;
 using TagEkyc.Domain;
 using TagEkyc.Infrastructure.RawExport;
@@ -113,10 +115,12 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         byte[]? plaintextOverride,
         Func<Tip88C1B2R2DurableCustodyEncryptionDatabaseTests.R3VerifiedSourceFixture, Task>? beforeAuthenticate,
         RawExportJobLeaseState? leaseOverride = null,
-        Func<Guid, Guid, Task<IC2AssemblyPreparationProvider>>? c2Factory = null)
+        Func<Guid, Guid, Task<IC2AssemblyPreparationProvider>>? c2Factory = null,
+        bool publishSource = true,
+        DurableObjectMinioFixture? sharedMinio = null)
     {
         var plaintext = plaintextOverride ?? Encoding.UTF8.GetBytes("c1-end-to-end-synthetic-selfie");
-        var minio = await DurableObjectMinioFixture.StartAsync();
+        var minio = sharedMinio ?? await DurableObjectMinioFixture.StartAsync();
         await using var setup = postgres.CreateDbContext();
         var permit = await Tip88B4RawExportJobFoundationTests.CreateAuthorizedPermitAsync(
             setup,
@@ -146,11 +150,15 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                 source.ActorPrincipalId, source.AttemptId, staged.ReservationRevision!.Value,
                 source.EncryptionAttemptRevision, source.Fence, source.ObjectStateRevision));
         Assert.Equal(SourceCommitDisposition.Committed, committed.Disposition);
-        await using (var publishDb = postgres.CreateDbContext())
+        if (publishSource)
         {
-            var published = await new RawExportSourceFinalizationService(publishDb).PublishAsync(new(
-                source.ActorPrincipalId, committed.SourcePublicationId!.Value,
-                staged.ReservationRevision.Value, source.Fence));
+            await using var publishDb = postgres.CreateDbContext();
+            var published = await new RawExportSourceFinalizationService(publishDb).PublishAsync(
+                new(
+                    source.ActorPrincipalId,
+                    committed.SourcePublicationId!.Value,
+                    staged.ReservationRevision.Value,
+                    source.Fence));
             Assert.Equal(SourcePublishDisposition.Available, published.Disposition);
         }
 
@@ -198,8 +206,13 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             acquired.Revision!.Value,
             acquired.FencingToken!.Value,
             actor.PrincipalId);
+        var ownedResources = new List<IAsyncDisposable>
+        {
+            verifyDb, lookupDb, contentScope, contentProvider,
+        };
+        if (sharedMinio is null) ownedResources.Add(minio);
         return new(
-            [verifyDb, lookupDb, contentScope, contentProvider, minio],
+            ownedResources,
             minio,
             bound.JobId,
             request,
@@ -257,9 +270,26 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             bound.JobId, acquired.AttemptId!.Value, acquired.Revision!.Value,
             acquired.FencingToken!.Value, actor.PrincipalId), default);
 
-        Assert.Equal("SourceUnavailable", result.Outcome);
+        Assert.Equal("SelectionNone", result.Outcome);
         Assert.Equal(0, result.RowRevision);
         Assert.Equal(0, await db.RawExportJobSourceBindings.CountAsync(row => row.JobId == bound.JobId));
+
+        await using var minio = await DurableObjectMinioFixture.StartAsync();
+        var c2 = new BoundedFixtureC2Provider();
+        await using var owned = CreateIndependentOrchestrator(minio, c2);
+        var orchestrated = await owned.Orchestrator.ExecuteAsync(
+            new(
+                bound.JobId,
+                acquired.AttemptId.Value,
+                acquired.Revision.Value,
+                acquired.FencingToken.Value,
+                actor.PrincipalId),
+            default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.SelectionNone, orchestrated.Outcome);
+        Assert.Equal(0, c2.PrepareCount);
+        Assert.Equal(0, await db.RawExportAssemblyPreparationDispositions.CountAsync(row => row.JobId == bound.JobId));
+        Assert.Equal(0, await db.RawExportAssemblyIdentities.CountAsync(row => row.JobId == bound.JobId));
+        Assert.Equal(0, await db.RawExportAssemblyItems.CountAsync());
 
         var mismatched = await repository.FreezeAsync(new(
             bound.JobId, acquired.AttemptId.Value, acquired.Revision.Value,
@@ -294,9 +324,11 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var first = await repository.FreezeAsync(prepared.Request, default);
         Assert.Equal("Frozen", first.Outcome);
         Assert.Equal(1, first.RowRevision);
+        var frozenBytes = await ReadBindingsJsonAsync(prepared.JobId);
         var replay = await repository.FreezeAsync(prepared.Request, default);
         Assert.Equal("ExistingMatch", replay.Outcome);
         Assert.Equal(first.RowRevision, replay.RowRevision);
+        Assert.Equal(frozenBytes, await ReadBindingsJsonAsync(prepared.JobId));
 
         await using var db = postgres.CreateDbContext();
         var bindings = await db.RawExportJobSourceBindings.AsNoTracking()
@@ -432,27 +464,205 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Equal(RawExportAssemblyExecutionOutcome.AuthorityInvalid, result.Outcome);
         Assert.Equal(0, prepared.ObjectReads.OpenReadCount);
         Assert.Equal(0, prepared.C2.PrepareCount);
+        await using var db = postgres.CreateDbContext();
+        Assert.Equal(0, await db.RawExportJobSourceBindings.CountAsync(row => row.JobId == prepared.JobId));
+        Assert.Equal(0, await db.RawExportAssemblyPreparationDispositions.CountAsync(row => row.JobId == prepared.JobId));
+        Assert.Equal(0, await db.RawExportAssemblyIdentities.CountAsync(row => row.JobId == prepared.JobId));
+        Assert.Equal(0, await db.RawExportAssemblyItems.CountAsync());
     }
 
     [Fact]
     public async Task C113_second_fresh_barrier_immediately_precedes_prepare()
     {
         var callbackCount = 0;
-        await using var prepared = await PrepareAssemblyExecutionAsync(
+        string? frozenBindings = null;
+        PreparedAssemblyFixture? prepared = null;
+        await using (prepared = await PrepareAssemblyExecutionAsync(
             null,
             null,
             async source =>
             {
                 callbackCount++;
+                frozenBindings = await ReadBindingsJsonAsync(prepared!.JobId);
                 await WithdrawAuthorityAsync(source);
-            });
+            }))
+        {
+            var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+
+            Assert.Equal(1, callbackCount);
+            Assert.Equal(RawExportAssemblyExecutionOutcome.AuthorityInvalid, result.Outcome);
+            Assert.NotNull(result.AssemblyId);
+            Assert.NotNull(result.C2PreparationId);
+            Assert.Equal(1, prepared.ObjectReads.OpenReadCount);
+            Assert.Equal(0, prepared.C2.PrepareCount);
+            Assert.Equal(frozenBindings, await ReadBindingsJsonAsync(prepared.JobId));
+
+            await using var db = postgres.CreateDbContext();
+            var disposition = await db.RawExportAssemblyPreparationDispositions.AsNoTracking()
+                .SingleAsync(row => row.JobId == prepared.JobId);
+            Assert.Equal(result.AssemblyId, disposition.AssemblyId);
+            Assert.Equal(result.C2PreparationId, disposition.C2PreparationId);
+            Assert.Equal("Preparing", disposition.Disposition);
+            Assert.Null(disposition.ProviderReceiptDigest);
+            Assert.Null(disposition.PendingAtUtc);
+            Assert.Null(disposition.SealCommittedAtUtc);
+            Assert.Null(disposition.FinalizedAtUtc);
+            Assert.Equal(0, await db.RawExportAssemblyIdentities.CountAsync(row => row.JobId == prepared.JobId));
+            Assert.Equal(0, await db.RawExportAssemblyItems.CountAsync(row => row.AssemblyId == result.AssemblyId));
+        }
+    }
+
+    [Fact]
+    public async Task A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead()
+    {
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            null,
+            null,
+            null,
+            publishSource: false);
 
         var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
 
-        Assert.Equal(1, callbackCount);
-        Assert.Equal(RawExportAssemblyExecutionOutcome.AuthorityInvalid, result.Outcome);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.SourceUnavailable, result.Outcome);
+        Assert.Equal(0, prepared.ObjectReads.OpenReadCount);
+        Assert.Equal(0, prepared.C2.PrepareCount);
+        await using var db = postgres.CreateDbContext();
+        Assert.Equal(1, await db.RawExportSessionCaptureSelections.CountAsync(
+            row => row.VerificationSessionId == prepared.Source.VerificationSessionId));
+        Assert.Equal(1, await db.RawExportSourcePublications.CountAsync(
+            row => row.SourceArtifactId == prepared.Source.SourceArtifactId
+                && row.PublicationState == "Committed"));
+        Assert.Equal(0, await db.RawExportJobSourceBindings.CountAsync(row => row.JobId == prepared.JobId));
+        Assert.Equal(0, await db.RawExportAssemblyPreparationDispositions.CountAsync(row => row.JobId == prepared.JobId));
+        Assert.Equal(0, await db.RawExportAssemblyIdentities.CountAsync(row => row.JobId == prepared.JobId));
+        Assert.Equal(0, await db.RawExportAssemblyItems.CountAsync());
+    }
+
+    [Fact]
+    public async Task A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture()
+    {
+        await using var minio = await DurableObjectMinioFixture.StartAsync();
+        var failures = new List<string>();
+        foreach (var scenario in new (string Name, Func<Task> Run)[]
+        {
+            ("P31-selection-ambiguous", () => AssertP31SelectionAmbiguousAsync(minio)),
+            ("P32-binding-conflict", () => AssertP32BindingConflictAsync(minio)),
+            ("P34-integrity-evidence", () => AssertP34IntegrityEvidenceAsync(minio)),
+            ("P35-prepare-abort", () => AssertP35PrepareAbortAsync(minio)),
+            ("P36-class-set-abort", () => AssertP36ClassSetAbortAsync(minio))
+        })
+        {
+            try
+            {
+                await scenario.Run();
+            }
+            catch (Exception failure)
+            {
+                failures.Add($"{scenario.Name}: {failure.GetType().Name}: {failure.Message}");
+            }
+        }
+        Assert.True(failures.Count == 0, string.Join(Environment.NewLine, failures));
+    }
+
+    private async Task AssertP31SelectionAmbiguousAsync(DurableObjectMinioFixture minio)
+    {
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            null, null, null, sharedMinio: minio);
+        await InsertAmbiguousIngressClaimAsync(prepared.Source);
+
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+
+        Assert.Equal(RawExportAssemblyExecutionOutcome.SelectionAmbiguous, result.Outcome);
+        Assert.Equal(0, prepared.ObjectReads.OpenReadCount);
+        Assert.Equal(0, prepared.C2.PrepareCount);
+        await AssertNoAssemblyAsync(prepared.JobId);
+    }
+
+    private async Task AssertP32BindingConflictAsync(DurableObjectMinioFixture minio)
+    {
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            null, null, null, sharedMinio: minio);
+        var repository = new RawExportAssemblyRepository(
+            new RoleConnectionFactory(postgres.ConnectionString));
+        var frozen = await repository.FreezeAsync(prepared.Request, default);
+        Assert.Equal("Frozen", frozen.Outcome);
+        var before = await ReadBindingsJsonAsync(prepared.JobId);
+        await MutateReservationCommitmentAsync(prepared.Source.SourceArtifactId);
+
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+
+        Assert.Equal(RawExportAssemblyExecutionOutcome.SourceBindingInvalid, result.Outcome);
+        Assert.Equal(before, await ReadBindingsJsonAsync(prepared.JobId));
+        Assert.Equal(0, prepared.ObjectReads.OpenReadCount);
+        Assert.Equal(0, prepared.C2.PrepareCount);
+        await AssertNoAssemblyAsync(prepared.JobId, expectedBindings: 1);
+    }
+
+    private async Task AssertP34IntegrityEvidenceAsync(DurableObjectMinioFixture minio)
+    {
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            null, null, null, sharedMinio: minio);
+        var repository = new RawExportAssemblyRepository(
+            new RoleConnectionFactory(postgres.ConnectionString));
+        Assert.Equal("Frozen", (await repository.FreezeAsync(prepared.Request, default)).Outcome);
+        await TamperExactObjectAsync(prepared.Source.ObjectCustodyId, minio);
+
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+
+        Assert.Equal(RawExportAssemblyExecutionOutcome.SourceIntegrityInvalid, result.Outcome);
         Assert.Equal(1, prepared.ObjectReads.OpenReadCount);
         Assert.Equal(0, prepared.C2.PrepareCount);
+        await using var connection = await OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT pg_catalog.count(*)
+            FROM tagekyc.raw_export_assembly_source_integrity_failures
+            WHERE "JobId"=@job AND "Ordinal"=0
+              AND "FailureKind"='DeterministicCiphertextInvalid'
+              AND pg_catalog.octet_length("EvidenceDigest")=32
+            """;
+        command.Parameters.AddWithValue("job", prepared.JobId);
+        Assert.Equal(1L, Convert.ToInt64(await command.ExecuteScalarAsync()));
+        await AssertNoAssemblyAsync(prepared.JobId, expectedBindings: 1);
+    }
+
+    private async Task AssertP35PrepareAbortAsync(DurableObjectMinioFixture minio)
+    {
+        var provider = new BoundedFixtureC2Provider(conflictAfterPrepare: true);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, sharedMinio: minio);
+
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+
+        Assert.Equal(RawExportAssemblyExecutionOutcome.AssemblyPrepareFailed, result.Outcome);
+        Assert.Equal(1, provider.PrepareCount);
+        Assert.Equal(1, provider.AbortCount);
+        await using var db = postgres.CreateDbContext();
+        Assert.Equal("Aborted", (await db.RawExportAssemblyPreparationDispositions.AsNoTracking()
+            .SingleAsync(row => row.JobId == prepared.JobId)).Disposition);
+        Assert.Equal(0, await db.RawExportAssemblyIdentities.CountAsync(row => row.JobId == prepared.JobId));
+        Assert.Equal(0, await db.RawExportAssemblyItems.CountAsync());
+    }
+
+    private async Task AssertP36ClassSetAbortAsync(DurableObjectMinioFixture minio)
+    {
+        PreparedAssemblyFixture? holder = null;
+        var provider = new BoundedFixtureC2Provider(afterPrepare: () =>
+            MutateJobClassAsync(holder!.JobId));
+        await using (holder = await PrepareAssemblyExecutionAsync(
+            provider, null, null, sharedMinio: minio))
+        {
+            var result = await holder.Orchestrator.ExecuteAsync(holder.Request, default);
+
+            Assert.Equal(RawExportAssemblyExecutionOutcome.AssemblyClassSetMismatch, result.Outcome);
+            Assert.Equal(1, provider.PrepareCount);
+            Assert.Equal(1, provider.AbortCount);
+            await using var db = postgres.CreateDbContext();
+            Assert.Equal("Aborted", (await db.RawExportAssemblyPreparationDispositions.AsNoTracking()
+                .SingleAsync(row => row.JobId == holder.JobId)).Disposition);
+            Assert.Equal(0, await db.RawExportAssemblyIdentities.CountAsync(row => row.JobId == holder.JobId));
+            Assert.Equal(0, await db.RawExportAssemblyItems.CountAsync());
+        }
     }
     [Fact]
     public async Task C114_preparing_is_durable_before_provider_call_and_recoverable()
@@ -927,6 +1137,35 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         await new CustodyRoleReadinessValidator(db).ValidateAsync(default);
     }
 
+    [Fact]
+    public async Task A3_W2_DurableWorkerIsARealProductCallerWithExplicitWorkSource()
+    {
+        var request = new RawExportAssemblyExecutionRequest(
+            Guid.NewGuid(), Guid.NewGuid(), 2, 1, Guid.NewGuid());
+        var expected = new RawExportAssemblyExecutionResult(
+            RawExportAssemblyExecutionOutcome.SelectionNone, null, null, null, null);
+        var source = new RecordingAssemblyWorkSource(request);
+        var orchestrator = new RecordingAssemblyOrchestrator(expected);
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddSingleton<IRawExportAssemblyWorkSource>(source);
+        services.AddSingleton<IRawExportAssemblyOrchestrator>(orchestrator);
+        await using var provider = services.BuildServiceProvider();
+        var worker = new RawExportAssemblyHostedService(
+            provider.GetRequiredService<IServiceScopeFactory>(),
+            new(RawExportAssemblyTopology.DurableWorker, 10));
+
+        await worker.StartAsync(default);
+        var recorded = await source.Recorded.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        await worker.StopAsync(default);
+
+        Assert.Equal(request, orchestrator.Request);
+        Assert.Equal(request, recorded.Request);
+        Assert.Equal(expected, recorded.Result);
+        Assert.True(source.AcquireCalls >= 1);
+        Assert.Equal(1, source.RecordCalls);
+    }
+
     private async Task AssertReadinessCodeAsync(
         IConfiguration configuration,
         bool isProduction,
@@ -1173,6 +1412,144 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         await transaction.CommitAsync();
     }
 
+    private async Task<string> ReadBindingsJsonAsync(Guid jobId)
+    {
+        await using var connection = await OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = """
+            SELECT COALESCE(
+              pg_catalog.jsonb_agg(pg_catalog.to_jsonb(binding) ORDER BY binding."Ordinal"),
+              '[]'::jsonb)::text
+            FROM tagekyc.raw_export_job_source_bindings AS binding
+            WHERE binding."JobId"=@job
+            """;
+        command.Parameters.AddWithValue("job", jobId);
+        return (string)(await command.ExecuteScalarAsync() ?? "[]");
+    }
+
+    private async Task InsertAmbiguousIngressClaimAsync(
+        Tip88C1B2R2DurableCustodyEncryptionDatabaseTests.R3VerifiedSourceFixture source)
+    {
+        await using var connection = await OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await using var command = connection.CreateCommand();
+        command.Transaction = transaction;
+        command.CommandText = """
+            SET LOCAL ROLE tagekyc_raw_export_deployer;
+            SELECT pg_catalog.set_config(
+              'tagekyc.raw_export_source_ingress_write_context','claim:INSERT',true);
+            INSERT INTO tagekyc.raw_export_source_ingress_claims(
+              "IngressClaimId","VerificationSessionId","CaptureAcceptanceId","CaptureArtifactId",
+              "ClientApplicationId","AuthenticatedPrincipalId","ProducerId","CaptureAgentInstanceId",
+              "CaptureRevision","RawClass","SessionChallengeHash","AuthoritySnapshotId",
+              "IngressIdentityFingerprint","ClaimState","CommitmentKeySelectorId",
+              "CommitmentKeySelectorVersion","CreatedAtUtc")
+            SELECT pg_catalog.gen_random_uuid(),"VerificationSessionId","CaptureAcceptanceId","CaptureArtifactId",
+              "ClientApplicationId","AuthenticatedPrincipalId",
+              'w2-ambiguous-'||pg_catalog.gen_random_uuid()::text,"CaptureAgentInstanceId",
+              "CaptureRevision","RawClass","SessionChallengeHash","AuthoritySnapshotId",
+              tagekyc_extensions.digest(pg_catalog.convert_to(pg_catalog.gen_random_uuid()::text,'UTF8'),'sha256'),
+              "ClaimState","CommitmentKeySelectorId","CommitmentKeySelectorVersion",pg_catalog.clock_timestamp()
+            FROM tagekyc.raw_export_source_ingress_claims
+            WHERE "VerificationSessionId"=@session AND "CaptureAcceptanceId"=@acceptance
+            LIMIT 1;
+            """;
+        command.Parameters.AddWithValue("session", source.VerificationSessionId);
+        command.Parameters.AddWithValue("acceptance", source.CaptureAcceptanceId);
+        Assert.Equal(1, await command.ExecuteNonQueryAsync());
+        await transaction.CommitAsync();
+    }
+
+    private async Task MutateReservationCommitmentAsync(Guid sourceArtifactId)
+    {
+        await using var connection = await OpenAsync();
+        await SetTriggerAsync(connection, "tagekyc.raw_export_source_reservations",
+            "tr_raw_export_source_reservations_guard", enabled: false);
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                UPDATE tagekyc.raw_export_source_reservations
+                SET "ContentCommitment"=pg_catalog.set_byte(
+                  "ContentCommitment",0,(pg_catalog.get_byte("ContentCommitment",0)+1)%256)
+                WHERE "SourceArtifactId"=@source
+                """;
+            command.Parameters.AddWithValue("source", sourceArtifactId);
+            Assert.Equal(1, await command.ExecuteNonQueryAsync());
+        }
+        finally
+        {
+            await SetTriggerAsync(connection, "tagekyc.raw_export_source_reservations",
+                "tr_raw_export_source_reservations_guard", enabled: true);
+        }
+    }
+
+    private async Task TamperExactObjectAsync(Guid objectCustodyId, DurableObjectMinioFixture minio)
+    {
+        await using var db = postgres.CreateDbContext();
+        var objectRow = await db.RawExportProvisionalObjects.AsNoTracking()
+            .SingleAsync(row => row.ObjectCustodyId == objectCustodyId);
+        var reconciler = new S3CompatibleProvisionalObjectReconciler(
+            minio.Options(ProvisionalObjectCapability.Reconciler));
+        await using var exact = await reconciler.OpenExactReadAsync(
+            new(
+                objectRow.ProvisionalObjectIdentity,
+                objectRow.ObjectKey,
+                objectRow.ObjectBindingDigest),
+            default);
+        await using var buffer = new MemoryStream();
+        await exact.Ciphertext.CopyToAsync(buffer);
+        var bytes = buffer.ToArray();
+        bytes[^1] ^= 0x01;
+        await minio.PutRootObjectAsync(minio.BucketName, objectRow.ObjectKey, bytes);
+        CryptographicOperations.ZeroMemory(bytes);
+    }
+
+    private async Task MutateJobClassAsync(Guid jobId)
+    {
+        await using var connection = await OpenAsync();
+        await SetTriggerAsync(connection, "tagekyc.raw_export_job_classes",
+            "tr_b4_job_class_append_only", enabled: false);
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = """
+                UPDATE tagekyc.raw_export_job_classes
+                SET "RawClass"=CASE "RawClass"
+                  WHEN 'LiveSelfieImage' THEN 'ChipDg2Portrait'
+                  ELSE 'LiveSelfieImage' END
+                WHERE "JobId"=@job
+                """;
+            command.Parameters.AddWithValue("job", jobId);
+            Assert.Equal(1, await command.ExecuteNonQueryAsync());
+        }
+        finally
+        {
+            await SetTriggerAsync(connection, "tagekyc.raw_export_job_classes",
+                "tr_b4_job_class_append_only", enabled: true);
+        }
+    }
+
+    private static async Task SetTriggerAsync(
+        NpgsqlConnection connection,
+        string table,
+        string trigger,
+        bool enabled)
+    {
+        await using var command = connection.CreateCommand();
+        command.CommandText = $"ALTER TABLE {table} {(enabled ? "ENABLE" : "DISABLE")} TRIGGER {trigger}";
+        await command.ExecuteNonQueryAsync();
+    }
+
+    private async Task AssertNoAssemblyAsync(Guid jobId, int expectedBindings = 0)
+    {
+        await using var db = postgres.CreateDbContext();
+        Assert.Equal(expectedBindings, await db.RawExportJobSourceBindings.CountAsync(row => row.JobId == jobId));
+        Assert.Equal(0, await db.RawExportAssemblyPreparationDispositions.CountAsync(row => row.JobId == jobId));
+        Assert.Equal(0, await db.RawExportAssemblyIdentities.CountAsync(row => row.JobId == jobId));
+        Assert.Equal(0, await db.RawExportAssemblyItems.CountAsync());
+    }
+
     private ServiceProvider CreateContentCommitmentProvider()
     {
         var configuration = new ConfigurationManager
@@ -1416,7 +1793,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         bool loseFirstPrepareResponse = false,
         bool loseFirstFinalizeResponse = false,
         bool unavailableFirstFinalize = false,
-        Func<Task>? afterPrepare = null) : IC2AssemblyPreparationProvider
+        Func<Task>? afterPrepare = null,
+        bool conflictAfterPrepare = false) : IC2AssemblyPreparationProvider
     {
         private byte[]? assemblyFingerprint;
         private byte[]? receipt;
@@ -1464,6 +1842,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                 AssemblyWasRetained = retainedAssembly.Length == request.CompleteAssemblyLength;
                 state = State.Prepared;
                 if (afterPrepare is not null) await afterPrepare();
+                if (conflictAfterPrepare)
+                    return new(C2AssemblyPrepareOutcome.Conflict, null);
                 if (loseFirstPrepareResponse && PrepareCount == 1)
                     return new(C2AssemblyPrepareOutcome.OutcomeUnknown, null);
                 return new(C2AssemblyPrepareOutcome.Prepared, receipt.ToArray());
@@ -1536,6 +1916,45 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             left is not null && left.Length == right.Length && CryptographicOperations.FixedTimeEquals(left, right);
 
         private enum State { None, Prepared, Finalized, Aborted }
+    }
+
+    private sealed class RecordingAssemblyWorkSource(RawExportAssemblyExecutionRequest request)
+        : IRawExportAssemblyWorkSource
+    {
+        private int issued;
+        internal int AcquireCalls;
+        internal int RecordCalls;
+        internal TaskCompletionSource<(RawExportAssemblyExecutionRequest Request,
+            RawExportAssemblyExecutionResult Result)> Recorded { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        public ValueTask<RawExportAssemblyExecutionRequest?> TryAcquireAsync(
+            CancellationToken cancellationToken)
+        {
+            AcquireCalls++;
+            return ValueTask.FromResult<RawExportAssemblyExecutionRequest?>(
+                Interlocked.Exchange(ref issued, 1) == 0 ? request : null);
+        }
+
+        public ValueTask RecordAsync(RawExportAssemblyExecutionRequest completedRequest,
+            RawExportAssemblyExecutionResult result, CancellationToken cancellationToken)
+        {
+            RecordCalls++;
+            Recorded.TrySetResult((completedRequest, result));
+            return ValueTask.CompletedTask;
+        }
+    }
+
+    private sealed class RecordingAssemblyOrchestrator(RawExportAssemblyExecutionResult result)
+        : IRawExportAssemblyOrchestrator
+    {
+        internal RawExportAssemblyExecutionRequest? Request;
+        public Task<RawExportAssemblyExecutionResult> ExecuteAsync(
+            RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken)
+        {
+            Request = request;
+            return Task.FromResult(result);
+        }
     }
 
     private sealed class ExactBoundedBufferStream : Stream

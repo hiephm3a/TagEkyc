@@ -1069,7 +1069,7 @@ public sealed class Tip88C1B2DurableObjectCustodyTests(PostgresPersistenceFixtur
     public async Task O16_minio_restart_preserves_conditional_object_and_recovery()
     {
         Assert.Equal(
-            "minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
+            "quay.io/minio/minio@sha256:14cea493d9a34af32f524e538b8346cf79f3321eff8e708c1e2960462bd8936e",
             DurableObjectMinioFixture.Image);
         await using var minio = await DurableObjectMinioFixture.StartAsync();
         var identity = Guid.NewGuid();

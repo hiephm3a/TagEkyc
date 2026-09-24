@@ -8,6 +8,9 @@
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <EnableCaptureAgentA2Acceptance Condition="'$(EnableCaptureAgentA2Acceptance)' == ''">false</EnableCaptureAgentA2Acceptance>
+    <EnableCaptureAgentA3Acceptance Condition="'$(EnableCaptureAgentA3Acceptance)' == ''">false</EnableCaptureAgentA3Acceptance>
+    <EnableRawExportClientAcceptance Condition="'$(EnableRawExportClientAcceptance)' == ''">false</EnableRawExportClientAcceptance>
+    <DefineConstants Condition="'$(EnableCaptureAgentA3Acceptance)' == 'true'">$(DefineConstants);A3_ACCEPTANCE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,7 +24,20 @@
 
   <ItemGroup>
     <Compile Remove="Tip88C1C6BA2ClientServerAcceptanceTests.cs" />
+    <Compile Remove="Tip88C1C6BA3ClientServerAcceptanceTests.cs" />
+    <Compile Remove="Tip88C1C6BA3R2R6TransportHarnessTests.cs" />
+    <Compile Remove="RawExportClientProductionCodecCompatibilityTests.cs" />
   </ItemGroup>
+  <ItemGroup Condition="'$(EnableCaptureAgentA3Acceptance)' == 'true'">
+    <ProjectReference Include="../../../TagEkyc.CaptureAgent/src/TagEkyc.CaptureAgent.Client/TagEkyc.CaptureAgent.Client.csproj" />
+    <Compile Include="Tip88C1C6BA3ClientServerAcceptanceTests.cs" />
+    <Compile Include="Tip88C1C6BA3R2R6TransportHarnessTests.cs" />
+  </ItemGroup>
+  <Target Name="RequireCaptureAgentA3AcceptanceSibling" BeforeTargets="CollectPackageReferences;ResolveProjectReferences"
+          Condition="'$(EnableCaptureAgentA3Acceptance)' == 'true'">
+    <Error Condition="!Exists('../../../TagEkyc.CaptureAgent/src/TagEkyc.CaptureAgent.Client/TagEkyc.CaptureAgent.Client.csproj')"
+           Text="A3 acceptance explicitly requires the exact sibling CaptureAgent.Client project; it cannot be skipped." />
+  </Target>
   <ItemGroup Condition="'$(EnableCaptureAgentA2Acceptance)' == 'true'">
     <ProjectReference Include="../../../TagEkyc.CaptureAgent/src/TagEkyc.CaptureAgent.Client/TagEkyc.CaptureAgent.Client.csproj" />
     <Compile Include="Tip88C1C6BA2ClientServerAcceptanceTests.cs" />
@@ -30,6 +46,15 @@
           Condition="'$(EnableCaptureAgentA2Acceptance)' == 'true'">
     <Error Condition="!Exists('../../../TagEkyc.CaptureAgent/src/TagEkyc.CaptureAgent.Client/TagEkyc.CaptureAgent.Client.csproj')"
            Text="A2 acceptance explicitly requires the exact sibling CaptureAgent.Client project; it cannot be skipped." />
+  </Target>
+  <ItemGroup Condition="'$(EnableRawExportClientAcceptance)' == 'true'">
+    <ProjectReference Include="../../../Codex_SignFlow/src/Clients/TagEkyc.RawExport.Client/TagEkyc.RawExport.Client.csproj" />
+    <Compile Include="RawExportClientProductionCodecCompatibilityTests.cs" />
+  </ItemGroup>
+  <Target Name="RequireRawExportClientAcceptanceSibling" BeforeTargets="CollectPackageReferences;ResolveProjectReferences"
+          Condition="'$(EnableRawExportClientAcceptance)' == 'true'">
+    <Error Condition="!Exists('../../../Codex_SignFlow/src/Clients/TagEkyc.RawExport.Client/TagEkyc.RawExport.Client.csproj')"
+           Text="Raw-export client acceptance requires the exact sibling standalone client project; it cannot be skipped." />
   </Target>
 
   <ItemGroup>

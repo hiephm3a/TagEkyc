@@ -399,19 +399,27 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
             .GetAsync(Guid.Parse(session.VerificationSessionId), CancellationToken.None)
             ?? throw new InvalidOperationException("Second expected session missing.");
         var gate = new TwoPartyAsyncGate();
-        scope1.ServiceProvider.GetRequiredService<EfPersistenceFaultInjector>().BeforeFinalizationSaveAsync = gate.SignalAndWaitAsync;
-        scope2.ServiceProvider.GetRequiredService<EfPersistenceFaultInjector>().BeforeFinalizationSaveAsync = gate.SignalAndWaitAsync;
-
-        var task1 = scope1.ServiceProvider.GetRequiredService<IVerificationFinalizationBoundary>()
-            .TryFinalizeAsync(CreateFinalizationWrite(expected1, "11111111-1111-5111-8111-111111111111"), CancellationToken.None);
-        var task2 = scope2.ServiceProvider.GetRequiredService<IVerificationFinalizationBoundary>()
-            .TryFinalizeAsync(CreateFinalizationWrite(expected2, "22222222-2222-5222-8222-222222222222"), CancellationToken.None);
+        var task1 = StartFinalizationAsync(
+            scope1.ServiceProvider.GetRequiredService<IVerificationFinalizationBoundary>(),
+            CreateFinalizationWrite(expected1, "11111111-1111-5111-8111-111111111111"), gate);
+        var task2 = StartFinalizationAsync(
+            scope2.ServiceProvider.GetRequiredService<IVerificationFinalizationBoundary>(),
+            CreateFinalizationWrite(expected2, "22222222-2222-5222-8222-222222222222"), gate);
 
         var results = await Task.WhenAll(task1, task2);
 
         Assert.Single(results, result => result.Status == VerificationFinalizationWriteStatus.Applied);
         Assert.Single(results, result => result.Status == VerificationFinalizationWriteStatus.StateMismatch);
         await AssertPersistedCountsAsync(decisions: 1, packages: 1, manifests: 1, completionAudits: 1);
+
+        static async Task<VerificationFinalizationWriteResult> StartFinalizationAsync(
+            IVerificationFinalizationBoundary boundary,
+            VerificationFinalizationWrite write,
+            TwoPartyAsyncGate startGate)
+        {
+            await startGate.SignalAndWaitAsync(CancellationToken.None);
+            return await boundary.TryFinalizeAsync(write, CancellationToken.None);
+        }
     }
 
     [Fact]

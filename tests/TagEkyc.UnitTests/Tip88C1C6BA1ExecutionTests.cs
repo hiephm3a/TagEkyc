@@ -13,7 +13,8 @@ namespace TagEkyc.UnitTests;
 public sealed class Tip88C1C6BA1ExecutionTests
 {
     private static readonly AuthenticatedClientContext Client = new(Guid.NewGuid(), Guid.NewGuid(), "client",
-        AuthenticatedCallerCategory.BusinessConsumer, new HashSet<string>());
+        AuthenticatedCallerCategory.BusinessConsumer, new HashSet<string>(),
+        PrincipalId: Guid.Parse("a3000000-0000-4000-8000-000000000020"));
     private static readonly AuthenticatedCaptureRuntimeContext Runtime = new(
         Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), 1, new byte[32], Guid.NewGuid(),
         1, 1, 1, 1, DateTimeOffset.UtcNow, new byte[32], new byte[32]);
@@ -27,6 +28,8 @@ public sealed class Tip88C1C6BA1ExecutionTests
         var first = await service.IssueOrReplaceCapabilityAsync(Client, session, new("Issue"), key, body);
         Assert.True(first.IsSuccess); Assert.Equal(43, first.Value!.Secret!.Length);
         Assert.Equal(7, gateway.Request!.PepperVersion);
+        Assert.Equal(Client.PrincipalId, gateway.Request.PrincipalId);
+        Assert.Equal(Client.ClientApplicationId, gateway.Request.ClientApplicationId);
         Assert.Equal(12, gateway.Request.LookupPrefix.Length);
         Assert.Equal(7, peppers.ResolvedVersion);
         var firstFingerprint = gateway.Request.RequestFingerprint.ToArray();
@@ -38,6 +41,27 @@ public sealed class Tip88C1C6BA1ExecutionTests
         Assert.All(gateway.Request.Digest, b => Assert.Equal(0, b));
     }
 
+    [Theory]
+    [InlineData("Issue")]
+    [InlineData("Replace")]
+    public async Task Capability_MissingPrincipalRejectsBeforeSecretAndPersistence(string action)
+    {
+        var gateway = new Gateway(); var peppers = new Peppers();
+        var service = new CaptureRuntimeExecutionApplicationService(gateway, peppers, gateway);
+        var request = action == "Issue" ? new CaptureCapabilityRequest("Issue") :
+            new CaptureCapabilityRequest("Replace", Guid.Parse("a3000000-0000-4000-8000-000000000021"), 1);
+        var result = await service.IssueOrReplaceCapabilityAsync(Client with { PrincipalId = Guid.Empty },
+            Guid.NewGuid(), request, Guid.NewGuid(), Encoding.UTF8.GetBytes("{}"));
+        Assert.False(result.IsSuccess);
+        Assert.Equal(403, result.Error!.StatusCode);
+        Assert.Equal("ACCESS_DENIED", result.Error.Code);
+        Assert.Null(result.Value);
+        Assert.Null(gateway.Request);
+        Assert.Equal(0, gateway.IssueCalls);
+        Assert.Equal(0, peppers.CurrentVersionReads);
+        Assert.Equal(0, peppers.ResolvedVersion);
+    }
+
     [Fact]
     public async Task Issue_FingerprintBindsExactReceivedBytes()
     {
@@ -45,6 +69,7 @@ public sealed class Tip88C1C6BA1ExecutionTests
         var session = Guid.NewGuid(); var key = Guid.NewGuid();
         await service.IssueOrReplaceCapabilityAsync(Client, session, new("Issue"), key, Encoding.UTF8.GetBytes("{\"Action\":\"Issue\"}"));
         var first = gateway.Request!.RequestFingerprint;
+        Assert.Equal(Client.PrincipalId, gateway.Request.PrincipalId);
         await service.IssueOrReplaceCapabilityAsync(Client, session, new("Issue"), key, Encoding.UTF8.GetBytes("{ \"Action\":\"Issue\"}"));
         Assert.NotEqual(first, gateway.Request!.RequestFingerprint);
     }
@@ -104,7 +129,8 @@ public sealed class Tip88C1C6BA1ExecutionTests
 
     private sealed class Peppers : ICaptureRuntimeVerifierPepperSource
     {
-        public int CurrentVersion => 7;
+        public int CurrentVersion { get { CurrentVersionReads++; return 7; } }
+        public int CurrentVersionReads;
         public int ResolvedVersion;
         public bool Missing;
         public ValueTask<ICaptureRuntimeVerifierPepperLease?> TryResolveAsync(int version,
@@ -128,8 +154,10 @@ public sealed class Tip88C1C6BA1ExecutionTests
         public CaptureRuntimeBindPersistenceRequest? BindRequest;
         public CaptureCapabilityVerifier? Verifier;
         public bool Replay;
+        public int IssueCalls;
         public Task<CaptureCapabilityPersistenceResult> IssueOrReplaceCapabilityAsync(CaptureCapabilityPersistenceRequest request, CancellationToken ct)
         {
+            IssueCalls++;
             Request = request;
             return Task.FromResult(new CaptureCapabilityPersistenceResult(Replay ? "EXISTING_MATCH_SECRET_UNAVAILABLE" : "CREATED",
                 request.NewCapabilityId, !Replay, DateTimeOffset.UtcNow.AddMinutes(5), "ActiveUnbound", 1));

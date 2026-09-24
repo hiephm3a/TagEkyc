@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,6 +31,56 @@ using TagEkyc.Contracts.TrustedAdapter;
 using TagEkyc.Domain;
 
 namespace TagEkyc.IntegrationTests;
+
+public sealed class Tip88C1C6BA3AgentRawCrt1ParserTests
+{
+    [Fact]
+    public void A3_AgentRawCrt1MatchesServerParser()
+    {
+        using var signer = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        var credential = Guid.NewGuid();
+        var nonce = RandomNumberGenerator.GetBytes(32);
+        var now = DateTimeOffset.Parse("2026-09-15T01:02:03.4567890Z");
+        var metadata = new RawExportSourceIngressMetadata(7, Guid.NewGuid(), Guid.NewGuid(), 3,
+            TagEkyc.CaptureAgent.Core.RawExportRawClass.ChipDg2Portrait, Guid.NewGuid(), "image/jpeg", 17, new string('a', 64),
+            now, now, now.AddSeconds(60), 60);
+        var preimage = CaptureRuntimeWireCodec.Crt1RawIngress(credential, 1, now, nonce, metadata);
+        var signature = signer.SignData(preimage, HashAlgorithmName.SHA256,
+            DSASignatureFormat.IeeeP1363FixedFieldConcatenation);
+        var context = new DefaultHttpContext();
+        context.Request.Method = "POST";
+        context.Request.Path = "/api/ekyc/raw-export/source-ingress";
+        context.Request.ContentType = "image/jpeg";
+        context.Request.ContentLength = 17;
+        var headers = new Dictionary<string, string>
+        {
+            ["X-TagEkyc-Agent-Configuration-Revision"] = "7",
+            ["X-TagEkyc-Verification-Session-Id"] = metadata.VerificationSessionId.ToString("N"),
+            ["X-TagEkyc-Capture-Artifact-Id"] = metadata.CaptureArtifactId.ToString("N"),
+            ["X-TagEkyc-Capture-Revision"] = "3",
+            ["X-TagEkyc-Raw-Class"] = "ChipDg2Portrait",
+            ["Idempotency-Key"] = metadata.IngressIdempotencyKey.ToString("N"),
+            ["X-TagEkyc-Captured-At-Utc"] = now.ToString("yyyy-MM-dd'T'HH:mm:ss.fffffffzzz", System.Globalization.CultureInfo.InvariantCulture),
+            ["X-TagEkyc-Retention-Started-At-Utc"] = now.ToString("yyyy-MM-dd'T'HH:mm:ss.fffffffzzz", System.Globalization.CultureInfo.InvariantCulture),
+            ["X-TagEkyc-Retention-Expires-At-Utc"] = now.AddSeconds(60).ToString("yyyy-MM-dd'T'HH:mm:ss.fffffffzzz", System.Globalization.CultureInfo.InvariantCulture),
+            ["X-TagEkyc-Retention-Budget-Seconds"] = "60",
+            ["X-TagEkyc-Plaintext-Sha256"] = new string('a', 64),
+            [CaptureRuntimeCrt1RequestParser.CredentialIdHeader] = credential.ToString("N"),
+            [CaptureRuntimeCrt1RequestParser.CredentialGenerationHeader] = "1",
+            [CaptureRuntimeCrt1RequestParser.TimestampHeader] = CaptureRuntimeWireCodec.Timestamp(now),
+            [CaptureRuntimeCrt1RequestParser.NonceHeader] = CaptureRuntimeWireCodec.Base64Url(nonce),
+            [CaptureRuntimeCrt1RequestParser.SignatureHeader] = CaptureRuntimeWireCodec.Base64Url(signature),
+        };
+        foreach (var header in headers) context.Request.Headers[header.Key] = header.Value;
+
+        Assert.True(CaptureRuntimeCrt1RequestParser.TryComputeIngressMetadataDigest(context.Request, out var digest));
+        Assert.True(CaptureRuntimeCrt1RequestParser.TryCreate(context.Request, "RawIngress", "image/jpeg", 17,
+            new string('a', 64), "ingress=IngressMetadataSha256=" + digest, out var parsed));
+        Assert.Equal(preimage, parsed!.ExactSignedPreimage.ToArray());
+        Assert.True(signer.VerifyData(parsed.ExactSignedPreimage.Span, parsed.Signature,
+            HashAlgorithmName.SHA256, DSASignatureFormat.IeeeP1363FixedFieldConcatenation));
+    }
+}
 
 // Deliberately NOT PostgresPersistenceCollection: never starts/stops shared Compose.
 [SupportedOSPlatform("windows")]
@@ -366,15 +417,27 @@ public sealed class Tip88C1C6BA2ClientServerAcceptanceTests : IAsyncLifetime
             CorrelationId = "synthetic-correlation", BindingNonceHash = "synthetic-challenge", CreatedAt = DateTimeOffset.UtcNow, ExpiresAt = DateTimeOffset.UtcNow.AddHours(1) });
         await db.SaveChangesAsync();
         await using var connection = new NpgsqlConnection(db.Database.GetConnectionString()); await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        var principal = Guid.Parse("00000000-0000-4000-8000-000000000001");
+        await using (var actor = new NpgsqlCommand(
+            "SELECT pg_catalog.set_config('tagekyc.actor_principal_id',@principal,true)", connection, transaction))
+        {
+            actor.Parameters.AddWithValue("principal", principal.ToString("D"));
+            await actor.ExecuteNonQueryAsync();
+        }
         await using var command = new NpgsqlCommand("""
             SELECT result_code FROM tagekyc.capture_runtime_issue_or_replace_capability(
-            @client,@session,'Issue',NULL,NULL,@op,@cap,@prefix,@digest,7,@fingerprint,now())
-            """, connection);
+            @client,@session,'Issue',NULL,NULL,@op,@cap,@prefix,@digest,7,@fingerprint,now(),
+            @principal,NULL::uuid,NULL::jsonb)
+            """, connection, transaction);
         command.Parameters.AddWithValue("client", LocalDevRuntimePolicySource.BusinessClientId); command.Parameters.AddWithValue("session", session);
         command.Parameters.AddWithValue("op", Guid.NewGuid()); command.Parameters.AddWithValue("cap", capability); command.Parameters.AddWithValue("prefix", capability.ToString("N")[..12]);
         command.Parameters.AddWithValue("digest", CaptureRuntimeVerifierCryptography.ComputeDigest(Enumerable.Repeat((byte)9, 32).ToArray(), CaptureRuntimeVerifierPepperDomain.CapabilityDigest, secret));
         command.Parameters.AddWithValue("fingerprint", SHA256.HashData("synthetic-issue"u8));
-        Assert.Equal("CREATED", await command.ExecuteScalarAsync()); return (session, capability, secret);
+        command.Parameters.AddWithValue("principal", principal);
+        Assert.Equal("CREATED", await command.ExecuteScalarAsync());
+        await transaction.CommitAsync();
+        return (session, capability, secret);
     }
 
     private sealed class RuntimeFixture : IAsyncDisposable

@@ -27,6 +27,7 @@ public sealed class Tip88C1C6BA1ExecutionHttpTests(PostgresPersistenceFixture po
 {
     private static readonly Guid Session = Guid.NewGuid();
     private static readonly Guid Client = Guid.NewGuid();
+    private static readonly Guid Principal = Guid.Parse("60000000-0000-4000-8000-000000000002");
     private static readonly Guid Credential = Guid.Parse("60000000-0000-4000-8000-000000000001");
 
     [Fact]
@@ -46,7 +47,7 @@ public sealed class Tip88C1C6BA1ExecutionHttpTests(PostgresPersistenceFixture po
             using var http = app.GetTestClient();
             var issuePath = $"/api/ekyc/verification-sessions/{Session:N}/capture-capabilities";
             var issueKey = Guid.NewGuid();
-            using var issue = Request(HttpMethod.Post, issuePath, "{\"Action\":\"Issue\"}", issueKey);
+            using var issue = Request(HttpMethod.Post, issuePath, "{\"action\":\"Issue\"}", issueKey);
             using var issued = await http.SendAsync(issue);
             Assert.Equal(HttpStatusCode.Created, issued.StatusCode);
             using var issuedJson = JsonDocument.Parse(await issued.Content.ReadAsStringAsync());
@@ -60,7 +61,7 @@ public sealed class Tip88C1C6BA1ExecutionHttpTests(PostgresPersistenceFixture po
                 WHERE c."CaptureCapabilityId"='{capability}' AND o."OperationKind"='Issue'
                 """).SingleAsync();
             var durableBeforeReplay = await DurableIssue();
-            using var replayIssue = Request(HttpMethod.Post, issuePath, "{\"Action\":\"Issue\"}", issueKey);
+            using var replayIssue = Request(HttpMethod.Post, issuePath, "{\"action\":\"Issue\"}", issueKey);
             using var issueReplay = await http.SendAsync(replayIssue);
             Assert.Equal(HttpStatusCode.Conflict, issueReplay.StatusCode);
             var replayText = await issueReplay.Content.ReadAsStringAsync();
@@ -223,6 +224,7 @@ public sealed class Tip88C1C6BA1ExecutionHttpTests(PostgresPersistenceFixture po
     private sealed class ClientAuth : IApiKeyAuthenticator
     {
         public Task<SessionOperationResult<AuthenticatedClientContext>> AuthenticateAsync(HttpContext context, string? requiredScope = null, CancellationToken cancellationToken = default)
-            => Task.FromResult(SessionOperationResult<AuthenticatedClientContext>.Success(new(Guid.NewGuid(), Client, "synthetic-client", AuthenticatedCallerCategory.BusinessConsumer, new HashSet<string> { "business.session.read" })));
+            => Task.FromResult(SessionOperationResult<AuthenticatedClientContext>.Success(new(Guid.NewGuid(), Client, "synthetic-client",
+                AuthenticatedCallerCategory.BusinessConsumer, new HashSet<string> { "business.session.read" }, PrincipalId: Principal)));
     }
 }

@@ -1,6 +1,8 @@
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql;
 using Xunit.Abstractions;
 
@@ -9,6 +11,8 @@ namespace TagEkyc.IntegrationTests;
 [Collection(PostgresPersistenceCollection.Name)]
 public sealed class Tip88C1C6BA1NormativeSqlProofTests(PostgresPersistenceFixture postgres, ITestOutputHelper output)
 {
+    private const string A1FoundationMigration = "20260908120000_Tip88C1C6BA1Foundation";
+
     [Theory]
     [InlineData("core_identity")]
     [InlineData("runtime")]
@@ -29,6 +33,10 @@ public sealed class Tip88C1C6BA1NormativeSqlProofTests(PostgresPersistenceFixtur
         await using (var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("a1_normative_" + family))
         {
             await using var db = isolated.CreateDbContext();
+            var migrator = db.GetService<IMigrator>();
+            var requiresExactA1Schema = family is "core_identity" or "expiry";
+            if (requiresExactA1Schema)
+                await migrator.MigrateAsync(A1FoundationMigration);
             var connectionString = db.Database.GetConnectionString()!;
             isolatedName = new NpgsqlConnectionStringBuilder(connectionString).Database!;
             await using var connection = new NpgsqlConnection(connectionString);
@@ -53,7 +61,21 @@ public sealed class Tip88C1C6BA1NormativeSqlProofTests(PostgresPersistenceFixtur
                 await using var raceCount = new NpgsqlCommand("SELECT count(*) FROM tagekyc.capture_runtime_management_operations WHERE \"OperationKind\"='CredentialRevoke'", connection);
                 Assert.Equal(1L, (long)(await raceCount.ExecuteScalarAsync())!);
             }
-            else Assert.Equal(before, await Counts(connection));
+            else
+            {
+                Assert.Equal(before, await Counts(connection));
+                if (requiresExactA1Schema)
+                {
+                    // The immutable A1 proof bytes own the A1 schema. Advance the same
+                    // residue-free database to the A3 successor to prove that the
+                    // compatibility boundary is migration, not a disabled A3 guard.
+                    await migrator.MigrateAsync();
+                    Assert.Equal(before, await Counts(connection));
+                    Assert.Equal(
+                        db.Database.GetMigrations().Last(),
+                        (await db.Database.GetAppliedMigrationsAsync()).Last());
+                }
+            }
         }
         await using var source = postgres.CreateDbContext();
         Assert.False(await source.Database.SqlQueryRaw<bool>(

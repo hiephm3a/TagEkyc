@@ -64,9 +64,13 @@ public sealed class Tip88C1C6BA1StartupCompositionTests(PostgresPersistenceFixtu
                   "ActivatedAtUtc"=now(),"ActivatedByCredentialId"='feffffff-ffff-4fff-8fff-ffffffffffff' WHERE "Profile"='Managed'
                 """);
             now = DateTimeOffset.UtcNow;
-            await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(reader, peppers).SelectAsync(now, default));
-            await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(reader, peppers, new Ready()).SelectAsync(now, default));
-            selected = await new CaptureRuntimeStartup(reader, peppers, new Ready(), new Admission()).SelectAsync(now, default);
+            var evidence = new Evidence();
+            await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
+                reader, peppers, activationEvidence: evidence).SelectAsync(now, default));
+            await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
+                reader, peppers, new Ready(), activationEvidence: evidence).SelectAsync(now, default));
+            selected = await new CaptureRuntimeStartup(reader, peppers, new Ready(), new Admission(), evidence)
+                .SelectAsync(now, default);
             Assert.Equal(CaptureRuntimeRouteState.Activated, selected.State);
             // Independently invalidate a startup dependency without broadening privilege.
             await admin.Database.ExecuteSqlRawAsync($"REVOKE tagekyc_capture_runtime_authenticator FROM {names[1]}");
@@ -103,6 +107,14 @@ public sealed class Tip88C1C6BA1StartupCompositionTests(PostgresPersistenceFixtu
     {
         public ValueTask<CaptureRuntimeRawIngressAdmissionResult> AdmitAsync(CaptureRuntimeRawIngressAdmissionContext context,
             Stream body, CancellationToken cancellationToken) => throw new InvalidOperationException("Startup cannot admit body.");
+    }
+    private sealed class Evidence : ICaptureRuntimeActivationEvidenceSealProvider
+    {
+        private const string A = "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        private const string B = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
+        private const string C = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
+        private const string D = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD";
+        public CaptureRuntimeActivationEvidenceSeal Current { get; } = new(1, 1, A, B, 0, A, B, 0, C, D);
     }
     private sealed class Peppers : ICaptureRuntimeVerifierPepperSource
     {
