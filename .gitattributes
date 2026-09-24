@@ -5,3 +5,6 @@ src/TagEkyc.Infrastructure/Persistence/Migrations/20260819180000_Tip88C1C4Packag
 src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs text eol=lf
 src/TagEkyc.Infrastructure/Persistence/Migrations/20260823120000_Tip88C1C5ManagedRecipientEnrollment.cs text eol=lf
 src/TagEkyc.Infrastructure/Persistence/Migrations/20260823120000_Tip88C1C5ManagedRecipientEnrollment.Designer.cs text eol=lf
+
+# Evidence TRX runs are byte-exact artifacts hashed by review manifests.
+*.trx binary
