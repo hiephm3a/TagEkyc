@@ -12,7 +12,7 @@ namespace TagEkyc.Application.CaptureRuntime;
 
 public sealed class CaptureRuntimeExecutionApplicationService(
     ICaptureRuntimeExecutionGateway gateway, ICaptureRuntimeVerifierPepperSource peppers,
-    ICaptureRuntimeAppendGateway append)
+    ICaptureRuntimeAppendGateway append, IRawSourceRetentionProfileProvider? retentionProfiles = null)
     : ICaptureRuntimeExecutionService
 {
     public async Task<SessionOperationResult<CaptureCapabilityResponse>> IssueOrReplaceCapabilityAsync(
@@ -21,11 +21,23 @@ public sealed class CaptureRuntimeExecutionApplicationService(
         CancellationToken cancellationToken = default)
     {
         if (verificationSessionId == Guid.Empty || idempotencyKey == Guid.Empty || exactRequestBody.IsEmpty ||
-            !(request.Action == "Issue" && request.CurrentCapabilityId is null && request.ExpectedRevision is null ||
+            !(request.Action == "Issue" && request.CurrentCapabilityId is null && request.ExpectedRevision is null &&
+              request.ConsentBindingId != Guid.Empty ||
               request.Action == "Replace" && request.CurrentCapabilityId is { } id && id != Guid.Empty &&
-              request.ExpectedRevision > 0))
+              request.ExpectedRevision > 0 && request.ConsentBindingId is null))
             return Invalid<CaptureCapabilityResponse>();
-        if (actor.ClientApplicationId == Guid.Empty) return Denied<CaptureCapabilityResponse>();
+        if (actor.CallerCategory != AuthenticatedCallerCategory.BusinessConsumer ||
+            actor.ClientApplicationId == Guid.Empty || actor.PrincipalId == Guid.Empty)
+            return Denied<CaptureCapabilityResponse>();
+        RawSourceRetentionProfile? retentionProfile = null;
+        if (request.ConsentBindingId is not null)
+        {
+            if (retentionProfiles is null || !retentionProfiles.IsReady ||
+                retentionProfiles.Find(actor.ClientApplicationId) is not { } profile ||
+                profile.ClientApplicationId != actor.ClientApplicationId || !profile.IsValid())
+                return NotReady<CaptureCapabilityResponse>();
+            retentionProfile = profile.Copy();
+        }
         var secret = RandomNumberGenerator.GetBytes(32);
         byte[]? digest = null;
         try
@@ -42,13 +54,17 @@ public sealed class CaptureRuntimeExecutionApplicationService(
             CaptureRuntimeVerifierCryptography.EncodeCanonicalSecret(secret, encoded);
             var prefix = new string(encoded, 0, 12);
             Array.Clear(encoded);
+            var actorPartition = new byte[32];
+            actor.ClientApplicationId.TryWriteBytes(actorPartition.AsSpan(0, 16), bigEndian: true, out _);
+            actor.PrincipalId.TryWriteBytes(actorPartition.AsSpan(16, 16), bigEndian: true, out _);
             var fingerprint = CaptureRuntimeHttpFingerprint.Compute(
                 request.Action == "Issue" ? "R20a" : "R20b",
                 $"/api/ekyc/verification-sessions/{verificationSessionId:N}/capture-capabilities",
-                exactRequestBody, idempotencyKey, actor.ClientApplicationId.ToByteArray(bigEndian: true));
+                exactRequestBody, idempotencyKey, actorPartition);
             var result = await gateway.IssueOrReplaceCapabilityAsync(new(
                 actor.ClientApplicationId, verificationSessionId, request, idempotencyKey,
-                Guid.NewGuid(), prefix, digest, version, fingerprint, DateTimeOffset.UtcNow), cancellationToken);
+                Guid.NewGuid(), prefix, digest, version, fingerprint, DateTimeOffset.UtcNow,
+                actor.PrincipalId, retentionProfile), cancellationToken);
             if (result.ResultCode == "CREATED" && result.SecretAvailable &&
                 result.CapabilityId is { } capability && capability != Guid.Empty &&
                 result.ExpiresAtUtc is { } expiry && result.State == "ActiveUnbound" && result.Revision > 0)

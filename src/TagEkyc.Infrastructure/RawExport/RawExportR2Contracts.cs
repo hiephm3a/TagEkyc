@@ -1,5 +1,35 @@
 namespace TagEkyc.Infrastructure.RawExport;
 
+internal enum RawExportR2InputCompletionKind
+{
+    NotCompleted,
+    CompleteMatch,
+    ActualLimitExceeded,
+    CleanShortEof,
+    ContentCommitmentMismatch,
+    TransportInterrupted,
+    CommitmentProviderUnavailable,
+    EncryptionProviderFailure,
+}
+
+internal readonly record struct RawExportR2InputObservation(
+    RawExportR2InputCompletionKind Kind, bool TerminalIntentPersisted);
+
+internal enum RawExportR2TerminalIntentOutcome
+{
+    Recorded,
+    ExistingMatch,
+    StateConflict,
+    NotFound,
+}
+
+internal interface IRawExportR2TerminalIntentRecorder
+{
+    Task<RawExportR2TerminalIntentOutcome> RecordAsync(
+        Guid sourceArtifactId, Guid attemptId, long expectedRevision, long expectedFence,
+        string operationalDisposition, string terminalOutcomeCode, CancellationToken cancellationToken);
+}
+
 internal enum RawExportR2WriterDisposition
 {
     PreCustodyRejected,
@@ -35,6 +65,8 @@ internal sealed record RawExportR2WriterResult(
     long? StateRevision,
     RawExportR2WriterDisposition Disposition)
 {
+    internal RawExportR2InputObservation InputObservation { get; init; }
+
     public override string ToString() =>
         $"RawExportR2WriterResult:{Disposition}:Attempt={AttemptId:N}:<redacted>";
 }
@@ -100,7 +132,12 @@ internal sealed record RawExportR2EncryptionContext(
     byte[] ContentCommitment,
     DateTimeOffset OwnershipLeaseExpiresAtUtc,
     DateTimeOffset EffectivePlaintextRetentionExpiresAtUtc,
-    DateTimeOffset ReservationExpiresAtUtc);
+    DateTimeOffset ReservationExpiresAtUtc)
+{
+    // NULL means an explicitly verified pre-A3 reader, not a fabricated
+    // LegacyExport snapshot. Modern readers must provide the persisted tag.
+    internal string? AuthorityKind { get; init; }
+}
 
 internal sealed record RawExportR2VerificationContext(
     Guid AttemptId,

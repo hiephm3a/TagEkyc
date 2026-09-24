@@ -12,4 +12,16 @@
     <ProjectReference Include="..\TagEkyc.Infrastructure\TagEkyc.Infrastructure.csproj" />
   </ItemGroup>
 
+  <PropertyGroup>
+    <CaptureRuntimeActivationEvidenceGeneratedFile>$(MSBuildProjectExtensionsPath)$(Configuration)\$(TargetFramework)\Generated\CaptureRuntimeActivationEvidenceSeal.Generated.cs</CaptureRuntimeActivationEvidenceGeneratedFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="$(CaptureRuntimeActivationEvidenceGeneratedFile)" Visible="false" />
+  </ItemGroup>
+
+  <Target Name="GenerateCaptureRuntimeActivationEvidenceSeal" BeforeTargets="CoreCompile">
+    <Exec Command="pwsh -NoProfile -File &quot;$(MSBuildProjectDirectory)\..\..\tools\Generate-CaptureRuntimeActivationEvidenceSeal.ps1&quot; -RepoRoot &quot;$(MSBuildProjectDirectory)\..\..&quot; -OutputPath &quot;$(CaptureRuntimeActivationEvidenceGeneratedFile)&quot;" />
+  </Target>
+
 </Project>

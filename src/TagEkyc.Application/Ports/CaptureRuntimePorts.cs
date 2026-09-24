@@ -1,4 +1,5 @@
 using TagEkyc.Application.VerificationSessions;
+using TagEkyc.Application.CaptureRuntime;
 using TagEkyc.Contracts.CaptureAgent;
 using TagEkyc.Contracts.CaptureRuntime;
 using TagEkyc.Contracts.TrustedAdapter;
@@ -82,6 +83,19 @@ public interface ICaptureRuntimeRawIngressAdmission
         CancellationToken cancellationToken);
 }
 
+// Host-owned lifecycle only. Infrastructure uses this token for durable work
+// that must outlive a disconnected request but must stop with the process.
+public interface ICaptureRuntimeHostLifetime
+{
+    CancellationToken Stopping { get; }
+}
+
+// Activated-host continuation entry point. It carries no request/body state.
+public interface ICaptureRuntimeA3Worker
+{
+    Task RunAsync(CancellationToken stoppingToken);
+}
+
 public sealed record CaptureRuntimeRawIngressAdmissionContext(
     Guid CaptureAgentId, Guid DeviceInstallationId, Guid CredentialId,
     long CredentialGeneration, Guid RolePolicyId, long RolePolicyRevision,
@@ -95,8 +109,27 @@ public sealed record CaptureRuntimeRawIngressAdmissionContext(
 
 public enum CaptureRuntimeRawIngressOutcome
 {
-    Available, AlreadyAvailable, EvaluationInProgress, BindingInvalid,
-    CapacityUnavailable, TransportProtocolInvalid
+    BindingInvalid,
+    NotFoundOrNotAllowed,
+    TransportProtocolInvalid,
+    CapabilityUnavailable,
+    ArtifactSizeLimitExceeded,
+    PlaintextRetentionInvalid,
+    CapacityUnavailable,
+    IdempotencyBusy,
+    EvaluationInProgress,
+    ClaimTokenInvalid,
+    ClaimRestartRequired,
+    SourceRetentionNotAuthorized,
+    HistoricCommitmentKeyUnavailable,
+    FingerprintConflict,
+    ReservationBusy,
+    AlreadyAvailable,
+    TemporarilyUnavailable,
+    ContentCommitmentMismatch,
+    RecaptureRequired,
+    ResumePending,
+    Available
 }
 
 public sealed record CaptureRuntimeRawIngressAdmissionResult(
@@ -205,7 +238,8 @@ public interface ICaptureRuntimeControlGateway
 public sealed record CaptureCapabilityPersistenceRequest(
     Guid ClientApplicationId, Guid VerificationSessionId, CaptureCapabilityRequest Request,
     Guid IdempotencyKey, Guid NewCapabilityId, string LookupPrefix, byte[] Digest,
-    int PepperVersion, byte[] RequestFingerprint, DateTimeOffset Now);
+    int PepperVersion, byte[] RequestFingerprint, DateTimeOffset Now,
+    Guid PrincipalId, RawSourceRetentionProfile? RetentionProfile = null);
 public sealed record CaptureCapabilityPersistenceResult(
     string ResultCode, Guid? CapabilityId, bool SecretAvailable, DateTimeOffset? ExpiresAtUtc,
     string? State, long? Revision);

@@ -250,6 +250,11 @@ public sealed class CaptureCapabilitiesRowConfiguration : IEntityTypeConfigurati
     public void Configure(EntityTypeBuilder<CaptureCapabilitiesRow> builder)
     {
         builder.ToTable("capture_capabilities", "tagekyc", table => table.ExcludeFromMigrations());
+        builder.Property(e => e.AuthorityMode).HasColumnType("varchar(24)").HasDefaultValue("HistoricalNonRetained").IsRequired();
+        builder.Property(e => e.PrincipalId).HasColumnType("uuid");
+        builder.Property(e => e.RetentionAuthorityId).HasColumnType("uuid");
+        builder.Property(e => e.RetentionAuthorityRevision).HasColumnType("bigint");
+        builder.Property(e => e.ConsentBindingId).HasColumnType("uuid");
         builder.HasKey(entity => entity.CaptureCapabilityId);
         builder.Property(entity => entity.CaptureCapabilityId).HasColumnName("CaptureCapabilityId").HasColumnType("uuid").IsRequired();
         builder.Property(entity => entity.VerificationSessionId).HasColumnName("VerificationSessionId").HasColumnType("uuid").IsRequired();
@@ -277,6 +282,11 @@ public sealed class CaptureExecutionBindingsRowConfiguration : IEntityTypeConfig
     public void Configure(EntityTypeBuilder<CaptureExecutionBindingsRow> builder)
     {
         builder.ToTable("capture_execution_bindings", "tagekyc", table => table.ExcludeFromMigrations());
+        builder.Property(e => e.AuthorityMode).HasColumnType("varchar(24)").HasDefaultValue("HistoricalNonRetained").IsRequired();
+        builder.Property(e => e.PrincipalId).HasColumnType("uuid");
+        builder.Property(e => e.RetentionAuthorityId).HasColumnType("uuid");
+        builder.Property(e => e.RetentionAuthorityRevision).HasColumnType("bigint");
+        builder.Property(e => e.ConsentBindingId).HasColumnType("uuid");
         builder.HasKey(entity => entity.CaptureExecutionBindingId);
         builder.Property(entity => entity.CaptureExecutionBindingId).HasColumnName("CaptureExecutionBindingId").HasColumnType("uuid").IsRequired();
         builder.Property(entity => entity.VerificationSessionId).HasColumnName("VerificationSessionId").HasColumnType("uuid").IsRequired();

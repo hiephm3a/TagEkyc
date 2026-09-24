@@ -28,16 +28,50 @@ public static partial class CaptureRuntimeHttpRoutes
             context.Request.Headers.Keys.Any(x => x.StartsWith("X-TagEkyc-Capture-Runtime-", StringComparison.OrdinalIgnoreCase))) return Denied(context);
         var auth = await context.RequestServices.GetRequiredService<IApiKeyAuthenticator>().AuthenticateAsync(context, cancellationToken: ct);
         if (!auth.IsSuccess) return Respond(context, auth);
-        if (auth.Value!.CallerCategory != AuthenticatedCallerCategory.BusinessConsumer) return Denied(context);
+        if (auth.Value!.CallerCategory != AuthenticatedCallerCategory.BusinessConsumer ||
+            auth.Value.ClientApplicationId == Guid.Empty || auth.Value.PrincipalId == Guid.Empty) return Denied(context);
         if (!TryRouteId(context, "sessionId", out var session) || !TryIdempotency(context.Request, out var key)) return Invalid(context);
-        using var body = await ReadBodyAsync<CaptureCapabilityRequest>(context.Request, 16384, ct);
+        using var body = await ReadCapabilityBodyAsync(context.Request, ct);
         if (body is null) return Invalid(context);
-        // Issue's exact grammar excludes even explicitly-null Replace fields.
-        using var json = JsonDocument.Parse(body.Bytes);
-        var count = json.RootElement.EnumerateObject().Count();
-        if (!(body.Value.Action == "Issue" && count == 1 || body.Value.Action == "Replace" && count == 3)) return Invalid(context);
         return Respond(context, await context.RequestServices.GetRequiredService<ICaptureRuntimeExecutionService>()
             .IssueOrReplaceCapabilityAsync(auth.Value, session, body.Value, key, body.Bytes, ct), 201);
+    }
+
+    // CP11's three closed camelCase sets are wire grammar, not inferred from
+    // the PascalCase CLR record or A1's generic required-member convention.
+    private static async Task<Body<CaptureCapabilityRequest>?> ReadCapabilityBodyAsync(HttpRequest request, CancellationToken ct)
+    {
+        if (request.QueryString.HasValue || request.ContentType != "application/json" ||
+            request.ContentLength is not > 0 or > 16384 ||
+            request.Headers.ContainsKey("Transfer-Encoding") || request.Headers.ContainsKey("Content-Encoding")) return null;
+        var bytes = new byte[(int)request.ContentLength.Value];
+        var owned = false;
+        try
+        {
+            await request.Body.ReadExactlyAsync(bytes, ct);
+            using var document = JsonDocument.Parse(bytes, new JsonDocumentOptions { MaxDepth = 32 });
+            var root = document.RootElement;
+            if (root.ValueKind != JsonValueKind.Object || !MembersValid(root) ||
+                !root.TryGetProperty("action", out var action) || action.ValueKind != JsonValueKind.String) return null;
+            var count = root.EnumerateObject().Count();
+            CaptureCapabilityRequest value;
+            if (action.GetString() == "Issue" && count == 1) value = new("Issue");
+            else if (action.GetString() == "Issue" && count == 2 &&
+                root.TryGetProperty("consentBindingId", out var binding) && binding.ValueKind == JsonValueKind.String &&
+                binding.Deserialize<Guid>(ClosedJson) is var bindingId && bindingId != Guid.Empty)
+                value = new("Issue", ConsentBindingId: bindingId);
+            else if (action.GetString() == "Replace" && count == 3 &&
+                root.TryGetProperty("currentCapabilityId", out var current) && current.ValueKind == JsonValueKind.String &&
+                current.Deserialize<Guid>(ClosedJson) is var currentId && currentId != Guid.Empty &&
+                root.TryGetProperty("expectedRevision", out var revision) && revision.TryGetInt64(out var revisionValue) && revisionValue > 0)
+                value = new("Replace", currentId, revisionValue);
+            else return null;
+            owned = true;
+            return new(value, bytes);
+        }
+        catch (Exception error) when (error is JsonException or EndOfStreamException or FormatException or InvalidOperationException)
+        { return null; }
+        finally { if (!owned) CryptographicOperations.ZeroMemory(bytes); }
     }
 
     private static async Task<IResult> BindRuntimeExecutionAsync(HttpContext context, CancellationToken ct)

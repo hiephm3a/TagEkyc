@@ -1,4 +1,5 @@
 using TagEkyc.Application.Ports;
+using TagEkyc.Application.RawExport;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Contracts.CaptureAgent;
 using TagEkyc.Contracts.CaptureRuntime;
@@ -13,7 +14,9 @@ public sealed class CaptureRuntimeAppendApplicationService(
     ILocalDevClientPolicyProvider policies,
     ICaptureArtifactRepository artifacts,
     IAuthorityNeutralVerificationEvidencePlanner planner,
-    IAuthorityNeutralVerificationEvidenceWriter writer) : ICaptureRuntimeAppendGateway
+    IAuthorityNeutralVerificationEvidenceWriter writer,
+    IRawExportCaptureAcceptanceWriter? rawAcceptances = null,
+    IRawExportCaptureAcceptancePolicyProvider? rawAcceptancePolicies = null) : ICaptureRuntimeAppendGateway
 {
     public Task<SessionOperationResult<CaptureArtifactSubmissionResponseDto>> AppendCaptureArtifactAsync(
         AuthenticatedCaptureRuntimeContext actor, Guid bindingId,
@@ -43,36 +46,54 @@ public sealed class CaptureRuntimeAppendApplicationService(
         }, cancellationToken);
     }
 
-    public Task<SessionOperationResult<EvidenceResultSubmissionResponseDto>> AppendEvidenceResultAsync(
+    public async Task<SessionOperationResult<EvidenceResultSubmissionResponseDto>> AppendEvidenceResultAsync(
         AuthenticatedCaptureRuntimeContext actor, Guid verificationSessionId,
         CaptureRuntimeEvidenceResultRequest request, Guid idempotencyKey,
         CancellationToken cancellationToken)
     {
         if (verificationSessionId == Guid.Empty || request.BindingId == Guid.Empty ||
             idempotencyKey == Guid.Empty || request.Payload is null)
-            return Task.FromResult(Invalid<EvidenceResultSubmissionResponseDto>());
-        return transaction.ExecuteAsync(async ct =>
+            return Invalid<EvidenceResultSubmissionResponseDto>();
+        try
         {
-            var now = DateTimeOffset.UtcNow;
-            var validated = await authority.ValidateEvidenceAsync(actor, request.BindingId, now, ct);
-            if (!validated.IsSuccess) return Propagate<EvidenceResultSubmissionResponseDto>(validated.Error!);
-            var verified = validated.Value!;
-            // Equality is checked before *any* session, policy, artifact, planner or writer access.
-            if (!ValidAuthority(verified, request.BindingId) ||
-                verified.VerificationSessionId != verificationSessionId)
-                return Denied<EvidenceResultSubmissionResponseDto>();
-            var session = await sessions.GetAsync(verified.VerificationSessionId, ct);
-            if (session is null) return Denied<EvidenceResultSubmissionResponseDto>();
-            var policy = await policies.GetPolicyAsync(session.ClientApplicationId, ct);
-            if (policy is null) return NotReady<EvidenceResultSubmissionResponseDto>();
-            var principal = Principal(actor, verified);
-            var sessionArtifacts = await artifacts.ListBySessionAsync(session.Id, ct);
-            var plan = await planner.PlanEvidenceResultAsync(principal, session, policy, sessionArtifacts,
-                AuthorityNeutralPayloadAdapters.MapRuntimeEvidencePayload(request.Payload, principal),
-                idempotencyKey.ToString("N"), now, ct);
-            if (!plan.IsSuccess) return Propagate<EvidenceResultSubmissionResponseDto>(plan.Error!);
-            return await writer.ApplyEvidenceResultAsync(principal, plan.Value!, ct);
-        }, cancellationToken);
+            return await transaction.ExecuteAsync(async ct =>
+            {
+                var now = DateTimeOffset.UtcNow;
+                var validated = await authority.ValidateEvidenceAsync(actor, request.BindingId, now, ct);
+                if (!validated.IsSuccess) return Propagate<EvidenceResultSubmissionResponseDto>(validated.Error!);
+                var verified = validated.Value!;
+                // Equality is checked before *any* session, policy, artifact, planner or writer access.
+                if (!ValidAuthority(verified, request.BindingId) ||
+                    verified.VerificationSessionId != verificationSessionId)
+                    return Denied<EvidenceResultSubmissionResponseDto>();
+                var session = await sessions.GetAsync(verified.VerificationSessionId, ct);
+                if (session is null) return Denied<EvidenceResultSubmissionResponseDto>();
+                var policy = await policies.GetPolicyAsync(session.ClientApplicationId, ct);
+                if (policy is null) return NotReady<EvidenceResultSubmissionResponseDto>();
+                var principal = Principal(actor, verified);
+                var sessionArtifacts = await artifacts.ListBySessionAsync(session.Id, ct);
+                var plan = await planner.PlanEvidenceResultAsync(principal, session, policy, sessionArtifacts,
+                    AuthorityNeutralPayloadAdapters.MapRuntimeEvidencePayload(request.Payload, principal),
+                    idempotencyKey.ToString("N"), now, ct);
+                if (!plan.IsSuccess) return Propagate<EvidenceResultSubmissionResponseDto>(plan.Error!);
+                var applied = await writer.ApplyEvidenceResultAsync(principal, plan.Value!, ct);
+                if (!applied.IsSuccess || rawAcceptances is null) return applied;
+                if (!Guid.TryParseExact(applied.Value!.EvidenceResultId, "N", out var evidenceResultId))
+                    return NotReady<EvidenceResultSubmissionResponseDto>();
+                var configured = rawAcceptancePolicies?.Find(session.ClientApplicationId);
+                if (configured is not null && configured.ClientApplicationId != session.ClientApplicationId)
+                    return NotReady<EvidenceResultSubmissionResponseDto>();
+                var acceptance = await rawAcceptances.BindAcceptedEvidenceAsync(request.BindingId,
+                    session.Id, evidenceResultId, configured, ct);
+                return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Success(
+                    applied.Value with { RawCaptureAcceptance = acceptance });
+            }, cancellationToken);
+        }
+        catch (RawExportCaptureAcceptanceConflictException)
+        {
+            return SessionOperationResult<EvidenceResultSubmissionResponseDto>.Failure(
+                "CONFLICT", "The request conflicts with current state.", 409);
+        }
     }
 
     private static bool ValidAuthority(VerifiedRuntimeAppendAuthority row, Guid bindingId) =>

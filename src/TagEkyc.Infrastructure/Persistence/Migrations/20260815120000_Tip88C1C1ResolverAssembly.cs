@@ -12,6 +12,42 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "raw_export_assembly_source_integrity_failures",
+                schema: "tagekyc",
+                columns: table => new
+                {
+                    FailureId = table.Column<Guid>(type: "uuid", nullable: false),
+                    JobId = table.Column<Guid>(type: "uuid", nullable: false),
+                    Ordinal = table.Column<int>(type: "integer", nullable: false),
+                    JobSourceBindingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ObjectCustodyId = table.Column<Guid>(type: "uuid", nullable: false),
+                    FailureKind = table.Column<string>(type: "character varying(64)", maxLength: 64, nullable: false),
+                    EvidenceDigest = table.Column<byte[]>(type: "bytea", nullable: false),
+                    ObservedAtUtc = table.Column<DateTimeOffset>(type: "timestamp with time zone", nullable: false),
+                    SchemaVersion = table.Column<int>(type: "integer", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("pk_raw_export_assembly_source_integrity_failure", x => x.FailureId);
+                    table.UniqueConstraint("uq_raw_export_assembly_source_integrity_failure", x => new { x.JobId, x.Ordinal, x.FailureKind });
+                    table.CheckConstraint("ck_raw_export_assembly_source_integrity_failure_shape", "\"Ordinal\" >= 0 AND \"FailureKind\" IN ('DeterministicCiphertextInvalid','HistoricCommitmentMismatch') AND octet_length(\"EvidenceDigest\") = 32 AND \"SchemaVersion\" = 1");
+                    table.ForeignKey(
+                        name: "fk_raw_export_assembly_source_integrity_failure_job",
+                        column: x => x.JobId,
+                        principalSchema: "tagekyc",
+                        principalTable: "raw_export_job_identities",
+                        principalColumn: "JobId",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "fk_raw_export_assembly_source_integrity_failure_object",
+                        column: x => x.ObjectCustodyId,
+                        principalSchema: "tagekyc",
+                        principalTable: "raw_export_provisional_objects",
+                        principalColumn: "ObjectCustodyId",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "raw_export_assembly_preparation_dispositions",
                 schema: "tagekyc",
                 columns: table => new
@@ -351,11 +387,13 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                   tagekyc_raw_export_assembly_sealer;
 
                 ALTER TABLE tagekyc.raw_export_job_source_bindings OWNER TO tagekyc_raw_export_deployer;
+                ALTER TABLE tagekyc.raw_export_assembly_source_integrity_failures OWNER TO tagekyc_raw_export_deployer;
                 ALTER TABLE tagekyc.raw_export_assembly_preparation_dispositions OWNER TO tagekyc_raw_export_deployer;
                 ALTER TABLE tagekyc.raw_export_assembly_identities OWNER TO tagekyc_raw_export_deployer;
                 ALTER TABLE tagekyc.raw_export_assembly_items OWNER TO tagekyc_raw_export_deployer;
                 REVOKE ALL ON TABLE
                   tagekyc.raw_export_job_source_bindings,
+                  tagekyc.raw_export_assembly_source_integrity_failures,
                   tagekyc.raw_export_assembly_preparation_dispositions,
                   tagekyc.raw_export_assembly_identities,
                   tagekyc.raw_export_assembly_items
@@ -438,7 +476,7 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                   now_ timestamptz; binding_id uuid; binding_hash text; binding_digest bytea;
                   binding_preimage bytea; field_bytes bytea; field_ text;
                   existing tagekyc.raw_export_job_source_bindings%ROWTYPE; count_ integer:=0;
-                  created_count integer:=0; inserted_count integer:=0;
+                  created_count integer:=0; inserted_count integer:=0; candidate_count integer:=0;
                 BEGIN
                   IF tagekyc.raw_export_current_actor() IS DISTINCT FROM p_actor_principal_id THEN
                     RETURN QUERY SELECT 'NotFoundOrNotAllowed'::text,0; RETURN;
@@ -458,6 +496,15 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                   FOR class_row IN
                     SELECT * FROM tagekyc.raw_export_job_classes WHERE "JobId"=p_job_id ORDER BY "Ordinal"
                   LOOP
+                    SELECT pg_catalog.count(*)::integer INTO candidate_count
+                    FROM tagekyc.raw_export_session_capture_selections s
+                    JOIN tagekyc.raw_export_capture_acceptance_events a0 ON a0."CaptureAcceptanceId"=s."CaptureAcceptanceId"
+                    JOIN tagekyc.raw_export_source_ingress_claims c ON c."VerificationSessionId"=s."VerificationSessionId" AND c."CaptureAcceptanceId"=s."CaptureAcceptanceId" AND c."CaptureArtifactId"=a0."CaptureArtifactId" AND c."CaptureRevision"=a0."CaptureRevision" AND c."RawClass"=s."RawClass"
+                    WHERE s."VerificationSessionId"=job."VerificationSessionId" AND s."RawClass"=class_row."RawClass"
+                      AND a0."VerificationSessionId"=job."VerificationSessionId" AND a0."RawClass"=class_row."RawClass";
+                    IF candidate_count=0 THEN RETURN QUERY SELECT 'SelectionNone'::text,0; RETURN;
+                    ELSIF candidate_count>1 THEN RETURN QUERY SELECT 'SelectionAmbiguous'::text,0; RETURN;
+                    END IF;
                     SELECT s."CaptureAcceptanceId",r."ConsentPolicyId",r."ConsentPolicyVersion"
                     INTO source_row
                     FROM tagekyc.raw_export_session_capture_selections s
@@ -487,6 +534,15 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                   FOR class_row IN
                     SELECT * FROM tagekyc.raw_export_job_classes WHERE "JobId"=p_job_id ORDER BY "Ordinal"
                   LOOP
+                    SELECT pg_catalog.count(*)::integer INTO candidate_count
+                    FROM tagekyc.raw_export_session_capture_selections s
+                    JOIN tagekyc.raw_export_capture_acceptance_events a0 ON a0."CaptureAcceptanceId"=s."CaptureAcceptanceId"
+                    JOIN tagekyc.raw_export_source_ingress_claims c ON c."VerificationSessionId"=s."VerificationSessionId" AND c."CaptureAcceptanceId"=s."CaptureAcceptanceId" AND c."CaptureArtifactId"=a0."CaptureArtifactId" AND c."CaptureRevision"=a0."CaptureRevision" AND c."RawClass"=s."RawClass"
+                    WHERE s."VerificationSessionId"=job."VerificationSessionId" AND s."RawClass"=class_row."RawClass"
+                      AND a0."VerificationSessionId"=job."VerificationSessionId" AND a0."RawClass"=class_row."RawClass";
+                    IF candidate_count=0 THEN RETURN QUERY SELECT 'SelectionNone'::text,0; RETURN;
+                    ELSIF candidate_count>1 THEN RETURN QUERY SELECT 'SelectionAmbiguous'::text,0; RETURN;
+                    END IF;
                     SELECT s."SessionCaptureSelectionId",s."CaptureAcceptanceId",a0."CaptureArtifactId",a0."CaptureRevision",
                            r."SourceArtifactId",p."SourcePublicationId",p."PublicationRevision",p."AttemptId",ea."EncryptionAttemptRevision",ea."Fence",
                            p."AttemptKeyReservationId",p."ObjectCustodyId",o."StateRevision",
@@ -565,13 +621,13 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     GET DIAGNOSTICS inserted_count=ROW_COUNT;
                     created_count:=created_count+inserted_count;
                     SELECT * INTO existing FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id AND "Ordinal"=class_row."Ordinal";
-                    IF existing."BindingFingerprint" IS DISTINCT FROM binding_digest THEN RETURN QUERY SELECT 'BindingConflict'::text,count_; RETURN; END IF;
+                    IF existing."BindingFingerprint" IS DISTINCT FROM binding_digest THEN RETURN QUERY SELECT 'SourceBindingInvalid'::text,count_; RETURN; END IF;
                     count_:=count_+1;
                   END LOOP;
-                  IF count_=0 THEN RETURN QUERY SELECT 'SourceUnavailable'::text,0;
+                  IF count_=0 THEN RETURN QUERY SELECT 'SelectionNone'::text,0;
                   ELSIF created_count=count_ THEN RETURN QUERY SELECT 'Frozen'::text,count_;
                   ELSIF created_count=0 THEN RETURN QUERY SELECT 'ExistingMatch'::text,count_;
-                  ELSE RETURN QUERY SELECT 'BindingConflict'::text,count_;
+                  ELSE RETURN QUERY SELECT 'SourceBindingInvalid'::text,count_;
                   END IF;
                 END $$;
 
@@ -616,6 +672,40 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     AND tagekyc.raw_export_current_actor()=p_actor_principal_id
                     AND o."State"='VerifiedCompleted' AND k."PreparationDisposition"='Active';
                 $$;
+
+                CREATE FUNCTION tagekyc.raw_export_record_assembly_source_integrity_failure(
+                  p_job_id uuid,p_ordinal integer,p_attempt_id uuid,p_expected_revision bigint,p_expected_fence bigint,
+                  p_actor_principal_id uuid,p_failure_kind text)
+                RETURNS TABLE("Outcome" text,"EvidenceDigest" bytea)
+                LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $$
+                DECLARE b tagekyc.raw_export_job_source_bindings%ROWTYPE; head tagekyc.raw_export_job_operational_heads%ROWTYPE;
+                  evidence bytea; existing bytea; now_ timestamptz:=pg_catalog.clock_timestamp(); failure_id uuid;
+                BEGIN
+                  IF tagekyc.raw_export_current_actor() IS DISTINCT FROM p_actor_principal_id
+                     OR p_ordinal<0 OR p_failure_kind NOT IN ('DeterministicCiphertextInvalid','HistoricCommitmentMismatch') THEN
+                    RETURN QUERY SELECT 'NotFoundOrNotAllowed'::text,NULL::bytea; RETURN;
+                  END IF;
+                  SELECT * INTO head FROM tagekyc.raw_export_job_operational_heads WHERE "JobId"=p_job_id FOR SHARE;
+                  IF NOT FOUND OR head."CurrentState"<>'Assembling' OR head."CurrentAttemptId" IS DISTINCT FROM p_attempt_id
+                     OR head."Revision"<>p_expected_revision OR head."FencingToken"<>p_expected_fence THEN
+                    RETURN QUERY SELECT 'LeaseLost'::text,NULL::bytea; RETURN;
+                  END IF;
+                  SELECT * INTO b FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id AND "Ordinal"=p_ordinal FOR SHARE;
+                  IF NOT FOUND THEN RETURN QUERY SELECT 'NotFoundOrNotAllowed'::text,NULL::bytea; RETURN; END IF;
+                  evidence:=tagekyc_extensions.digest(
+                    pg_catalog.convert_to('tip-88c1-c1-source-integrity-failure-v1','UTF8')||
+                    pg_catalog.uuid_send(b."JobSourceBindingId")||pg_catalog.uuid_send(b."ObjectCustodyId")||
+                    pg_catalog.int4send(p_ordinal)||pg_catalog.convert_to(p_failure_kind,'UTF8')||b."BindingFingerprint",'sha256');
+                  failure_id:=pg_catalog.gen_random_uuid();
+                  INSERT INTO tagekyc.raw_export_assembly_source_integrity_failures(
+                    "FailureId","JobId","Ordinal","JobSourceBindingId","ObjectCustodyId","FailureKind","EvidenceDigest","ObservedAtUtc","SchemaVersion")
+                  VALUES(failure_id,p_job_id,p_ordinal,b."JobSourceBindingId",b."ObjectCustodyId",p_failure_kind,evidence,now_,1)
+                  ON CONFLICT ("JobId","Ordinal","FailureKind") DO NOTHING;
+                  SELECT f."EvidenceDigest" INTO existing FROM tagekyc.raw_export_assembly_source_integrity_failures f
+                    WHERE f."JobId"=p_job_id AND f."Ordinal"=p_ordinal AND f."FailureKind"=p_failure_kind;
+                  IF existing IS DISTINCT FROM evidence THEN RETURN QUERY SELECT 'EvidenceConflict'::text,NULL::bytea; RETURN; END IF;
+                  RETURN QUERY SELECT 'Recorded'::text,evidence;
+                END $$;
 
                 CREATE FUNCTION tagekyc.raw_export_register_assembly_preparing(
                   p_c2_preparation_id uuid,p_assembly_id uuid,p_job_id uuid,p_expected_revision bigint,p_expected_fence bigint,p_assembly_fingerprint bytea,p_preparation_fingerprint bytea)
@@ -712,7 +802,20 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                   IF NOT FOUND OR prep."Disposition"<>'Pending' OR prep."RowRevision"<>p_expected_preparation_revision OR prep."JobId"<>p_job_id OR prep."AttemptId"<>p_attempt_id OR prep."FencingToken"<>p_expected_fence OR prep."AssemblyFingerprint"<>p_assembly_fingerprint THEN RETURN QUERY SELECT 'PreparationConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;
 
                   actual_count:=(SELECT pg_catalog.count(*)::integer FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id);
-                  IF actual_count<>p_item_count OR p_item_count<1 OR pg_catalog.jsonb_typeof(p_items)<>'array' OR pg_catalog.jsonb_array_length(p_items)<>p_item_count OR pg_catalog.octet_length(p_assembly_digest)<>32 OR pg_catalog.octet_length(p_manifest_digest)<>32 OR pg_catalog.octet_length(p_authentication_value)<>32 OR pg_catalog.octet_length(p_assembly_fingerprint)<>32 OR p_authentication_key_version<1 OR p_complete_assembly_length<1 THEN RETURN QUERY SELECT 'AssemblyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;
+                  IF p_item_count<1 OR pg_catalog.jsonb_typeof(p_items)<>'array' OR pg_catalog.jsonb_array_length(p_items)<>p_item_count OR pg_catalog.octet_length(p_assembly_digest)<>32 OR pg_catalog.octet_length(p_manifest_digest)<>32 OR pg_catalog.octet_length(p_authentication_value)<>32 OR pg_catalog.octet_length(p_assembly_fingerprint)<>32 OR p_authentication_key_version<1 OR p_complete_assembly_length<1 THEN RETURN QUERY SELECT 'AssemblyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;
+                  IF actual_count<>p_item_count
+                     OR (SELECT pg_catalog.count(*)::integer FROM tagekyc.raw_export_job_classes WHERE "JobId"=p_job_id)<>p_item_count
+                     OR EXISTS (
+                       SELECT 1 FROM tagekyc.raw_export_job_classes c
+                       WHERE c."JobId"=p_job_id AND NOT EXISTS (
+                         SELECT 1 FROM pg_catalog.jsonb_array_elements(p_items) item
+                         WHERE item->>'Ordinal'=c."Ordinal"::text AND item->>'RawClass'=c."RawClass"))
+                     OR EXISTS (
+                       SELECT 1 FROM pg_catalog.jsonb_array_elements(p_items) item
+                       WHERE NOT EXISTS (
+                         SELECT 1 FROM tagekyc.raw_export_job_classes c
+                         WHERE c."JobId"=p_job_id AND item->>'Ordinal'=c."Ordinal"::text AND item->>'RawClass'=c."RawClass"))
+                  THEN RETURN QUERY SELECT 'AssemblyClassSetMismatch'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;
                   IF (SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(
                         'Ordinal',x."Ordinal",'RawClass',x."RawClass",'SourceArtifactId',x."SourceArtifactId",
                         'CaptureArtifactId',x."CaptureArtifactId",'CaptureRevision',x."CaptureRevision",'MediaType',x."MediaType",
@@ -720,7 +823,7 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         'ContentCommitmentKeyId',x."ContentCommitmentKeyId",'ContentCommitmentKeyVersion',x."ContentCommitmentKeyVersion",
                         'ContentCommitment',pg_catalog.encode(x."ContentCommitment",'base64')) ORDER BY x."Ordinal")
                       FROM tagekyc.raw_export_job_source_bindings x WHERE x."JobId"=p_job_id) IS DISTINCT FROM p_items
-                  THEN RETURN QUERY SELECT 'AssemblyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;
+                  THEN RETURN QUERY SELECT 'SourceBindingInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;
 
                   -- Acquire every authority and consent lock before the single admission clock.
                   FOR b IN SELECT x.*,c."ClientApplicationId" FROM tagekyc.raw_export_job_source_bindings x JOIN tagekyc.raw_export_source_ingress_claims c ON c."VerificationSessionId"=x."VerificationSessionId" AND c."CaptureAcceptanceId"=x."CaptureAcceptanceId" AND c."CaptureArtifactId"=x."CaptureArtifactId" AND c."CaptureRevision"=x."CaptureRevision" AND c."RawClass"=x."RawClass" WHERE x."JobId"=p_job_id ORDER BY x."Ordinal"
@@ -846,6 +949,7 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
 
                 ALTER FUNCTION tagekyc.raw_export_freeze_job_source_bindings(uuid,uuid,bigint,bigint,uuid) OWNER TO tagekyc_raw_export_deployer;
                 ALTER FUNCTION tagekyc.raw_export_read_job_source_verification_context(uuid,integer,uuid,bigint,bigint,uuid) OWNER TO tagekyc_raw_export_deployer;
+                ALTER FUNCTION tagekyc.raw_export_record_assembly_source_integrity_failure(uuid,integer,uuid,bigint,bigint,uuid,text) OWNER TO tagekyc_raw_export_deployer;
                 ALTER FUNCTION tagekyc.raw_export_register_assembly_preparing(uuid,uuid,uuid,bigint,bigint,bytea,bytea) OWNER TO tagekyc_raw_export_deployer;
                 ALTER FUNCTION tagekyc.raw_export_record_assembly_pending(uuid,bigint,bytea) OWNER TO tagekyc_raw_export_deployer;
                 ALTER FUNCTION tagekyc.raw_export_seal_authenticated_assembly(uuid,uuid,bigint,bigint,bigint,uuid,bytea,bytea,bytea,text,integer,bytea,bigint,integer,jsonb) OWNER TO tagekyc_raw_export_deployer;
@@ -858,6 +962,7 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                 REVOKE ALL ON FUNCTION
                   tagekyc.raw_export_freeze_job_source_bindings(uuid,uuid,bigint,bigint,uuid),
                   tagekyc.raw_export_read_job_source_verification_context(uuid,integer,uuid,bigint,bigint,uuid),
+                  tagekyc.raw_export_record_assembly_source_integrity_failure(uuid,integer,uuid,bigint,bigint,uuid,text),
                   tagekyc.raw_export_register_assembly_preparing(uuid,uuid,uuid,bigint,bigint,bytea,bytea),
                   tagekyc.raw_export_record_assembly_pending(uuid,bigint,bytea),
                   tagekyc.raw_export_seal_authenticated_assembly(uuid,uuid,bigint,bigint,bigint,uuid,bytea,bytea,bytea,text,integer,bytea,bigint,integer,jsonb),
@@ -869,7 +974,8 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                 FROM PUBLIC,tagekyc_runtime,tagekyc_raw_export_assembly_resolver,tagekyc_raw_export_assembly_sealer;
                 GRANT EXECUTE ON FUNCTION
                   tagekyc.raw_export_freeze_job_source_bindings(uuid,uuid,bigint,bigint,uuid),
-                  tagekyc.raw_export_read_job_source_verification_context(uuid,integer,uuid,bigint,bigint,uuid)
+                  tagekyc.raw_export_read_job_source_verification_context(uuid,integer,uuid,bigint,bigint,uuid),
+                  tagekyc.raw_export_record_assembly_source_integrity_failure(uuid,integer,uuid,bigint,bigint,uuid,text)
                 TO tagekyc_raw_export_assembly_resolver;
                 GRANT EXECUTE ON FUNCTION
                   tagekyc.raw_export_register_assembly_preparing(uuid,uuid,uuid,bigint,bigint,bytea,bytea),
@@ -898,6 +1004,7 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                 DROP FUNCTION IF EXISTS tagekyc.raw_export_record_assembly_pending(uuid,bigint,bytea);
                 DROP FUNCTION IF EXISTS tagekyc.raw_export_register_assembly_preparing(uuid,uuid,uuid,bigint,bigint,bytea,bytea);
                 DROP FUNCTION IF EXISTS tagekyc.raw_export_read_job_source_verification_context(uuid,integer,uuid,bigint,bigint,uuid);
+                DROP FUNCTION IF EXISTS tagekyc.raw_export_record_assembly_source_integrity_failure(uuid,integer,uuid,bigint,bigint,uuid,text);
                 DROP FUNCTION IF EXISTS tagekyc.raw_export_freeze_job_source_bindings(uuid,uuid,bigint,bigint,uuid);
 
                 ALTER TABLE tagekyc.raw_export_job_transitions DROP CONSTRAINT "CK_b4_job_transition_event_shape";
@@ -952,6 +1059,10 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
 
             migrationBuilder.DropTable(
                 name: "raw_export_assembly_items",
+                schema: "tagekyc");
+
+            migrationBuilder.DropTable(
+                name: "raw_export_assembly_source_integrity_failures",
                 schema: "tagekyc");
 
             migrationBuilder.DropTable(

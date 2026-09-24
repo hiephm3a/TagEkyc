@@ -16,6 +16,7 @@ using TagEkyc.Infrastructure.Signing;
 using ApplicationMarker = TagEkyc.Application.AssemblyMarker;
 using TagEkyc.Contracts;
 using TagEkyc.Contracts.Common;
+using TagEkyc.Contracts.RawExport;
 using TagEkyc.Application.RawExport;
 using TagEkyc.Application.CaptureRuntime;
 using TagEkyc.Infrastructure.CaptureRuntime;
@@ -60,7 +61,13 @@ else
 {
     builder.Services.AddSingleton(recipientPackageOptions);
 }
+var rawExportAssemblyOptions = RawExportAssemblyOptions.Resolve(builder.Configuration);
 builder.Services.AddTagEkycRawExportAssembly(builder.Configuration, builder.Environment.IsProduction());
+builder.Services.AddSingleton<ICaptureRuntimeAssemblyTopology>(sp =>
+    new CaptureRuntimeAssemblyTopology(
+        sp.GetRequiredService<RawExportAssemblyOptions>().Topology.ToString()));
+if (rawExportAssemblyOptions.Topology == RawExportAssemblyTopology.DurableWorker)
+    builder.Services.AddHostedService<RawExportAssemblyHostedService>();
 builder.Services.AddTagEkycRecipientPackageDelivery(builder.Configuration);
 builder.Services.AddTagEkycRecipientPackageReference(builder.Configuration);
 var recipientPackageDeliveryOptions = RecipientPackageDeliveryOptions.Resolve(builder.Configuration);
@@ -75,6 +82,16 @@ builder.Services.AddTagEkycRecipientManagement(builder.Configuration, builder.En
 ConfigureRetention(builder);
 ConfigureDecisionThresholds(builder);
 ConfigureReadiness(builder);
+builder.Services.AddSingleton<ICaptureRuntimeActivationEvidenceSealProvider,
+    BuildGeneratedCaptureRuntimeActivationEvidenceSealProvider>();
+builder.Services.AddSingleton<SiteRawIngressTransportQualificationFileProvider>();
+builder.Services.AddSingleton<ICaptureRuntimeSiteTransportQualificationProvider>(sp =>
+    sp.GetRequiredService<SiteRawIngressTransportQualificationFileProvider>());
+builder.Services.AddSingleton<ICaptureRuntimeSiteTransportQualificationSettingsProvider>(sp =>
+    sp.GetRequiredService<SiteRawIngressTransportQualificationFileProvider>());
+builder.Services.AddSingleton<ISiteRawIngressTransportQualificationRuntimeGate,
+    SiteRawIngressTransportQualificationRuntimeGate>();
+builder.Services.AddHostedService<SiteRawIngressTransportQualificationMonitor>();
 builder.Services.AddScoped<VerificationSessionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
 builder.Services.AddScoped<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
@@ -97,20 +114,32 @@ builder.Services.AddScoped<VerificationCompletionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCompletionCommands>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
 builder.Services.AddScoped<IEvidencePackageQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
 builder.Services.AddScoped<ICompletionNotificationQueries>(sp => sp.GetRequiredService<VerificationCompletionApplicationService>());
+builder.Services.AddScoped<RawExportControlPlaneApplicationService>();
+builder.Services.AddScoped<IRawExportControlPlaneApplicationService>(sp =>
+    sp.GetRequiredService<RawExportControlPlaneApplicationService>());
 builder.Services.AddPreparedRawExportSourceIngressServices();
+builder.Services.AddCaptureRuntimeA3HostLifecycle();
+builder.Services.AddTagEkycCaptureRuntimeRawIngressHostGraph();
 builder.Services.AddSingleton<ICaptureAgentConfigurationProvider, CaptureAgentConfigurationProvider>();
 builder.Services.AddSingleton<IRawExportIngressCapacity>(sp =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
-    static long RequiredLong(IConfiguration c, string key) =>
-        long.TryParse(c[key], NumberStyles.None, CultureInfo.InvariantCulture, out var value) && value > 0
+    static long RequiredLong(IConfiguration c, string key, long maximum) =>
+        long.TryParse(c[key], NumberStyles.None, CultureInfo.InvariantCulture, out var value)
+            && value is > 0 && value <= maximum
             ? value
             : throw new InvalidOperationException("RAW_EXPORT_SOURCE_CAPACITY_CONFIGURATION_INVALID");
-    return new RawExportIngressCapacity(
-        checked((int)RequiredLong(config, "TagEkyc:RawExport:RawExportCustodyMaximumConcurrentStreamsPerProducer")),
-        checked((int)RequiredLong(config, "TagEkyc:RawExport:RawExportCustodyMaximumConcurrentStreamsPerDeployment")),
-        RequiredLong(config, "TagEkyc:RawExport:RawExportCustodyMaximumAggregatePlaintextWindowBytesPerDeployment"),
-        RequiredLong(config, "TagEkyc:RawExport:RawExportCustodyMaximumPlaintextWindowBytesPerStream"));
+    var perProducer = checked((int)RequiredLong(config,
+        "TagEkyc:RawExport:RawExportCustodyMaximumConcurrentStreamsPerProducer", 32));
+    var perDeployment = checked((int)RequiredLong(config,
+        "TagEkyc:RawExport:RawExportCustodyMaximumConcurrentStreamsPerDeployment", 256));
+    var aggregateWindow = RequiredLong(config,
+        "TagEkyc:RawExport:RawExportCustodyMaximumAggregatePlaintextWindowBytesPerDeployment", 2_147_483_647);
+    var perStreamWindow = RequiredLong(config,
+        "TagEkyc:RawExport:RawExportCustodyMaximumPlaintextWindowBytesPerStream", 16_777_216);
+    if (perProducer > perDeployment || aggregateWindow < perStreamWindow)
+        throw new InvalidOperationException("RAW_EXPORT_SOURCE_CAPACITY_CONFIGURATION_INVALID");
+    return new RawExportIngressCapacity(perProducer, perDeployment, aggregateWindow, perStreamWindow);
 });
 
 var app = builder.Build();
@@ -123,6 +152,7 @@ await using (var startupScope = app.Services.CreateAsyncScope())
     captureRuntimeRoutes = await startupScope.ServiceProvider.GetRequiredService<CaptureRuntimeStartup>()
         .SelectAsync(DateTimeOffset.UtcNow, CancellationToken.None);
 }
+app.Services.GetRequiredService<CaptureRuntimeRouteSelectionState>().Set(captureRuntimeRoutes);
 
 app.UseHttpsRedirection();
 
@@ -131,6 +161,22 @@ app.MapGet("/health", () => Results.Ok(new
     status = "ok",
     service = "TagEkyc.Api",
 }));
+
+app.MapGet("/health/site-transport-qualification",
+    (ISiteRawIngressTransportQualificationRuntimeGate gate) =>
+    {
+        var result = gate.Evaluate(DateTimeOffset.UtcNow);
+        var status = result.State is CaptureRuntimeSiteTransportQualificationState.NotRequired
+            or CaptureRuntimeSiteTransportQualificationState.Qualified
+            or CaptureRuntimeSiteTransportQualificationState.Expiring
+            ? StatusCodes.Status200OK : StatusCodes.Status503ServiceUnavailable;
+        return Results.Json(new
+        {
+            state = result.State.ToString(),
+            code = string.IsNullOrWhiteSpace(result.Code) ? null : result.Code,
+            validUntilUtc = result.ValidUntilUtc
+        }, statusCode: status);
+    });
 
 app.MapReadinessEndpoint();
 
@@ -155,9 +201,11 @@ app.MapGet("/", () => Results.Ok(new SessionStatusPlaceholder(
     "NOT_AVAILABLE")));
 
 app.MapCaptureRuntimeSelectedEndpoints(captureRuntimeRoutes);
+app.MapRawSourceConsentEndpoints();
 app.MapRecipientPackageDeliveryEndpoints();
 app.MapRecipientPackageReferenceEndpoints();
 app.MapRecipientManagementEndpoints();
+app.MapRawExportControlPlaneEndpoints();
 
 app.Run();
 

@@ -130,9 +130,18 @@ internal sealed class RawExportSourceFinalizationRepository(TagEkycDbContext db)
             ("operation",context.ProviderOperationId!.Value),("reservation",reservationId),("preparation",context.PreparationId!.Value),
             ("fence",context.PreparationFence),("token",context.ProviderOperationToken!.Value.Value),("kind",kind),("cleanup",cleanupReference),("receipt",receipt));
 
-    internal Task MarkObjectCleanupRequiredAsync(SourceObjectLifecycleContext value,CancellationToken ct) => ObjectMutationAsync(
-        "raw_export_mark_provisional_object_cleanup_required",ct,("id",value.ObjectCustodyId),("revision",value.StateRevision),("reason","SourceConsumed"),
-        ("evidence",C1HashCanonical.Compute("tip-88c1-object-cleanup-evidence-v1",new C1HashCanonical.Scalar(Convert.ToHexString(value.ObjectBindingDigest).ToLowerInvariant()),new C1HashCanonical.Scalar(value.State),new C1HashCanonical.Scalar(value.StateRevision.ToString(System.Globalization.CultureInfo.InvariantCulture)),new C1HashCanonical.Scalar("SourceConsumed"))));
+    internal Task MarkObjectCleanupRequiredAsync(SourceObjectLifecycleContext value,CancellationToken ct) =>
+        MarkObjectCleanupRequiredAsync(value,"SourceConsumed",ct);
+
+    internal Task MarkObjectCleanupRequiredAsync(SourceObjectLifecycleContext value,string reason,CancellationToken ct) =>
+        MarkObjectCleanupRequiredAsync(value.ObjectCustodyId,value.StateRevision,value.ObjectBindingDigest,value.State,reason,ct);
+
+    internal Task MarkObjectCleanupRequiredAsync(SourceObjectReconcileContext value,string reason,CancellationToken ct) =>
+        MarkObjectCleanupRequiredAsync(value.ObjectCustodyId,value.StateRevision,value.ObjectBindingDigest,value.State,reason,ct);
+
+    private Task MarkObjectCleanupRequiredAsync(Guid id,long revision,byte[] binding,string state,string reason,CancellationToken ct) => ObjectMutationAsync(
+        "raw_export_mark_provisional_object_cleanup_required",ct,("id",id),("revision",revision),("reason",reason),
+        ("evidence",C1HashCanonical.Compute("tip-88c1-object-cleanup-evidence-v1",new C1HashCanonical.Scalar(Convert.ToHexString(binding).ToLowerInvariant()),new C1HashCanonical.Scalar(state),new C1HashCanonical.Scalar(revision.ToString(System.Globalization.CultureInfo.InvariantCulture)),new C1HashCanonical.Scalar(reason))));
 
     internal Task RecordObjectDeleteAcknowledgedAsync(SourceObjectLifecycleContext value,CancellationToken ct) => ObjectMutationAsync(
         "raw_export_record_provisional_object_delete_acknowledged",ct,("id",value.ObjectCustodyId),("revision",value.StateRevision),("status",204),

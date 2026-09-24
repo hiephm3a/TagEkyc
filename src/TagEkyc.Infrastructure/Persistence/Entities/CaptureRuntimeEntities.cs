@@ -183,6 +183,11 @@ public sealed class CaptureRuntimeBootstrapIssuancesRow
 
 public sealed class CaptureCapabilitiesRow
 {
+    public string AuthorityMode { get; set; } = "HistoricalNonRetained";
+    public Guid? PrincipalId { get; set; }
+    public Guid? RetentionAuthorityId { get; set; }
+    public long? RetentionAuthorityRevision { get; set; }
+    public Guid? ConsentBindingId { get; set; }
     public Guid CaptureCapabilityId { get; set; }
     public Guid VerificationSessionId { get; set; }
     public Guid ClientApplicationId { get; set; }
@@ -205,6 +210,11 @@ public sealed class CaptureCapabilitiesRow
 
 public sealed class CaptureExecutionBindingsRow
 {
+    public string AuthorityMode { get; set; } = "HistoricalNonRetained";
+    public Guid? PrincipalId { get; set; }
+    public Guid? RetentionAuthorityId { get; set; }
+    public long? RetentionAuthorityRevision { get; set; }
+    public Guid? ConsentBindingId { get; set; }
     public Guid CaptureExecutionBindingId { get; set; }
     public Guid VerificationSessionId { get; set; }
     public Guid CaptureCapabilityId { get; set; }

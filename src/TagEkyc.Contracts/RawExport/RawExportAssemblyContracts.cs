@@ -4,6 +4,7 @@ public enum RawExportAssemblyTopology
 {
     Disabled,
     FixtureProof,
+    DurableWorker,
     Invalid,
 }
 
@@ -147,6 +148,12 @@ public enum RawExportAssemblyExecutionOutcome
     ProviderUnavailable,
     ProviderOutcomeUnknown,
     VerificationIndeterminate,
+    SelectionNone,
+    SelectionAmbiguous,
+    SourceBindingInvalid,
+    SourceIntegrityInvalid,
+    AssemblyPrepareFailed,
+    AssemblyClassSetMismatch,
 }
 
 public sealed record RawExportAssemblyExecutionRequest(

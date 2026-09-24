@@ -7,7 +7,9 @@ internal sealed class RawExportR2EncryptionOrchestrator(
     IAttemptKeyReservationProvisioningOperation keyProvisioning,
     IAttemptAeadEncryptionOperation encryption,
     IContentCommitmentService contentCommitments,
-    IProvisionalObjectWriter objectWriter)
+    IProvisionalObjectWriter objectWriter,
+    IRawExportR2TerminalIntentRecorder? terminalIntentRecorder = null,
+    long? classMaximumBytes = null)
 {
     internal async Task<RawExportR2WriterResult> ExecuteAsync(
         RawExportR2EncryptionRequest request,
@@ -15,6 +17,22 @@ internal sealed class RawExportR2EncryptionOrchestrator(
     {
         if (!IsValidRequest(request))
             return PreCustody(request.AttemptId, RawExportR2WriterDisposition.PreCustodyRejected);
+
+        // Retained key preparation validates the frozen custody actor before
+        // it can create provider evidence. Set it on the existing scoped
+        // connection before provisioning, without a transaction spanning I/O.
+        try
+        {
+            await repository.SetActorAsync(request.ActorPrincipalId, cancellationToken).ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch
+        {
+            return PreCustody(request.AttemptId, RawExportR2WriterDisposition.PreCustodyRejected);
+        }
 
         AttemptKeyProvisioningResult key;
         try
@@ -40,7 +58,6 @@ internal sealed class RawExportR2EncryptionOrchestrator(
         RawExportR2EncryptionContext? context;
         try
         {
-            await repository.SetActorAsync(request.ActorPrincipalId, cancellationToken).ConfigureAwait(false);
             context = await repository.ReadEncryptionContextAsync(
                 request.AttemptId,
                 request.ExpectedEncryptionAttemptRevision,
@@ -57,6 +74,9 @@ internal sealed class RawExportR2EncryptionOrchestrator(
         }
 
         if (context is null || !ContextMatches(request, context) || !ProfileIsAdmitted(context))
+            return PreCustody(request.AttemptId, RawExportR2WriterDisposition.PreCustodyRejected);
+        if (context.AuthorityKind == "SourceRetention"
+            && (terminalIntentRecorder is null || classMaximumBytes is null or <= 0))
             return PreCustody(request.AttemptId, RawExportR2WriterDisposition.PreCustodyRejected);
 
         ProvisionalObjectBeginResult begin;
@@ -93,7 +113,9 @@ internal sealed class RawExportR2EncryptionOrchestrator(
                 context,
                 begin.ObjectBindingDigest,
                 encryption,
-                contentCommitments);
+                contentCommitments,
+                terminalIntentRecorder: context.AuthorityKind == "SourceRetention" ? terminalIntentRecorder : null,
+                classMaximumBytes: context.AuthorityKind == "SourceRetention" ? classMaximumBytes : null);
         }
         catch
         {
@@ -132,7 +154,10 @@ internal sealed class RawExportR2EncryptionOrchestrator(
                         framed.ExpectedCiphertextLength),
                     framed,
                     cancellationToken).ConfigureAwait(false);
-                if (put.Outcome == ConditionalPutOutcome.Created && !framed.Completed)
+                if (put.Outcome == ConditionalPutOutcome.Created
+                    && (context.AuthorityKind == "SourceRetention"
+                        ? framed.InputObservation.Kind != RawExportR2InputCompletionKind.CompleteMatch
+                        : !framed.Completed))
                     put = new(ConditionalPutOutcome.OutcomeUnknown, null, 0, null, null);
             }
             catch
@@ -152,12 +177,13 @@ internal sealed class RawExportR2EncryptionOrchestrator(
             }
             catch
             {
-                return new(
+                return new RawExportR2WriterResult(
                     request.AttemptId,
                     begin.Mutation.ObjectCustodyId,
                     "PutInFlight",
                     armed.StateRevision,
-                    RawExportR2WriterDisposition.ReconciliationRequired);
+                    RawExportR2WriterDisposition.ReconciliationRequired)
+                { InputObservation = framed.InputObservation };
             }
 
             return ObjectResult(
@@ -165,7 +191,8 @@ internal sealed class RawExportR2EncryptionOrchestrator(
                 recorded,
                 recorded.ObjectState == "ObjectPresentPendingVerification"
                     ? RawExportR2WriterDisposition.PendingVerification
-                    : RawExportR2WriterDisposition.ReconciliationRequired);
+                    : RawExportR2WriterDisposition.ReconciliationRequired)
+                with { InputObservation = framed.InputObservation };
         }
     }
 

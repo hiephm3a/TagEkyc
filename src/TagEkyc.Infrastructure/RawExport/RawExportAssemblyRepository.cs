@@ -8,6 +8,8 @@ namespace TagEkyc.Infrastructure.RawExport;
 
 internal sealed record RawExportAssemblyMutation(string Outcome, long? RowRevision);
 
+internal sealed record RawExportAssemblyIntegrityMutation(string Outcome, byte[]? EvidenceDigest);
+
 internal sealed record RawExportAssemblySealMutation(
     string Outcome,
     long? JobRevision,
@@ -207,6 +209,38 @@ internal sealed class RawExportAssemblyRepository(IRawExportAssemblyConnectionFa
             T(reader, "JobExpiresAtUtc"), T(reader, "JobCreatedAtUtc"),
             I(reader, "SubjectRefTokenSchemaVersion"), S(reader, "SubjectRefTokenKeyId"),
             I(reader, "SubjectRefTokenKeyVersion"), B(reader, "SubjectRefToken"), verification, objectContext);
+        await reader.CloseAsync().ConfigureAwait(false);
+        await scope.Transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
+        return result;
+    }
+
+    internal async Task<RawExportAssemblyIntegrityMutation> RecordSourceIntegrityFailureAsync(
+        RawExportAssemblyExecutionRequest request,
+        int ordinal,
+        RawExportAssemblySourceDisposition disposition,
+        CancellationToken cancellationToken)
+    {
+        if (disposition is not (RawExportAssemblySourceDisposition.DeterministicCiphertextInvalid
+            or RawExportAssemblySourceDisposition.HistoricCommitmentMismatch))
+            throw new ArgumentOutOfRangeException(nameof(disposition));
+        await using var scope = await ResolverScope.OpenAsync(
+            connections, request.ActorPrincipalId, cancellationToken).ConfigureAwait(false);
+        await using var command = scope.Connection.CreateCommand();
+        command.Transaction = scope.Transaction;
+        command.CommandText = "SELECT * FROM tagekyc.raw_export_record_assembly_source_integrity_failure(@job,@ordinal,@attempt,@revision,@fence,@actor,@kind)";
+        command.Parameters.AddWithValue("job", request.JobId);
+        command.Parameters.AddWithValue("ordinal", ordinal);
+        command.Parameters.AddWithValue("attempt", request.AttemptId);
+        command.Parameters.AddWithValue("revision", request.ExpectedJobRevision);
+        command.Parameters.AddWithValue("fence", request.ExpectedFence);
+        command.Parameters.AddWithValue("actor", request.ActorPrincipalId);
+        command.Parameters.AddWithValue("kind", disposition.ToString());
+        await using var reader = await command.ExecuteReaderAsync(
+            CommandBehavior.SingleRow, cancellationToken).ConfigureAwait(false);
+        if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            throw new InvalidOperationException("RAW_EXPORT_ASSEMBLY_EMPTY_INTEGRITY_RESULT");
+        var result = new RawExportAssemblyIntegrityMutation(
+            S(reader, "Outcome"), NB(reader, "EvidenceDigest"));
         await reader.CloseAsync().ConfigureAwait(false);
         await scope.Transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
         return result;

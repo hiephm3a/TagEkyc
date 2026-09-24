@@ -42,6 +42,9 @@ internal sealed class ProtectedValuePurpose :
     internal static ProtectedValuePurpose PackageReferenceCursorHmac { get; } =
         new("raw-export.package-reference-cursor.hmac");
 
+    internal static ProtectedValuePurpose AssemblyAuthenticationHmac { get; } =
+        new("raw-export.assembly-authentication.hmac");
+
     private ProtectedValuePurpose(string code)
     {
         Code = code;

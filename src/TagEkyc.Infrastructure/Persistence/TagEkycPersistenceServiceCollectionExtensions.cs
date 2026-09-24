@@ -34,6 +34,7 @@ public static class TagEkycPersistenceServiceCollectionExtensions
         services.AddScoped<IRawExportSubjectConsentRepository, EfRawExportSubjectConsentRepository>();
         services.AddScoped<IRawExportAuthorizationRepository, EfRawExportAuthorizationRepository>();
         services.AddScoped<IRawExportJobRepository, EfRawExportJobRepository>();
+        services.AddScoped<IRawExportJobPackageProjectionReader, EfRawExportJobPackageProjectionReader>();
         services.AddScoped<RawExportRuntimePrivilegeValidator>();
         services.AddScoped<RawExportControlPlaneReadinessValidator>();
         services.AddScoped<RawExportSubjectConsentReadinessValidator>();

@@ -69,7 +69,9 @@ internal sealed class RawExportAssemblySourceResolver(
                 new(context.Object.ProvisionalObjectIdentity, context.Object.ObjectKey, context.Object.ObjectBindingDigest),
                 cancellationToken).ConfigureAwait(false);
             if (exact.CiphertextLength != context.Object.CiphertextLength)
-                return RawExportAssemblySourceDisposition.DeterministicCiphertextInvalid;
+                return await CompleteDispositionAsync(
+                    request, ordinal, RawExportAssemblySourceDisposition.DeterministicCiphertextInvalid,
+                    cancellationToken).ConfigureAwait(false);
 
             var result = await framedVerification.VerifyAsync(
                 exact.Ciphertext,
@@ -80,9 +82,11 @@ internal sealed class RawExportAssemblySourceResolver(
                 cancellationToken).ConfigureAwait(false);
             try
             {
-                return Fixed(result.ContentCommitment, context.Verification.ContentCommitment)
+                var disposition = Fixed(result.ContentCommitment, context.Verification.ContentCommitment)
                     ? RawExportAssemblySourceDisposition.Verified
                     : RawExportAssemblySourceDisposition.HistoricCommitmentMismatch;
+                return await CompleteDispositionAsync(
+                    request, ordinal, disposition, cancellationToken).ConfigureAwait(false);
             }
             finally
             {
@@ -93,7 +97,33 @@ internal sealed class RawExportAssemblySourceResolver(
         }
         catch (Exception exception)
         {
-            return ClassifyVerificationFailure(exception, cancellationToken.IsCancellationRequested);
+            var disposition = ClassifyVerificationFailure(
+                exception, cancellationToken.IsCancellationRequested);
+            return await CompleteDispositionAsync(
+                request, ordinal, disposition, cancellationToken).ConfigureAwait(false);
+        }
+    }
+
+    private async Task<RawExportAssemblySourceDisposition> CompleteDispositionAsync(
+        RawExportAssemblyExecutionRequest request,
+        int ordinal,
+        RawExportAssemblySourceDisposition disposition,
+        CancellationToken cancellationToken)
+    {
+        if (disposition is not (RawExportAssemblySourceDisposition.DeterministicCiphertextInvalid
+            or RawExportAssemblySourceDisposition.HistoricCommitmentMismatch))
+            return disposition;
+        try
+        {
+            var recorded = await repository.RecordSourceIntegrityFailureAsync(
+                request, ordinal, disposition, cancellationToken).ConfigureAwait(false);
+            return recorded.Outcome == "Recorded" && recorded.EvidenceDigest is { Length: 32 }
+                ? disposition
+                : RawExportAssemblySourceDisposition.ObjectReadIndeterminate;
+        }
+        catch when (!cancellationToken.IsCancellationRequested)
+        {
+            return RawExportAssemblySourceDisposition.ObjectReadIndeterminate;
         }
     }
 

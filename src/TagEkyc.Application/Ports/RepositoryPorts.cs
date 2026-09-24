@@ -397,13 +397,25 @@ public interface IRawExportAssemblyOrchestrator
         CancellationToken cancellationToken = default);
 }
 
+public interface IRawExportAssemblyWorkSource
+{
+    ValueTask<RawExportAssemblyExecutionRequest?> TryAcquireAsync(
+        CancellationToken cancellationToken = default);
+
+    ValueTask RecordAsync(
+        RawExportAssemblyExecutionRequest request,
+        RawExportAssemblyExecutionResult result,
+        CancellationToken cancellationToken = default);
+}
+
 public sealed record VerificationFinalizationWrite(
     VerificationSession ExpectedSession,
     VerificationSession CompletedSession,
     VerificationDecision Decision,
     EvidencePackage EvidencePackage,
     EvidenceManifestDto Manifest,
-    AuditEvent CompletionAuditEvent);
+    AuditEvent CompletionAuditEvent,
+    Guid CompletionPrincipalId = default);
 
 public sealed record VerificationCancellationWrite(
     VerificationSession ExpectedSession,

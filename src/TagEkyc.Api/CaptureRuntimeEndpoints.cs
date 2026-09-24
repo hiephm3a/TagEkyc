@@ -504,7 +504,7 @@ public static class CaptureRuntimeCrt1RequestParser
             !IsCanonicalUuidV4(values[1]) ||
             !IsCanonicalUuidV4(values[2]) ||
             !IsCanonicalPositiveInteger(values[3], int.MaxValue) ||
-            values[4] is not ("ChipDg2Portrait" or "LiveSelfieImage") ||
+            !IsCanonicalRawClass(values[4]) ||
             !IsCanonicalUuidV4(values[5]) ||
             !IsCanonicalUtcOffsetTimestamp(values[6]) ||
             !IsCanonicalUtcOffsetTimestamp(values[7]) ||
@@ -524,6 +524,10 @@ public static class CaptureRuntimeCrt1RequestParser
         digest = Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(preimage.ToString()))).ToLowerInvariant();
         return true;
     }
+
+    private static bool IsCanonicalRawClass(string value) =>
+        value.Length is >= 1 and <= 64 && value[0] is >= 'A' and <= 'Z'
+        && value.All(character => character is >= 'A' and <= 'Z' or >= 'a' and <= 'z' or >= '0' and <= '9');
 
     private static bool IsCanonicalPositiveInteger(string value, long maximum) =>
         long.TryParse(value, NumberStyles.None, CultureInfo.InvariantCulture, out var parsed) &&

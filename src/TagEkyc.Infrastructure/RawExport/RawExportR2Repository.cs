@@ -2,6 +2,7 @@ using System.Data;
 using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
+using NpgsqlTypes;
 using TagEkyc.Infrastructure.Persistence;
 
 namespace TagEkyc.Infrastructure.RawExport;
@@ -27,13 +28,30 @@ internal sealed class RawExportR2Repository(TagEkycDbContext db)
         CancellationToken cancellationToken)
     {
         await using var command = await CreateCommandAsync(cancellationToken).ConfigureAwait(false);
+        command.CommandText = """
+            SELECT EXISTS(SELECT 1 FROM pg_catalog.pg_attribute
+             WHERE attrelid=pg_catalog.to_regclass('tagekyc.raw_export_authority_snapshots')
+              AND attname='AuthorityKind' AND NOT attisdropped)
+            """;
+        var taggedSchema = (bool)(await command.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false))!;
         command.CommandText = "SELECT * FROM tagekyc.raw_export_read_source_encryption_context(@attempt,@revision,@fence)";
         command.Parameters.AddWithValue("attempt", attemptId);
         command.Parameters.AddWithValue("revision", revision);
         command.Parameters.AddWithValue("fence", fence);
         await using var reader = await command.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken).ConfigureAwait(false);
+        if (reader.FieldCount != (taggedSchema ? 35 : 34))
+            throw new InvalidDataException("RAW_EXPORT_R2_ENCRYPTION_CONTEXT_SHAPE_INVALID");
         if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false)) return null;
-        return new(
+        string? authorityKind = null;
+        if (taggedSchema)
+        {
+            if (reader.GetName(34) != "AuthorityKind" || reader.IsDBNull(34))
+                throw new InvalidDataException("RAW_EXPORT_R2_ENCRYPTION_AUTHORITY_INVALID");
+            authorityKind = reader.GetString(34);
+            if (authorityKind is not ("LegacyExport" or "SourceRetention"))
+                throw new InvalidDataException("RAW_EXPORT_R2_ENCRYPTION_AUTHORITY_INVALID");
+        }
+        return new RawExportR2EncryptionContext(
             G(reader, "AttemptId"), G(reader, "SourceArtifactId"), L(reader, "EncryptionAttemptRevision"), L(reader, "Fence"),
             G(reader, "AttemptKeyReservationId"), G(reader, "ProvisionalObjectIdentity"), B(reader, "EncryptionAttemptFingerprint"),
             S(reader, "KeyProviderId"), S(reader, "KekId"), I(reader, "KekVersion"), S(reader, "KekFingerprint"),
@@ -44,7 +62,8 @@ internal sealed class RawExportR2Repository(TagEkycDbContext db)
             S(reader, "ControllerIdentity"), L(reader, "ClaimedPlaintextLength"), S(reader, "MediaType"),
             I(reader, "ContentCommitmentSchemaVersion"), S(reader, "ContentCommitmentKeyId"), I(reader, "ContentCommitmentKeyVersion"),
             B(reader, "ContentCommitment"), T(reader, "OwnershipLeaseExpiresAtUtc"),
-            T(reader, "EffectivePlaintextRetentionExpiresAtUtc"), T(reader, "ReservationExpiresAtUtc"));
+            T(reader, "EffectivePlaintextRetentionExpiresAtUtc"), T(reader, "ReservationExpiresAtUtc"))
+        { AuthorityKind = authorityKind };
     }
 
     internal async Task<RawExportR2VerificationContext?> ReadVerificationContextAsync(
@@ -169,6 +188,36 @@ internal sealed class RawExportR2Repository(TagEkycDbContext db)
             "raw_export_mark_provisional_object_verified",
             cancellationToken,
             ("id", objectCustodyId), ("revision", revision), ("evidence", verificationEvidenceDigest));
+
+    internal async Task<ProvisionalObjectMutationResult> ResolvePutOutcomeAsync(
+        Guid objectCustodyId,
+        long revision,
+        string resolutionKind,
+        long? ciphertextLength,
+        byte[]? ciphertextDigest,
+        DateTimeOffset? firstObservedAtUtc,
+        DateTimeOffset? secondObservedAtUtc,
+        byte[] observationEvidenceDigest,
+        CancellationToken cancellationToken)
+    {
+        await using var command = await CreateCommandAsync(cancellationToken).ConfigureAwait(false);
+        command.CommandText = """
+            SELECT * FROM tagekyc.raw_export_resolve_provisional_object_put_outcome(
+                @id,@revision,@kind,@length,@digest,@first,@second,@evidence)
+            """;
+        command.Parameters.AddWithValue("id", objectCustodyId);
+        command.Parameters.AddWithValue("revision", revision);
+        command.Parameters.AddWithValue("kind", resolutionKind);
+        command.Parameters.Add("length", NpgsqlDbType.Bigint).Value = (object?)ciphertextLength ?? DBNull.Value;
+        command.Parameters.Add("digest", NpgsqlDbType.Bytea).Value = (object?)ciphertextDigest ?? DBNull.Value;
+        command.Parameters.Add("first", NpgsqlDbType.TimestampTz).Value = (object?)firstObservedAtUtc ?? DBNull.Value;
+        command.Parameters.Add("second", NpgsqlDbType.TimestampTz).Value = (object?)secondObservedAtUtc ?? DBNull.Value;
+        command.Parameters.AddWithValue("evidence", observationEvidenceDigest);
+        await using var reader = await command.ExecuteReaderAsync(CommandBehavior.SingleRow, cancellationToken).ConfigureAwait(false);
+        if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            throw new InvalidOperationException("RAW_EXPORT_R2_EMPTY_OBJECT_RESOLUTION_RESULT");
+        return new(reader.GetString(0), reader.GetGuid(1), reader.GetString(2), reader.GetInt64(3));
+    }
 
     internal Task<ProvisionalObjectMutationResult> MarkVerificationCleanupRequiredAsync(
         RawExportR2ObjectContext objectContext,

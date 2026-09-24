@@ -1,4 +1,3 @@
-using System.Globalization;
 using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using NpgsqlTypes;
@@ -52,14 +51,27 @@ internal sealed class RawExportSourceClaimComparisonBroker(
             return Failed(RawExportSourceClaimComparisonOutcome.ClaimTokenInvalid);
         }
 
-        var suppliedEnvelope = C1HashCanonical.ComputeProducerClaimEnvelopeFingerprint(
+        var input = new SourceClaimPreflightInput(
             preflight.AttemptedIngressIdentityFingerprint,
+            preflight.ProducerEnvelopeFingerprint,
+            preflight.VerificationSessionId,
+            preflight.CaptureArtifactId,
+            preflight.CaptureRevision,
+            preflight.RawClass,
+            preflight.StableDataScopeId,
+            preflight.ControllerIdentity,
+            preflight.SubjectRef,
+            preflight.CommitmentKeySelectorId,
+            preflight.CommitmentKeySelectorVersion,
+            expectedTokenVariant,
+            command.ClaimedPlaintextDigest,
             command.ClaimedPlaintextLength,
             command.MediaType,
             command.CapturedAtUtc,
             command.PlaintextRetentionStartedAtUtc,
             command.PlaintextRetentionExpiresAtUtc,
             command.PlaintextRetentionBudgetSeconds);
+        var suppliedEnvelope = RetainedSourceClaimPreflight.ComputeEnvelope(input);
         if (!suppliedEnvelope.AsSpan().SequenceEqual(preflight.ProducerEnvelopeFingerprint))
         {
             return Failed(RawExportSourceClaimComparisonOutcome.ClaimTokenInvalid);
@@ -70,66 +82,20 @@ internal sealed class RawExportSourceClaimComparisonBroker(
             return Failed(RawExportSourceClaimComparisonOutcome.SourceRetentionNotAuthorized);
         }
 
-        var commitmentPayload = C1HashCanonical.EncodeLengthPrefixedPayload(
-            "TAG-EKYC:RAW-EXPORT:CONTENT-COMMITMENT:C1:V1",
-            preflight.StableDataScopeId,
-            preflight.ControllerIdentity,
-            preflight.VerificationSessionId.ToString("N"),
-            preflight.CaptureArtifactId.ToString("N"),
-            preflight.CaptureRevision.ToString(CultureInfo.InvariantCulture),
-            preflight.RawClass,
-            Convert.ToHexString(command.ClaimedPlaintextDigest.Span).ToLowerInvariant(),
-            command.ClaimedPlaintextLength.ToString(CultureInfo.InvariantCulture),
-            command.MediaType);
-        var commitment = await contentCommitments.ComputeAsync(
-            new CommitmentKeySelector(
-                preflight.CommitmentKeySelectorId,
-                preflight.CommitmentKeySelectorVersion),
-            commitmentPayload,
-            cancellationToken);
-        var historicCommitmentUnavailable = !commitment.IsSuccess
-            && expectedTokenVariant == "ExistingClaimComparisonToken";
-        if (!commitment.IsSuccess && !historicCommitmentUnavailable)
-        {
-            throw new InvalidOperationException("RAW_EXPORT_CONTENT_COMMITMENT_PROVIDER_FAILURE");
-        }
-
-        byte[] subjectTokenBytes;
-        if (historicCommitmentUnavailable)
-        {
-            subjectTokenBytes = new byte[32];
-        }
-        else
-        {
-            var subjectPayload = C1HashCanonical.EncodeLengthPrefixedPayload(
-                "TAG-EKYC:RAW-EXPORT:SUBJECT-TOKEN:C1:V1",
-                preflight.StableDataScopeId,
-                preflight.ControllerIdentity,
-                preflight.SubjectRef.Normalize());
-            var subjectToken = await subjectTokens.ComputeAsync(
-                new SubjectTokenKeySelector(
-                    FixtureSubjectTokenCatalog.FixtureKeyId,
+        // Preserve this legacy broker's existing fixture selector. The shared
+        // collaborator has no fixture fallback; A3 supplies its qualified selector.
+        var material = await new RetainedSourceClaimPreflight(contentCommitments, subjectTokens)
+            .ComputeAsync(input,
+                new SubjectTokenKeySelector(FixtureSubjectTokenCatalog.FixtureKeyId,
                     FixtureSubjectTokenCatalog.FixtureKeyVersion),
-                subjectPayload,
                 cancellationToken);
-            if (!subjectToken.IsSuccess)
-            {
-                throw new InvalidOperationException("RAW_EXPORT_SUBJECT_TOKEN_PROVIDER_FAILURE");
-            }
-
-            subjectTokenBytes = subjectToken.Token.ToArray();
-        }
+        if (material is null)
+            return Failed(RawExportSourceClaimComparisonOutcome.ClaimTokenInvalid);
 
         var profile = custodyProfiles.ActiveSourceEncryptionProfile;
         var kek = custodyProfiles.ActiveKekReference;
         var bounds = custodyProfiles.TimeBounds;
-        var nonceCommitment = C1HashCanonical.ComputeNonceSeedCommitment(
-            profile.NonceStrategyId);
-        var framingDigest = C1HashCanonical.ComputeFramingParametersDigest(
-            profile.EncryptionSuiteId,
-            profile.EncryptionFramingVersion,
-            profile.ChunkSize,
-            profile.NonceStrategyId);
+        var profileDigests = RetainedSourceClaimPreflight.ComputeProfileDigests(profile);
 
         var connection = (NpgsqlConnection)db.Database.GetDbConnection();
         await db.Database.OpenConnectionAsync(cancellationToken);
@@ -176,11 +142,11 @@ internal sealed class RawExportSourceClaimComparisonBroker(
             AddNullableBytea(
                 sql,
                 "commitment",
-                commitment.IsSuccess ? commitment.Mac.ToArray() : null);
+                material.ContentCommitment);
             Add(sql, "subjectSchema", 1);
             Add(sql, "subjectKey", FixtureSubjectTokenCatalog.FixtureKeyId);
             Add(sql, "subjectVersion", FixtureSubjectTokenCatalog.FixtureKeyVersion);
-            Add(sql, "subjectToken", subjectTokenBytes);
+            Add(sql, "subjectToken", material.SubjectToken);
             Add(sql, "length", command.ClaimedPlaintextLength);
             Add(sql, "media", command.MediaType);
             Add(sql, "captured", command.CapturedAtUtc);
@@ -193,9 +159,9 @@ internal sealed class RawExportSourceClaimComparisonBroker(
             Add(sql, "suite", profile.EncryptionSuiteId);
             Add(sql, "framing", profile.EncryptionFramingVersion);
             Add(sql, "nonce", profile.NonceStrategyId);
-            Add(sql, "nonceCommitment", nonceCommitment);
+            Add(sql, "nonceCommitment", profileDigests.NonceSeedCommitment);
             Add(sql, "chunk", profile.ChunkSize);
-            Add(sql, "framingDigest", framingDigest);
+            Add(sql, "framingDigest", profileDigests.FramingParametersDigest);
             Add(sql, "keyProvider", kek.KeyProviderId);
             Add(sql, "kekId", kek.KekId);
             Add(sql, "kekVersion", kek.KekVersion);

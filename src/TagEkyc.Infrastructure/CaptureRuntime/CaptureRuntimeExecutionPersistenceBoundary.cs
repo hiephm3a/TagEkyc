@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using Npgsql;
 using NpgsqlTypes;
 using TagEkyc.Application.Ports;
@@ -20,8 +21,14 @@ public sealed class CaptureRuntimeExecutionPersistenceBoundary(ICaptureRuntimeDb
             await db.Database.OpenConnectionAsync(cancellationToken);
             var connection = (NpgsqlConnection)db.Database.GetDbConnection();
             await using var transaction = await connection.BeginTransactionAsync(cancellationToken);
+            await using (var actorCommand = new NpgsqlCommand(
+                "SELECT pg_catalog.set_config('tagekyc.actor_principal_id',@actor,true)", connection, transaction))
+            {
+                Add(actorCommand, "actor", NpgsqlDbType.Text, request.PrincipalId.ToString("D"));
+                await actorCommand.ExecuteNonQueryAsync(cancellationToken);
+            }
             await using var command = new NpgsqlCommand(
-                "SELECT * FROM tagekyc.capture_runtime_issue_or_replace_capability(@client,@session,@action,@current,@revision,@key,@new,@prefix,@digest,@version,@fingerprint,@now)", connection, transaction);
+                "SELECT * FROM tagekyc.capture_runtime_issue_or_replace_capability(@client,@session,@action,@current,@revision,@key,@new,@prefix,@digest,@version,@fingerprint,@now,@principal,@binding,@profile)", connection, transaction);
             Add(command, "client", NpgsqlDbType.Uuid, request.ClientApplicationId);
             Add(command, "session", NpgsqlDbType.Uuid, request.VerificationSessionId);
             Add(command, "action", NpgsqlDbType.Text, request.Request.Action);
@@ -34,10 +41,20 @@ public sealed class CaptureRuntimeExecutionPersistenceBoundary(ICaptureRuntimeDb
             Add(command, "version", NpgsqlDbType.Integer, request.PepperVersion);
             Add(command, "fingerprint", NpgsqlDbType.Bytea, request.RequestFingerprint);
             Add(command, "now", NpgsqlDbType.TimestampTz, request.Now);
+            Add(command, "principal", NpgsqlDbType.Uuid, request.PrincipalId);
+            Add(command, "binding", NpgsqlDbType.Uuid, request.Request.ConsentBindingId);
+            var profile = request.RetentionProfile;
+            Add(command, "profile", NpgsqlDbType.Jsonb, profile is null ? null : JsonSerializer.Serialize(new
+            {
+                profile.PolicyId, profile.PolicyVersion, profile.RawClasses, profile.ControllerIdentity,
+                profile.StableDataScopeId, profile.RetentionPolicyId, profile.RetentionPolicyVersion,
+                profile.RetentionClass, profile.RevocationPolicyId, profile.PurgePolicyId,
+                profile.LegalHoldPolicyId, profile.MaximumRetentionSeconds
+            }));
             CaptureCapabilityPersistenceResult result;
             await using (var reader = await command.ExecuteReaderAsync(cancellationToken))
             {
-                if (!await reader.ReadAsync(cancellationToken)) return UnavailableCapability();
+                if (reader.FieldCount != 6 || !await reader.ReadAsync(cancellationToken)) return UnavailableCapability();
                 result = new(reader.GetString(0), NullableGuid(reader, 1), reader.GetBoolean(2),
                     NullableTime(reader, 3), reader.IsDBNull(4) ? null : reader.GetString(4),
                     reader.IsDBNull(5) ? null : reader.GetInt64(5));

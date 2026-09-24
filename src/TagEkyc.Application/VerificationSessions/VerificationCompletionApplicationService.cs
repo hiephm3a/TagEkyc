@@ -296,7 +296,8 @@ public sealed class VerificationCompletionApplicationService(
                 decision,
                 evidencePackage,
                 manifest,
-                completionAuditEvent),
+                completionAuditEvent,
+                caller.PrincipalId),
             cancellationToken);
 
         return writeResult.Status switch
@@ -307,6 +308,14 @@ public sealed class VerificationCompletionApplicationService(
                 SessionOperationResult<CompleteVerificationSessionResponseDto>.Success(ToCompleteResponse(writeResult.Session)),
             VerificationFinalizationWriteStatus.NotFound =>
                 NotFound<CompleteVerificationSessionResponseDto>("SESSION_NOT_FOUND", "Verification session was not found."),
+            VerificationFinalizationWriteStatus.AccessDenied =>
+                Forbidden<CompleteVerificationSessionResponseDto>("ACCESS_DENIED", "Access denied."),
+            VerificationFinalizationWriteStatus.NotReady =>
+                SessionOperationResult<CompleteVerificationSessionResponseDto>.Failure(
+                    "NOT_READY", "Verification session finalization is not ready.", 503),
+            VerificationFinalizationWriteStatus.InvalidRequest =>
+                SessionOperationResult<CompleteVerificationSessionResponseDto>.Failure(
+                    "REQUEST_INVALID", "Verification session finalization request is invalid.", 400),
             _ => SessionOperationResult<CompleteVerificationSessionResponseDto>.Failure(
                 "FINALIZATION_CONFLICT",
                 "Verification session changed before finalization completed.",

@@ -286,6 +286,12 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .HasColumnType("varchar(32)")
                         .HasColumnName("Audience");
 
+                    b.Property<string>("AuthorityMode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(24)")
+                        .HasDefaultValue("HistoricalNonRetained");
+
                     b.Property<DateTimeOffset?>("BoundAtUtc")
                         .HasColumnType("timestamptz")
                         .HasColumnName("BoundAtUtc");
@@ -298,6 +304,9 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ClientApplicationId")
                         .HasColumnType("uuid")
                         .HasColumnName("ClientApplicationId");
+
+                    b.Property<Guid?>("ConsentBindingId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("ExpiredAtUtc")
                         .HasColumnType("timestamptz")
@@ -319,6 +328,15 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("PredecessorCapabilityId")
                         .HasColumnType("uuid")
                         .HasColumnName("PredecessorCapabilityId");
+
+                    b.Property<Guid?>("PrincipalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("RetentionAuthorityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long?>("RetentionAuthorityRevision")
+                        .HasColumnType("bigint");
 
                     b.Property<long>("Revision")
                         .HasColumnType("bigint")
@@ -502,6 +520,12 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("CaptureExecutionBindingId");
 
+                    b.Property<string>("AuthorityMode")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(24)")
+                        .HasDefaultValue("HistoricalNonRetained");
+
                     b.Property<Guid>("BindOperationId")
                         .HasColumnType("uuid")
                         .HasColumnName("BindOperationId");
@@ -535,6 +559,9 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("ConfigurationRevision");
 
+                    b.Property<Guid?>("ConsentBindingId")
+                        .HasColumnType("uuid");
+
                     b.Property<long>("CredentialGeneration")
                         .HasColumnType("bigint")
                         .HasColumnName("CredentialGeneration");
@@ -559,10 +586,19 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("InstallationRevision");
 
+                    b.Property<Guid?>("PrincipalId")
+                        .HasColumnType("uuid");
+
                     b.Property<byte[]>("PublicKeyThumbprint")
                         .IsRequired()
                         .HasColumnType("bytea")
                         .HasColumnName("PublicKeyThumbprint");
+
+                    b.Property<Guid?>("RetentionAuthorityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long?>("RetentionAuthorityRevision")
+                        .HasColumnType("bigint");
 
                     b.Property<Guid>("RolePolicyId")
                         .HasColumnType("uuid")
@@ -2672,6 +2708,12 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.Property<int?>("AuthorityArtifactVersion")
                         .HasColumnType("integer");
 
+                    b.Property<string>("AuthorityKind")
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("varchar(32)")
+                        .HasDefaultValue("LegacyExport");
+
                     b.Property<Guid?>("AuthoritySnapshotId")
                         .HasColumnType("uuid");
 
@@ -2687,6 +2729,9 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ClientApplicationId")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid?>("ConsentBindingId")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid?>("ConsentPolicyId")
                         .HasColumnType("uuid");
 
@@ -2696,6 +2741,9 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.Property<string>("ControllerIdentity")
                         .HasMaxLength(128)
                         .HasColumnType("character varying(128)");
+
+                    b.Property<Guid?>("CustodyPrincipalId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("EvaluatedAtUtc")
                         .HasColumnType("timestamp with time zone");
@@ -2725,6 +2773,12 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.Property<DateTimeOffset>("RecordedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<Guid?>("RetentionAuthorityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long?>("RetentionAuthorityRevision")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("RetentionClass")
                         .HasMaxLength(64)
                         .HasColumnType("character varying(64)");
@@ -2752,6 +2806,9 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .HasColumnType("character varying(128)");
 
                     b.Property<Guid?>("RevokedByPrincipalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid?>("RuntimeBindingId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("StableDataScopeId")
@@ -2786,13 +2843,26 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.HasIndex("ConsentPolicyId", "ConsentPolicyVersion")
                         .HasDatabaseName("ix_raw_export_authority_consent_policy");
 
+                    b.HasIndex("RetentionAuthorityId", "RetentionAuthorityRevision")
+                        .HasDatabaseName("ix_a3_snapshot_retention_permit")
+                        .HasFilter("\"AuthorityKind\"='SourceRetention' AND \"EventType\"='Granted'");
+
+                    b.HasIndex("ClientApplicationId", "VerificationSessionId", "CaptureAcceptanceId", "RawClass", "RetentionAuthorityId", "RetentionAuthorityRevision", "RuntimeBindingId")
+                        .IsUnique()
+                        .HasDatabaseName("uq_a3_snapshot_retained_grant")
+                        .HasFilter("\"AuthorityKind\"='SourceRetention' AND \"EventType\"='Granted'");
+
                     b.ToTable("raw_export_authority_snapshots", "tagekyc", t =>
                         {
+                            t.HasCheckConstraint("ck_a3_snapshot_authority_kind", "\"AuthorityKind\" IN ('LegacyExport','SourceRetention')");
+
+                            t.HasCheckConstraint("ck_a3_snapshot_retention_shape", "(\"RetentionAuthorityId\" IS NULL OR \"RetentionAuthorityId\"<>'00000000-0000-0000-0000-000000000000'::uuid)\nAND (\"RetentionAuthorityRevision\" IS NULL OR \"RetentionAuthorityRevision\">0)\nAND (\"ConsentBindingId\" IS NULL OR \"ConsentBindingId\"<>'00000000-0000-0000-0000-000000000000'::uuid)\nAND (\"CustodyPrincipalId\" IS NULL OR \"CustodyPrincipalId\"<>'00000000-0000-0000-0000-000000000000'::uuid)\nAND (\"RuntimeBindingId\" IS NULL OR \"RuntimeBindingId\"<>'00000000-0000-0000-0000-000000000000'::uuid)\nAND (\n  (\"AuthorityKind\"='LegacyExport' AND \"RetentionAuthorityId\" IS NULL\n   AND \"RetentionAuthorityRevision\" IS NULL AND \"ConsentBindingId\" IS NULL\n   AND \"CustodyPrincipalId\" IS NULL AND \"RuntimeBindingId\" IS NULL\n   AND (\"ApprovedPurpose\" IS NULL OR \"ApprovedPurpose\"='SubjectRawBiometricExport'))\n  OR (\"AuthorityKind\"='SourceRetention' AND (\n    (\"EventType\"='Granted' AND \"ApprovedPurpose\"='SourceRetention'\n     AND \"RetentionAuthorityId\" IS NOT NULL AND \"RetentionAuthorityRevision\" IS NOT NULL\n     AND \"RetentionAuthorityRevision\">=1 AND \"ConsentBindingId\" IS NOT NULL\n     AND \"CustodyPrincipalId\" IS NOT NULL AND \"RuntimeBindingId\" IS NOT NULL\n     AND \"CustodyPrincipalId\"=\"CapturedByPrincipalId\")\n    OR (\"EventType\" IN ('Withdrawn','Revoked') AND \"RetentionAuthorityId\" IS NULL\n     AND \"RetentionAuthorityRevision\" IS NULL AND \"ConsentBindingId\" IS NULL\n     AND \"CustodyPrincipalId\" IS NULL AND \"RuntimeBindingId\" IS NULL AND \"ApprovedPurpose\" IS NULL)\n  ))\n)");
+
                             t.HasCheckConstraint("ck_raw_export_authority_snapshot_event_shape", "(\n    \"EventType\" = 'Granted'\n    AND \"TargetRevision\" IS NULL\n    AND \"ValidFromUtc\" IS NOT NULL\n    AND (\"ValidUntilUtc\" IS NULL OR \"ValidUntilUtc\" > \"ValidFromUtc\")\n    AND \"AuthoritySnapshotSchemaVersion\" IS NOT NULL\n    AND \"AuthoritySnapshotId\" IS NOT NULL\n    AND \"AuthorityArtifactId\" IS NOT NULL\n    AND \"AuthorityArtifactVersion\" IS NOT NULL\n    AND \"ControllerIdentity\" IS NOT NULL\n    AND \"ApprovedPurpose\" IS NOT NULL\n    AND \"StableDataScopeId\" IS NOT NULL\n    AND \"RetentionPolicyId\" IS NOT NULL\n    AND \"RetentionPolicyVersion\" IS NOT NULL\n    AND \"ConsentPolicyId\" IS NOT NULL\n    AND \"ConsentPolicyVersion\" IS NOT NULL\n    AND \"RetentionClass\" IS NOT NULL\n    AND \"RetentionStartEvent\" IS NOT NULL\n    AND \"AbsoluteSourceExpiresAtUtc\" IS NOT NULL\n    AND \"ReuseDisposition\" IS NOT NULL\n    AND \"ExtensionDisposition\" IS NOT NULL\n    AND \"RevocationPolicyId\" IS NOT NULL\n    AND \"PurgePolicyId\" IS NOT NULL\n    AND \"LegalHoldPolicyId\" IS NOT NULL\n    AND \"EvaluatedAtUtc\" IS NOT NULL\n    AND \"CapturedByPrincipalId\" IS NOT NULL\n    AND \"WithdrawnByPrincipalId\" IS NULL\n    AND \"RevokedByPrincipalId\" IS NULL\n) OR (\n    \"EventType\" = 'Withdrawn'\n    AND \"TargetRevision\" IS NOT NULL\n    AND \"ValidFromUtc\" IS NULL\n    AND \"ValidUntilUtc\" IS NULL\n    AND \"AuthoritySnapshotSchemaVersion\" IS NULL\n    AND \"AuthoritySnapshotId\" IS NULL\n    AND \"AuthorityArtifactId\" IS NULL\n    AND \"AuthorityArtifactVersion\" IS NULL\n    AND \"ControllerIdentity\" IS NULL\n    AND \"ApprovedPurpose\" IS NULL\n    AND \"StableDataScopeId\" IS NULL\n    AND \"RetentionPolicyId\" IS NULL\n    AND \"RetentionPolicyVersion\" IS NULL\n    AND \"ConsentPolicyId\" IS NULL\n    AND \"ConsentPolicyVersion\" IS NULL\n    AND \"RetentionClass\" IS NULL\n    AND \"RetentionStartEvent\" IS NULL\n    AND \"AbsoluteSourceExpiresAtUtc\" IS NULL\n    AND \"ReuseDisposition\" IS NULL\n    AND \"ExtensionDisposition\" IS NULL\n    AND \"RevocationPolicyId\" IS NULL\n    AND \"PurgePolicyId\" IS NULL\n    AND \"LegalHoldPolicyId\" IS NULL\n    AND \"EvaluatedAtUtc\" IS NULL\n    AND \"CapturedByPrincipalId\" IS NULL\n    AND \"WithdrawnByPrincipalId\" IS NOT NULL\n    AND \"RevokedByPrincipalId\" IS NULL\n) OR (\n    \"EventType\" = 'Revoked'\n    AND \"TargetRevision\" IS NOT NULL\n    AND \"ValidFromUtc\" IS NULL\n    AND \"ValidUntilUtc\" IS NULL\n    AND \"AuthoritySnapshotSchemaVersion\" IS NULL\n    AND \"AuthoritySnapshotId\" IS NULL\n    AND \"AuthorityArtifactId\" IS NULL\n    AND \"AuthorityArtifactVersion\" IS NULL\n    AND \"ControllerIdentity\" IS NULL\n    AND \"ApprovedPurpose\" IS NULL\n    AND \"StableDataScopeId\" IS NULL\n    AND \"RetentionPolicyId\" IS NULL\n    AND \"RetentionPolicyVersion\" IS NULL\n    AND \"ConsentPolicyId\" IS NULL\n    AND \"ConsentPolicyVersion\" IS NULL\n    AND \"RetentionClass\" IS NULL\n    AND \"RetentionStartEvent\" IS NULL\n    AND \"AbsoluteSourceExpiresAtUtc\" IS NULL\n    AND \"ReuseDisposition\" IS NULL\n    AND \"ExtensionDisposition\" IS NULL\n    AND \"RevocationPolicyId\" IS NULL\n    AND \"PurgePolicyId\" IS NULL\n    AND \"LegalHoldPolicyId\" IS NULL\n    AND \"EvaluatedAtUtc\" IS NULL\n    AND \"CapturedByPrincipalId\" IS NULL\n    AND \"WithdrawnByPrincipalId\" IS NULL\n    AND \"RevokedByPrincipalId\" IS NOT NULL\n)");
 
                             t.HasCheckConstraint("ck_raw_export_authority_snapshot_event_type", "\"EventType\" IN ('Granted','Withdrawn','Revoked')");
 
-                            t.HasCheckConstraint("ck_raw_export_authority_snapshot_values", "\"Revision\" >= 1\nAND (\"TargetRevision\" IS NULL OR \"TargetRevision\" >= 1)\nAND \"ClientApplicationId\" <> '00000000-0000-0000-0000-000000000000'::uuid\nAND \"VerificationSessionId\" <> '00000000-0000-0000-0000-000000000000'::uuid\nAND \"CaptureAcceptanceId\" <> '00000000-0000-0000-0000-000000000000'::uuid\nAND btrim(\"RawClass\") <> ''\nAND (\"AuthoritySnapshotSchemaVersion\" IS NULL OR \"AuthoritySnapshotSchemaVersion\" = 1)\nAND (\"AuthorityArtifactVersion\" IS NULL OR \"AuthorityArtifactVersion\" >= 1)\nAND (\"RetentionPolicyVersion\" IS NULL OR \"RetentionPolicyVersion\" >= 1)\nAND (\"ConsentPolicyVersion\" IS NULL OR \"ConsentPolicyVersion\" >= 1)\nAND (\"AuthoritySnapshotId\" IS NULL OR \"AuthoritySnapshotId\" <> '00000000-0000-0000-0000-000000000000'::uuid)\nAND (\"AuthorityArtifactId\" IS NULL OR \"AuthorityArtifactId\" <> '00000000-0000-0000-0000-000000000000'::uuid)\nAND (\"ControllerIdentity\" IS NULL OR btrim(\"ControllerIdentity\") <> '')\nAND (\"ApprovedPurpose\" IS NULL OR \"ApprovedPurpose\" = 'SubjectRawBiometricExport')\nAND (\"StableDataScopeId\" IS NULL OR btrim(\"StableDataScopeId\") <> '')\nAND (\"RetentionPolicyId\" IS NULL OR btrim(\"RetentionPolicyId\") <> '')\nAND (\"RetentionClass\" IS NULL OR btrim(\"RetentionClass\") <> '')\nAND (\"RetentionStartEvent\" IS NULL OR btrim(\"RetentionStartEvent\") <> '')\nAND (\"ReuseDisposition\" IS NULL OR \"ReuseDisposition\" = 'FreshAuthorityRequired')\nAND (\"ExtensionDisposition\" IS NULL OR \"ExtensionDisposition\" = 'Forbidden')\nAND (\"RevocationPolicyId\" IS NULL OR btrim(\"RevocationPolicyId\") <> '')\nAND (\"PurgePolicyId\" IS NULL OR btrim(\"PurgePolicyId\") <> '')\nAND (\"LegalHoldPolicyId\" IS NULL OR btrim(\"LegalHoldPolicyId\") <> '')\nAND (\n    \"AbsoluteSourceExpiresAtUtc\" IS NULL\n    OR \"EvaluatedAtUtc\" IS NULL\n    OR \"AbsoluteSourceExpiresAtUtc\" > \"EvaluatedAtUtc\"\n)");
+                            t.HasCheckConstraint("ck_raw_export_authority_snapshot_values", "\"Revision\" >= 1\nAND (\"TargetRevision\" IS NULL OR \"TargetRevision\" >= 1)\nAND \"ClientApplicationId\" <> '00000000-0000-0000-0000-000000000000'::uuid\nAND \"VerificationSessionId\" <> '00000000-0000-0000-0000-000000000000'::uuid\nAND \"CaptureAcceptanceId\" <> '00000000-0000-0000-0000-000000000000'::uuid\nAND btrim(\"RawClass\") <> ''\nAND (\"AuthoritySnapshotSchemaVersion\" IS NULL OR \"AuthoritySnapshotSchemaVersion\" = 1)\nAND (\"AuthorityArtifactVersion\" IS NULL OR \"AuthorityArtifactVersion\" >= 1)\nAND (\"RetentionPolicyVersion\" IS NULL OR \"RetentionPolicyVersion\" >= 1)\nAND (\"ConsentPolicyVersion\" IS NULL OR \"ConsentPolicyVersion\" >= 1)\nAND (\"AuthoritySnapshotId\" IS NULL OR \"AuthoritySnapshotId\" <> '00000000-0000-0000-0000-000000000000'::uuid)\nAND (\"AuthorityArtifactId\" IS NULL OR \"AuthorityArtifactId\" <> '00000000-0000-0000-0000-000000000000'::uuid)\nAND (\"ControllerIdentity\" IS NULL OR btrim(\"ControllerIdentity\") <> '')\nAND (\"ApprovedPurpose\" IS NULL OR \"ApprovedPurpose\" IN ('SubjectRawBiometricExport','SourceRetention'))\nAND (\"StableDataScopeId\" IS NULL OR btrim(\"StableDataScopeId\") <> '')\nAND (\"RetentionPolicyId\" IS NULL OR btrim(\"RetentionPolicyId\") <> '')\nAND (\"RetentionClass\" IS NULL OR btrim(\"RetentionClass\") <> '')\nAND (\"RetentionStartEvent\" IS NULL OR btrim(\"RetentionStartEvent\") <> '')\nAND (\"ReuseDisposition\" IS NULL OR \"ReuseDisposition\" = 'FreshAuthorityRequired')\nAND (\"ExtensionDisposition\" IS NULL OR \"ExtensionDisposition\" = 'Forbidden')\nAND (\"RevocationPolicyId\" IS NULL OR btrim(\"RevocationPolicyId\") <> '')\nAND (\"PurgePolicyId\" IS NULL OR btrim(\"PurgePolicyId\") <> '')\nAND (\"LegalHoldPolicyId\" IS NULL OR btrim(\"LegalHoldPolicyId\") <> '')\nAND (\n    \"AbsoluteSourceExpiresAtUtc\" IS NULL\n    OR \"EvaluatedAtUtc\" IS NULL\n    OR \"AbsoluteSourceExpiresAtUtc\" > \"EvaluatedAtUtc\"\n)");
                         });
                 });
 
@@ -5474,6 +5544,20 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("ProvisionalObjectIdentity")
                         .HasColumnType("uuid");
 
+                    b.Property<DateTimeOffset?>("R2TerminalIntentAtUtc")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("R2TerminalIntentCode")
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<string>("R2TerminalIntentDisposition")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<string>("R2TerminalOutcomeCode")
+                        .HasColumnType("text");
+
                     b.Property<DateTimeOffset?>("R2TerminatedAtUtc")
                         .HasColumnType("timestamp with time zone");
 
@@ -5539,6 +5623,10 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
 
                     b.ToTable("raw_export_source_encryption_attempts", "tagekyc", t =>
                         {
+                            t.HasCheckConstraint("ck_a3_r2_terminal_intent", "((\"R2TerminalIntentCode\" IS NULL AND \"R2TerminalIntentDisposition\" IS NULL AND \"R2TerminalIntentAtUtc\" IS NULL)\n OR (\"R2TerminalIntentCode\" IS NOT NULL AND \"R2TerminalIntentDisposition\" IS NOT NULL AND \"R2TerminalIntentAtUtc\" IS NOT NULL\n AND \"R2TerminalIntentCode\" IN ('RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED','CONTENT_COMMITMENT_MISMATCH','RECAPTURE_REQUIRED')\n AND \"R2TerminalIntentDisposition\" IN ('Terminated','TerminatedBeforeStart')))\n AND (\"R2TerminalOutcomeCode\" IS NULL OR \"R2TerminalIntentCode\" IS NULL\n OR (\"R2TerminalOutcomeCode\"=\"R2TerminalIntentCode\" AND \"R2TerminationDisposition\" IS NOT NULL\n AND \"R2TerminationDisposition\"=\"R2TerminalIntentDisposition\"))");
+
+                            t.HasCheckConstraint("ck_raw_export_source_attempt_r2_terminal_outcome", "\"R2TerminalOutcomeCode\" IS NULL OR (\"R2TerminationDisposition\" IN ('Terminated','TerminatedBeforeStart') AND \"R2TerminatedAtUtc\" IS NOT NULL AND \"R2TerminalOutcomeCode\" IN ('RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED','CONTENT_COMMITMENT_MISMATCH','RECAPTURE_REQUIRED'))");
+
                             t.HasCheckConstraint("ck_raw_export_source_attempt_values", "\"SchemaVersion\" = 1\nAND \"EncryptionAttemptRevision\" >= 1\nAND \"Fence\" >= 1\nAND \"KekVersion\" >= 1\nAND \"EncryptionFramingVersion\" >= 1\nAND \"ChunkSize\" >= 1\nAND octet_length(\"NonceDerivationSeedCommitment\") = 32\nAND octet_length(\"FramingParametersDigest\") = 32\nAND octet_length(\"EncryptionAttemptFingerprint\") = 32\nAND (\n  (\"R2TerminationDisposition\" IS NULL AND \"R2TerminatedAtUtc\" IS NULL)\n  OR\n  (\"R2TerminationDisposition\" IN ('Terminated','TerminatedBeforeStart')\n   AND \"R2TerminatedAtUtc\" IS NOT NULL)\n)\nAND (\n  (\n    \"StagedCiphertextFingerprintSchemaVersion\" IS NULL\n    AND \"StagedCiphertextFingerprint\" IS NULL\n    AND \"StagedObjectCustodyId\" IS NULL\n    AND \"StagedObjectStateRevision\" IS NULL\n    AND \"StagedFromReservationRevision\" IS NULL\n    AND \"VerifiedPlaintextLength\" IS NULL\n    AND \"StagedCiphertextLength\" IS NULL\n    AND \"StagedCiphertextDigest\" IS NULL\n    AND \"StagedProviderReceiptDigest\" IS NULL\n    AND \"StagedVerificationEvidenceDigest\" IS NULL\n    AND \"StagedAtUtc\" IS NULL\n  )\n  OR\n  (\n    \"R2TerminationDisposition\" IS NULL\n    AND \"R2TerminatedAtUtc\" IS NULL\n    AND \"StagedCiphertextFingerprintSchemaVersion\" IS NOT NULL\n    AND \"StagedCiphertextFingerprint\" IS NOT NULL\n    AND \"StagedObjectCustodyId\" IS NOT NULL\n    AND \"StagedObjectStateRevision\" IS NOT NULL\n    AND \"StagedFromReservationRevision\" IS NOT NULL\n    AND \"VerifiedPlaintextLength\" IS NOT NULL\n    AND \"StagedCiphertextLength\" IS NOT NULL\n    AND \"StagedCiphertextDigest\" IS NOT NULL\n    AND \"StagedProviderReceiptDigest\" IS NOT NULL\n    AND \"StagedVerificationEvidenceDigest\" IS NOT NULL\n    AND \"StagedAtUtc\" IS NOT NULL\n    AND \"StagedCiphertextFingerprintSchemaVersion\" = 2\n    AND octet_length(\"StagedCiphertextFingerprint\") = 32\n    AND \"StagedObjectStateRevision\" >= 1\n    AND \"StagedFromReservationRevision\" >= 1\n    AND \"VerifiedPlaintextLength\" >= 1\n    AND \"StagedCiphertextLength\" BETWEEN 1 AND 134217728\n    AND octet_length(\"StagedCiphertextDigest\") = 32\n    AND octet_length(\"StagedProviderReceiptDigest\") = 32\n    AND octet_length(\"StagedVerificationEvidenceDigest\") = 32\n    AND \"StagedAtUtc\" IS NOT NULL\n  )\n)");
                         });
                 });
@@ -6191,6 +6279,246 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawSourceConsentBindingRow", b =>
+                {
+                    b.Property<Guid>("ConsentBindingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ConsentReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("ConsentReferenceRevision")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("PrincipalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("RecordedAtUtc")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("SubjectRef")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("VerificationSessionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("ConsentBindingId")
+                        .HasName("PK_a3_consent_binding");
+
+                    b.ToTable("raw_source_consent_bindings", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawSourceConsentReferenceEventRow", b =>
+                {
+                    b.Property<Guid>("ConsentReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ConsentTextContentHash")
+                        .IsRequired()
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("ConsentTextVersion")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("DecisionRef")
+                        .HasColumnType("varchar(256)");
+
+                    b.Property<string>("EventType")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<Guid>("IdempotencyKey")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("OperationDomain")
+                        .IsRequired()
+                        .HasColumnType("varchar(16)");
+
+                    b.Property<DateTimeOffset>("RecordedAtUtc")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<Guid>("RecordedByPrincipalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("SourceVersion")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<DateTimeOffset>("ValidFromUtc")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<DateTimeOffset>("ValidUntilUtc")
+                        .HasColumnType("timestamptz");
+
+                    b.HasKey("ConsentReferenceId", "Revision")
+                        .HasName("PK_a3_consent_reference_event");
+
+                    b.ToTable("raw_source_consent_reference_events", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawSourceConsentReferenceRow", b =>
+                {
+                    b.Property<Guid>("ConsentReferenceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ClientApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("CurrentRevision")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("ExternalConsentArtifactRef")
+                        .IsRequired()
+                        .HasColumnType("varchar(512)");
+
+                    b.Property<string>("SubjectRef")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("ConsentReferenceId")
+                        .HasName("PK_a3_consent_reference");
+
+                    b.ToTable("raw_source_consent_references", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawSourceRetentionPermitClassRow", b =>
+                {
+                    b.Property<Guid>("RetentionAuthorityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("RawClass")
+                        .HasColumnType("varchar(32)");
+
+                    b.HasKey("RetentionAuthorityId", "Revision", "RawClass")
+                        .HasName("PK_a3_retention_permit_class");
+
+                    b.ToTable("raw_source_retention_permit_classes", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
+            modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawSourceRetentionPermitRow", b =>
+                {
+                    b.Property<Guid>("RetentionAuthorityId")
+                        .HasColumnType("uuid");
+
+                    b.Property<long>("Revision")
+                        .HasColumnType("bigint");
+
+                    b.Property<Guid>("ClientApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ConsentBindingId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("ControllerIdentity")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<DateTimeOffset>("ExpiresAtUtc")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<Guid>("IssueOperationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("IssuedAtUtc")
+                        .HasColumnType("timestamptz");
+
+                    b.Property<string>("LegalHoldPolicyId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<int>("MaximumRetentionSeconds")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("PolicyId")
+                        .HasColumnType("uuid");
+
+                    b.Property<int>("PolicyVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<Guid>("PrincipalId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("PurgePolicyId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("Purpose")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<byte[]>("RequestFingerprint")
+                        .IsRequired()
+                        .HasColumnType("bytea");
+
+                    b.Property<string>("RetentionClass")
+                        .IsRequired()
+                        .HasColumnType("varchar(64)");
+
+                    b.Property<string>("RetentionPolicyId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<int>("RetentionPolicyVersion")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("RetentionStartEvent")
+                        .IsRequired()
+                        .HasColumnType("varchar(32)");
+
+                    b.Property<string>("RevocationPolicyId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<string>("StableDataScopeId")
+                        .IsRequired()
+                        .HasColumnType("varchar(128)");
+
+                    b.Property<Guid>("VerificationSessionId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("RetentionAuthorityId", "Revision")
+                        .HasName("PK_a3_retention_permit");
+
+                    b.ToTable("raw_source_retention_permits", "tagekyc", t =>
+                        {
+                            t.ExcludeFromMigrations();
+                        });
+                });
+
             modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.VerificationDecisionRow", b =>
                 {
                     b.Property<Guid>("Id")
@@ -6525,6 +6853,18 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasConstraintName("fk_raw_export_authority_snapshot_acceptance");
 
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.RawSourceConsentBindingRow", null)
+                        .WithMany()
+                        .HasForeignKey("ConsentBindingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_a3_snapshot_consent_binding");
+
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.CaptureExecutionBindingsRow", null)
+                        .WithMany()
+                        .HasForeignKey("RuntimeBindingId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_a3_snapshot_runtime_binding");
+
                     b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.VerificationSessionRow", null)
                         .WithMany()
                         .HasForeignKey("VerificationSessionId")
@@ -6537,6 +6877,12 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
                         .HasForeignKey("ConsentPolicyId", "ConsentPolicyVersion")
                         .OnDelete(DeleteBehavior.Restrict)
                         .HasConstraintName("fk_raw_export_authority_snapshot_consent_policy");
+
+                    b.HasOne("TagEkyc.Infrastructure.Persistence.Entities.RawSourceRetentionPermitRow", null)
+                        .WithMany()
+                        .HasForeignKey("RetentionAuthorityId", "RetentionAuthorityRevision")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .HasConstraintName("fk_a3_snapshot_retention_permit");
                 });
 
             modelBuilder.Entity("TagEkyc.Infrastructure.Persistence.Entities.RawExportAuthorizationDecisionRow", b =>

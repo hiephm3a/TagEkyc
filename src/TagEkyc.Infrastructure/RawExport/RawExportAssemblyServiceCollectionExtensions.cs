@@ -7,6 +7,7 @@ using Npgsql;
 using TagEkyc.Application.Ports;
 using TagEkyc.Contracts.RawExport;
 using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.ProtectedValues;
 
 namespace TagEkyc.Infrastructure.RawExport;
 
@@ -19,10 +20,31 @@ public static class RawExportAssemblyServiceCollectionExtensions
     {
         var options = RawExportAssemblyOptions.Resolve(configuration);
         services.TryAddSingleton(options);
+        var runtime = RawExportAssemblyRuntimeOptions.Resolve(configuration, isProduction);
+        services.TryAddSingleton(runtime);
         services.TryAddSingleton(new RawExportAssemblyHostPosture(isProduction));
         services.TryAddScoped<RawExportAssemblyReadinessValidator>();
-        if (options.Topology != RawExportAssemblyTopology.FixtureProof || isProduction)
+        var graphEnabled = options.Topology == RawExportAssemblyTopology.DurableWorker
+            || options.Topology == RawExportAssemblyTopology.FixtureProof && !isProduction;
+        if (!graphEnabled)
             return services;
+
+        services.TryAddSingleton<SecretRefProtectedValueProvider>();
+        services.TryAddEnumerable(ServiceDescriptor.Singleton<IProtectedValueProvider, SecretRefProtectedValueProvider>());
+        services.TryAddSingleton(new ProtectedValueResolverOptions());
+        services.TryAddSingleton(TimeProvider.System);
+        services.TryAddSingleton(serviceProvider =>
+            ProtectedValueProviderRegistry.CreateTerminal(
+                serviceProvider.GetServices<IProtectedValueProvider>()));
+        services.TryAddSingleton<RawExportAssemblyAuthenticationCatalog>();
+        services.TryAddSingleton<IRawExportAssemblyAuthenticationProvider,
+            ProtectedValueRawExportAssemblyAuthenticationProvider>();
+        services.TryAddSingleton<IRawExportAssemblyConnectionFactory, RawExportAssemblyConnectionFactory>();
+        if (options.Topology == RawExportAssemblyTopology.DurableWorker)
+        {
+            services.TryAddSingleton(new RawExportAssemblyWorkerIdentity(Guid.NewGuid()));
+            services.TryAddScoped<IRawExportAssemblyWorkSource, DurableRawExportAssemblyWorkSource>();
+        }
 
         services.TryAddScoped<RawExportAssemblyRepository>();
         services.TryAddScoped<RawExportFramedSourceVerificationService>();
@@ -50,9 +72,13 @@ public sealed class RawExportAssemblyReadinessValidator(
     public async Task ValidateAsync(CancellationToken cancellationToken)
     {
         if (options.Topology == RawExportAssemblyTopology.Invalid
-            || (host.IsProduction && options.Topology != RawExportAssemblyTopology.Disabled))
+            || (host.IsProduction && options.Topology == RawExportAssemblyTopology.FixtureProof))
             throw new RawExportAssemblyReadinessException(RawExportAssemblyOptions.ConfigInvalid);
         if (options.Topology == RawExportAssemblyTopology.Disabled) return;
+        if (options.Topology == RawExportAssemblyTopology.DurableWorker
+            && (options.PollIntervalMilliseconds is not (>= 10 and <= 60_000)
+                || services.GetService<IRawExportAssemblyWorkSource>() is null))
+            throw new RawExportAssemblyReadinessException(RawExportAssemblyOptions.WorkSourceUnavailable);
 
         if (services.GetService<IRawExportAssemblyAuthenticationProvider>() is null)
             throw new RawExportAssemblyReadinessException(RawExportAssemblyOptions.AuthenticatorUnavailable);
@@ -90,7 +116,8 @@ public sealed class RawExportAssemblyReadinessValidator(
               ('raw_export_record_assembly_finalized','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_record_assembly_aborted','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_read_assembly_recovery_context','uuid','tagekyc_raw_export_assembly_sealer'),
-              ('raw_export_read_committed_assembly_recovery_context','uuid, uuid, bigint, bigint','tagekyc_raw_export_assembly_sealer')),
+              ('raw_export_read_committed_assembly_recovery_context','uuid, uuid, bigint, bigint','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_next_assembly_candidate','','tagekyc_raw_export_assembly_resolver')),
             role_check AS (
               SELECT pg_catalog.count(*)=4 AND pg_catalog.bool_and(
                 r.rolinherit AND NOT r.rolsuper AND NOT r.rolcreatedb AND NOT r.rolcreaterole
@@ -115,7 +142,7 @@ public sealed class RawExportAssemblyReadinessValidator(
               JOIN pg_catalog.pg_namespace n ON n.nspname='tagekyc'
               JOIN pg_catalog.pg_class c ON c.relnamespace=n.oid AND c.relname=e.name AND c.relkind='r'),
             function_check AS (
-              SELECT pg_catalog.count(*)=10 AND pg_catalog.bool_and(
+              SELECT pg_catalog.count(*)=11 AND pg_catalog.bool_and(
                 pg_catalog.pg_get_userbyid(p.proowner)='tagekyc_raw_export_deployer'
                 AND p.prosecdef AND p.proconfig=ARRAY['search_path=pg_catalog']::text[]
                 AND EXISTS (
@@ -136,7 +163,7 @@ public sealed class RawExportAssemblyReadinessValidator(
               JOIN pg_catalog.pg_proc p ON p.pronamespace=n.oid AND p.proname=e.name
                 AND pg_catalog.oidvectortypes(p.proargtypes)=e.args),
             function_surface_check AS (
-              SELECT pg_catalog.count(*)=10 AS ok
+              SELECT pg_catalog.count(*)=11 AS ok
               FROM pg_catalog.pg_proc p
               JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
               WHERE n.nspname='tagekyc'

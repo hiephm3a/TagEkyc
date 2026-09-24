@@ -23,6 +23,10 @@ public sealed class RawExportSourceEncryptionAttemptRow
     public DateTimeOffset OwnershipLeaseExpiresAtUtc { get; set; }
     public string? R2TerminationDisposition { get; set; }
     public DateTimeOffset? R2TerminatedAtUtc { get; set; }
+    public string? R2TerminalOutcomeCode { get; set; }
+    public string? R2TerminalIntentCode { get; set; }
+    public string? R2TerminalIntentDisposition { get; set; }
+    public DateTimeOffset? R2TerminalIntentAtUtc { get; set; }
     public int? StagedCiphertextFingerprintSchemaVersion { get; set; }
     public byte[]? StagedCiphertextFingerprint { get; set; }
     public Guid? StagedObjectCustodyId { get; set; }

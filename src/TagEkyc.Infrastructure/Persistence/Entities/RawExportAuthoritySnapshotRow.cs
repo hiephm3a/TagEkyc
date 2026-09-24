@@ -2,6 +2,12 @@ namespace TagEkyc.Infrastructure.Persistence.Entities;
 
 public sealed class RawExportAuthoritySnapshotRow
 {
+    public string AuthorityKind { get; set; } = "LegacyExport";
+    public Guid? RetentionAuthorityId { get; set; }
+    public long? RetentionAuthorityRevision { get; set; }
+    public Guid? ConsentBindingId { get; set; }
+    public Guid? CustodyPrincipalId { get; set; }
+    public Guid? RuntimeBindingId { get; set; }
     public Guid AuthoritySnapshotEventId { get; set; }
     public string EventType { get; set; } = string.Empty;
     public long Revision { get; set; }

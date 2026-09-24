@@ -104,7 +104,9 @@ internal sealed class RawExportAssemblyOrchestrator(
             if (prepared.Outcome is C2AssemblyPrepareOutcome.OutcomeUnknown)
                 return Failure(RawExportAssemblyExecutionOutcome.ProviderOutcomeUnknown, assemblyId, preparationId);
             if (prepared.Outcome is C2AssemblyPrepareOutcome.Conflict || prepared.ProviderReceiptDigest is not { Length: 32 })
-                return Failure(RawExportAssemblyExecutionOutcome.PreparationConflict, assemblyId, preparationId);
+                return await AbortPreparedFailureAsync(
+                    repository, c2, preparationId, registered.RowRevision.Value,
+                    assemblyFingerprint, assemblyId, cancellationToken).ConfigureAwait(false);
 
             var pending = await repository.RecordPendingAsync(
                 preparationId, registered.RowRevision.Value, prepared.ProviderReceiptDigest, cancellationToken).ConfigureAwait(false);
@@ -115,7 +117,15 @@ internal sealed class RawExportAssemblyOrchestrator(
                 preparationId, request, pending.RowRevision.Value, derivation,
                 authentication.KeyId, authentication.KeyVersion, header.Items, cancellationToken).ConfigureAwait(false);
             if (sealedResult.Outcome is not ("Sealed" or "ExistingMatch") || sealedResult.PreparationRevision is null)
-                return Failure(Map(sealedResult.Outcome), assemblyId, preparationId);
+            {
+                var mapped = Map(sealedResult.Outcome);
+                if (sealedResult.Outcome is "AuthorityInvalid" or "LeaseLost" or "Expired" or
+                    "AssemblyClassSetMismatch" or "SourceBindingInvalid" or "AssemblyConflict")
+                    return await AbortSealFailureAsync(
+                        repository, c2, preparationId, pending.RowRevision.Value,
+                        assemblyFingerprint, assemblyId, mapped, cancellationToken).ConfigureAwait(false);
+                return Failure(mapped, assemblyId, preparationId);
+            }
 
             var finalized = await FinalizeOrRecoverAsync(
                 c2, preparationId, assemblyFingerprint, cancellationToken).ConfigureAwait(false);
@@ -134,9 +144,18 @@ internal sealed class RawExportAssemblyOrchestrator(
                 sealedResult.Outcome == "ExistingMatch" ? RawExportAssemblyExecutionOutcome.ExistingMatch : RawExportAssemblyExecutionOutcome.Sealed,
                 assemblyId, preparationId, sealedResult.JobRevision, recorded.RowRevision);
         }
-        catch (RawExportAssemblySourceReadException)
+        catch (RawExportAssemblySourceReadException exception)
         {
-            return Failure(RawExportAssemblyExecutionOutcome.VerificationIndeterminate, assemblyId);
+            return Failure(exception.Disposition switch
+            {
+                RawExportAssemblySourceDisposition.DeterministicCiphertextInvalid or
+                    RawExportAssemblySourceDisposition.HistoricCommitmentMismatch =>
+                    RawExportAssemblyExecutionOutcome.SourceIntegrityInvalid,
+                RawExportAssemblySourceDisposition.KeyAccessIndeterminate or
+                    RawExportAssemblySourceDisposition.ObjectReadIndeterminate =>
+                    RawExportAssemblyExecutionOutcome.SourceUnavailable,
+                _ => RawExportAssemblyExecutionOutcome.VerificationIndeterminate,
+            }, assemblyId);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
@@ -264,6 +283,74 @@ internal sealed class RawExportAssemblyOrchestrator(
             : new(C2AssemblyAbortOutcome.Conflict);
     }
 
+    private static async Task<RawExportAssemblyExecutionResult> AbortPreparedFailureAsync(
+        RawExportAssemblyRepository repository,
+        IC2AssemblyPreparationProvider c2,
+        Guid preparationId,
+        long rowRevision,
+        byte[] assemblyFingerprint,
+        Guid assemblyId,
+        CancellationToken cancellationToken)
+    {
+        var authorization = AbortAuthorizationDigest(preparationId, assemblyFingerprint);
+        try
+        {
+            var durable = await repository.AuthorizeAbortAsync(
+                preparationId, rowRevision, authorization, cancellationToken).ConfigureAwait(false);
+            if (durable.Outcome is not ("AbortAuthorized" or "ExistingMatch") || durable.RowRevision is null)
+                return Failure(RawExportAssemblyExecutionOutcome.PreparationConflict, assemblyId, preparationId);
+            var aborted = await CompleteAuthorizedAbortAsync(
+                repository, c2, preparationId, authorization, cancellationToken).ConfigureAwait(false);
+            return aborted.Outcome is C2AssemblyAbortOutcome.Aborted or C2AssemblyAbortOutcome.ExistingMatch
+                ? Failure(RawExportAssemblyExecutionOutcome.AssemblyPrepareFailed, assemblyId, preparationId)
+                : Failure(RawExportAssemblyExecutionOutcome.PreparationConflict, assemblyId, preparationId);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(authorization);
+        }
+    }
+
+    private static async Task<RawExportAssemblyExecutionResult> AbortSealFailureAsync(
+        RawExportAssemblyRepository repository,
+        IC2AssemblyPreparationProvider c2,
+        Guid preparationId,
+        long rowRevision,
+        byte[] assemblyFingerprint,
+        Guid assemblyId,
+        RawExportAssemblyExecutionOutcome failure,
+        CancellationToken cancellationToken)
+    {
+        var authorization = AbortAuthorizationDigest(preparationId, assemblyFingerprint);
+        try
+        {
+            var durable = await repository.AuthorizeAbortAsync(
+                preparationId, rowRevision, authorization, cancellationToken).ConfigureAwait(false);
+            if (durable.Outcome is not ("AbortAuthorized" or "ExistingMatch") || durable.RowRevision is null)
+                return Failure(RawExportAssemblyExecutionOutcome.PreparationConflict, assemblyId, preparationId);
+            var aborted = await CompleteAuthorizedAbortAsync(
+                repository, c2, preparationId, authorization, cancellationToken).ConfigureAwait(false);
+            return aborted.Outcome is C2AssemblyAbortOutcome.Aborted or C2AssemblyAbortOutcome.ExistingMatch
+                ? Failure(failure, assemblyId, preparationId)
+                : Failure(RawExportAssemblyExecutionOutcome.PreparationConflict, assemblyId, preparationId);
+        }
+        finally
+        {
+            CryptographicOperations.ZeroMemory(authorization);
+        }
+    }
+
+    private static byte[] AbortAuthorizationDigest(Guid preparationId, ReadOnlySpan<byte> assemblyFingerprint)
+    {
+        using var hash = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+        hash.AppendData("tip-88c1-c1-assembly-abort-authorization-v1"u8);
+        Span<byte> id = stackalloc byte[16];
+        preparationId.TryWriteBytes(id, bigEndian: true, out _);
+        hash.AppendData(id);
+        hash.AppendData(assemblyFingerprint);
+        return hash.GetHashAndReset();
+    }
+
     private static bool ExactInspection(
         C2AssemblyInspection inspection,
         ReadOnlySpan<byte> expectedFingerprint,
@@ -304,8 +391,13 @@ internal sealed class RawExportAssemblyOrchestrator(
     {
         "NotFoundOrNotAllowed" => RawExportAssemblyExecutionOutcome.NotFoundOrNotAllowed,
         "AuthorityInvalid" => RawExportAssemblyExecutionOutcome.AuthorityInvalid,
+        "SelectionNone" => RawExportAssemblyExecutionOutcome.SelectionNone,
+        "SelectionAmbiguous" => RawExportAssemblyExecutionOutcome.SelectionAmbiguous,
         "SourceUnavailable" => RawExportAssemblyExecutionOutcome.SourceUnavailable,
-        "BindingConflict" => RawExportAssemblyExecutionOutcome.BindingConflict,
+        "BindingConflict" or "SourceBindingInvalid" => RawExportAssemblyExecutionOutcome.SourceBindingInvalid,
+        "SourceIntegrityInvalid" => RawExportAssemblyExecutionOutcome.SourceIntegrityInvalid,
+        "AssemblyPrepareFailed" => RawExportAssemblyExecutionOutcome.AssemblyPrepareFailed,
+        "AssemblyClassSetMismatch" => RawExportAssemblyExecutionOutcome.AssemblyClassSetMismatch,
         "AssemblyConflict" => RawExportAssemblyExecutionOutcome.AssemblyConflict,
         "PreparationConflict" => RawExportAssemblyExecutionOutcome.PreparationConflict,
         "LeaseLost" => RawExportAssemblyExecutionOutcome.LeaseLost,

@@ -10,6 +10,8 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
     private readonly IAttemptAeadEncryptionOperation encryption;
     private readonly IContentCommitmentService contentCommitments;
     private readonly Func<int, byte[]> randomBytes;
+    private readonly IRawExportR2TerminalIntentRecorder? terminalIntentRecorder;
+    private readonly long plaintextLimit;
     private readonly RawExportR2Header header;
     private readonly byte[] headerDigest;
     private readonly byte[] envelopeMetadataDigest;
@@ -25,6 +27,9 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
     private bool headerEmitted;
     private bool finalEmitted;
     private bool disposed;
+    private bool failed;
+    private long actualPlaintext;
+    private RawExportR2InputObservation inputObservation;
 
     internal RawExportR2FramedCiphertextStream(
         Stream source,
@@ -32,7 +37,9 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
         byte[] objectBindingDigest,
         IAttemptAeadEncryptionOperation encryption,
         IContentCommitmentService contentCommitments,
-        Func<int, byte[]>? randomBytes = null)
+        Func<int, byte[]>? randomBytes = null,
+        IRawExportR2TerminalIntentRecorder? terminalIntentRecorder = null,
+        long? classMaximumBytes = null)
     {
         ArgumentNullException.ThrowIfNull(source);
         ArgumentNullException.ThrowIfNull(context);
@@ -44,9 +51,14 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
             throw new ArgumentException("Plaintext source must be readable.", nameof(source));
         if (context.ClaimedPlaintextLength < 1)
             throw new ArgumentOutOfRangeException(nameof(context));
+        if (classMaximumBytes is <= 0)
+            throw new ArgumentOutOfRangeException(nameof(classMaximumBytes));
 
         this.source = source;
         this.context = context;
+        this.terminalIntentRecorder = terminalIntentRecorder;
+        plaintextLimit = Math.Min(context.ClaimedPlaintextLength,
+            classMaximumBytes ?? context.ClaimedPlaintextLength);
         remainingPlaintext = context.ClaimedPlaintextLength;
         header = new(
             context.AttemptId,
@@ -94,6 +106,8 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
 
     internal bool Completed => finalEmitted && current is null;
 
+    internal RawExportR2InputObservation InputObservation => inputObservation;
+
     internal RawExportR2Header Header => header;
 
     public override bool CanRead => !disposed;
@@ -115,13 +129,24 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
         CancellationToken cancellationToken = default)
     {
         ObjectDisposedException.ThrowIf(disposed, this);
+        if (failed)
+            throw new IOException("RAW_EXPORT_R2_INPUT_ALREADY_FAILED");
         if (buffer.Length == 0)
             return 0;
 
         if (current is null || currentOffset == current.Length)
         {
             ReleaseCurrent();
-            current = await BuildNextAsync(cancellationToken).ConfigureAwait(false);
+            try
+            {
+                current = await BuildNextAsync(cancellationToken).ConfigureAwait(false);
+            }
+            catch
+            {
+                failed = true;
+                Observe(RawExportR2InputCompletionKind.EncryptionProviderFailure);
+                throw;
+            }
             currentOffset = 0;
             if (current is null)
                 return 0;
@@ -130,7 +155,60 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
         var count = Math.Min(buffer.Length, current.Length - currentOffset);
         current.AsMemory(currentOffset, count).CopyTo(buffer);
         currentOffset += count;
+        if (finalEmitted && currentOffset == current.Length)
+            Observe(RawExportR2InputCompletionKind.CompleteMatch);
         return count;
+    }
+
+    private void Observe(RawExportR2InputCompletionKind kind)
+    {
+        if (inputObservation.Kind == RawExportR2InputCompletionKind.NotCompleted)
+            inputObservation = new(kind, false);
+    }
+
+    // Subtraction avoids overflowing at the Int64 boundary. An invalid count is
+    // never added to the accumulator, and callers stop before encrypting it.
+    internal static bool ExceedsPlaintextLimit(long actual, int count, long limit) =>
+        actual < 0 || count < 0 || limit < 0 || actual > limit || count > limit - actual;
+
+    private async ValueTask<int> ReadPlaintextAsync(Memory<byte> buffer, CancellationToken cancellationToken)
+    {
+        var allowance = plaintextLimit - actualPlaintext;
+        var requested = allowance < buffer.Length ? checked((int)allowance + 1) : buffer.Length;
+        int count;
+        try
+        {
+            count = await source.ReadAsync(buffer[..requested], cancellationToken).ConfigureAwait(false);
+        }
+        catch
+        {
+            Observe(RawExportR2InputCompletionKind.TransportInterrupted);
+            throw;
+        }
+        if (count < 0 || count > requested)
+            throw new IOException("RAW_EXPORT_R2_INVALID_SOURCE_READ_COUNT");
+        if (ExceedsPlaintextLimit(actualPlaintext, count, plaintextLimit))
+        {
+            await RecordInputFailureAsync(RawExportR2InputCompletionKind.ActualLimitExceeded,
+                "RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED", cancellationToken).ConfigureAwait(false);
+            throw new RawExportR2DeterministicInvalidException("RAW_EXPORT_R2_PLAINTEXT_LENGTH_MISMATCH");
+        }
+        actualPlaintext = checked(actualPlaintext + count);
+        return count;
+    }
+
+    private async Task RecordInputFailureAsync(
+        RawExportR2InputCompletionKind kind, string code, CancellationToken cancellationToken)
+    {
+        Observe(kind);
+        if (terminalIntentRecorder is null)
+            return; // Legacy R2 does not gain retained authority.
+        var result = await terminalIntentRecorder.RecordAsync(
+            context.SourceArtifactId, context.AttemptId, context.EncryptionAttemptRevision,
+            context.Fence, "Terminated", code, cancellationToken).ConfigureAwait(false);
+        if (result is not (RawExportR2TerminalIntentOutcome.Recorded or RawExportR2TerminalIntentOutcome.ExistingMatch))
+            throw new IOException("RAW_EXPORT_R2_TERMINAL_INTENT_NOT_ACKNOWLEDGED");
+        inputObservation = new(kind, true);
     }
 
     private async Task<byte[]?> BuildNextAsync(CancellationToken cancellationToken)
@@ -166,10 +244,14 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
             var read = 0;
             while (read < plaintext.Length)
             {
-                var count = await source.ReadAsync(plaintext.AsMemory(read), cancellationToken)
+                var count = await ReadPlaintextAsync(plaintext.AsMemory(read), cancellationToken)
                     .ConfigureAwait(false);
                 if (count == 0)
+                {
+                    await RecordInputFailureAsync(RawExportR2InputCompletionKind.CleanShortEof,
+                        "CONTENT_COMMITMENT_MISMATCH", cancellationToken).ConfigureAwait(false);
                     throw new RawExportR2DeterministicInvalidException("RAW_EXPORT_R2_PLAINTEXT_LENGTH_MISMATCH");
+                }
                 read += count;
             }
 
@@ -235,7 +317,7 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
         byte[]? aad = null;
         try
         {
-            if (await source.ReadAsync(extra, cancellationToken).ConfigureAwait(false) != 0)
+            if (await ReadPlaintextAsync(extra, cancellationToken).ConfigureAwait(false) != 0)
                 throw new RawExportR2DeterministicInvalidException("RAW_EXPORT_R2_PLAINTEXT_LENGTH_MISMATCH");
             if (chunkOrdinal == 0)
                 throw new RawExportR2DeterministicInvalidException("RAW_EXPORT_R2_ZERO_CHUNKS_FORBIDDEN");
@@ -251,17 +333,30 @@ internal sealed class RawExportR2FramedCiphertextStream : Stream
                 plaintextDigest,
                 context.ClaimedPlaintextLength,
                 context.MediaType);
-            var result = await contentCommitments.ComputeAsync(
-                new(context.ContentCommitmentKeyId, context.ContentCommitmentKeyVersion),
-                payload,
-                cancellationToken).ConfigureAwait(false);
-            if (!result.IsSuccess)
-                throw new IOException("RAW_EXPORT_R2_CONTENT_COMMITMENT_PROVIDER_UNAVAILABLE");
+            ContentCommitmentResult result;
+            try
+            {
+                result = await contentCommitments.ComputeAsync(
+                    new(context.ContentCommitmentKeyId, context.ContentCommitmentKeyVersion),
+                    payload,
+                    cancellationToken).ConfigureAwait(false);
+                if (!result.IsSuccess)
+                    throw new IOException("RAW_EXPORT_R2_CONTENT_COMMITMENT_PROVIDER_UNAVAILABLE");
+            }
+            catch
+            {
+                Observe(RawExportR2InputCompletionKind.CommitmentProviderUnavailable);
+                throw;
+            }
             var computedCommitment = result.Mac.ToArray();
             try
             {
                 if (!CryptographicOperations.FixedTimeEquals(computedCommitment, context.ContentCommitment))
+                {
+                    await RecordInputFailureAsync(RawExportR2InputCompletionKind.ContentCommitmentMismatch,
+                        "CONTENT_COMMITMENT_MISMATCH", cancellationToken).ConfigureAwait(false);
                     throw new RawExportR2DeterministicInvalidException("RAW_EXPORT_R2_CONTENT_COMMITMENT_MISMATCH");
+                }
             }
             finally
             {

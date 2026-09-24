@@ -14,57 +14,107 @@ public sealed class EfVerificationFinalizationBoundary(
         VerificationFinalizationWrite write,
         CancellationToken cancellationToken = default)
     {
-        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
-        var currentRow = await db.Sessions.SingleOrDefaultAsync(candidate => candidate.Id == write.ExpectedSession.Id, cancellationToken);
-        if (currentRow is null)
-        {
-            return new VerificationFinalizationWriteResult(VerificationFinalizationWriteStatus.NotFound, Session: null);
-        }
-
-        var current = DomainRowMapper.ToDomain(currentRow);
-        if (current.State == VerificationSessionState.Completed)
-        {
-            return new VerificationFinalizationWriteResult(VerificationFinalizationWriteStatus.AlreadyCompleted, current);
-        }
-
-        if (!MatchesExpectedSession(current, write.ExpectedSession) ||
-            current.State is VerificationSessionState.Expired
-                or VerificationSessionState.Cancelled
-                or VerificationSessionState.TechnicalTerminal ||
-            !HasCompleteSnapshot(write.CompletedSession))
-        {
-            return new VerificationFinalizationWriteResult(VerificationFinalizationWriteStatus.StateMismatch, current);
-        }
-
-        ApplySession(currentRow, write.CompletedSession);
-        faultInjector?.ThrowIfFinalizationSessionUpdated();
-
-        db.VerificationDecisions.Add(DomainRowMapper.ToRow(write.Decision));
-        db.EvidencePackages.Add(DomainRowMapper.ToRow(write.EvidencePackage));
-        db.EvidenceManifests.Add(DomainRowMapper.ToRow(write.Manifest));
-        db.AuditEvents.Add(DomainRowMapper.ToRow(write.CompletionAuditEvent));
-
         try
         {
-            if (faultInjector is not null)
+            return await FinalizeInTransactionAsync(write, cancellationToken);
+        }
+        catch (PostgresException exception) when (exception.SqlState == PostgresErrorCodes.RaiseException)
+        {
+            return exception.MessageText switch
             {
-                await faultInjector.WaitBeforeFinalizationSaveAsync(cancellationToken);
+                "RAW_EXPORT_COMPLETION_ACCESS_DENIED" => new(VerificationFinalizationWriteStatus.AccessDenied, null),
+                "RAW_EXPORT_SESSION_CAPTURE_SELECTION_MISSING" or
+                "RAW_EXPORT_SESSION_CAPTURE_SELECTION_AMBIGUOUS" or
+                "RAW_EXPORT_SESSION_CAPTURE_SELECTION_CONFLICT" =>
+                    new(VerificationFinalizationWriteStatus.StateMismatch, null),
+                _ => new(VerificationFinalizationWriteStatus.NotReady, null),
+            };
+        }
+        catch (Exception exception) when (exception is NpgsqlException or DbUpdateException)
+        {
+            return new(VerificationFinalizationWriteStatus.NotReady, null);
+        }
+    }
+
+    private async Task<VerificationFinalizationWriteResult> FinalizeInTransactionAsync(
+        VerificationFinalizationWrite write,
+        CancellationToken cancellationToken)
+    {
+        await using var transaction = await db.Database.BeginTransactionAsync(cancellationToken);
+        try
+        {
+            var currentRow = await db.Sessions.SingleOrDefaultAsync(
+                candidate => candidate.Id == write.ExpectedSession.Id, cancellationToken);
+            if (currentRow is null)
+                return new(VerificationFinalizationWriteStatus.NotFound, null);
+
+            var current = DomainRowMapper.ToDomain(currentRow);
+            if (current.State == VerificationSessionState.Completed)
+                return new(VerificationFinalizationWriteStatus.AlreadyCompleted, current);
+
+            if (!MatchesExpectedSession(current, write.ExpectedSession) ||
+                current.State is VerificationSessionState.Expired
+                    or VerificationSessionState.Cancelled
+                    or VerificationSessionState.TechnicalTerminal ||
+                !HasCompleteSnapshot(write.CompletedSession))
+                return new(VerificationFinalizationWriteStatus.StateMismatch, current);
+
+            var selected = await db.Database.SqlQueryRaw<CompletionSelectionSqlResult>("""
+                SELECT "Required", "RawClass", "CaptureAcceptanceId", "CaptureRevision"
+                FROM tagekyc.raw_export_select_runtime_sources_on_completion(
+                    @session_id,@client_id,@principal_id)
+                """,
+                new NpgsqlParameter("session_id", current.Id),
+                new NpgsqlParameter("client_id", current.ClientApplicationId),
+                new NpgsqlParameter("principal_id", write.CompletionPrincipalId))
+                .Take(3)
+                .ToListAsync(cancellationToken);
+            if (!ValidCompletionSelection(selected))
+            {
+                await transaction.RollbackAsync(CancellationToken.None);
+                return new(VerificationFinalizationWriteStatus.NotReady, null);
             }
+
+            ApplySession(currentRow, write.CompletedSession);
+            faultInjector?.ThrowIfFinalizationSessionUpdated();
+
+            db.VerificationDecisions.Add(DomainRowMapper.ToRow(write.Decision));
+            db.EvidencePackages.Add(DomainRowMapper.ToRow(write.EvidencePackage));
+            db.EvidenceManifests.Add(DomainRowMapper.ToRow(write.Manifest));
+            db.AuditEvents.Add(DomainRowMapper.ToRow(write.CompletionAuditEvent));
+
+            if (faultInjector is not null)
+                await faultInjector.WaitBeforeFinalizationSaveAsync(cancellationToken);
 
             await db.SaveChangesAsync(cancellationToken);
             await transaction.CommitAsync(cancellationToken);
+            return new(VerificationFinalizationWriteStatus.Applied, write.CompletedSession);
         }
         catch (DbUpdateConcurrencyException)
         {
-            await transaction.RollbackAsync(cancellationToken);
-            return new VerificationFinalizationWriteResult(
-                VerificationFinalizationWriteStatus.StateMismatch,
-                Session: null);
+            await transaction.RollbackAsync(CancellationToken.None);
+            return new(VerificationFinalizationWriteStatus.StateMismatch, null);
         }
+    }
 
-        return new VerificationFinalizationWriteResult(
-            VerificationFinalizationWriteStatus.Applied,
-            write.CompletedSession);
+    private static bool ValidCompletionSelection(IReadOnlyList<CompletionSelectionSqlResult> rows)
+    {
+        if (rows.Count == 1)
+            return !rows[0].Required && rows[0].RawClass is null &&
+                rows[0].CaptureAcceptanceId is null && rows[0].CaptureRevision is null;
+        if (rows.Count != 2 || rows.Any(row => !row.Required || row.CaptureAcceptanceId is null ||
+            row.CaptureAcceptanceId == Guid.Empty || row.CaptureRevision is null || row.CaptureRevision < 1))
+            return false;
+        return rows.Select(row => row.RawClass).ToHashSet(StringComparer.Ordinal)
+            .SetEquals(["ChipDg2Portrait", "LiveSelfieImage"]);
+    }
+
+    private sealed class CompletionSelectionSqlResult
+    {
+        public bool Required { get; set; }
+        public string? RawClass { get; set; }
+        public Guid? CaptureAcceptanceId { get; set; }
+        public int? CaptureRevision { get; set; }
     }
 
     public async Task<VerificationFinalizationWriteResult> TryCancelAsync(

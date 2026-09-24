@@ -136,6 +136,11 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.HasDefaultSchema("tagekyc");
+        modelBuilder.ApplyConfiguration(new RawSourceConsentReferenceRowConfiguration());
+        modelBuilder.ApplyConfiguration(new RawSourceConsentReferenceEventRowConfiguration());
+        modelBuilder.ApplyConfiguration(new RawSourceConsentBindingRowConfiguration());
+        modelBuilder.ApplyConfiguration(new RawSourceRetentionPermitRowConfiguration());
+        modelBuilder.ApplyConfiguration(new RawSourceRetentionPermitClassRowConfiguration());
         modelBuilder.ApplyConfiguration(new RawExportAttemptKeyReservationConfig());
         modelBuilder.ApplyConfiguration(new RawExportKeyProviderOperationConfig());
         modelBuilder.ApplyConfiguration(new RawExportAttemptKeyPreparationEventConfig());
@@ -740,6 +745,15 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             if (entityTypeBuilder.Metadata.ClrType == typeof(RawExportManagedRecipientCredentialRow))
                 return null;
 
+            // A3 CP02 likewise owns its exact index catalogue. Suppress only
+            // these single-column FK conventions; all legacy and explicit
+            // composite indexes retain their existing behavior.
+            if (entityTypeBuilder.Metadata.ClrType == typeof(RawExportAuthoritySnapshotRow)
+                && properties.Count == 1
+                && properties[0].Name is nameof(RawExportAuthoritySnapshotRow.ConsentBindingId)
+                    or nameof(RawExportAuthoritySnapshotRow.RuntimeBindingId))
+                return null;
+
             return base.CreateIndex(properties, unique, entityTypeBuilder);
         }
     }
@@ -750,6 +764,30 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         {
             entity.ToTable("raw_export_authority_snapshots", table =>
             {
+                table.HasCheckConstraint("ck_a3_snapshot_authority_kind", "\"AuthorityKind\" IN ('LegacyExport','SourceRetention')");
+                table.HasCheckConstraint("ck_a3_snapshot_retention_shape", """
+                    ("RetentionAuthorityId" IS NULL OR "RetentionAuthorityId"<>'00000000-0000-0000-0000-000000000000'::uuid)
+                    AND ("RetentionAuthorityRevision" IS NULL OR "RetentionAuthorityRevision">0)
+                    AND ("ConsentBindingId" IS NULL OR "ConsentBindingId"<>'00000000-0000-0000-0000-000000000000'::uuid)
+                    AND ("CustodyPrincipalId" IS NULL OR "CustodyPrincipalId"<>'00000000-0000-0000-0000-000000000000'::uuid)
+                    AND ("RuntimeBindingId" IS NULL OR "RuntimeBindingId"<>'00000000-0000-0000-0000-000000000000'::uuid)
+                    AND (
+                      ("AuthorityKind"='LegacyExport' AND "RetentionAuthorityId" IS NULL
+                       AND "RetentionAuthorityRevision" IS NULL AND "ConsentBindingId" IS NULL
+                       AND "CustodyPrincipalId" IS NULL AND "RuntimeBindingId" IS NULL
+                       AND ("ApprovedPurpose" IS NULL OR "ApprovedPurpose"='SubjectRawBiometricExport'))
+                      OR ("AuthorityKind"='SourceRetention' AND (
+                        ("EventType"='Granted' AND "ApprovedPurpose"='SourceRetention'
+                         AND "RetentionAuthorityId" IS NOT NULL AND "RetentionAuthorityRevision" IS NOT NULL
+                         AND "RetentionAuthorityRevision">=1 AND "ConsentBindingId" IS NOT NULL
+                         AND "CustodyPrincipalId" IS NOT NULL AND "RuntimeBindingId" IS NOT NULL
+                         AND "CustodyPrincipalId"="CapturedByPrincipalId")
+                        OR ("EventType" IN ('Withdrawn','Revoked') AND "RetentionAuthorityId" IS NULL
+                         AND "RetentionAuthorityRevision" IS NULL AND "ConsentBindingId" IS NULL
+                         AND "CustodyPrincipalId" IS NULL AND "RuntimeBindingId" IS NULL AND "ApprovedPurpose" IS NULL)
+                      ))
+                    )
+                    """);
                 table.HasCheckConstraint(
                     "ck_raw_export_authority_snapshot_event_type",
                     "\"EventType\" IN ('Granted','Withdrawn','Revoked')");
@@ -769,7 +807,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                     AND ("AuthoritySnapshotId" IS NULL OR "AuthoritySnapshotId" <> '00000000-0000-0000-0000-000000000000'::uuid)
                     AND ("AuthorityArtifactId" IS NULL OR "AuthorityArtifactId" <> '00000000-0000-0000-0000-000000000000'::uuid)
                     AND ("ControllerIdentity" IS NULL OR btrim("ControllerIdentity") <> '')
-                    AND ("ApprovedPurpose" IS NULL OR "ApprovedPurpose" = 'SubjectRawBiometricExport')
+                    AND ("ApprovedPurpose" IS NULL OR "ApprovedPurpose" IN ('SubjectRawBiometricExport','SourceRetention'))
                     AND ("StableDataScopeId" IS NULL OR btrim("StableDataScopeId") <> '')
                     AND ("RetentionPolicyId" IS NULL OR btrim("RetentionPolicyId") <> '')
                     AND ("RetentionClass" IS NULL OR btrim("RetentionClass") <> '')
@@ -887,6 +925,12 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                 })
                 .HasName("uq_raw_export_authority_snapshot_scope_revision");
             entity.Property(row => row.EventType).HasMaxLength(32).IsRequired();
+            entity.Property(row => row.AuthorityKind).HasColumnType("varchar(32)").IsRequired().HasDefaultValue("LegacyExport");
+            entity.Property(row => row.RetentionAuthorityId).HasColumnType("uuid");
+            entity.Property(row => row.RetentionAuthorityRevision).HasColumnType("bigint");
+            entity.Property(row => row.ConsentBindingId).HasColumnType("uuid");
+            entity.Property(row => row.CustodyPrincipalId).HasColumnType("uuid");
+            entity.Property(row => row.RuntimeBindingId).HasColumnType("uuid");
             entity.Property(row => row.RawClass).HasMaxLength(64).IsRequired();
             entity.Property(row => row.ControllerIdentity).HasMaxLength(128);
             entity.Property(row => row.ApprovedPurpose).HasMaxLength(64);
@@ -929,6 +973,30 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
                     row.ConsentPolicyVersion,
                 })
                 .HasDatabaseName("ix_raw_export_authority_consent_policy");
+            entity.HasOne<RawSourceRetentionPermitRow>().WithMany()
+                .HasForeignKey(row => new { row.RetentionAuthorityId, row.RetentionAuthorityRevision })
+                .HasPrincipalKey(row => new { row.RetentionAuthorityId, row.Revision })
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_a3_snapshot_retention_permit");
+            entity.HasOne<RawSourceConsentBindingRow>().WithMany()
+                .HasForeignKey(row => row.ConsentBindingId)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_a3_snapshot_consent_binding");
+            entity.HasOne<CaptureExecutionBindingsRow>().WithMany()
+                .HasForeignKey(row => row.RuntimeBindingId)
+                .OnDelete(DeleteBehavior.Restrict).HasConstraintName("fk_a3_snapshot_runtime_binding");
+            // CP02 authorizes two explicit indexes, not convention-created
+            // indexes for each newly mapped FK.
+            foreach (var index in entity.Metadata.GetIndexes().Where(index =>
+                         index.Properties.Any(property => property.Name is nameof(RawExportAuthoritySnapshotRow.RetentionAuthorityId)
+                             or nameof(RawExportAuthoritySnapshotRow.ConsentBindingId)
+                             or nameof(RawExportAuthoritySnapshotRow.RuntimeBindingId))).ToArray())
+                entity.Metadata.RemoveIndex(index);
+            entity.HasIndex(row => new { row.RetentionAuthorityId, row.RetentionAuthorityRevision })
+                .HasDatabaseName("ix_a3_snapshot_retention_permit")
+                .HasFilter("\"AuthorityKind\"='SourceRetention' AND \"EventType\"='Granted'");
+            entity.HasIndex(row => new { row.ClientApplicationId, row.VerificationSessionId, row.CaptureAcceptanceId,
+                    row.RawClass, row.RetentionAuthorityId, row.RetentionAuthorityRevision, row.RuntimeBindingId })
+                .HasDatabaseName("uq_a3_snapshot_retained_grant").IsUnique()
+                .HasFilter("\"AuthorityKind\"='SourceRetention' AND \"EventType\"='Granted'");
         });
     }
 
@@ -999,6 +1067,19 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         {
             entity.ToTable("raw_export_source_encryption_attempts", table =>
             {
+                table.HasCheckConstraint("ck_a3_r2_terminal_intent", """
+                (("R2TerminalIntentCode" IS NULL AND "R2TerminalIntentDisposition" IS NULL AND "R2TerminalIntentAtUtc" IS NULL)
+                 OR ("R2TerminalIntentCode" IS NOT NULL AND "R2TerminalIntentDisposition" IS NOT NULL AND "R2TerminalIntentAtUtc" IS NOT NULL
+                 AND "R2TerminalIntentCode" IN ('RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED','CONTENT_COMMITMENT_MISMATCH','RECAPTURE_REQUIRED')
+                 AND "R2TerminalIntentDisposition" IN ('Terminated','TerminatedBeforeStart')))
+                 AND ("R2TerminalOutcomeCode" IS NULL OR "R2TerminalIntentCode" IS NULL
+                 OR ("R2TerminalOutcomeCode"="R2TerminalIntentCode" AND "R2TerminationDisposition" IS NOT NULL
+                 AND "R2TerminationDisposition"="R2TerminalIntentDisposition"))
+                """);
+                table.HasCheckConstraint("ck_raw_export_source_attempt_r2_terminal_outcome",
+                    """
+                    "R2TerminalOutcomeCode" IS NULL OR ("R2TerminationDisposition" IN ('Terminated','TerminatedBeforeStart') AND "R2TerminatedAtUtc" IS NOT NULL AND "R2TerminalOutcomeCode" IN ('RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED','CONTENT_COMMITMENT_MISMATCH','RECAPTURE_REQUIRED'))
+                    """);
                 table.HasCheckConstraint(
                     "ck_raw_export_source_attempt_values",
                     """
@@ -1086,6 +1167,10 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
             entity.Property(row => row.NonceStrategyId).HasMaxLength(128).IsRequired();
             entity.Property(row => row.NonceDerivationSeedReferenceOrWrappedSeed).HasMaxLength(256).IsRequired();
             entity.Property(row => row.R2TerminationDisposition).HasMaxLength(64);
+            entity.Property(row => row.R2TerminalOutcomeCode).HasColumnType("text");
+            entity.Property(row => row.R2TerminalIntentCode).HasMaxLength(64);
+            entity.Property(row => row.R2TerminalIntentDisposition).HasMaxLength(32);
+            entity.Property(row => row.R2TerminalIntentAtUtc).HasColumnType("timestamp with time zone");
             entity.HasOne<RawExportSourceReservationRow>()
                 .WithMany()
                 .HasForeignKey(row => row.SourceArtifactId)

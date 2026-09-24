@@ -4,7 +4,8 @@ using TagEkyc.Contracts.TrustedAdapter;
 
 namespace TagEkyc.Contracts.CaptureRuntime;
 
-public sealed record CaptureCapabilityRequest(string Action, Guid? CurrentCapabilityId = null, long? ExpectedRevision = null);
+public sealed record CaptureCapabilityRequest(string Action, Guid? CurrentCapabilityId = null,
+    long? ExpectedRevision = null, Guid? ConsentBindingId = null);
 public sealed record CaptureCapabilityResponse(Guid CaptureCapabilityId, string? Secret, DateTimeOffset ExpiresAtUtc, string State, long Revision);
 public sealed record CaptureRuntimeBindRequest(Guid CaptureCapabilityId, string CaptureCapabilitySecret, Guid BindOperationId);
 public sealed record CaptureRuntimeBindingResponse(Guid BindingId, DateTimeOffset ExecutionExpiresAtUtc, long RuntimeRevision, long InstallationRevision, long CredentialRevision, long CapabilityRevision);
