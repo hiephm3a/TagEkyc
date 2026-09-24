@@ -11,22 +11,19 @@ function Assert-True([bool]$Condition, [string]$Message) {
 
 function Get-GitBlobEvidence([string]$Path) {
     $gitPath = $Path.Replace('\', '/')
-    $start = [Diagnostics.ProcessStartInfo]::new()
+    $start = New-Object Diagnostics.ProcessStartInfo
     $start.FileName = 'git'
+    $start.WorkingDirectory = $RepoRoot
     $start.UseShellExecute = $false
     $start.RedirectStandardOutput = $true
     $start.RedirectStandardError = $true
-    [void]$start.ArgumentList.Add('-C')
-    [void]$start.ArgumentList.Add($RepoRoot)
-    [void]$start.ArgumentList.Add('cat-file')
-    [void]$start.ArgumentList.Add('blob')
-    [void]$start.ArgumentList.Add("HEAD:$gitPath")
+    $start.Arguments = 'cat-file blob "HEAD:' + $gitPath.Replace('"', '\"') + '"'
 
     $process = [Diagnostics.Process]::Start($start)
     $errorRead = $process.StandardError.ReadToEndAsync()
     $hasher = [Security.Cryptography.IncrementalHash]::CreateHash(
         [Security.Cryptography.HashAlgorithmName]::SHA256)
-    $buffer = [byte[]]::new(81920)
+    $buffer = New-Object byte[] 81920
     [long]$bytes = 0
     try {
         while (($read = $process.StandardOutput.BaseStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
@@ -37,7 +34,7 @@ function Get-GitBlobEvidence([string]$Path) {
         $errorText = $errorRead.GetAwaiter().GetResult()
         Assert-True ($process.ExitCode -eq 0) "git blob is unavailable for $gitPath`: $errorText"
         return [pscustomobject]@{
-            Sha256 = [Convert]::ToHexString($hasher.GetHashAndReset())
+            Sha256 = ([BitConverter]::ToString($hasher.GetHashAndReset())).Replace('-', '')
             Bytes = $bytes
         }
     }
@@ -75,6 +72,8 @@ foreach ($row in $map) {
 }
 
 $manifest = @(Import-Csv -Delimiter "`t" -LiteralPath $manifestPath)
+Assert-True ((@($manifest | Where-Object { $_.HashBasis -cne 'GIT_OBJECT_CONTENT' })).Count -eq 0) `
+    'manifest contains a non-Git-object hash basis'
 $mismatch = 0
 foreach ($entry in $manifest) {
     $evidence = Get-GitBlobEvidence $entry.Path
@@ -84,7 +83,7 @@ foreach ($entry in $manifest) {
 }
 Assert-True ($mismatch -eq 0) "manifest mismatches: $mismatch"
 
-$manifestRelativePath = [IO.Path]::GetRelativePath($RepoRoot, $manifestPath)
+$manifestRelativePath = 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_p29_p36_review_manifest_v1.tsv'
 $manifestHash = (Get-GitBlobEvidence $manifestRelativePath).Sha256
 $packet = Get-Content -Raw -LiteralPath $packetPath
 Assert-True ($packet.Contains($manifestHash)) 'review packet does not pin the current manifest SHA-256'

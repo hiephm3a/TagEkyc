@@ -2,7 +2,9 @@
 
 Status: `TECHNICAL_CLOSURE_CANDIDATE — HOMEOWNER RATIFICATION NOT YET GRANTED`
 
-Candidate manifest SHA-256: `1933DE579DBAA41B29B6A37837455573190B927D1D2CC6A3B9B8B819585A6333`
+Candidate manifest SHA-256: `CF9D0D6061E46919996205DA8708FDE6576090E8191D49ECE8AF813017B1646B`
+
+Hashing convention: every `Sha256` and `Bytes` value in the companion manifest is calculated over canonical Git object content, after Git clean filters and line-ending normalization, not over checkout-specific working-tree bytes. The reference procedure is `scripts/a3_p29_p36_review_verify.ps1`; it reads each `HEAD:<path>` blob through `git cat-file` and is the authoritative third-party verification path.
 
 ## Scope and non-claims
 
