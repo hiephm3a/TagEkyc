@@ -1,0 +1,16 @@
+Command:
+powershell.exe -NoProfile -ExecutionPolicy Bypass -Command '$PSVersionTable.PSVersion.ToString()'
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\a3_p29_p36_review_verify.ps1
+
+Transcript:
+5.1.19041.6456
+partition_rows=8
+evidence_map_rows=8
+manifest_entries=24
+manifest_mismatch=0
+failed_runs=9
+unclassified_failed_runs=0
+manifest_sha256=CF9D0D6061E46919996205DA8708FDE6576090E8191D49ECE8AF813017B1646B
+A3_P29_P36_REVIEW_VERIFY=PASS
+VERSION_EXIT_CODE=0
+POWERSHELL51_EXIT_CODE=0

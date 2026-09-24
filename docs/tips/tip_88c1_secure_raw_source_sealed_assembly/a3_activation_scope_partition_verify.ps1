@@ -27,7 +27,15 @@ $reconciled = 'E01_Race_IssueWithdrawal'
 $ratifiedSuccessors = @(
     'BP10 WindowCapacityIsBoundedAcrossAllExitPaths',
     'P05 A3_S02_O05_ExactOutcomeShapeStatusAndResidue',
-    'P04 A3_S02_O04_ExactOutcomeShapeStatusAndResidue'
+    'P04 A3_S02_O04_ExactOutcomeShapeStatusAndResidue',
+    'P29 A3_S02_O29_ExactOutcomeShapeStatusAndResidue',
+    'P30 A3_S02_O30_ExactOutcomeShapeStatusAndResidue',
+    'P31 A3_S02_O31_ExactOutcomeShapeStatusAndResidue',
+    'P32 A3_S02_O32_ExactOutcomeShapeStatusAndResidue',
+    'P33 A3_S02_O33_ExactOutcomeShapeStatusAndResidue',
+    'P34 A3_S02_O34_ExactOutcomeShapeStatusAndResidue',
+    'P35 A3_S02_O35_ExactOutcomeShapeStatusAndResidue',
+    'P36 A3_S02_O36_ExactOutcomeShapeStatusAndResidue'
 )
 $siteQualified = @(
     'A3_AgentRawExpectDoesNotSendBeforeCommittedR1',
@@ -36,7 +44,7 @@ $siteQualified = @(
     'Agent raw HTTP Expect → durable server B/R1 before first body byte'
 )
 if ($oldPartition.Count -ne 46 -or -not $prior.Contains($reconciled) -or
-    $proofOpen.Count -ne 38 -or $proofOpen.ContainsKey($reconciled)) {
+    $proofOpen.Count -ne 30 -or $proofOpen.ContainsKey($reconciled)) {
     throw 'SCOPE_E01_RECONCILIATION_INVALID'
 }
 foreach ($id in $ratifiedSuccessors) {
@@ -65,6 +73,9 @@ if ($ledger -notmatch '(?m)^\| P04 `A3_S02_O04_ExactOutcomeShapeStatusAndResidue
     $ledger -notmatch '### P04 corrected-contract Homeowner ratification successor') {
     throw 'SCOPE_P04_RATIFICATION_ANCHOR_MISSING'
 }
+if ($ledger -notmatch '### P29-P36 Homeowner ratification successor') {
+    throw 'SCOPE_P29_P36_RATIFICATION_ANCHOR_MISSING'
+}
 if ([regex]::Matches($ledger, 'PRODUCT COMPLETE / SITE QUALIFICATION REQUIRED').Count -lt 4 -or
     $ledger -notmatch '### Expect product-complete / site-qualification successor') {
     throw 'SCOPE_SITE_QUALIFICATION_LEDGER_ANCHOR_MISSING'
@@ -83,24 +94,7 @@ foreach ($row in $ownership) {
         throw "SCOPE_OWNERSHIP_DUPLICATE row=$($row.RowId)"
     }
 }
-$expected = [ordered]@{
-    'P29 A3_S02_O29_ExactOutcomeShapeStatusAndResidue' =
-        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
-    'P30 A3_S02_O30_ExactOutcomeShapeStatusAndResidue' =
-        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
-    'P31 A3_S02_O31_ExactOutcomeShapeStatusAndResidue' =
-        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
-    'P32 A3_S02_O32_ExactOutcomeShapeStatusAndResidue' =
-        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
-    'P33 A3_S02_O33_ExactOutcomeShapeStatusAndResidue' =
-        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
-    'P34 A3_S02_O34_ExactOutcomeShapeStatusAndResidue' =
-        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
-    'P35 A3_S02_O35_ExactOutcomeShapeStatusAndResidue' =
-        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
-    'P36 A3_S02_O36_ExactOutcomeShapeStatusAndResidue' =
-        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
-}
+$expected = [ordered]@{}
 $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 foreach ($row in $current) {
     $id = Normalize-RowId $row.RowId
@@ -113,7 +107,7 @@ foreach ($row in $current) {
         throw "SCOPE_RETAINED_ROW_INVALID row=$id"
     }
 }
-if ($seen.Count -ne 8) { throw "SCOPE_RETAINED_COUNT_INVALID actual=$($seen.Count)" }
+if ($seen.Count -ne 0) { throw "SCOPE_RETAINED_COUNT_INVALID actual=$($seen.Count)" }
 foreach ($id in $ratifiedSuccessors) {
     if (-not $owners.ContainsKey($id) -or
         $owners[$id].AuthorityStatus -cne 'HOMEOWNER_RATIFIED' -or
@@ -166,5 +160,5 @@ if ($backlogSet.Count -ne 30 -or
 "mechanism_ADMISSION-CAPABILITY=0"
 "mechanism_TRANSPORT-EXPECT-FENCE=0"
 "mechanism_ADMISSION-CAPACITY=0"
-"mechanism_ASSEMBLY-WORK-SOURCE=8"
+"mechanism_ASSEMBLY-WORK-SOURCE=0"
 "ownership_registry_sha256=$((Get-FileHash -LiteralPath $ownershipPath -Algorithm SHA256).Hash)"

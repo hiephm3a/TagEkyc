@@ -26,6 +26,55 @@ foreach ($name in @(
     'a3_activation_evidence_seal_v1.tsv'
 )) { [void]$derivedExclusions.Add("server/$relativeDoc$name") }
 
+function Get-GitNormalizedEvidence([string]$repositoryRoot, [string]$relativePath, [string]$fullPath) {
+    # Hash the exact blob content selected for the next commit. For tracked
+    # paths this is the index object, so unrelated unstaged checkout changes
+    # cannot leak into a governance manifest. New untracked paths use the blob
+    # Git would retain after applying attributes. Working-tree bytes are not a
+    # portable authority on Windows because checkout line endings may differ.
+    $objectIdOutput = & git -C $repositoryRoot rev-parse --verify ":$relativePath" 2>$null
+    $objectId = if ($null -eq $objectIdOutput) { '' } else { "$objectIdOutput".Trim() }
+    if ($LASTEXITCODE -ne 0 -or $objectId -notmatch '^[0-9a-f]{40,64}$') {
+        $objectId = (& git -C $repositoryRoot hash-object -w "--path=$relativePath" -- $fullPath 2>$null).Trim()
+    }
+    if ($LASTEXITCODE -ne 0 -or $objectId -notmatch '^[0-9a-f]{40,64}$') {
+        throw "ACTIVATION_SCOPE_GIT_BLOB_CREATE_FAILED path=$relativePath"
+    }
+
+    $start = New-Object Diagnostics.ProcessStartInfo
+    $start.FileName = 'git'
+    $start.WorkingDirectory = $repositoryRoot
+    $start.UseShellExecute = $false
+    $start.RedirectStandardOutput = $true
+    $start.RedirectStandardError = $true
+    $start.Arguments = 'cat-file blob "' + $objectId + '"'
+    $process = [Diagnostics.Process]::Start($start)
+    $errorRead = $process.StandardError.ReadToEndAsync()
+    $hasher = [Security.Cryptography.IncrementalHash]::CreateHash(
+        [Security.Cryptography.HashAlgorithmName]::SHA256)
+    $buffer = New-Object byte[] 81920
+    [long]$bytes = 0
+    try {
+        while (($read = $process.StandardOutput.BaseStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+            $hasher.AppendData($buffer, 0, $read)
+            $bytes += $read
+        }
+        $process.WaitForExit()
+        $errorText = $errorRead.GetAwaiter().GetResult()
+        if ($process.ExitCode -ne 0) {
+            throw "ACTIVATION_SCOPE_GIT_BLOB_READ_FAILED path=$relativePath error=$errorText"
+        }
+        return [pscustomobject]@{
+            Sha256 = ([BitConverter]::ToString($hasher.GetHashAndReset())).Replace('-', '')
+            Bytes = $bytes
+        }
+    }
+    finally {
+        $hasher.Dispose()
+        $process.Dispose()
+    }
+}
+
 $paths = [Collections.Generic.Dictionary[string,string]]::new([StringComparer]::Ordinal)
 foreach ($repo in @('server','agent')) {
     $visible = @(& git -C $roots[$repo] ls-files --cached --others --exclude-standard)
@@ -66,7 +115,8 @@ foreach ($key in $orderedKeys) {
     $repo = $key.Substring(0, $slash)
     $relative = $key.Substring($slash + 1)
     $file = $paths[$key]
-    $lines.Add("$repo`t$relative`t$(Get-Role $relative)`t$((Get-Item -LiteralPath $file).Length)`t$((Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash)")
+    $evidence = Get-GitNormalizedEvidence $roots[$repo] $relative $file
+    $lines.Add("$repo`t$relative`t$(Get-Role $relative)`t$($evidence.Bytes)`t$($evidence.Sha256)")
 }
 $utf8 = [Text.UTF8Encoding]::new($false)
 $content = [string]::Join("`n", $lines) + "`n"

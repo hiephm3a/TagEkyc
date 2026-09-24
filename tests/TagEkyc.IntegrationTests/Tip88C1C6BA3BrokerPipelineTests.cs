@@ -59,16 +59,24 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
     }
 
     [Fact]
-    public void ActivatedWithCurrentGeneratedAssemblyGateSealFailsIncompleteBeforeRoutesStart()
+    public async Task ActivatedWithCurrentGeneratedZeroOpenSealBlocksRawIngressAtSiteGate()
     {
         using var factory = StartupSelectionFactory(activated: true, seal: null,
-            assemblyTopology: "DurableWorker", useGeneratedSeal: true);
-        var failure = Assert.ThrowsAny<Exception>(() => factory.CreateClient());
-        Assert.Contains("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INCOMPLETE", failure.ToString(),
+            assemblyTopology: "DurableWorker", useGeneratedSeal: true,
+            siteQualification: new ActivationEvidenceTestSeals.MissingQualificationProvider());
+        using var client = factory.CreateClient();
+        using var response = await client.PostAsync("/api/ekyc/raw-export/source-ingress",
+            new ByteArrayContent([0x01]));
+        var failure = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Contains(CaptureRuntimeSiteTransportQualificationPolicy.InvalidCode, failure,
             StringComparison.Ordinal);
-        Assert.DoesNotContain("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INVALID", failure.ToString(),
+        Assert.DoesNotContain("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INCOMPLETE", failure,
             StringComparison.Ordinal);
-        Assert.DoesNotContain("CAPTURE_RUNTIME_STARTUP_NOT_READY", failure.ToString(),
+        Assert.DoesNotContain("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INVALID", failure,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("CAPTURE_RUNTIME_STARTUP_NOT_READY", failure,
             StringComparison.Ordinal);
     }
 

@@ -9,7 +9,7 @@ $retained = @(Import-Csv -LiteralPath (Join-Path $DocDir 'a3_activation_scope_pa
 $ownership = @(Import-Csv -LiteralPath (Join-Path $DocDir 'a3_outcome_ownership_table_v1.tsv') -Delimiter "`t")
 $outputPath = Join-Path $DocDir 'a3_activation_scope_deferred_backlog_v1.tsv'
 
-if ($oldPartition.Count -ne 46 -or $retained.Count -ne 8) {
+if ($oldPartition.Count -ne 46 -or $retained.Count -ne 0) {
     throw "ACTIVATION_SCOPE_INPUT_COUNT_INVALID prior=$($oldPartition.Count) retained=$($retained.Count)"
 }
 $priorIds = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -38,6 +38,19 @@ $candidate = 0
 $reconciled = 0
 $ratifiedSuccessor = 0
 $siteQualification = 0
+$ratifiedSuccessorIds = @(
+    'BP10 WindowCapacityIsBoundedAcrossAllExitPaths',
+    'P05 A3_S02_O05_ExactOutcomeShapeStatusAndResidue',
+    'P04 A3_S02_O04_ExactOutcomeShapeStatusAndResidue',
+    'P29 A3_S02_O29_ExactOutcomeShapeStatusAndResidue',
+    'P30 A3_S02_O30_ExactOutcomeShapeStatusAndResidue',
+    'P31 A3_S02_O31_ExactOutcomeShapeStatusAndResidue',
+    'P32 A3_S02_O32_ExactOutcomeShapeStatusAndResidue',
+    'P33 A3_S02_O33_ExactOutcomeShapeStatusAndResidue',
+    'P34 A3_S02_O34_ExactOutcomeShapeStatusAndResidue',
+    'P35 A3_S02_O35_ExactOutcomeShapeStatusAndResidue',
+    'P36 A3_S02_O36_ExactOutcomeShapeStatusAndResidue'
+)
 foreach ($row in $oldPartition) {
     if (-not $ownershipById.ContainsKey($row.RowId)) {
         throw "ACTIVATION_SCOPE_OWNERSHIP_MISSING row=$($row.RowId)"
@@ -48,19 +61,7 @@ foreach ($row in $oldPartition) {
         $reconciled++
         continue
     }
-    if ($row.RowId -ceq 'BP10 WindowCapacityIsBoundedAcrossAllExitPaths' -and
-        $owner.AuthorityStatus -ceq 'HOMEOWNER_RATIFIED' -and
-        $owner.AuditDisposition -ceq 'ALREADY_RATIFIED_COMPLETE') {
-        $ratifiedSuccessor++
-        continue
-    }
-    if ($row.RowId -ceq 'P05 A3_S02_O05_ExactOutcomeShapeStatusAndResidue' -and
-        $owner.AuthorityStatus -ceq 'HOMEOWNER_RATIFIED' -and
-        $owner.AuditDisposition -ceq 'ALREADY_RATIFIED_COMPLETE') {
-        $ratifiedSuccessor++
-        continue
-    }
-    if ($row.RowId -ceq 'P04 A3_S02_O04_ExactOutcomeShapeStatusAndResidue' -and
+    if ($ratifiedSuccessorIds -ccontains $row.RowId -and
         $owner.AuthorityStatus -ceq 'HOMEOWNER_RATIFIED' -and
         $owner.AuditDisposition -ceq 'ALREADY_RATIFIED_COMPLETE') {
         $ratifiedSuccessor++
@@ -86,7 +87,7 @@ foreach ($row in $oldPartition) {
     $lines.Add([string]::Join("`t", $values))
 }
 if ($assembly -ne 0 -or $candidate -ne 30 -or $reconciled -ne 1 -or
-    $ratifiedSuccessor -ne 3 -or $siteQualification -ne 4 -or $lines.Count -ne 31) {
+    $ratifiedSuccessor -ne 11 -or $siteQualification -ne 4 -or $lines.Count -ne 31) {
     throw "ACTIVATION_SCOPE_DISPOSITION_COUNT_INVALID assembly=$assembly candidate=$candidate reconciled=$reconciled ratified_successor=$ratifiedSuccessor site_qualification=$siteQualification"
 }
 $content = [string]::Join("`n", $lines) + "`n"
