@@ -9,6 +9,44 @@ function Assert-True([bool]$Condition, [string]$Message) {
     if (-not $Condition) { throw $Message }
 }
 
+function Get-GitBlobEvidence([string]$Path) {
+    $gitPath = $Path.Replace('\', '/')
+    $start = [Diagnostics.ProcessStartInfo]::new()
+    $start.FileName = 'git'
+    $start.UseShellExecute = $false
+    $start.RedirectStandardOutput = $true
+    $start.RedirectStandardError = $true
+    [void]$start.ArgumentList.Add('-C')
+    [void]$start.ArgumentList.Add($RepoRoot)
+    [void]$start.ArgumentList.Add('cat-file')
+    [void]$start.ArgumentList.Add('blob')
+    [void]$start.ArgumentList.Add("HEAD:$gitPath")
+
+    $process = [Diagnostics.Process]::Start($start)
+    $errorRead = $process.StandardError.ReadToEndAsync()
+    $hasher = [Security.Cryptography.IncrementalHash]::CreateHash(
+        [Security.Cryptography.HashAlgorithmName]::SHA256)
+    $buffer = [byte[]]::new(81920)
+    [long]$bytes = 0
+    try {
+        while (($read = $process.StandardOutput.BaseStream.Read($buffer, 0, $buffer.Length)) -gt 0) {
+            $hasher.AppendData($buffer, 0, $read)
+            $bytes += $read
+        }
+        $process.WaitForExit()
+        $errorText = $errorRead.GetAwaiter().GetResult()
+        Assert-True ($process.ExitCode -eq 0) "git blob is unavailable for $gitPath`: $errorText"
+        return [pscustomobject]@{
+            Sha256 = [Convert]::ToHexString($hasher.GetHashAndReset())
+            Bytes = $bytes
+        }
+    }
+    finally {
+        $hasher.Dispose()
+        $process.Dispose()
+    }
+}
+
 $evidenceRoot = Join-Path $RepoRoot 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly'
 $partitionPath = Join-Path $evidenceRoot 'a3_activation_scope_partition_v1.tsv'
 $mapPath = Join-Path $evidenceRoot 'a3_p29_p36_row_evidence_map_v1.tsv'
@@ -39,15 +77,15 @@ foreach ($row in $map) {
 $manifest = @(Import-Csv -Delimiter "`t" -LiteralPath $manifestPath)
 $mismatch = 0
 foreach ($entry in $manifest) {
-    $path = Join-Path $RepoRoot $entry.Path
-    Assert-True (Test-Path -LiteralPath $path) "manifest path is missing: $($entry.Path)"
-    $hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $path).Hash
-    $bytes = (Get-Item -LiteralPath $path).Length
-    if ($hash -cne $entry.Sha256 -or "$bytes" -cne $entry.Bytes) { $mismatch++ }
+    $evidence = Get-GitBlobEvidence $entry.Path
+    if ($evidence.Sha256 -cne $entry.Sha256 -or "$($evidence.Bytes)" -cne $entry.Bytes) {
+        $mismatch++
+    }
 }
 Assert-True ($mismatch -eq 0) "manifest mismatches: $mismatch"
 
-$manifestHash = (Get-FileHash -Algorithm SHA256 -LiteralPath $manifestPath).Hash
+$manifestRelativePath = [IO.Path]::GetRelativePath($RepoRoot, $manifestPath)
+$manifestHash = (Get-GitBlobEvidence $manifestRelativePath).Sha256
 $packet = Get-Content -Raw -LiteralPath $packetPath
 Assert-True ($packet.Contains($manifestHash)) 'review packet does not pin the current manifest SHA-256'
 
