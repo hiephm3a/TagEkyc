@@ -20,4 +20,5 @@ Homeowner direction may activate one for a bounded pilot.
 ## Current candidates
 
 - [`PI-TAG-001_semantic_trace_and_review_convergence_pilot.md`](PI-TAG-001_semantic_trace_and_review_convergence_pilot.md)
-  — `CANDIDATE / NOT_STARTED`; approved for one eligible complex TIP.
+  — `ACTIVE` for `TIP-88C1` only as of 2026-07-28; High-risk pilot, not a
+  generally ratified rule and not implementation authority.

@@ -1,13 +1,27 @@
 # TagEkyc Agent Coordination Bus
 
 **File:** `docs/00_AGENT_COORDINATION_BUS.md`
-**Version:** 1.24
+**Version:** 1.26
 **Status:** Active
 **Date:** 2026-06-15
-**Baseline:** Product Brief v0.1.1
+**Baseline:** Product Brief v0.1.2
 **Purpose:** Defines how Codex, GPT web, reviewers, and future automations coordinate TagEkyc work with minimal user message-bus involvement.
 
 ## Changelog
+
+### v1.26 - TIP-18 closeout draft state synchronized
+
+- Recorded the untracked TIP-18 closeout draft at `docs/tips/tip_18_db_provider_posture_decision/tip_18_closeout_v0_1.md`.
+- Synchronized that `docs/tips/README.md` is already updated locally to index the TIP-18 closeout draft.
+- Preserved TIP-18 as docs-only draft/closeout work with no runtime implementation, no DB/provider selection, no EF/migrations, no adapter/repository implementation, and no SignFlow runtime dependency.
+- Updated the next recommended action to homeowner/GPT review of the TIP-18 planning brief and closeout draft only.
+
+### v1.25 - TIP-18 planning state synchronized
+
+- Recorded TIP-18 planning brief commit `5cd808f` (`docs: open TIP-18 DB provider posture decision`).
+- Synchronized that TIP-17 closeout is closed in git history at `7424d55` and no longer the active review target.
+- Recorded TIP-18 as docs-only planning/decision work with no `src/**`, no `tests/**`, no packages, no DB/provider selection, no EF/migrations, no adapter/repository implementation, and no SignFlow runtime dependency.
+- Updated the next recommended action to homeowner/GPT review of TIP-18 only and preserved known unrelated local GDriveSync tooling dirt.
 
 ### v1.24 - TIP-17 implementation closeout drafted
 
@@ -579,7 +593,7 @@ No open inbound agent messages.
 
 ### Pending User Gates
 
-TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 code/test implementation, and TIP-09 S1 closeout acceptance are synchronized in governance state.
+No explicit user gate is opened by this coordinator run. TIP-18 remains a homeowner/GPT docs review item only and does not authorize implementation.
 
 ### Decisions Recorded
 
@@ -648,16 +662,20 @@ TIP-06 runtime/docs closeout, TIP-07 Option A code/test implementation, TIP-08 c
 - TIP-17 validation passed: `dotnet test TagEkyc.sln --no-restore` = 103 passed, 0 failed, 0 skipped.
 - TIP-17 implementation scope was provider-neutral durable metadata repository boundary only: Application port `IDurableMetadataRepository`, durable metadata records for session, actor credential, audit identity, evidence package, completion authority, write set, and Domain metadata value objects/enums `PrincipalId`, `CredentialRef`, `CredentialType`, `CredentialStatus`, and `ScopeGrantSetId`.
 - TIP-17 preserved no DB/EF/migrations/packages, no Infrastructure adapter, no LocalDev adapter, no durable repository implementation, no production auth, no credential store, no secret backend, no raw or hashed secret storage, no raw artifact/biometric/vault storage, no retention/legal enforcement, no webhook/outbox/retry/delivery, no crypto/signing/replay, no provider/vendor integration, no public API/DTO/JSON/status/error behavior change, no pilot/production/certification readiness claim, and no SignFlow runtime/source/database/network/package/internal-model dependency.
-- TIP-17 closeout draft exists at `docs/tips/tip_17_provider_neutral_durable_metadata_repository_boundary/tip_17_closeout_v0_1.md` and is pending homeowner/GPT review. It does not open TIP-18.
-- Current worktree is not claimed clean because known unrelated local GDriveSync tooling files remain dirty: `.gitignore`, `tools/TagEkyc.GDriveSync/Program.cs`, and `tools/TagEkyc.GDriveSync/README.md`.
+- TIP-17 closeout was recorded in git history at `7424d55` (`docs: close TIP-17 durable metadata repository boundary`).
+- TIP-18 DB / Provider Posture Decision planning brief exists at `docs/tips/tip_18_db_provider_posture_decision/tip_18_planning_brief_v0_1.md` and was opened by commit `5cd808f` (`docs: open TIP-18 DB provider posture decision`).
+- TIP-18 closeout draft exists locally at `docs/tips/tip_18_db_provider_posture_decision/tip_18_closeout_v0_1.md` and is not yet committed or accepted. It is docs-only and does not open implementation.
+- TIP-18 is planning-only. It opens no runtime implementation, no `src/**`, no `tests/**`, no project/package/dependency change, no DB/provider selection, no EF/DbContext/migrations/schema tooling, no repository/adapter implementation, no LocalDev durable adapter, no credential material storage, no raw artifact/biometric/vault storage, no public API/DTO/JSON/status/error behavior change, no readiness claim, and no SignFlow runtime/source/database/network/package/internal-model dependency.
+- TIP-18 accepts provider-neutral posture only: production DB/provider selection remains deferred; EF versus non-EF and migration policy remain deferred; `DurableMetadataWriteSet` remains a future consistency requirement, not an implemented durability claim; backup/recovery remains a future decision requirement.
+- Current worktree is not claimed clean because known unrelated local GDriveSync tooling files remain dirty: `.gitignore`, `tools/TagEkyc.GDriveSync/Program.cs`, and `tools/TagEkyc.GDriveSync/README.md`. The current docs-only TIP-18 draft worktree also includes local edits to `docs/00_AGENT_COORDINATION_BUS.md`, `docs/tips/README.md`, and untracked `docs/tips/tip_18_db_provider_posture_decision/tip_18_closeout_v0_1.md`.
 
 ### Next Recommended Action
 
-Homeowner/GPT review of the TIP-17 closeout draft is the next recommended action.
+Homeowner/GPT review of the TIP-18 planning brief and TIP-18 closeout draft is the next recommended action.
 
-Do not open TIP-18 implementation immediately from the closeout. The safest next governed slice is a DB/provider posture decision TIP because TIP-17 deliberately stopped at provider-neutral contracts. Later alternatives include LocalDev-only durable metadata adapter kickoff, transaction/audit consistency planning, or policy catalog durability planning.
+Do not dispatch implementation from TIP-18. If TIP-18 is accepted, the next governed slice should be a separate narrow TIP for exactly one of: DB/provider decision criteria refinement only, LocalDev-only durable metadata adapter planning, transaction/audit consistency planning, backup/recovery requirement planning, or policy catalog durability planning.
 
-Future durable repository implementation, DB/EF/migrations/provider selection, Infrastructure adapter work, LocalDev adapter work, vault lifecycle implementation, production auth/client trust implementation, credential store/secret backend work, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-17 closeout. SignFlow must remain an external consumer profile only.
+Future durable repository implementation, DB/EF/migrations/provider selection, Infrastructure adapter work, LocalDev adapter work, vault lifecycle implementation, production auth/client trust implementation, credential store/secret backend work, webhook delivery/retry/outbox work, specialized evidence endpoints, fingerprint default enablement, provider/vendor selection, production crypto/signing, and production readiness remain deferred to later accepted planning or kickoff slices and are not opened by TIP-18. SignFlow must remain an external consumer profile only.
 
 ### Outbox
 

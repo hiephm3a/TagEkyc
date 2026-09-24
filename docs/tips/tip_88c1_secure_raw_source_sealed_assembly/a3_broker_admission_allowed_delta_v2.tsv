@@ -1,0 +1,20 @@
+repo	path_pattern	allowed_change	category	reason
+server	tests/TagEkyc.IntegrationTests/Tip88C1C6BA3BrokerAdmissionClusterTests.cs	MODIFIED	test_source	Correct capacity tuple and add real foreign-existing-artifact P02 nondisclosure scenario.
+server	tests/TagEkyc.IntegrationTests/Tip88C1C6BA3RetentionCheckpointTests.cs	MODIFIED	test_support	Permit an explicit client id when seeding the foreign graph.
+server	tests/TagEkyc.IntegrationTests/Tip88C1C6BA3ConsentRetentionTests.cs	MODIFIED	test_support	Grant the foreign client its explicit recorder authority.
+server	tests/TagEkyc.IntegrationTests/TestResults/a3-broker-admission-v2-*.trx	ADDED	evidence_trx	Successor baseline, diagnostics, mutations and restored run.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	MODIFIED	reconciliation	Record P07 ratification and P02 successor evidence.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_open_matrix.tsv	MODIFIED	route_matrix	Record P07 ratification and exact P02 successor dimensions.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_recorded_mutants.tsv	MODIFIED	mutant_registry	Append BA-G4 mutant hash.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_manifest_verify.ps1	MODIFIED	verifier	Include successor v2 matrix and packet in reference resolution.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_trx_reference_resolution.tsv	MODIFIED	trx_resolution	Regenerated from all current ledgers and packets.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_failed_run_census.tsv	MODIFIED	cluster_control	Classify every v1/v2 failed run and point superseded REDs to current-source successors.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_cluster_execution_matrix_v2.md	ADDED	cluster_control	Successor scenario/guard matrix.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_cluster_review_packet_v2.md	ADDED	review_packet	Single successor handoff requesting P02 only.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_allowed_delta_v2.tsv	ADDED	cluster_control	Authorized correction drift.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_candidate_manifest.tsv	ADDED	predecessor_control	Frozen v1 candidate manifest becomes an ordinary predecessor artifact under the successor manifest.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_candidate_manifest.tsv.sha256	ADDED	predecessor_control	Frozen v1 candidate sidecar becomes an ordinary predecessor artifact under the successor manifest.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_candidate_trx_inventory_v2.tsv	ADDED	cluster_control	All-repository TRX inventory after correction.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_cluster_drift_v2.tsv	ADDED	cluster_control	Exact v1-candidate to v2-candidate drift.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_candidate_manifest_v2.tsv	ADDED	cluster_control	Successor candidate manifest.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_candidate_manifest_v2.tsv.sha256	ADDED	cluster_control	Successor manifest sidecar.

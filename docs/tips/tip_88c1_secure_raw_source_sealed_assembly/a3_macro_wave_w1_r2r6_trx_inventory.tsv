@@ -1,0 +1,5 @@
+id	path	sha256	result_summary	total	passed	failed	skipped	failed_census_id
+W1TR001	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w1-p21-baseline-current.trx	07420ACCB7B6C2FA1508D32C060692D006E1A3BAF2CD439AB2F6FDCF4BADDA2E	Completed	1	1	0	0	
+W1TR002	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w1-go21-adjacent-green-diagnostic.trx	CDC23F9A9A8C5E5CA1274DD63FA7A8C27F8E906BEFAD90FC4D1B822D3EE11A86	Completed	9	9	0	0	
+W1TR003	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w1-go21-broker-projection-red.trx	0DA23087C4BF7A5368AB48F29A193A2216AF2D47EB4509018808565F746726D9	Failed	9	8	1	0	W1FR001
+W1TR004	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w1-r2r6-restored-joined-final.trx	1523CCDB2F07F3A88343FF24D41CE34BBBCD68673D82293814E55602DF9F8351	Completed	27	27	0	0	

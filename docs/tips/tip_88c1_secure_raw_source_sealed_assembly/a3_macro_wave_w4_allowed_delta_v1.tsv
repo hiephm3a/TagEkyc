@@ -1,0 +1,23 @@
+change	path	reason
+ADDED	agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-agent-config-restored-joined.trx	W4 restored Agent config gate
+ADDED	agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-agent-final-joined-v2.trx	W4 sequential final Agent gate
+ADDED	agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-p25-agent-portrait-guard-mutation.trx	W4 P25 targeted guard RED
+ADDED	agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-p25-agent-relational-corrected.trx	W4 P25 corrected GREEN
+ADDED	agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-p25-agent-relational-precorrection.trx	W4 P25 actual product defect RED
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_activation_evidence_seal_v1.tsv	W3 ratification predecessor seal artifact excluded from predecessor self-manifest
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_ratification_candidate_manifest_v1.tsv	W3 predecessor self-manifest
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_ratification_candidate_manifest_v1.tsv.sha256	W3 predecessor self-manifest sidecar
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_ratification_v1.md	W3 predecessor ratification record excluded from predecessor self-manifest
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_allowed_delta_v1.tsv	W4 exact predecessor-to-candidate drift allowlist
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_execution_matrix_v1.tsv	W4 prespecified execution matrix
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_failed_run_census_v1.tsv	W4 exact failed-run accounting
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_final_matrix_v1.tsv	W4 row dispositions
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_manifest_verify.ps1	W4 whole-repo manifest verifier
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_reachability_audit_v1.md	W4 production reachability and gap audit
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_trx_inventory_v1.tsv	W4 exact TRX inventory
+ADDED	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w4/a3-w4-existing-readiness-baseline.trx	W4 Server baseline
+ADDED	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w4/a3-w4-server-final-joined.trx	W4 final Server gate
+MODIFIED	agent/src/TagEkyc.CaptureAgent.Core/CaptureAgentProductionConfigGate.cs	P25 product correction of class maximum versus aggregate capacity
+MODIFIED	agent/tests/TagEkyc.CaptureAgent.Tests/Tip75WpfCaptureAppTests.cs	P25 positive and invalid configuration test
+MODIFIED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_scratch_evidence_v1.tsv	W4 continuous scratch run accounting
+MODIFIED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_recorded_mutants.tsv	Register narrow W4 P25 mutant SHA

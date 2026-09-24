@@ -1,0 +1,48 @@
+path	reason
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_partition_v1.tsv	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_partition_verify.ps1	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_scratch_evidence_v1.tsv	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w1_allowed_delta.tsv	Predecessor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w1_candidate_manifest.tsv	Predecessor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w1_candidate_manifest.tsv.sha256	Predecessor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w1_drift.tsv	Predecessor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_authority_audit.tsv	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_authority_decision_packet_v1.md	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_authority_decision_packet_v2.md	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_authority_verify.ps1	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_failed_run_census.tsv	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_review_packet_v1.md	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_trx_inventory.tsv	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_verify.ps1	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_manifest_verify.ps1	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_recorded_mutants.tsv	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_trx_reference_resolution.tsv	W2 governance, evidence, or freeze artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_r2r6_remaining_cluster_candidate_manifest_v4.tsv	Predecessor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_r2r6_remaining_cluster_candidate_manifest_v4.tsv.sha256	Predecessor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	W2 governance, evidence, or freeze artifact.
+server/src/TagEkyc.Api/CaptureRuntimeEndpoints.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Api/Program.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Api/RawExportAssemblyHostedService.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Api/RawExportSourceIngressEndpoints.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Application/Ports/RepositoryPorts.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Application/RawExport/CaptureRuntimeRawIngressAdmissionService.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Contracts/RawExport/RawExportAssemblyContracts.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Infrastructure/Persistence/Migrations/20260815120000_Tip88C1C1ResolverAssembly.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Infrastructure/Persistence/Migrations/20260913120000_Tip88C1C6BA3RetainedIngressComposition.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyOptions.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyOrchestrator.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyRepository.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyServiceCollectionExtensions.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Infrastructure/RawExport/RawExportAssemblySourceResolver.cs	Authorized W2 product implementation.
+server/src/TagEkyc.Infrastructure/RawExport/RawIngressBrokerTransactionFacade.cs	Authorized W2 product implementation.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-current-baseline.trx	W2 focused TRX evidence.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-current-guards-red.trx	W2 focused TRX evidence.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-final-restored-joined.trx	W2 focused TRX evidence.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-guard-matrix-red.trx	W2 focused TRX evidence.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-restored-joined.trx	W2 focused TRX evidence.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-worker-caller-red.trx	W2 focused TRX evidence.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-worker-current-baseline.trx	W2 focused TRX evidence.
+server/tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs	W2 shared scenario family and residue proof.
+server/tests/TagEkyc.IntegrationTests/Tip88C1C6BA3BrokerAdmissionClusterTests.cs	W2 shared scenario family and residue proof.
+server/tests/TagEkyc.IntegrationTests/Tip88C1C6BA3BrokerClaimClusterTests.cs	W2 shared scenario family and residue proof.
+server/tests/TagEkyc.IntegrationTests/Tip88C1C6BA3R2TerminalProjectionTests.cs	W2 shared scenario family and residue proof.

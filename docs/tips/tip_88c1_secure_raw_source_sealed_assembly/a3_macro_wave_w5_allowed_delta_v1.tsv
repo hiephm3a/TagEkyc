@@ -1,0 +1,20 @@
+change	path	reason
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_candidate_manifest_v1.tsv	Frozen W4 predecessor self-excluded manifest enters W5 inventory
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_candidate_manifest_v1.tsv.sha256	Frozen W4 predecessor sidecar enters W5 inventory
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w4_review_packet_v1.md	Frozen W4 predecessor packet enters W5 inventory
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w5_allowed_delta_v1.tsv	W5 exact predecessor-to-candidate allowlist
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w5_execution_matrix_v1.tsv	W5 prespecified twelve-row mechanism matrix
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w5_failed_run_census_v1.tsv	W5 whole-repo failed-run classification
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w5_final_matrix_v1.tsv	W5 twelve-row final dispositions
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w5_manifest_verify.ps1	W5 whole-repo candidate verifier
+ADDED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w5_trx_inventory_v1.tsv	W5 exact five-run TRX inventory
+ADDED	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-baseline.trx	W5 shared lineage baseline
+ADDED	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-latest-head-mutation.trx	W5 latest-head guard RED
+ADDED	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-c3-withdrawal-mutation.trx	W5 non-discriminating inner-C3 mutation diagnostic
+ADDED	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-c3-begin-guard-mutation.trx	W5 C3 begin authority guard RED
+ADDED	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-restored-joined.trx	W5 restored joined gate
+MODIFIED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_partition_v1.tsv	Latest-reference row becomes candidate without authority ratification
+MODIFIED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_scratch_evidence_v1.tsv	W5 continuous scratch runs and exact source/TRX hashes
+MODIFIED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_recorded_mutants.tsv	Register three W5 mutant source hashes including diagnostic
+MODIFIED	server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	W4 freeze history and W5 candidate/official census distinction
+MODIFIED	server/tests/TagEkyc.IntegrationTests/Tip88C1C6BA3RetentionCheckpointTests.cs	Shared W5 permit-revision and C3 provider-read controls plus old-event time-effective assertion

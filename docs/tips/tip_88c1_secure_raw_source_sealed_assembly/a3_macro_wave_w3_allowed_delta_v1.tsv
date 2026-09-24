@@ -1,0 +1,36 @@
+path	reason
+agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w3/a3-w3-agent-expired-lease-baseline-v2.trx	W3 evidence/governance
+agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w3/a3-w3-agent-expired-lease-baseline.trx	W3 evidence/governance
+agent/tests/TagEkyc.CaptureAgent.Tests/Tip88C1C6BA3RetainedOwnershipTests.cs	W3 shared test extension
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_partition_v1.tsv	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_partition_verify.ps1	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_scratch_evidence_v1.tsv	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_allowed_delta_v2.tsv	W3 predecessor/current-byte inventory
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_candidate_manifest_v2.tsv	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_candidate_manifest_v2.tsv.sha256	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_drift_v2.tsv	W3 predecessor/current-byte inventory
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_ratification_v1.md	W3 predecessor/current-byte inventory
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_verify.ps1	W3 predecessor/current-byte inventory
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_allowed_delta_v1.tsv	W3 current provenance control
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_drift_v1.tsv	W3 current provenance control
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_execution_matrix_v1.tsv	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_failed_run_census_v1.tsv	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_final_matrix_v1.tsv	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_preflight_packet_v1.md	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_preflight_verify.ps1	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_review_packet_v1.md	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_trx_inventory_v1.tsv	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w3_verify.ps1	W3 machine verifier
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_recorded_mutants.tsv	W3 evidence/governance
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-final-restored-joined.trx	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-horizontal-baseline-v2.trx	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-horizontal-baseline.trx	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-diagnostic-v2.trx	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-diagnostic-v3.trx	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-diagnostic.trx	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-focused-green-v2.trx	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-attempt-a4.trx	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-shared-guards-red.trx	W3 evidence/governance
+server/tests/TagEkyc.IntegrationTests/Tip88C1C6BA3BrokerAdmissionClusterTests.cs	W3 shared test extension
+server/tests/TagEkyc.IntegrationTests/Tip88C1C6BA3BrokerClaimClusterTests.cs	W3 shared test extension

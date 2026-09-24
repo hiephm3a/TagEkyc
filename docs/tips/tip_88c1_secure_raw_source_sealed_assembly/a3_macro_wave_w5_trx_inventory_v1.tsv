@@ -1,0 +1,6 @@
+path	sha256	total	passed	failed	skipped	classification
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-baseline.trx	EAADA4BD6A5BE67475ADBBE1696CD1880B1687A710B761ABBCF2D7975ED55544	7	7	0	0	BASELINE_GREEN
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-latest-head-mutation.trx	BC05C4BDB02DC587DB5D4D219DE1EA0336F581274319354D04C1F116019B4006	7	3	4	0	EVIDENCE_RED
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-c3-withdrawal-mutation.trx	71C4A28B9D815B5F625F9F278D7712C3985AD1E849C4FB7616BD1327FC83D75F	7	7	0	0	EXCLUDED_DIAGNOSTIC
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-c3-begin-guard-mutation.trx	3AD8716061DC541FDEC95F0BC33DADE050EA80237D23AEB59E6B438BEAF98884	7	6	1	0	EVIDENCE_RED
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w5/a3-w5-lineage-restored-joined.trx	955A7E1D8DAB94B267404FF9C6A61C39732DF9B285C1131A0DCBC69E53D90CDA	15	15	0	0	RESTORED_GREEN

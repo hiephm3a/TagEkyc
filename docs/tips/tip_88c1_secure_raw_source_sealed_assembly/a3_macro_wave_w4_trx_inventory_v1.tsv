@@ -1,0 +1,8 @@
+path	sha256	total	passed	failed	skipped	classification
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w4/a3-w4-existing-readiness-baseline.trx	65B32BDABBF4BC873506B25DAA75D2A1A51F46EF4B1FFF332F3CBAC22350B0DF	3	3	0	0	BASELINE_GREEN
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w4/a3-w4-server-final-joined.trx	86EC85232D27EE5EFC734ED02850CE785974686204C7DD818264645EA2F70DBC	17	17	0	0	RESTORED_GREEN
+agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-agent-config-restored-joined.trx	07CC57D216B104D50BD88DA30A006E877E33BE22637AFD5748FD1C95DCD74757	41	41	0	0	RESTORED_GREEN
+agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-agent-final-joined-v2.trx	7BCD43C8F2A9B06C7743028D95B08B92F3393F5690866B38168C04AB08E97B2A	94	94	0	0	RESTORED_GREEN
+agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-p25-agent-portrait-guard-mutation.trx	F198FCE85E3FFDD433ED2C446EFC5289B03C96785DAAC4727C73C21E88842ED4	1	0	1	0	EVIDENCE_RED
+agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-p25-agent-relational-corrected.trx	3F889748FEA9C320D745A87809D1DCD4FE69E0CDB684DF7AE49BAE2AF5B3B8D7	1	1	0	0	CORRECTED_GREEN
+agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w4/a3-w4-p25-agent-relational-precorrection.trx	53885400DCEE6964993C7EC924640E9BB0194253E03747202AC35F08286012C8	1	0	1	0	EVIDENCE_RED_ACTUAL_DEFECT

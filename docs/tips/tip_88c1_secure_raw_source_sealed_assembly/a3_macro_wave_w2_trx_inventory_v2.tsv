@@ -1,0 +1,14 @@
+id	path	sha256	result_summary	total	passed	failed	skipped	failed_census_id
+W2TR001	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-current-baseline.trx	1DD276CA80EFEA1B16F7CA7C77832F10080D2E76D8DE420CDAB93D1C0E5BE27E	Completed	19	19	0	0	
+W2TR002	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-current-guards-red.trx	916D6B02FF9C5C5486019C8719F06042357BEB673F10B401656C5705403DF5F5	Failed	19	9	10	0	W2FR001
+W2TR003	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-guard-matrix-red.trx	A8ED82B9104C329207EE06953AE9AF2CA2DD8BC0048EE36F6E7E7A7719A844BE	Failed	5	0	5	0	W2FR002
+W2TR004	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-restored-joined.trx	1BA09CB508E9D52D2BE45F3398BBC51EDCED5ED90E47DF72FFBD57BBFE5EC1E0	Completed	19	19	0	0	
+W2TR005	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-worker-current-baseline.trx	6CCE9C980F8263B71DC859D1F065DA04589B5D2A120BF11640CF80AB67E8381A	Completed	1	1	0	0	
+W2TR006	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-worker-caller-red.trx	DBBB3B934F691F9E7EAD8B3B0DF6603723E877D35C6B061FAB0F32E06FDC6C6D	Failed	1	0	1	0	W2FR003
+W2TR007	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-final-restored-joined.trx	877C94643D7442F8F26DE07EDE016F7E46CADE86F4A8E797EC30E4166E7B210B	Completed	20	20	0	0	
+W2TR008	server/TestResults/a3-w2/a3-w2-assembly-shared-baseline.trx	052A84C45CAAD9748EA1434E49FF0F97681CA0ABC0A7707BE147045031971FA1	Failed	1	0	1	0	W2FR004
+W2TR009	server/TestResults/a3-w2/a3-w2-assembly-shared-restored.trx	7744EBA0F70AD6AC42982F3AA3AC94A8160E83C64C787BE98F7AC96FECB0E50F	Completed	1	1	0	0	
+W2TR010	server/TestResults/a3-w2/a3-w2-horizontal-baseline.trx	4A6551B4AB61590332B06929257D97D3A99D655B0940A6CEE60723C71ED5171E	Failed	26	22	4	0	W2FR005
+W2TR011	server/TestResults/a3-w2/a3-w2-horizontal-retry.trx	D49FBE25E6DBD2DBE64DEBB5150F1435642EEA5B48D4BD7B563AE5CAB6F73B7F	Failed	4	3	1	0	W2FR006
+W2TR012	server/TestResults/a3-w2/a3-w2-o12-restored.trx	F5F36CF54CFC61324164832C087C733415442F8EA8638B9F80CA026CE8928258	Completed	1	1	0	0	
+W2TR013	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-current-source-ratified-sentinel.trx	37B519B0550AE1BEF3DE975E0C2C0C03959CD8FDEEFBCCBB1F7B4659E3DCBF51	Completed	18	18	0	0	

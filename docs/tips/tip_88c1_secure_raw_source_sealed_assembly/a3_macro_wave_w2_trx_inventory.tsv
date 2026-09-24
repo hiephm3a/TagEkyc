@@ -1,0 +1,8 @@
+id	path	sha256	result_summary	total	passed	failed	skipped	failed_census_id
+W2TR001	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-current-baseline.trx	1DD276CA80EFEA1B16F7CA7C77832F10080D2E76D8DE420CDAB93D1C0E5BE27E	Completed	19	19	0	0	
+W2TR002	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-current-guards-red.trx	916D6B02FF9C5C5486019C8719F06042357BEB673F10B401656C5705403DF5F5	Failed	19	9	10	0	W2FR001
+W2TR003	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-guard-matrix-red.trx	A8ED82B9104C329207EE06953AE9AF2CA2DD8BC0048EE36F6E7E7A7719A844BE	Failed	5	0	5	0	W2FR002
+W2TR004	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-restored-joined.trx	1BA09CB508E9D52D2BE45F3398BBC51EDCED5ED90E47DF72FFBD57BBFE5EC1E0	Completed	19	19	0	0	
+W2TR005	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-worker-current-baseline.trx	6CCE9C980F8263B71DC859D1F065DA04589B5D2A120BF11640CF80AB67E8381A	Completed	1	1	0	0	
+W2TR006	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-worker-caller-red.trx	DBBB3B934F691F9E7EAD8B3B0DF6603723E877D35C6B061FAB0F32E06FDC6C6D	Failed	1	0	1	0	W2FR003
+W2TR007	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-horizontal-final-restored-joined.trx	877C94643D7442F8F26DE07EDE016F7E46CADE86F4A8E797EC30E4166E7B210B	Completed	20	20	0	0	

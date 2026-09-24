@@ -1,0 +1,4 @@
+generator_self_test_valid=PASS
+generator_self_test_wrong_count=PASS
+generator_self_test_non_ratification=PASS
+generator_self_tests=3/3

@@ -1,0 +1,21 @@
+path	reason
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_partition_v1.tsv	W2 successor governance, census, decision, or verification artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_scratch_evidence_v1.tsv	W2 successor governance, census, decision, or verification artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_allowed_delta.tsv	Predecessor or successor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_candidate_manifest.tsv	Predecessor or successor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_candidate_manifest.tsv.sha256	Predecessor or successor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_drift.tsv	Predecessor or successor provenance artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_failed_run_census_v2.tsv	W2 successor governance, census, decision, or verification artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_homeowner_scope_decision_v1.md	W2 successor governance, census, decision, or verification artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_review_packet_v2.md	W2 successor governance, census, decision, or verification artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_trx_inventory_v2.tsv	W2 successor governance, census, decision, or verification artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w2_verify.ps1	W2 successor governance, census, decision, or verification artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_manifest_verify.ps1	W2 successor governance, census, decision, or verification artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_trx_reference_resolution.tsv	W2 successor governance, census, decision, or verification artifact.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	W2 successor governance, census, decision, or verification artifact.
+server/TestResults/a3-w2/a3-w2-assembly-shared-baseline.trx	Whole-repository W2 TRX inventory or current-byte sentinel.
+server/TestResults/a3-w2/a3-w2-assembly-shared-restored.trx	Whole-repository W2 TRX inventory or current-byte sentinel.
+server/TestResults/a3-w2/a3-w2-horizontal-baseline.trx	Whole-repository W2 TRX inventory or current-byte sentinel.
+server/TestResults/a3-w2/a3-w2-horizontal-retry.trx	Whole-repository W2 TRX inventory or current-byte sentinel.
+server/TestResults/a3-w2/a3-w2-o12-restored.trx	Whole-repository W2 TRX inventory or current-byte sentinel.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w2/a3-w2-current-source-ratified-sentinel.trx	Whole-repository W2 TRX inventory or current-byte sentinel.

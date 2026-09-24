@@ -1,0 +1,12 @@
+repo	path_pattern	allowed_change	category	reason
+server	tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs	MODIFIED	test_source	Extend the existing production-orchestrator fixture with shared AS-A1/AS-A2/AS-S0/AS-SC/AS-SU component assertions.
+server	tests/TagEkyc.IntegrationTests/TestResults/a3-assembly-*.trx	ADDED	evidence_trx	Focused, mutation, restored and joined ASSEMBLY runs; every failed run is separately classified.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	MODIFIED	reconciliation	Append component evidence and blocker dispositions without flipping a P29-P36 row.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_assembly_cluster_execution_matrix_v1.md	MODIFIED	cluster_control	Record final component results, locators and machine counters.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_assembly_failed_run_census.tsv	MODIFIED	failed_run_audit	Classify every failed cluster TRX.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_recorded_mutants.tsv	MODIFIED	mutant_registry	Append exact SHA-256 for isolated ASSEMBLY mutants.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_assembly_candidate_trx_inventory.tsv	ADDED	trx_inventory	Freeze every candidate TRX path and SHA.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_assembly_candidate_manifest.tsv	ADDED	candidate_manifest	Candidate manifest; intentionally excluded from its own rows.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_assembly_candidate_manifest.tsv.sha256	ADDED	candidate_manifest_sidecar	SHA sidecar; intentionally excluded from manifest rows.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_assembly_cluster_drift.tsv	ADDED	drift_audit	Exact baseline-to-candidate delta with allowlist match.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_assembly_cluster_review_packet_v1.md	ADDED	review_packet	Single end-of-cluster packet.

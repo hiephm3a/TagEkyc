@@ -1,0 +1,7 @@
+# A3 O19 conditional positive-absence authority amendment
+
+Homeowner decision: **“Cho phép positive absence có điều kiện.”** This is a narrow exception to the B2 R2 build dispatch rule that operational `Terminated` normally requires an object in `Deleted` or `Quarantined`. It does not change `TerminatedBeforeStart`, and absence of a provider receipt by itself is not proof of no object.
+
+For a `SourceRetention` attempt with durable `CONTENT_COMMITMENT_MISMATCH` intent and matching `Terminated` disposition, `Terminated` may also settle an object in `NoObjectEstablished` **only** after production reconciliation persists `PutOutcomeKind = PositiveAbsence`, a non-null put operation ID, put-arm timestamp, and outcome-observed timestamp. The object must match the same source, attempt, key reservation, provisional identity, encryption revision, fence and fingerprint; the key must be `Revoked` or `ReservationAbandoned`. This exception is not available for `NotArmed`, `PutOutcomeUnknown`, a foreign/stale object, another terminal cause, or an unproven provider result.
+
+TI02 may finalize the exact O19 intent only after these conditions hold. Pending or ambiguous states remain pending, with no fabricated provider outcome. This amendment grants no production activation, fixture fallback, wider terminal interpretation, A3 PASS, or permission to skip the restored joined gate and independent review.

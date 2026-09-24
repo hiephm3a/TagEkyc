@@ -528,7 +528,7 @@ PlatformOperator `runtime-manage`; it has no body, query, or `Idempotency-Key`.
 ### R20a — capability issue
 
 `POST /api/ekyc/verification-sessions/{sessionId}/capture-capabilities`; landed
-Client session-owner authentication; body exactly `{ "Action":"Issue" }` and
+Client session-owner authentication; body exactly `{ "action":"Issue" }` and
 header `Idempotency-Key:U`; B locks 70→80 and inserts ActiveUnbound; 201 returns
 CapabilityId, secret once, expiry, state and revision; exact replay is 409
 `EXISTING_MATCH_SECRET_UNAVAILABLE` with only §1's nonsecret `code`/`correlationId`
@@ -539,7 +539,7 @@ projection, 32-byte domain-separated digest and positive pepper version. The
 API-hosted Application resolves and stamps exactly
 `ICaptureRuntimeVerifierPepperSource.CurrentVersion`; neither the Client nor
 another HTTP caller supplies or overrides it;
-`tagekyc.capture_runtime_issue_or_replace_capability(uuid,uuid,text,uuid,bigint,uuid,uuid,text,bytea,integer,bytea,timestamptz) RETURNS TABLE(result_code text,capture_capability_id uuid,secret_available boolean,expires_at_utc timestamptz,state text,revision bigint)`;
+`tagekyc.capture_runtime_issue_or_replace_capability(uuid,uuid,text,uuid,bigint,uuid,uuid,text,bytea,integer,bytea,timestamptz,uuid,uuid,jsonb) RETURNS TABLE(result_code text,capture_capability_id uuid,secret_available boolean,expires_at_utc timestamptz,state text,revision bigint)`; the final three inputs are the authenticated non-empty BusinessConsumer `PrincipalId`, optional existing-consent binding and validated server-built retention profile. None is accepted from the public JSON body. Non-retained issue supplies NULL consent/profile while retaining the authenticated principal;
 SQL derives expiry as `p_now + interval '5 minutes'` and never receives/returns
 plaintext; application emits and then zeroes it only for committed Created;
 if an older ActiveUnbound capability is already expired, Issue first records
@@ -551,8 +551,8 @@ re-emits a secret;
 ### R20b — capability replace
 
 `POST /api/ekyc/verification-sessions/{sessionId}/capture-capabilities`; landed
-Client session-owner authentication; body exactly `{ "Action":"Replace",
-"CurrentCapabilityId":"<U>", "ExpectedRevision":<V> }` and header
+Client session-owner authentication; body exactly `{ "action":"Replace",
+"currentCapabilityId":"<U>", "expectedRevision":<V> }` and header
 `Idempotency-Key:U`; B locks 70→80, revokes the exact ActiveUnbound predecessor
 and inserts one successor; 201 returns CapabilityId, secret once, expiry, state
 and revision; exact replay is 409 `EXISTING_MATCH_SECRET_UNAVAILABLE` with only
@@ -563,7 +563,7 @@ application generates the successor UUID and 32-byte secret and supplies a
 pepper version selected exactly from
 `ICaptureRuntimeVerifierPepperSource.CurrentVersion`; no external HTTP/API
 caller selects or overrides it;
-`tagekyc.capture_runtime_issue_or_replace_capability(uuid,uuid,text,uuid,bigint,uuid,uuid,text,bytea,integer,bytea,timestamptz) RETURNS TABLE(result_code text,capture_capability_id uuid,secret_available boolean,expires_at_utc timestamptz,state text,revision bigint)`;
+`tagekyc.capture_runtime_issue_or_replace_capability(uuid,uuid,text,uuid,bigint,uuid,uuid,text,bytea,integer,bytea,timestamptz,uuid,uuid,jsonb) RETURNS TABLE(result_code text,capture_capability_id uuid,secret_available boolean,expires_at_utc timestamptz,state text,revision bigint)`; the final three inputs have the same authenticated-principal/existing-consent/server-profile ownership as R20a and are never public JSON selectors;
 SQL derives expiry as `p_now + interval '5 minutes'` and never receives/returns
 plaintext; application emits and zeroes it only for committed Created;
 an expired exact predecessor is first materialized as `Expired`; the requested

@@ -1,0 +1,15 @@
+repo	path_pattern	allowed_change	category	reason
+server	tests/TagEkyc.IntegrationTests/Tip88C1C6BA3BrokerAdmissionClusterTests.cs	ADDED	test_source	Shared real Kestrel/PostgreSQL/Agent proof for reachable P02/P07.
+agent	tests/TagEkyc.CaptureAgent.Tests/Tip88C1C6BA3RetainedOwnershipTests.cs	MODIFIED	test_source	Add shared terminal zeroization/no-retry theory for P02/P07.
+server	tests/TagEkyc.IntegrationTests/TestResults/a3-broker-admission-*.trx	ADDED	evidence_trx	Focused baseline, mutation and restored Server runs.
+agent	tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-broker-admission-*.trx	ADDED	evidence_trx	Focused baseline, mutation and restored Agent runs.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	MODIFIED	reconciliation	Record candidate row dispositions and exact evidence.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_open_matrix.tsv	MODIFIED	route_matrix	Record reachability and candidate/blocker classification.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_recorded_mutants.tsv	MODIFIED	mutant_registry	Append three isolated BROKER_ADMISSION mutant hashes.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_manifest_verify.ps1	MODIFIED	verifier	Include ASSEMBLY and BROKER_ADMISSION ledgers in TRX reference resolution.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_trx_reference_resolution.tsv	MODIFIED	trx_resolution	Regenerated from all current ledgers.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_*.tsv	ADDED	cluster_control	Baseline/candidate manifests, TRX inventory, allowlist, drift and failed-run census.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_*.tsv.sha256	ADDED	cluster_control	Manifest sidecars.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_cluster_execution_matrix_v1.md	ADDED	cluster_control	Six-row scenario and guard matrix.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_cluster_review_packet_v1.md	ADDED	review_packet	Single cluster handoff.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_assembly_*.tsv	ADDED	predecessor_control	Accepted predecessor control artifacts absent from the older frozen manifest but already present before cluster work.

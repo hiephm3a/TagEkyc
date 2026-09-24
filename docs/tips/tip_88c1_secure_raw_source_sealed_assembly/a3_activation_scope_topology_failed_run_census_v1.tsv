@@ -1,0 +1,3 @@
+path	sha256	total	passed	failed	skipped	failing_test	first_assertion_or_exception	classification	guard_or_row	successor_trx	exclusion_reason
+tests/TagEkyc.UnitTests/TestResults/a3-scope-topology-guard-mutant-unit.trx	D760173D7411FFB05A697568EF3162C7CADF37AF2ED9AC567C574DABE3997311	17	14	3	0	ActivatedExcludedAssemblyTopologyFailsBeforePepperOrRoutes(DurableWorker|Invalid|FixtureProof)	Assert.Throws() Failure: No exception was thrown	EVIDENCE_RED	A3-SCOPE-TOPOLOGY		
+tests/TagEkyc.IntegrationTests/TestResults/a3-scope-topology-guard-mutant-host.trx	F0DFC3F53D92343B79E9204A081F9B0C4612CB135AB1045FFD6A9B593F745ABC	11	10	1	0	ActivatedWithAssemblyExcludedSealRejectsInvalidEffectiveTopology	Assert.ThrowsAny() Failure: No exception was thrown	EVIDENCE_RED	A3-SCOPE-TOPOLOGY		

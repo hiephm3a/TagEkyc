@@ -1,0 +1,26 @@
+path`tsha256`toutcome`ttotal`tpassed`tfailed`tskipped
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-family-b1-final-positive.trx	FEAD13D083FE23FA6BC11C3B48513905A945D8473C043115AB35A801B5EBD820	Failed	7	6	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-family-b1-observed.trx	311E30095B7ED033C5AFCD8E0AB7652A23607113BFBFB680ED843B58A59213EE	Failed	7	6	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-family-b1-positive-controls.trx	CB56D0FA56AAF434961678B34E9881BCFF1551C8A04BD618CC1EA5669987A560	Failed	7	6	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-family-baseline.trx	BF45EB9EB706F5D5C4166242221A3C3447A763C6121190546E77C453EBAA38D1	Failed	7	5	2	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-family-positive-controls-v2.trx	32AD552176974A81EB3EEE661BFE7F451C7D3DB996526365D7085518D8B032AC	Failed	7	6	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-family-positive-controls-v3.trx	1884B4C7AC0CC1771A2A1D097AD0FCF8DA8916C8168A0F3429A713CE4DE9A34F	Failed	7	6	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-family-positive-controls-v4.trx	EF2882D73E9EFD5955FD6FBA9BCAE65276AB54244BCF9F2741DB05CFCC39D23E	Failed	8	6	2	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-family-positive-controls.trx	0E6FE742C40F7D910A20C204056AD5E565D7D308BC9E7A0EA1D4D4CD04CD5800	Failed	7	6	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-family-restored-baseline.trx	4D6B904E349D23AA4211071E5E5E93CF7CBF77F929809019061EF57C118F41D3	Failed	7	6	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-final-restored-joined-gate.trx	298F9410DB0D168235F1004EC64DAF482BE1C575A13E958C6278603CBB80C5F0	Completed	14	14	0	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-joined-restored-gate.trx	1BD6FAE10F341C38750FEA4B23BC6BEC7D469DFA56A5E8373EE08B76990A002E	Completed	13	13	0	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-p10-retry-time-final-source-red.trx	26812E7F98F28017ABB521367756ACDC03EE650F7963EF02C8413FABA74FD286	Failed	6	5	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-p10-retry-time-red.trx	D4BE10ABDD04CCAEA7C319A58583F0FD45BE1F674735C7AF852C9371C10CD616	Failed	6	5	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-p15-tombstone-final-source-red.trx	4B005CCCAAC0221A9196F02724DFB8D3E9601FCCAA09099C42A2423251D7EEFE	Failed	6	5	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-p15-tombstone-red.trx	7F3F9EDD05A83D7B9FCB3B97C22EB3BF17960D2A89D59675D140DACBB0D314B5	Failed	6	5	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-p16-state-gate-final-source-red.trx	E70DD3603184CC70A3A270FBE69094568311B46528DB1DD9C3992285258ABE24	Failed	6	5	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-p16-state-gate-red.trx	DDC84D5D808B288184F91A5D0826310028D4473CA5AA0B512439FA2398C3DB0C	Failed	6	5	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-process-kill-matrix-positive-v2.trx	140ED3D5C8C646542D0012177344842DAEAAD51D7EBF8DAE6B9D17D2EF95151C	Failed	1	0	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-process-kill-matrix-positive-v3.trx	2825010049CBB37A8138B9DF3667E10A97E21C74F78267CECDCA46FF07CAB63A	Failed	1	0	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-process-kill-matrix-positive-v4.trx	83C1E2B9EE31EF1BEA3111498EE7156D8548755CE8C33AA52AFF39790AA17367	Failed	1	0	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-process-kill-matrix-positive-v5.trx	1F8C1933E91BE000A39385BBEE6B9B05028D66D3BE915109B8B86A66FCD37C7C	Completed	1	1	0	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-process-kill-matrix-positive.trx	5916D46A7B34453009179F8A5838578BC49E5C6D6CEE0D66A43BC6AC1BABA22A	Failed	1	0	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-six-outcome-final-source-positive-v2.trx	7DDF83A5F8B239D71C8A4439AA238EAC7075DE98DC6791D8BF75E17C37267536	Completed	6	6	0	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-six-outcome-final-source-positive.trx	A670F0D6F5B80EB52E8243EA161A81855D03EBCFE31EACD91B3EA9F5F39C709E	Failed	6	5	1	0
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-broker-claim-six-outcome-positive.trx	C0B39E685700C5D6E104FE9A90AD41546E2B6CB450386EAE07C7DE6507458FA0	Completed	6	6	0	0

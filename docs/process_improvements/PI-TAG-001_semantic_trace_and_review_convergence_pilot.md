@@ -1,17 +1,29 @@
 # PI-TAG-001 — Semantic Trace and Review Convergence Pilot
 
-**Status:** CANDIDATE — APPROVED FOR ONE-TIP PILOT
-**Pilot status:** NOT_STARTED
-**Version:** 0.1
-**Date:** 2026-07-26
+**Status:** ACTIVE — ONE-TIP PILOT ONLY
+**Pilot status:** ACTIVE
+**Pilot TIP:** TIP-88C1
+**Activation date:** 2026-07-28
+**Version:** 0.2
+**Date:** 2026-07-28
 **Owner:** Homeowner + Contractor/Drafter
-**Pilot target:** first eligible complex TIP whose Planning Brief begins after
-2026-07-26; record the exact TIP identifier before review round 1
-**Binding scope:** the named pilot TIP only
+**Pilot target:** TIP-88C1 Secure Raw Source + Sealed Assembly
+**Risk tier:** High-risk
+**Binding scope:** TIP-88C1 only
 **Proposed ratified code:** `L-TAG-Review-03` after a current code census
 **Not yet:** a generally binding playbook rule
 
 ## 0. Changelog
+
+### v0.2 — TIP-88C1 pilot activated
+
+- Activated the one-TIP pilot for `TIP-88C1 Secure Raw Source + Sealed
+  Assembly`, the first eligible complex TIP whose planning begins after
+  2026-07-26.
+- Recorded the High-risk tier and 2026-07-28 activation before Planning Brief
+  review round 1.
+- Preserved candidate-only scope and every implementation/non-authorization
+  boundary.
 
 ### v0.1 — Initial candidate
 

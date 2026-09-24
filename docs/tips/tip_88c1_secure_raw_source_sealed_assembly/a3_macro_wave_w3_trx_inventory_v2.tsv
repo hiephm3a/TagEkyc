@@ -1,0 +1,15 @@
+id	path	sha256	result_summary	total	passed	failed	skipped	failed_census_id
+W3V2TRX001	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-final-restored-joined.trx	3A08E656706321207151C80C982067C46FE9A390222FB0ECC5E53B813FC8D9A5	Completed	26	26	0	0	
+W3V2TRX002	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-horizontal-baseline-v2.trx	59591EBAC75F07A2D0D8431626C103ADEA363B7DDFC249D88E70E79129790651	Completed	26	26	0	0	
+W3V2TRX003	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-horizontal-baseline.trx	6045AF449465C24DCBA3FFE0577B9463EB5979036E168E061D809FC972E34C9A	Failed	26	25	1	0	W3FR001
+W3V2TRX004	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-attempt-a4.trx	F014785A30EEC3EEE0355ED67E21CB18CE26A9E69440643EE6AE8EF7C1D3F9C6	Failed	1	0	1	0	W3FR004
+W3V2TRX005	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-diagnostic-v2.trx	9D76EC4771B5061462849D2694C67FD4AA2CEC652B559202DDAA38AD298326FD	Completed	0	0	0	0	
+W3V2TRX006	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-diagnostic-v3.trx	84EBD5611B9BECECF37B8F786C1E368E4E3427CC98BC5928A1B62ABD365926FB	Failed	1	0	1	0	W3FR003
+W3V2TRX007	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-diagnostic.trx	E3BA9A5F8AE95FE0EAF4EE1E67FE41547251DFAAC41259CBB782B42749BC038F	Failed	1	0	1	0	W3FR002
+W3V2TRX008	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-o14-recovery-focused-green-v2.trx	27B104B9AE8F4B5E4597D051BD8752F2A1297DBCBDA1DCB43BD99504E71B0F26	Completed	1	1	0	0	
+W3V2TRX009	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-p08-p14-successor-restored-joined.trx	7064CE12C6663555D7BC3AC5C4093FC8648BFF15B8BA08DC6EA001CB049F61A6	Completed	9	9	0	0	
+W3V2TRX010	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-p08-same-buffer-capacity-mutant-red.trx	D20B9A90DD9F4C8BA2157B519F5D81141F9CA55B0CD7B5CF6A5528DACB8F925A	Failed	1	0	1	0	W3FR006
+W3V2TRX011	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-p08-same-buffer-successor.trx	B47D9596134179DA5A5E7132CC830FCFAABBFF424262B7855B21D8FD97E7366D	Completed	1	1	0	0	
+W3V2TRX012	server/tests/TagEkyc.IntegrationTests/TestResults/a3-w3/a3-w3-shared-guards-red.trx	3FBB2C5281DEE42626E02D3B956CFF5713CFD9774CDC232A03DEFE1D57964B39	Failed	26	24	2	0	W3FR005
+W3V2TRX013	agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w3/a3-w3-agent-expired-lease-baseline-v2.trx	860CBA4F89D31E3B44032F6180020808D0896F6C61AF014D31DD847243E43841	Completed	5	5	0	0	
+W3V2TRX014	agent/tests/TagEkyc.CaptureAgent.Tests/TestResults/a3-w3/a3-w3-agent-expired-lease-baseline.trx	A9EDA585F4A11D9E4E5F43F915328110867FEFF793DED52BD9B22257C69BE890	Completed	0	0	0	0	

@@ -1,0 +1,17 @@
+path	reason
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_partition_v1.tsv	Authoritative partition status advances P21 to candidate pending ratification.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_partition_verify.ps1	Accepted macro-wave governance verifier.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_scratch_evidence_v1.tsv	Append-only W1 run provenance.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w1_r2r6_failed_run_census.tsv	W1 failed-run classification.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w1_r2r6_review_packet_v1.md	Single W1 handoff packet.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w1_ratification_v1.md	Homeowner ratification record freezing Wave 1 as one nine-row execution wave.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w1_r2r6_trx_inventory.tsv	W1 TRX inventory.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_macro_wave_w1_verify.ps1	Machine verifier for W1 drift, TRX, failed census, mutants and Git state.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_recorded_mutants.tsv	Adds G-O21 evidence mutant and excluded adjacent diagnostic mutant.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_r2r6_remaining_cluster_execution_matrix_v2.md	Records final W1 dispositions.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_r2r6_remaining_cluster_ratification_v1.md	Pre-wave governance/census correction already accepted; no product behavior.
+server/docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	Records P21 candidate and exact W1 disposition.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w1-go21-broker-projection-red.trx	Targeted current-source G-O21 RED.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w1-go21-adjacent-green-diagnostic.trx	Excluded adjacent-branch GREEN-under-mutation diagnostic.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w1-p21-baseline-current.trx	P21 current-source positive control.
+server/tests/TagEkyc.IntegrationTests/TestResults/a3-w1-r2r6-restored-joined-final.trx	Final restored 27-case gate.

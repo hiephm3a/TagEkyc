@@ -1,0 +1,3 @@
+RunId	Artifact	Disposition	Reason
+SITEPROBE-FR001	a3-site-probe-startup-mutant.trx	EVIDENCE_RED	Reintroduced startup enforcement; the host failed before health/probe availability, exactly the behavior this successor removes.
+SITEPROBE-FR002	a3-site-probe-hostgraph-final.trx	SUPERSEDED_RED	Thirteen cases passed; the generated-seal case alone failed because current bytes intentionally differed from the predecessor manifest before revision-8 re-freeze.

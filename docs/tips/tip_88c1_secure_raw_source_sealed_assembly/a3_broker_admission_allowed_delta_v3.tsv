@@ -1,0 +1,21 @@
+repo	path	change	role	reason
+server	src/TagEkyc.Infrastructure/Persistence/Migrations/20260913120000_Tip88C1C6BA3RetainedIngressComposition.cs	MODIFIED	production_correction	Fresh-complete equality now fails closed as required by authority.
+server	tests/TagEkyc.IntegrationTests/Tip88C1B2CoreTests.cs	MODIFIED	proof	Add exact server-cap boundary and PostgreSQL microsecond precision controls.
+server	tests/TagEkyc.IntegrationTests/TestResults/a3-p07-boundary-baseline-red.trx	ADDED	evidence_trx	Pre-correction defect discovery.
+server	tests/TagEkyc.IntegrationTests/TestResults/a3-p07-boundary-corrected-green.trx	ADDED	evidence_trx	Corrected focused GREEN.
+server	tests/TagEkyc.IntegrationTests/TestResults/a3-p07-strict-comparator-mutant-red.trx	ADDED	evidence_trx	BA-G5 targeted RED.
+server	tests/TagEkyc.IntegrationTests/TestResults/a3-p07-boundary-restored-green.trx	ADDED	evidence_trx	Restored focused GREEN.
+server	tests/TagEkyc.IntegrationTests/TestResults/a3-broker-admission-current-source-ratified-sentinel.trx	ADDED	excluded_diagnostic	Invocation omitted A3 compile flag and executed only 7 controls.
+server	tests/TagEkyc.IntegrationTests/TestResults/a3-broker-admission-current-source-ratified-sentinel-v2.trx	ADDED	evidence_trx	Current-source 14/14 ratified sentinel.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_cluster_execution_matrix_v2.md	MODIFIED	cluster_control	Record BA-G5 and correct predecessor-sentinel wording.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_failed_run_census.tsv	MODIFIED	cluster_control	Classify new failed runs.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_recorded_mutants.tsv	MODIFIED	mutant_registry	Append BA-G5 hash.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a3_proof_reconciliation_v0_2.md	MODIFIED	reconciliation	Record P07 comparator correction and limits.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_manifest_verify.ps1	MODIFIED	verifier	Include successor v3 packet in TRX resolution.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_preflight_trx_reference_resolution.tsv	MODIFIED	trx_resolution	Regenerated from current ledgers and packets.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_cluster_review_packet_v3.md	ADDED	review_packet	P07 strict-boundary successor freeze.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_candidate_manifest_v2.tsv	ADDED	predecessor_control	Frozen v2 manifest becomes an ordinary predecessor artifact under v3.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_candidate_manifest_v2.tsv.sha256	ADDED	predecessor_control	Frozen v2 manifest sidecar becomes an ordinary predecessor artifact under v3.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_candidate_manifest_v3.tsv	ADDED	cluster_control	Current-byte successor manifest.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_candidate_manifest_v3.tsv.sha256	ADDED	cluster_control	Successor manifest sidecar.
+server	docs/tips/tip_88c1_secure_raw_source_sealed_assembly/a3_broker_admission_allowed_delta_v3.tsv	ADDED	cluster_control	Authorized successor drift.
