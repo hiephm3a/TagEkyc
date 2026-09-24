@@ -2768,10 +2768,11 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         Guid actorPrincipalId,
         Guid clientApplicationId,
         Guid verificationSessionId,
-        Guid consentPolicyId)
+        Guid consentPolicyId,
+        RawExportRawClass rawClass = RawExportRawClass.LiveSelfieImage)
     {
         var source = await SeedReservedSourceForExistingSessionAsync(
-            plaintext, actorPrincipalId, clientApplicationId, verificationSessionId, consentPolicyId);
+            plaintext, actorPrincipalId, clientApplicationId, verificationSessionId, consentPolicyId, rawClass);
         var written = await WriteObjectAsync(plaintext, minio, source);
         return await VerifyWrittenSourceAsync(written, minio, restartBeforeVerification: false);
     }
@@ -3935,7 +3936,14 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         var acceptance = await AppendAcceptanceAsync(actor, session, client, artifact);
         await GrantConsentAsync(actor, client, session, policy, consentLifetime);
         var authority = await AppendAuthorityAsync(
-            actor, client, session, acceptance, artifact, policy, sourceLifetime, consentLifetime);
+            actor,
+            client,
+            session,
+            acceptance,
+            artifact,
+            policy,
+            sourceLifetime: sourceLifetime,
+            consentLifetime: consentLifetime);
         var captured = now.AddSeconds(-5);
         var retentionStart = now.AddSeconds(-4);
         var retentionExpires = now.AddMinutes(30);
@@ -3989,8 +3997,11 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         Guid actor,
         Guid client,
         Guid session,
-        Guid policy)
+        Guid policy,
+        RawExportRawClass rawClass)
     {
+        var rawClassName = rawClass.ToString();
+        var mediaType = rawClass == RawExportRawClass.ChipDg2Portrait ? "image/jp2" : "image/jpeg";
         var artifact = Guid.NewGuid();
         var now = DateTimeOffset.UtcNow;
         await using (var db = postgres.CreateDbContext())
@@ -3999,8 +4010,8 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
             {
                 Id = artifact,
                 VerificationSessionId = session,
-                ArtifactType = "SelfieImage",
-                CaptureSource = "MobileSdk",
+                ArtifactType = rawClass == RawExportRawClass.ChipDg2Portrait ? "NfcDg2Portrait" : "SelfieImage",
+                CaptureSource = rawClass == RawExportRawClass.ChipDg2Portrait ? "Nfc" : "MobileSdk",
                 ArtifactHash = $"sha256:{new string('c', 64)}",
                 MetadataHash = $"sha256:{new string('d', 64)}",
                 QualityState = "Accepted",
@@ -4012,8 +4023,9 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
             await db.SaveChangesAsync();
         }
 
-        var acceptance = await AppendAcceptanceAsync(actor, session, client, artifact);
-        var authority = await AppendAuthorityAsync(actor, client, session, acceptance, artifact, policy);
+        var acceptance = await AppendAcceptanceAsync(actor, session, client, artifact, rawClassName);
+        var authority = await AppendAuthorityAsync(
+            actor, client, session, acceptance, artifact, policy, rawClassName);
         var captured = now.AddSeconds(-5);
         var retentionStart = now.AddSeconds(-4);
         var retentionExpires = now.AddMinutes(30);
@@ -4028,7 +4040,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
                 """
                 SELECT * FROM tagekyc.begin_raw_export_source_ingress_claim(
                   @actor,@client,@producer,@agent,@ingress,@session,@acceptance,@artifact,1,
-                  'LiveSelfieImage',@challenge,@authority,@length,'image/jpeg',@captured,
+                  @rawClass,@challenge,@authority,@length,@mediaType,@captured,
                   @retentionStart,@retentionExpires,1800,'fixture-content-commitment',1,@owner,300,100);
                 """,
                 connection,
@@ -4041,6 +4053,8 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
             begin.Parameters.AddWithValue("session", session);
             begin.Parameters.AddWithValue("acceptance", acceptance);
             begin.Parameters.AddWithValue("artifact", artifact);
+            begin.Parameters.AddWithValue("rawClass", rawClassName);
+            begin.Parameters.AddWithValue("mediaType", mediaType);
             begin.Parameters.AddWithValue("challenge", ChallengeHash);
             begin.Parameters.AddWithValue("authority", authority.ToString("D"));
             begin.Parameters.AddWithValue("length", (long)plaintext.Length);
@@ -4061,7 +4075,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
             actor,
             new RawExportSourceClaimComparisonCommand(
                 actor, client, actor.ToString("N"), "capture-agent-c1", ingressKey,
-                token, plaintext.Length, "image/jpeg", captured, retentionStart,
+                token, plaintext.Length, mediaType, captured, retentionStart,
                 retentionExpires, 1800, SHA256.HashData(plaintext))));
     }
 
@@ -4090,7 +4104,8 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         Guid actor,
         Guid session,
         Guid client,
-        Guid artifact)
+        Guid artifact,
+        string rawClass = "LiveSelfieImage")
     {
         await using var connection = await OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
@@ -4098,7 +4113,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         await using var command = new NpgsqlCommand(
             """
             SELECT tagekyc.raw_export_append_capture_acceptance(
-              @session,@client,'LiveSelfieImage',@artifact,1,@challenge,
+              @session,@client,@rawClass,@artifact,1,@challenge,
               'evidence:c1b2-r2','acceptance-policy:c1b2-r2',1);
             """,
             connection,
@@ -4106,6 +4121,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         command.Parameters.AddWithValue("session", session);
         command.Parameters.AddWithValue("client", client);
         command.Parameters.AddWithValue("artifact", artifact);
+        command.Parameters.AddWithValue("rawClass", rawClass);
         command.Parameters.AddWithValue("challenge", ChallengeHash);
         var id = (Guid)(await command.ExecuteScalarAsync() ?? Guid.Empty);
         await transaction.CommitAsync();
@@ -4156,6 +4172,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         Guid acceptance,
         Guid artifact,
         Guid policy,
+        string rawClass = "LiveSelfieImage",
         TimeSpan? sourceLifetime = null,
         TimeSpan? consentLifetime = null)
     {
@@ -4166,7 +4183,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
             """
             SELECT "AuthoritySnapshotId"
             FROM tagekyc.raw_export_append_authority_snapshot(
-              @client,@session,@acceptance,'LiveSelfieImage',@artifact,1,
+              @client,@session,@acceptance,@rawClass,@artifact,1,
               'controller:fixture','scope:fixture','retention-policy:fixture',1,
               @policy,1,'RawBiometric','CaptureAccepted',@sourceExpires,
               'revocation-policy:fixture','purge-policy:fixture',
@@ -4178,6 +4195,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         command.Parameters.AddWithValue("session", session);
         command.Parameters.AddWithValue("acceptance", acceptance);
         command.Parameters.AddWithValue("artifact", artifact);
+        command.Parameters.AddWithValue("rawClass", rawClass);
         command.Parameters.AddWithValue("policy", policy);
         command.Parameters.AddWithValue("sourceExpires", DateTimeOffset.UtcNow.Add(sourceLifetime ?? TimeSpan.FromHours(1)));
         command.Parameters.AddWithValue("evaluated", DateTimeOffset.UtcNow);

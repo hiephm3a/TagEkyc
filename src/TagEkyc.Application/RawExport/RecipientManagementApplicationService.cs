@@ -23,7 +23,8 @@ public sealed class RecipientManagementApplicationService(
         if (!ValidIdempotencyKey(idempotencyKey)
             || request.RecipientClientApplicationId == Guid.Empty
             || request.PrincipalId == Guid.Empty
-            || request.PrincipalId == request.RecipientClientApplicationId)
+            || request.PrincipalId == request.RecipientClientApplicationId
+            || request.ActivationProfile is not ("C3C4RecipientV1" or "RawExportDeliveryRecipientV2"))
             return Task.FromResult(Invalid<RecipientManagementWriteResult<ManagedRecipientIdentityDto>>());
         return gateway.EnrollRecipientAsync(actor, request, idempotencyKey!, cancellationToken);
     }

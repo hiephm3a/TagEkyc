@@ -25,7 +25,12 @@ public sealed class RecipientCredentialAuthenticationPolicy(
     private const string JobScope = "business.raw-export.job.manage";
     private const string DeliveryScope = "business.raw-export.package.download";
     private const string ReferenceScope = "business.raw-export.package.references.read";
-    private static readonly HashSet<string> ActivationScopes = new(StringComparer.Ordinal)
+    private static readonly HashSet<string> DownloadOnlyScopes = new(StringComparer.Ordinal)
+    {
+        DeliveryScope,
+        ReferenceScope,
+    };
+    private static readonly HashSet<string> DeliveryOperatorScopes = new(StringComparer.Ordinal)
     {
         AuthorizeScope,
         JobScope,
@@ -51,9 +56,8 @@ public sealed class RecipientCredentialAuthenticationPolicy(
             return Unauthorized("API_KEY_EXPIRED", "API key is expired.");
 
         var recipientCredential = apiKey.CallerCategory == AuthenticatedCallerCategory.BusinessConsumer
-            && apiKey.Scopes.SetEquals(ActivationScopes)
-            && requiredScope is not null
-            && ActivationScopes.Contains(requiredScope);
+            && (apiKey.Scopes.SetEquals(DownloadOnlyScopes)
+                || apiKey.Scopes.SetEquals(DeliveryOperatorScopes));
         var managementCredential = apiKey.CallerCategory == AuthenticatedCallerCategory.OperatorAdmin
             && apiKey.Scopes.Contains(ManagementScope)
             && string.Equals(requiredScope, ManagementScope, StringComparison.Ordinal);

@@ -1,0 +1,414 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="d1d7697f-f849-45f3-be1b-2a8c3cf65142" name="3AVNN@LEARNPC 2026-09-24 11:46:03" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-24T11:46:03.1207405+07:00" queuing="2026-09-24T11:46:03.1207411+07:00" start="2026-09-24T11:45:38.9436985+07:00" finish="2026-09-24T11:46:04.2181716+07:00" />
+  <TestSettings name="default" id="540d75f1-fa74-480f-9c13-0f7ed3b6c4ca">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-24_11_46_03" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="f558a287-7875-45db-9c09-ec4b7ef1dfed" testId="2ec24464-1f70-24c3-0a57-ecd7f043a661" testName="TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode" computerName="LEARNPC" duration="00:00:07.8484281" startTime="2026-09-24T11:46:02.9805828+07:00" endTime="2026-09-24T11:46:02.9806321+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f558a287-7875-45db-9c09-ec4b7ef1dfed">
+      <Output>
+        <ErrorInfo>
+          <Message>TagEkyc.RawExport.Client.TagEkycRawExportClientException : TagEkyc returned an invalid package digest.&#xD;
+---- System.FormatException : The input is not a valid hex string as its length is not a multiple of 2.</Message>
+          <StackTrace>   at TagEkyc.RawExport.Client.TagEkycRawExportClient.DownloadAsync(Delivery delivery, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\sdk\TagEkyc.RawExport.Client\TagEkycRawExportClient.cs:line 149&#xD;
+   at TagEkyc.RawExport.Client.TagEkycRawExportClient.DownloadAsync(Delivery delivery, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\sdk\TagEkyc.RawExport.Client\TagEkycRawExportClient.cs:line 162&#xD;
+   at TagEkyc.RawExport.Client.TagEkycRawExportClient.AcquireAsync(TagEkycRawExportAcquisitionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\sdk\TagEkyc.RawExport.Client\TagEkycRawExportClient.cs:line 74&#xD;
+   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 184&#xD;
+   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 189&#xD;
+   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 189&#xD;
+   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 189&#xD;
+   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 189&#xD;
+   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 189&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at System.Convert.FromHexString(ReadOnlySpan`1 chars)&#xD;
+   at System.Convert.FromHexString(String s)&#xD;
+   at TagEkyc.RawExport.Client.TagEkycRawExportClient.DownloadAsync(Delivery delivery, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\sdk\TagEkyc.RawExport.Client\TagEkycRawExportClient.cs:line 148</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2ec24464-1f70-24c3-0a57-ecd7f043a661">
+      <Execution id="f558a287-7875-45db-9c09-ec4b7ef1dfed" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests" name="Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="2ec24464-1f70-24c3-0a57-ecd7f043a661" executionId="f558a287-7875-45db-9c09-ec4b7ef1dfed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.26]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.40]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.40]   Starting:    TagEkyc.IntegrationTests&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."ExportDecisionId", r."ApiKeyId", r."BoundRuleSetVersion", r."ClientApplicationId", r."ConsentEvaluatedAtUtc", r."ConsentRevision", r."ConsentScopeHash", r."ConsentValidFromUtc", r."ConsentValidUntilUtc", r."CurrentRuleSetVersion", r."DecidedAtUtc", r."DecisionExpiresAtUtc", r."EligibilityEvaluatedAtUtc", r."EligibilityPrimaryCause", r."FingerprintHash", r."GrantPolicyId", r."GrantPolicyVersion", r."GrantPrincipalId", r."GrantRevision", r."LifecyclePolicyId", r."LifecyclePolicyVersion", r."LifecycleRevision", r."Outcome", r."PolicyId", r."PolicyPermitTtlSeconds", r."PolicyVersion", r."PrimaryCause", r."PrincipalId", r."PurposeCode", r."RawClassSelectionMode", r."RecipientClientApplicationId", r."RequestedVerificationSessionId", r."ResolvedVerificationSessionId", r."SessionOwnerClientApplicationId", r."SessionState", r."SessionSubjectRef", r."SubjectConsentCause", r."SubjectConsentRecordId"&#xD;
+      FROM tagekyc.raw_export_authorization_decisions AS r&#xD;
+      WHERE r."ExportDecisionId" = @__exportDecisionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."Ordinal", r."Cause"&#xD;
+      FROM tagekyc.raw_export_decision_eligibility_causes AS r&#xD;
+      WHERE r."ExportDecisionId" = @__exportDecisionId_0&#xD;
+      ORDER BY r."Ordinal"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."Ordinal", r."RequirementType", r."FulfillmentEventId", r."Revision", r."ArtifactRef", r."ArtifactVersion", r."ValidUntilUtc"&#xD;
+      FROM tagekyc.raw_export_decision_fulfillment_refs AS r&#xD;
+      WHERE r."ExportDecisionId" = @__exportDecisionId_0&#xD;
+      ORDER BY r."Ordinal"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."ClassKind", r."RawClass", r."Ordinal"&#xD;
+      FROM tagekyc.raw_export_decision_classes AS r&#xD;
+      WHERE r."ExportDecisionId" = @__exportDecisionId_0&#xD;
+      ORDER BY r."ClassKind", r."Ordinal"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PermitId", r."AuthorizationDecisionId", r."CreatedAt", r."DecisionExpiresAtUtc", r."PolicyId", r."PolicyVersion", r."PurposeCode", r."RecipientClientApplicationId", r."ResolvedVerificationSessionId", r."SchemaVersion", r."SubjectRef"&#xD;
+      FROM tagekyc.raw_export_authorization_permits AS r&#xD;
+      WHERE r."AuthorizationDecisionId" = @__exportDecisionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__permitRow_PermitId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."RawClass", r."Ordinal"&#xD;
+      FROM tagekyc.raw_export_permit_classes AS r&#xD;
+      WHERE r."PermitId" = @__permitRow_PermitId_0&#xD;
+      ORDER BY r."Ordinal"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__jobId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PackageId", r."State", r."FinalizedAtUtc"&#xD;
+      FROM tagekyc.raw_export_recipient_package_preparations AS r&#xD;
+      WHERE r."JobId" = @__jobId_0&#xD;
+      ORDER BY r."Revision" DESC&#xD;
+      LIMIT 1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__8__locals1_row_ApiKeyId_0='?' (DbType = Guid), @__8__locals1_row_ClientApplicationId_1='?' (DbType = Guid), @__8__locals1_row_PrincipalId_2='?' (DbType = Guid), @__activationProfile_3='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r1."ActivationScopesDigest"&#xD;
+      FROM tagekyc.raw_export_managed_recipient_credentials AS r&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_identities AS r0 ON r."RecipientClientApplicationId" = r0."RecipientClientApplicationId" AND r."PrincipalId" = r0."PrincipalId"&#xD;
+      INNER JOIN tagekyc.raw_export_managed_recipient_policies AS r1 ON r."RecipientClientApplicationId" = r1."RecipientClientApplicationId"&#xD;
+      WHERE r."ApiKeyId" = @__8__locals1_row_ApiKeyId_0 AND r."RecipientClientApplicationId" = @__8__locals1_row_ClientApplicationId_1 AND r."PrincipalId" = @__8__locals1_row_PrincipalId_2 AND r."State" = 'Active' AND r0."State" = 'Active' AND r1."State" = 'Active' AND r1."ActivationProfile" = @__activationProfile_3&#xD;
+      LIMIT 2&#xD;
+[xUnit.net 00:00:23.70]       TagEkyc.RawExport.Client.TagEkycRawExportClientException : TagEkyc returned an invalid package digest.&#xD;
+[xUnit.net 00:00:23.70]       ---- System.FormatException : The input is not a valid hex string as its length is not a multiple of 2.&#xD;
+[xUnit.net 00:00:23.70]       Stack Trace:&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\sdk\TagEkyc.RawExport.Client\TagEkycRawExportClient.cs(149,0): at TagEkyc.RawExport.Client.TagEkycRawExportClient.DownloadAsync(Delivery delivery, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\sdk\TagEkyc.RawExport.Client\TagEkycRawExportClient.cs(162,0): at TagEkyc.RawExport.Client.TagEkycRawExportClient.DownloadAsync(Delivery delivery, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\sdk\TagEkyc.RawExport.Client\TagEkycRawExportClient.cs(74,0): at TagEkyc.RawExport.Client.TagEkycRawExportClient.AcquireAsync(TagEkycRawExportAcquisitionRequest request, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(184,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(189,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(189,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(189,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(189,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(189,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()&#xD;
+[xUnit.net 00:00:23.70]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:23.70]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:23.70]            at System.Convert.FromHexString(ReadOnlySpan`1 chars)&#xD;
+[xUnit.net 00:00:23.70]            at System.Convert.FromHexString(String s)&#xD;
+[xUnit.net 00:00:23.70]         D:\Task\Remote Signing\TagEkyc\sdk\TagEkyc.RawExport.Client\TagEkycRawExportClient.cs(148,0): at TagEkyc.RawExport.Client.TagEkycRawExportClient.DownloadAsync(Delivery delivery, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:24.81]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T11:46:02.9773198+07:00">
+        <Text>[xUnit.net 00:00:23.70]     TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

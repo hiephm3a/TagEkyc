@@ -59,6 +59,17 @@ $expected = @{
     'raw-export-delivery-correction-restored-joined-v2.trx'=6
     'raw-export-delivery-correction-standalone-client-decrypt.trx'=1
     'raw-export-delivery-correction-c5-unit.trx'=1
+    'raw-export-delivery-same-job-e2e.trx'=1
+    'raw-export-delivery-same-job-e2e-a2.trx'=1
+    'raw-export-delivery-same-job-e2e-a3.trx'=1
+    'raw-export-delivery-same-job-e2e-a4.trx'=1
+    'raw-export-delivery-same-job-e2e-a5.trx'=1
+    'raw-export-delivery-same-job-e2e-a6.trx'=1
+    'raw-export-delivery-same-job-e2e-final.trx'=1
+    'raw-export-delivery-sdk-unit-final.trx'=4
+    'raw-export-delivery-c5-profile-final.trx'=3
+    'raw-export-delivery-consent-class-mutant.trx'=1
+    'raw-export-delivery-restored-final.trx'=1
 }
 
 $currentFailures = @{
@@ -84,7 +95,13 @@ $currentFailures = @{
     'raw-export-delivery-correction-c5-scope-successor-a2.trx' = @('SUPERSEDED_RED','The second successor attempt carried one incorrect predecessor digest literal and therefore did not rewrite every managed-credential function.','raw-export-delivery-correction-c5-scope-successor-a3.trx')
     'raw-export-delivery-correction-c5-c1-c4-managed-chain.trx' = @('PRODUCT_DEFECT_PREDECESSOR','The C5 authentication policy still recognized only the two delivery scopes, so the newly issued four-scope credential fell through to disabled-client policy.','raw-export-delivery-correction-c5-c1-c4-managed-chain-a2.trx')
     'raw-export-delivery-correction-migration-discovery.trx' = @('SUPERSEDED_RED','The migration discovery assertion still named the prior migration as the last current migration.','raw-export-delivery-correction-migration-discovery-a2.trx')
-    'raw-export-delivery-correction-c5-full-restored.trx' = @('EXCLUDED_HISTORICAL_OUTSIDE_SLICE','Twenty-four C5 cases pass; the legacy C528 rollback crosses the later A3 guarded migration and fails its independent current-body guard. The bounded successor down/up proof is retained separately.','raw-export-delivery-correction-credential-migration-roundtrip.trx')
+    'raw-export-delivery-correction-c5-full-restored.trx' = @('KNOWN_TEST_DEBT','C528 still assumes that a rollback may cross a later A3 guarded migration. That compatibility debt is named and is not evidence for this delivery correction.','raw-export-delivery-correction-credential-migration-roundtrip.trx')
+    'raw-export-delivery-same-job-e2e.trx' = @('PRODUCT_DEFECT_PREDECESSOR','The first joined run exposed legacy consent resolution selecting the first consent row instead of the row for the source raw class.','raw-export-delivery-same-job-e2e-final.trx')
+    'raw-export-delivery-same-job-e2e-a2.trx' = @('PRODUCT_DEFECT_PREDECESSOR','The reordered fixture reproduced the same multi-class consent defect on LiveSelfieImage.','raw-export-delivery-same-job-e2e-final.trx')
+    'raw-export-delivery-same-job-e2e-a3.trx' = @('SUPERSEDED_RED','The first migration rewrite did not match PostgreSQL normalized function text and failed closed before the joined assertion.','raw-export-delivery-same-job-e2e-final.trx')
+    'raw-export-delivery-same-job-e2e-a4.trx' = @('SUPERSEDED_FIXTURE_RED','The diagnostic predecessor still used a no-retain policy rather than the existing encrypted-packet policy fixture.','raw-export-delivery-same-job-e2e-final.trx')
+    'raw-export-delivery-same-job-e2e-a5.trx' = @('PRODUCT_DEFECT_PREDECESSOR','The joined run reached C3 and exposed that the SDK decoded the server base64url package digest as hexadecimal.','raw-export-delivery-same-job-e2e-final.trx')
+    'raw-export-delivery-consent-class-mutant.trx' = @('EVIDENCE_RED','Changing only the consent class comparison from equality to inequality makes the same-job joined proof fail at R3 staging with SourceRetentionNotAuthorized.','raw-export-delivery-restored-final.trx')
 }
 
 $inventory = [Collections.Generic.List[object]]::new()

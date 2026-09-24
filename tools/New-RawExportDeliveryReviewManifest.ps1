@@ -1,11 +1,10 @@
 param(
     [string]$TagEkycRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path,
-    [string]$AgentRoot = 'D:\Task\Remote Signing\TagEkyc.CaptureAgent',
-    [string]$SignFlowRoot = 'D:\Task\Remote Signing\Codex_SignFlow'
+    [string]$AgentRoot = 'D:\Task\Remote Signing\TagEkyc.CaptureAgent'
 )
 
 $ErrorActionPreference = 'Stop'
-$outputPath = Join-Path $TagEkycRoot 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v2.tsv'
+$outputPath = Join-Path $TagEkycRoot 'docs/tips/tip_88c1_secure_raw_source_sealed_assembly/raw_export_delivery_combined_review_manifest_v3.tsv'
 $rows = [System.Collections.Generic.List[object]]::new()
 
 function Get-GitNormalizedSha256 {
@@ -70,12 +69,15 @@ $productPaths = @(
     'src/TagEkyc.Api/RawExportControlPlaneEndpoints.cs',
     'src/TagEkyc.Application/Ports/RawExportControlPlanePorts.cs',
     'src/TagEkyc.Application/Ports/RecipientManagementPorts.cs',
+    'src/TagEkyc.Application/RawExport/RecipientManagementApplicationService.cs',
+    'src/TagEkyc.Contracts/RawExport/RecipientManagementContracts.cs',
     'src/TagEkyc.Application/RawExport/RawExportControlPlaneApplicationService.cs',
     'src/TagEkyc.Contracts/RawExport/RawExportControlPlaneContracts.cs',
     'src/TagEkyc.Infrastructure/Persistence/EfRawExportJobPackageProjectionReader.cs',
     'src/TagEkyc.Infrastructure/Auth/PostgresHashedApiKeyStore.cs',
     'src/TagEkyc.Infrastructure/Persistence/Configurations/RawExportManagedRecipientPolicyConfig.cs',
     'src/TagEkyc.Infrastructure/Persistence/Migrations/20260924120000_RawExportDeliveryRecipientCredential.cs',
+    'src/TagEkyc.Infrastructure/Persistence/Migrations/20260924130000_RawExportLegacyConsentClassFence.cs',
     'src/TagEkyc.Infrastructure/Persistence/Migrations/TagEkycDbContextModelSnapshot.cs',
     'src/TagEkyc.Infrastructure/Persistence/TagEkycPersistenceServiceCollectionExtensions.cs',
     'src/TagEkyc.Infrastructure/Persistence/Migrations/20260923090000_RawExportAssemblyDurableWorkSource.cs',
@@ -83,7 +85,9 @@ $productPaths = @(
     'src/TagEkyc.Infrastructure/ProtectedValues/SecretRefProtectedValueProvider.cs',
     'src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyRuntimeInfrastructure.cs',
     'src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyServiceCollectionExtensions.cs',
-    'src/TagEkyc.Infrastructure/RawExport/RecipientManagementCodec.cs'
+    'src/TagEkyc.Infrastructure/RawExport/RecipientManagementCodec.cs',
+    'src/TagEkyc.Infrastructure/RawExport/RecipientManagementReadinessValidator.cs',
+    'src/TagEkyc.Infrastructure/RawExport/RecipientManagementRepository.cs'
 )
 foreach ($path in $productPaths) {
     Add-ManifestFile TagEkyc PRODUCT_SOURCE_AUTHORIZED $TagEkycRoot $path
@@ -96,6 +100,9 @@ $testPaths = @(
     'tests/TagEkyc.IntegrationTests/RawExportDeliveryCredentialMigrationTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportJobClientIsolationTests.cs',
     'tests/TagEkyc.IntegrationTests/RawExportClientProductionCodecCompatibilityTests.cs',
+    'tests/TagEkyc.IntegrationTests/RawExportDeliverySameJobEndToEndTests.cs',
+    'tests/TagEkyc.IntegrationTests/Tip88C1B2R2DurableCustodyEncryptionTests.cs',
+    'tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs',
     'tests/TagEkyc.IntegrationTests/SiteQualificationTestServices.cs',
     'tests/TagEkyc.IntegrationTests/Tip88C1C6BA1RawIngressBoundaryTests.cs',
     'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3ClientServerAcceptanceTests.cs',
@@ -103,7 +110,9 @@ $testPaths = @(
     'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3R2R6ClusterHttpTests.cs',
     'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3R2TerminalProjectionTests.cs',
     'tests/TagEkyc.IntegrationTests/Tip88C1C5RecipientManagementTests.cs',
-    'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3MigrationTests.cs'
+    'tests/TagEkyc.IntegrationTests/Tip88C1C6BA3MigrationTests.cs',
+    'tests/TagEkyc.ContractTests/Tip88C1C5RecipientManagementContractTests.cs',
+    'tests/TagEkyc.IntegrationTests/TagEkyc.IntegrationTests.csproj'
 )
 foreach ($path in $testPaths) {
     Add-ManifestFile TagEkyc TEST_SOURCE $TagEkycRoot $path
@@ -128,11 +137,14 @@ foreach ($entry in $authorityAndGovernance) {
     Add-ManifestFile TagEkyc $entry[0] $TagEkycRoot $entry[1]
 }
 
+Add-ManifestFile TagEkyc PROJECT_GRAPH $TagEkycRoot 'TagEkyc.sln'
+
 $serverResultRoots = @(
     'tests/TagEkyc.IntegrationTests/TestResults/raw-export-delivery',
     'tests/TagEkyc.UnitTests/TestResults/raw-export-delivery',
     'tests/TagEkyc.IntegrationTests/TestResults/raw-export-delivery-correction',
-    'tests/TagEkyc.UnitTests/TestResults/raw-export-delivery-correction'
+    'tests/TagEkyc.UnitTests/TestResults/raw-export-delivery-correction',
+    'tests/TagEkyc.RawExport.Client.Tests/TestResults/raw-export-delivery-correction'
 )
 foreach ($relativeRoot in $serverResultRoots) {
     $fullRoot = Join-Path $TagEkycRoot ($relativeRoot -replace '/', [IO.Path]::DirectorySeparatorChar)
@@ -155,7 +167,15 @@ foreach ($relativeRoot in $serverResultRoots) {
         } elseif ($file.Name -eq 'raw-export-delivery-correction-c5-c1-c4-managed-chain.trx') {
             'PRODUCT_DEFECT_PREDECESSOR'
         } elseif ($file.Name -eq 'raw-export-delivery-correction-c5-full-restored.trx') {
-            'EXCLUDED_HISTORICAL_OUTSIDE_SLICE'
+            'KNOWN_TEST_DEBT'
+        } elseif ($file.Name -match '^raw-export-delivery-same-job-e2e(-a2|-a5)?\.trx$') {
+            'PRODUCT_DEFECT_PREDECESSOR'
+        } elseif ($file.Name -eq 'raw-export-delivery-same-job-e2e-a3.trx') {
+            'SUPERSEDED_RED'
+        } elseif ($file.Name -eq 'raw-export-delivery-same-job-e2e-a4.trx') {
+            'SUPERSEDED_FIXTURE_RED'
+        } elseif ($file.Name -eq 'raw-export-delivery-consent-class-mutant.trx') {
+            'EVIDENCE_RED'
         } else {
             'PASS_EVIDENCE'
         }
@@ -166,18 +186,17 @@ foreach ($relativeRoot in $serverResultRoots) {
 Add-ManifestFile TagEkyc_CaptureAgent PASS_SENTINEL $AgentRoot 'tests/TagEkyc.CaptureAgent.Tests/TestResults/raw-export-delivery/raw-export-delivery-a13.trx'
 
 $clientPaths = @(
-    @('STANDALONE_CLIENT', 'src/Clients/TagEkyc.RawExport.Client/TagEkyc.RawExport.Client.csproj'),
-    @('STANDALONE_CLIENT', 'src/Clients/TagEkyc.RawExport.Client/TagEkycRawExportModels.cs'),
-    @('STANDALONE_CLIENT', 'src/Clients/TagEkyc.RawExport.Client/TagEkycRawExportClient.cs'),
-    @('STANDALONE_CLIENT', 'src/Clients/TagEkyc.RawExport.Client/TagEkycRecipientPackageDecoder.cs'),
-    @('STANDALONE_CLIENT', 'src/Clients/TagEkyc.RawExport.Client/README.md'),
+    @('STANDALONE_SDK_CLIENT', 'sdk/TagEkyc.RawExport.Client/TagEkyc.RawExport.Client.csproj'),
+    @('STANDALONE_SDK_CLIENT', 'sdk/TagEkyc.RawExport.Client/TagEkycRawExportModels.cs'),
+    @('STANDALONE_SDK_CLIENT', 'sdk/TagEkyc.RawExport.Client/TagEkycRawExportClient.cs'),
+    @('STANDALONE_SDK_CLIENT', 'sdk/TagEkyc.RawExport.Client/TagEkycRecipientPackageDecoder.cs'),
+    @('STANDALONE_SDK_CLIENT', 'sdk/TagEkyc.RawExport.Client/README.md'),
     @('CLIENT_EVIDENCE', 'tests/TagEkyc.RawExport.Client.Tests/TagEkyc.RawExport.Client.Tests.csproj'),
     @('CLIENT_EVIDENCE', 'tests/TagEkyc.RawExport.Client.Tests/TagEkycRawExportClientTests.cs'),
-    @('CLIENT_EVIDENCE', 'TestResults/raw-export-client/raw-export-client-successor.trx'),
-    @('PREDECESSOR_PACKET', 'docs/ekyc_integration/raw_export_client_review_packet_v2.md')
+    @('CLIENT_EVIDENCE', 'tests/TagEkyc.RawExport.Client.Tests/TestResults/raw-export-client-successor.trx')
 )
 foreach ($entry in $clientPaths) {
-    Add-ManifestFile Codex_SignFlow $entry[0] $SignFlowRoot $entry[1]
+    Add-ManifestFile TagEkyc $entry[0] $TagEkycRoot $entry[1]
 }
 
 $content = $rows | Sort-Object repository, path | ConvertTo-Csv -Delimiter "`t" -NoTypeInformation

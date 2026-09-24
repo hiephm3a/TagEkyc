@@ -54,6 +54,42 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             recipient);
     }
 
+    internal async Task<C1RealC2ExecutionFixture> ExecuteExistingRequestWithRealC2ProviderAsync(
+        RawExportAssemblyExecutionRequest request,
+        DurableObjectMinioFixture minio,
+        Func<Guid, Guid, Task<IC2AssemblyPreparationProvider>> providerFactory)
+    {
+        await using var verifyDb = postgres.CreateDbContext();
+        await using var lookupDb = postgres.CreateDbContext();
+        await using var contentProvider = CreateContentCommitmentProvider();
+        await using var contentScope = contentProvider.CreateAsyncScope();
+        var kek = new FixtureDurableKekOperationProvider(
+            new PostgresFixtureKekJournal(verifyDb),
+            new PostgresFixtureKekJournal(lookupDb));
+        var repository = new RawExportAssemblyRepository(new RoleConnectionFactory(postgres.ConnectionString));
+        var resolver = new RawExportAssemblySourceResolver(
+            repository,
+            new S3CompatibleProvisionalObjectReconciler(
+                minio.Options(ProvisionalObjectCapability.Reconciler)),
+            new RawExportFramedSourceVerificationService(
+                new AttemptAeadVerificationOperationService(
+                    verifyDb, kek, DurableKeyCustodyOptions.Resolve(new ConfigurationManager())),
+                contentScope.ServiceProvider.GetRequiredService<IContentCommitmentService>()));
+        await using var identityDb = postgres.CreateDbContext();
+        var recipient = await identityDb.RawExportJobIdentities.AsNoTracking()
+            .Where(row => row.JobId == request.JobId)
+            .Select(row => row.RecipientClientApplicationId)
+            .SingleAsync();
+        var c2 = await providerFactory(request.JobId, recipient);
+        var orchestrator = new RawExportAssemblyOrchestrator(
+            repository,
+            resolver,
+            new RawExportAssemblyAuthenticationService(new FixtureAssemblyAuthenticator()),
+            c2);
+        var result = await orchestrator.ExecuteAsync(request, CancellationToken.None);
+        return new(result, request.JobId, request.AttemptId, request.ExpectedFence, recipient);
+    }
+
     internal async Task<C2RecipientPackageLineageFixture> CreateC2RecipientPackageLineageAsync()
     {
         var fixture = await CreateSealedAssemblyFixtureAsync();

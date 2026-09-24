@@ -38,15 +38,17 @@ public sealed class PostgresHashedApiKeyStore(TagEkycDbContext dbContext, ApiKey
         }
 
         var scopes = DeserializeSet<string>(row.ScopesJson);
-        var hasActivationScope = scopes.Overlaps(RecipientManagementCodec.ActivationScopes);
+        var hasActivationScope = scopes.Overlaps(RecipientManagementCodec.DownloadOnlyScopes)
+            || scopes.Overlaps(RecipientManagementCodec.DeliveryOperatorScopes);
         if (hasActivationScope)
         {
-            if (!scopes.SetEquals(RecipientManagementCodec.ActivationScopes)
+            if (!RecipientManagementCodec.TryResolveCredentialProfile(
+                    scopes, out var activationProfile, out var activationScopes)
                 || !string.Equals(row.CallerCategory, "BusinessConsumer", StringComparison.Ordinal))
                 return null;
 
             var expectedDigest = RecipientManagementCodec.ScopeSetDigest(
-                RecipientManagementCodec.ActivationScopes);
+                activationScopes!);
             try
             {
                 var companion = await (
@@ -62,7 +64,7 @@ public sealed class PostgresHashedApiKeyStore(TagEkycDbContext dbContext, ApiKey
                         && credential.State == "Active"
                         && identity.State == "Active"
                         && policy.State == "Active"
-                        && policy.ActivationProfile == RecipientManagementCodec.ActivationProfile
+                        && policy.ActivationProfile == activationProfile
                     select policy.ActivationScopesDigest)
                     .SingleOrDefaultAsync(cancellationToken).ConfigureAwait(false);
                 if (companion is null

@@ -99,7 +99,7 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
         var codec = Source("src/TagEkyc.Infrastructure/RawExport/RecipientManagementCodec.cs");
         var store = Source("src/TagEkyc.Infrastructure/Auth/PostgresHashedApiKeyStore.cs");
         var activationBlock = Regex.Match(codec,
-            @"ActivationScopes\s*=\s*\[(?<scopes>[\s\S]*?)\];").Groups["scopes"].Value;
+            @"DeliveryOperatorScopes\s*=\s*\[(?<scopes>[\s\S]*?)\];").Groups["scopes"].Value;
         var declaredScopes = Regex.Matches(activationBlock, "\"(?<scope>[^\"]+)\"")
             .Select(match => match.Groups["scope"].Value).ToArray();
         Bite(declaredScopes.SequenceEqual([
@@ -108,8 +108,11 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
                 "business.raw-export.package.download",
                 "business.raw-export.package.references.read",
             ], StringComparer.Ordinal)
-            && store.Contains("scopes.SetEquals(RecipientManagementCodec.ActivationScopes)", StringComparison.Ordinal),
+            && store.Contains("TryResolveCredentialProfile", StringComparison.Ordinal),
             "C504-EXACT-ACTIVATION-SCOPE-SET", string.Join(',', declaredScopes));
+        Bite(codec.Contains("DownloadOnlyScopes", StringComparison.Ordinal)
+            && codec.Contains("DeliveryOperatorScopes", StringComparison.Ordinal),
+            "C504-LEAST-PRIVILEGE-CREDENTIAL-PROFILES", "download-only and delivery-operator profiles");
         Bite(store.Contains("credential.State == \"Active\"", StringComparison.Ordinal),
             "C504-NO-GENERIC-ACTIVATION-WRITER", "active managed companion");
 
@@ -1700,7 +1703,8 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
             {
                 managedCallbackReached = true;
                 chainRecipient = recipient;
-                var workflow = await CreateManagedWorkflowAsync(recipient);
+                var workflow = await CreateManagedWorkflowAsync(
+                    recipient, activationProfile: RecipientManagementCodec.DeliveryOperatorProfile);
                 await RevokeAnyActiveKeyForFixtureAsync(recipient, "C526_PREPARE");
                 var issued = await IssueFreshCredentialAsync(workflow,
                     $"c526-credential-{Guid.NewGuid():N}");
@@ -1990,12 +1994,14 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
         return call with{Outcome=reader.GetString(reader.GetOrdinal("Outcome"))};
     }
     private async Task<ManagedWorkflow> CreateManagedWorkflowAsync(
-        IManagedCredentialMaterialGenerator? credentialGenerator = null) =>
-        await CreateManagedWorkflowAsync(Guid.NewGuid(), credentialGenerator);
+        IManagedCredentialMaterialGenerator? credentialGenerator = null,
+        string activationProfile = RecipientManagementCodec.DownloadOnlyProfile) =>
+        await CreateManagedWorkflowAsync(Guid.NewGuid(), credentialGenerator, activationProfile);
 
     private async Task<ManagedWorkflow> CreateManagedWorkflowAsync(
         Guid recipient,
-        IManagedCredentialMaterialGenerator? credentialGenerator = null)
+        IManagedCredentialMaterialGenerator? credentialGenerator = null,
+        string activationProfile = RecipientManagementCodec.DownloadOnlyProfile)
     {
         var principal = await ReadManagedPrincipalAsync(recipient) ?? Guid.NewGuid();
         var actor = new AuthenticatedClientContext(
@@ -2011,7 +2017,7 @@ public sealed class Tip88C1C5RecipientManagementTests(PostgresPersistenceFixture
         if (await ReadManagedPrincipalAsync(recipient) is not null)
             return new(service, repository, actor, recipient, principal, recipient);
         var enrolled = await service.EnrollRecipientAsync(actor,
-            new(recipient, principal), $"c5-identity-{Guid.NewGuid():N}", default);
+            new(recipient, principal, activationProfile), $"c5-identity-{Guid.NewGuid():N}", default);
         if (!enrolled.IsSuccess || enrolled.Value is null
             || enrolled.Value.Value.PrincipalId != principal)
             throw new InvalidOperationException(

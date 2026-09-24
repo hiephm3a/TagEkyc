@@ -36,7 +36,7 @@ public sealed class Tip88C1C5RecipientManagementContractTests : IDisposable
     public void C503_identity_contract_distinguishes_client_and_principal()
     {
         var names = typeof(EnrollManagedRecipientRequest).GetProperties().Select(p => p.Name).ToArray();
-        Bite(names.SequenceEqual(["RecipientClientApplicationId", "PrincipalId"]),
+        Bite(names.SequenceEqual(["RecipientClientApplicationId", "PrincipalId", "ActivationProfile"]),
             "C503-PERSISTED-PRINCIPAL-NOT-DERIVED", string.Join(',', names));
         var application = Source("src/TagEkyc.Application/RawExport/RecipientManagementApplicationService.cs");
         Bite(application.Contains("request.PrincipalId == Guid.Empty", StringComparison.Ordinal),

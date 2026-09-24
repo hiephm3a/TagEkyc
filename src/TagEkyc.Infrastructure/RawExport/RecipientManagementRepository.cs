@@ -22,11 +22,16 @@ internal sealed class RecipientManagementRepository(
     {
         var payload = RecipientManagementCodec.CanonicalPayload(
             RecipientManagementCodec.CanonicalGuid(request.RecipientClientApplicationId),
-            RecipientManagementCodec.CanonicalGuid(request.PrincipalId));
+            RecipientManagementCodec.CanonicalGuid(request.PrincipalId),
+            RecipientManagementCodec.CanonicalString(request.ActivationProfile));
         return ExecuteSingleAsync(
             actor, "EnrollRecipient", request.RecipientClientApplicationId,
             idempotencyKey, payload, EnrollRecipientSql,
-            parameters => parameters.AddWithValue("principal", request.PrincipalId),
+            parameters =>
+            {
+                parameters.AddWithValue("principal", request.PrincipalId);
+                parameters.AddWithValue("activation_profile", request.ActivationProfile);
+            },
             static snapshot => Deserialize<ManagedRecipientIdentityDto>(snapshot),
             cancellationToken);
     }
@@ -426,22 +431,23 @@ internal sealed class RecipientManagementRepository(
 
     private const string EnrollRecipientSql = """
         SELECT * FROM tagekyc.raw_export_enroll_managed_recipient(
-          @operation,@manager_api_key,@manager_principal,@recipient,@idempotency,@equality,@payload,@principal)
+          @operation,@manager_api_key,@manager_principal,@recipient,@idempotency,@equality,@payload,
+          @principal,@activation_profile)
         """;
     private const string IssueCredentialSql = """
         SELECT * FROM tagekyc.raw_export_issue_recipient_credential(
           @operation,@manager_api_key,@manager_principal,@recipient,@idempotency,@equality,@payload,
-          @new_api_key,@key_prefix,@key_hash,@expires)
+          @new_api_key,@key_prefix,@key_hash,@expires,1)
         """;
     private const string ReplaceCredentialSql = """
         SELECT * FROM tagekyc.raw_export_replace_recipient_credential(
           @operation,@manager_api_key,@manager_principal,@recipient,@idempotency,@equality,@payload,
-          @current_api_key,@current_revision,@new_api_key,@key_prefix,@key_hash,@expires,@reason)
+          @current_api_key,@current_revision,@new_api_key,@key_prefix,@key_hash,@expires,@reason,1)
         """;
     private const string RevokeCredentialSql = """
         SELECT * FROM tagekyc.raw_export_revoke_recipient_credential(
           @operation,@manager_api_key,@manager_principal,@recipient,@idempotency,@equality,@payload,
-          @api_key,@expected_revision,@reason)
+          @api_key,@expected_revision,@reason,1)
         """;
     private const string EnrollKeySql = """
         SELECT * FROM tagekyc.raw_export_enroll_recipient_key(
@@ -460,6 +466,6 @@ internal sealed class RecipientManagementRepository(
           @key_id,@key_version,@expected_revision,@reason)
         """;
     private const string ReadinessSql = """
-        SELECT * FROM tagekyc.raw_export_read_recipient_activation_readiness(@recipient)
+        SELECT * FROM tagekyc.raw_export_read_recipient_activation_readiness(@recipient,1)
         """;
 }

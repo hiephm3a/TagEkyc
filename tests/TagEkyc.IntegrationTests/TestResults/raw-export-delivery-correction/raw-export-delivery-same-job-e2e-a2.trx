@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="1d040dba-f878-4ff3-92f6-91746d9fc56d" name="3AVNN@LEARNPC 2026-09-24 11:36:50" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-24T11:36:50.4765617+07:00" queuing="2026-09-24T11:36:50.4765620+07:00" start="2026-09-24T11:36:26.7191587+07:00" finish="2026-09-24T11:36:50.4809837+07:00" />
+  <TestSettings name="default" id="20ab5f81-e9e0-4864-8b03-d4f89a00b8b8">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-24_11_36_50" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="6d56710c-929b-4a93-93bd-e4f4842a0079" testId="2ec24464-1f70-24c3-0a57-ecd7f043a661" testName="TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode" computerName="LEARNPC" duration="00:00:06.4980530" startTime="2026-09-24T11:36:49.3039287+07:00" endTime="2026-09-24T11:36:49.3039549+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6d56710c-929b-4a93-93bd-e4f4842a0079">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: Staged&#xD;
+Actual:   SourceRetentionNotAuthorized</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.MakeAvailableAsync(R3VerifiedSourceFixture source) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 252&#xD;
+   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 68&#xD;
+   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 194&#xD;
+   at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs:line 194&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2ec24464-1f70-24c3-0a57-ecd7f043a661">
+      <Execution id="6d56710c-929b-4a93-93bd-e4f4842a0079" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests" name="Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="2ec24464-1f70-24c3-0a57-ecd7f043a661" executionId="6d56710c-929b-4a93-93bd-e4f4842a0079" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.27]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.42]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.42]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:22.25]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:22.25]       Expected: Staged&#xD;
+[xUnit.net 00:00:22.25]       Actual:   SourceRetentionNotAuthorized&#xD;
+[xUnit.net 00:00:22.25]       Stack Trace:&#xD;
+[xUnit.net 00:00:22.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(252,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.MakeAvailableAsync(R3VerifiedSourceFixture source)&#xD;
+[xUnit.net 00:00:22.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(68,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()&#xD;
+[xUnit.net 00:00:22.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(194,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()&#xD;
+[xUnit.net 00:00:22.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportDeliverySameJobEndToEndTests.cs(194,0): at TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()&#xD;
+[xUnit.net 00:00:22.25]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:23.26]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T11:36:49.3015243+07:00">
+        <Text>[xUnit.net 00:00:22.25]     TagEkyc.IntegrationTests.RawExportDeliverySameJobEndToEndTests.Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

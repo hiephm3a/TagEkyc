@@ -27,6 +27,7 @@
     <Compile Remove="Tip88C1C6BA3ClientServerAcceptanceTests.cs" />
     <Compile Remove="Tip88C1C6BA3R2R6TransportHarnessTests.cs" />
     <Compile Remove="RawExportClientProductionCodecCompatibilityTests.cs" />
+    <Compile Remove="RawExportDeliverySameJobEndToEndTests.cs" />
   </ItemGroup>
   <ItemGroup Condition="'$(EnableCaptureAgentA3Acceptance)' == 'true'">
     <ProjectReference Include="../../../TagEkyc.CaptureAgent/src/TagEkyc.CaptureAgent.Client/TagEkyc.CaptureAgent.Client.csproj" />
@@ -48,13 +49,14 @@
            Text="A2 acceptance explicitly requires the exact sibling CaptureAgent.Client project; it cannot be skipped." />
   </Target>
   <ItemGroup Condition="'$(EnableRawExportClientAcceptance)' == 'true'">
-    <ProjectReference Include="../../../Codex_SignFlow/src/Clients/TagEkyc.RawExport.Client/TagEkyc.RawExport.Client.csproj" />
+    <ProjectReference Include="../../sdk/TagEkyc.RawExport.Client/TagEkyc.RawExport.Client.csproj" />
     <Compile Include="RawExportClientProductionCodecCompatibilityTests.cs" />
+    <Compile Include="RawExportDeliverySameJobEndToEndTests.cs" />
   </ItemGroup>
-  <Target Name="RequireRawExportClientAcceptanceSibling" BeforeTargets="CollectPackageReferences;ResolveProjectReferences"
+  <Target Name="RequireRawExportClientAcceptanceSdk" BeforeTargets="CollectPackageReferences;ResolveProjectReferences"
           Condition="'$(EnableRawExportClientAcceptance)' == 'true'">
-    <Error Condition="!Exists('../../../Codex_SignFlow/src/Clients/TagEkyc.RawExport.Client/TagEkyc.RawExport.Client.csproj')"
-           Text="Raw-export client acceptance requires the exact sibling standalone client project; it cannot be skipped." />
+    <Error Condition="!Exists('../../sdk/TagEkyc.RawExport.Client/TagEkyc.RawExport.Client.csproj')"
+           Text="Raw-export client acceptance requires the in-repository standalone SDK client project; it cannot be skipped." />
   </Target>
 
   <ItemGroup>

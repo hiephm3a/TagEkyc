@@ -8,7 +8,9 @@ namespace TagEkyc.Infrastructure.RawExport;
 
 public static class RecipientManagementCodec
 {
-    public const string ActivationProfile = "RawExportDeliveryRecipientV2";
+    public const string DownloadOnlyProfile = "C3C4RecipientV1";
+    public const string DeliveryOperatorProfile = "RawExportDeliveryRecipientV2";
+    public const string ActivationProfile = DeliveryOperatorProfile;
 
     private const string IdempotencyLabel = "tip-88c1-c5-idempotency-v1";
     private const string PayloadLabel = "tip-88c1-c5-payload-v1";
@@ -17,13 +19,43 @@ public static class RecipientManagementCodec
     private const string TargetLabel = "tip-88c1-c5-target-v1";
     private const string AuditLabel = "tip-88c1-c5-audit-v2";
 
-    public static readonly string[] ActivationScopes =
+    public static readonly string[] DownloadOnlyScopes =
+    [
+        "business.raw-export.package.download",
+        "business.raw-export.package.references.read",
+    ];
+
+    public static readonly string[] DeliveryOperatorScopes =
     [
         "business.raw-export.authorize",
         "business.raw-export.job.manage",
         "business.raw-export.package.download",
         "business.raw-export.package.references.read",
     ];
+
+    public static readonly string[] ActivationScopes = DeliveryOperatorScopes;
+
+    public static bool TryResolveCredentialProfile(
+        IReadOnlySet<string> scopes,
+        out string? profile,
+        out IReadOnlyList<string>? exactScopes)
+    {
+        if (scopes.SetEquals(DownloadOnlyScopes))
+        {
+            profile = DownloadOnlyProfile;
+            exactScopes = DownloadOnlyScopes;
+            return true;
+        }
+        if (scopes.SetEquals(DeliveryOperatorScopes))
+        {
+            profile = DeliveryOperatorProfile;
+            exactScopes = DeliveryOperatorScopes;
+            return true;
+        }
+        profile = null;
+        exactScopes = null;
+        return false;
+    }
 
     public static byte[] IdempotencyKeyDigest(string idempotencyKey) =>
         Hash(Fields(Utf8(IdempotencyLabel), Encoding.ASCII.GetBytes(idempotencyKey)));

@@ -2,7 +2,8 @@ namespace TagEkyc.Contracts.RawExport;
 
 public sealed record EnrollManagedRecipientRequest(
     Guid RecipientClientApplicationId,
-    Guid PrincipalId);
+    Guid PrincipalId,
+    string ActivationProfile = "C3C4RecipientV1");
 
 public sealed record IssueManagedRecipientCredentialRequest(
     Guid RecipientClientApplicationId,

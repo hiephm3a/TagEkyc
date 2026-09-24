@@ -4171,7 +4171,7 @@ namespace TagEkyc.Infrastructure.Persistence.Migrations
 
                     b.ToTable("raw_export_managed_recipient_policies", "tagekyc", t =>
                         {
-                            t.HasCheckConstraint("ck_raw_export_managed_recipient_policy_shape", "\"ActivationProfile\" = 'RawExportDeliveryRecipientV2' AND octet_length(\"ActivationScopesDigest\") = 32 AND \"State\" IN ('Active','Disabled') AND \"Revision\" > 0");
+                            t.HasCheckConstraint("ck_raw_export_managed_recipient_policy_shape", "\"ActivationProfile\" IN ('C3C4RecipientV1','RawExportDeliveryRecipientV2') AND octet_length(\"ActivationScopesDigest\") = 32 AND \"State\" IN ('Active','Disabled') AND \"Revision\" > 0");
                         });
                 });
 

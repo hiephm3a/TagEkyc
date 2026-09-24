@@ -79,14 +79,14 @@ public sealed class RecipientManagementReadinessValidator(
           ('raw_export_recipient_management_operations'),
           ('raw_export_recipient_management_events')),
         expected_functions(name,args) AS (VALUES
-          ('raw_export_enroll_managed_recipient','uuid, uuid, uuid, uuid, bytea, bytea, bytea, uuid'),
-          ('raw_export_issue_recipient_credential','uuid, uuid, uuid, uuid, bytea, bytea, bytea, uuid, text, bytea, timestamp with time zone'),
-          ('raw_export_replace_recipient_credential','uuid, uuid, uuid, uuid, bytea, bytea, bytea, uuid, bigint, uuid, text, bytea, timestamp with time zone, text'),
-          ('raw_export_revoke_recipient_credential','uuid, uuid, uuid, uuid, bytea, bytea, bytea, uuid, bigint, text'),
+          ('raw_export_enroll_managed_recipient','uuid, uuid, uuid, uuid, bytea, bytea, bytea, uuid, text'),
+          ('raw_export_issue_recipient_credential','uuid, uuid, uuid, uuid, bytea, bytea, bytea, uuid, text, bytea, timestamp with time zone, integer'),
+          ('raw_export_replace_recipient_credential','uuid, uuid, uuid, uuid, bytea, bytea, bytea, uuid, bigint, uuid, text, bytea, timestamp with time zone, text, integer'),
+          ('raw_export_revoke_recipient_credential','uuid, uuid, uuid, uuid, bytea, bytea, bytea, uuid, bigint, text, integer'),
           ('raw_export_enroll_recipient_key','uuid, uuid, uuid, uuid, bytea, bytea, bytea, text, integer, text, bytea, bytea, timestamp with time zone, timestamp with time zone'),
           ('raw_export_rotate_recipient_key','uuid, uuid, uuid, uuid, bytea, bytea, bytea, text, integer, bigint, integer, text, bytea, bytea, timestamp with time zone, timestamp with time zone, text'),
           ('raw_export_revoke_recipient_key','uuid, uuid, uuid, uuid, bytea, bytea, bytea, text, integer, bigint, text'),
-          ('raw_export_read_recipient_activation_readiness','uuid'),
+          ('raw_export_read_recipient_activation_readiness','uuid, integer'),
           ('raw_export_guard_recipient_management_event','')),
         expected_indexes(name,owner_name) AS (VALUES
           ('uq_raw_export_managed_recipient_identity_pair','tagekyc_raw_export_deployer'),
@@ -143,7 +143,7 @@ public sealed class RecipientManagementReadinessValidator(
         SELECT t.ok AND f.ok AND i.ok AND r.ok AND m.ok AND a.ok
           AND pg_catalog.has_schema_privilege('tagekyc_raw_export_recipient_manager','tagekyc','USAGE')
           AND NOT pg_catalog.has_function_privilege('tagekyc_runtime',
-            'tagekyc.raw_export_read_recipient_activation_readiness(uuid)','EXECUTE')
+            'tagekyc.raw_export_read_recipient_activation_readiness(uuid,integer)','EXECUTE')
         FROM table_ok t CROSS JOIN function_ok f CROSS JOIN index_ok i
           CROSS JOIN role_ok r CROSS JOIN membership_ok m CROSS JOIN acl_ok a
         """;
