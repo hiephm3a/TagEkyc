@@ -1,0 +1,694 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="61f09194-46fd-40d9-86a8-c254f87914f4" name="3AVNN@LEARNPC 2026-09-24 00:11:55" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-24T00:11:55.0695505+07:00" queuing="2026-09-24T00:11:55.0695515+07:00" start="2026-09-24T00:11:42.2004017+07:00" finish="2026-09-24T00:11:56.9171674+07:00" />
+  <TestSettings name="default" id="80573be4-a3fe-4162-8f69-2d6cd99a96e9">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-24_00_11_55" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="0caed4fa-00b5-4a84-929d-ed5ad06e6378" testId="4bb8c475-be1a-7c66-0f4b-dfcceee2ee46" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ClaimTokenInvalid, status: 403, code: &quot;RAW_EXPORT_SOURCE_CLAIM_TOKEN_INVALID&quot;)" computerName="LEARNPC" duration="00:00:00.0088501" startTime="2026-09-24T00:11:55.0399046+07:00" endTime="2026-09-24T00:11:55.0399046+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0caed4fa-00b5-4a84-929d-ed5ad06e6378">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 403&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="08a57779-475b-46a7-8ab5-9166b3bcc891" testId="b932cc1f-c9d7-96cf-5761-8ae6b5bf0195" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: CapacityUnavailable, status: 503, code: &quot;RAW_EXPORT_SOURCE_CAPACITY_UNAVAILABLE&quot;)" computerName="LEARNPC" duration="00:00:00.0097412" startTime="2026-09-24T00:11:55.0599745+07:00" endTime="2026-09-24T00:11:55.0599749+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="08a57779-475b-46a7-8ab5-9166b3bcc891">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 1&#xD;
+Actual:   0</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 209&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="30131776-b067-4b65-aa04-09a596055527" testId="1213e76e-c3f4-6ba6-81f4-9aecf6f0f2fa" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: PlaintextRetentionInvalid, status: 422, code: &quot;RAW_EXPORT_SOURCE_PLAINTEXT_RETENTION_INVALID&quot;)" computerName="LEARNPC" duration="00:00:00.0097439" startTime="2026-09-24T00:11:55.1324940+07:00" endTime="2026-09-24T00:11:55.1324941+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="30131776-b067-4b65-aa04-09a596055527">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 422&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="bf99f288-224b-45a6-8b17-2ef6bd6e40b8" testId="447aec9a-d508-8fad-c9e2-c704edf6691f" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ResumePending, status: 202, code: &quot;RAW_EXPORT_SOURCE_RESUME_PENDING&quot;)" computerName="LEARNPC" duration="00:00:00.0096237" startTime="2026-09-24T00:11:55.0498584+07:00" endTime="2026-09-24T00:11:55.0498586+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bf99f288-224b-45a6-8b17-2ef6bd6e40b8">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 202&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="4dffc9f2-16ad-46dc-874b-65d5d7f9ef3a" testId="569713f9-3dda-fe40-0bd1-6d010b258bac" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: NotFoundOrNotAllowed, status: 403, code: &quot;NOT_FOUND_OR_NOT_ALLOWED&quot;)" computerName="LEARNPC" duration="00:00:00.0089498" startTime="2026-09-24T00:11:55.1007745+07:00" endTime="2026-09-24T00:11:55.1007746+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4dffc9f2-16ad-46dc-874b-65d5d7f9ef3a">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 403&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c249ff67-f1e4-4042-b100-05f4e3db08b0" testId="4514e7f5-bd10-a416-2c56-b38ba487ac54" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: EvaluationInProgress, status: 409, code: &quot;RAW_EXPORT_SOURCE_CLAIM_EVALUATION_IN_PROGRESS&quot;)" computerName="LEARNPC" duration="00:00:00.0092345" startTime="2026-09-24T00:11:55.1420394+07:00" endTime="2026-09-24T00:11:55.1420395+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c249ff67-f1e4-4042-b100-05f4e3db08b0">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 409&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="cf4c84c9-878e-46ea-8925-2f8ce4e302c8" testId="530c8956-eb3d-bbac-9f1d-611eaa318021" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(rawClass: &quot;LiveSelfieImage&quot;)" computerName="LEARNPC" duration="00:00:00.6374128" startTime="2026-09-24T00:11:55.8332909+07:00" endTime="2026-09-24T00:11:55.8332911+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cf4c84c9-878e-46ea-8925-2f8ce4e302c8">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+                 ↓ (pos 6)&#xD;
+Expected: "20260913120000_Tip88C1C6BA3RetainedIngres"···&#xD;
+Actual:   "20260923090000_RawExportAssemblyDurableWo"···&#xD;
+                 ↑ (pos 6)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA3ConsentRetentionTests.Prepare(DisposableCurrentDatabase isolated) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3ConsentRetentionTests.cs:line 795&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3ConsentRetentionTests.Prepare(DisposableCurrentDatabase isolated) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3ConsentRetentionTests.cs:line 795&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(String rawClass) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3R2TerminalProjectionTests.cs:line 37&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(String rawClass) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3R2TerminalProjectionTests.cs:line 148&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="8a0b6fca-2477-46f1-8061-29a7efa51caf" testId="927a5e7e-a692-662a-f776-35473b93485c" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ReservationBusy, status: 409, code: &quot;RAW_EXPORT_SOURCE_RESERVATION_BUSY&quot;)" computerName="LEARNPC" duration="00:00:00.0121759" startTime="2026-09-24T00:11:55.1793894+07:00" endTime="2026-09-24T00:11:55.1793896+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8a0b6fca-2477-46f1-8061-29a7efa51caf">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 409&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d626836a-3e7c-4fb0-bd3a-9a36c7a93dca" testId="44a8a986-0b38-cc4e-4036-8137e89a0a24" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ArtifactSizeLimitExceeded, status: 413, code: &quot;RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED&quot;)" computerName="LEARNPC" duration="00:00:00.0124637" startTime="2026-09-24T00:11:55.1551561+07:00" endTime="2026-09-24T00:11:55.1551562+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d626836a-3e7c-4fb0-bd3a-9a36c7a93dca">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 413&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="a564d361-dbbd-4a43-b13f-a47b14b20819" testId="a29a227f-5d8a-5d49-0616-17e7d77788d2" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: RecaptureRequired, status: 409, code: &quot;RECAPTURE_REQUIRED&quot;)" computerName="LEARNPC" duration="00:00:00.0097129" startTime="2026-09-24T00:11:55.0915134+07:00" endTime="2026-09-24T00:11:55.0915136+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a564d361-dbbd-4a43-b13f-a47b14b20819">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 409&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="493ef533-9637-4f1a-a439-653e13142cca" testId="970a6224-d4d3-6010-9596-d0fcf8bbb135" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: FingerprintConflict, status: 409, code: &quot;RAW_EXPORT_SOURCE_FINGERPRINT_CONFLICT&quot;)" computerName="LEARNPC" duration="00:00:00.0149152" startTime="2026-09-24T00:11:55.0016390+07:00" endTime="2026-09-24T00:11:55.0016391+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="493ef533-9637-4f1a-a439-653e13142cca">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 409&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0a873e5e-fd42-49b6-b37c-3176eb75b7b2" testId="e7767f57-823d-514b-0a5f-44dd33f241ad" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: AlreadyAvailable, status: 200, code: &quot;RAW_EXPORT_SOURCE_ALREADY_AVAILABLE&quot;)" computerName="LEARNPC" duration="00:00:00.0090126" startTime="2026-09-24T00:11:55.1100857+07:00" endTime="2026-09-24T00:11:55.1100858+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0a873e5e-fd42-49b6-b37c-3176eb75b7b2">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 200&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="8072502e-b08f-439f-ab5d-3182c65c369e" testId="1944480b-a936-77b8-bead-048a78cde4f5" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: CapabilityUnavailable, status: 503, code: &quot;RAW_EXPORT_SOURCE_CAPABILITY_UNAVAILABLE&quot;)" computerName="LEARNPC" duration="00:00:00.1605869" startTime="2026-09-24T00:11:54.9553685+07:00" endTime="2026-09-24T00:11:54.9553956+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8072502e-b08f-439f-ab5d-3182c65c369e">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 1&#xD;
+Actual:   0</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 209&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="b78cfc19-1c8f-41fa-b829-39540c35210d" testId="86de0940-0a76-48d4-9d3f-c1c5271d8ab4" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ClaimRestartRequired, status: 409, code: &quot;RAW_EXPORT_SOURCE_CLAIM_RESTART_REQUIRED&quot;)" computerName="LEARNPC" duration="00:00:00.0098267" startTime="2026-09-24T00:11:55.0117808+07:00" endTime="2026-09-24T00:11:55.0117810+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b78cfc19-1c8f-41fa-b829-39540c35210d">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 409&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="01d1e329-d126-4147-8723-c09c35eccd49" testId="0fb030b9-2e2b-7184-4190-d333219794c4" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: SourceRetentionNotAuthorized, status: 403, code: &quot;SOURCE_RETENTION_NOT_AUTHORIZED&quot;)" computerName="LEARNPC" duration="00:00:00.0108612" startTime="2026-09-24T00:11:55.0814732+07:00" endTime="2026-09-24T00:11:55.0814732+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="01d1e329-d126-4147-8723-c09c35eccd49">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 403&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="92b9db84-2ad0-4640-ae5d-480d618c38d3" testId="bfc584f2-6661-7a80-c248-24bf328efa20" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: IdempotencyBusy, status: 409, code: &quot;RAW_EXPORT_SOURCE_IDEMPOTENCY_BUSY&quot;)" computerName="LEARNPC" duration="00:00:00.0092773" startTime="2026-09-24T00:11:55.0213642+07:00" endTime="2026-09-24T00:11:55.0213643+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="92b9db84-2ad0-4640-ae5d-480d618c38d3">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 409&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="85a68586-b8d5-4184-bb0c-72b4c31d2bbc" testId="f2db3e28-f302-317e-a4b7-7899a126fd2c" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: TransportProtocolInvalid, status: 400, code: &quot;RAW_EXPORT_SOURCE_TRANSPORT_PROTOCOL_INVALID&quot;)" computerName="LEARNPC" duration="00:00:00.0221752" startTime="2026-09-24T00:11:54.9749161+07:00" endTime="2026-09-24T00:11:54.9749162+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="85a68586-b8d5-4184-bb0c-72b4c31d2bbc">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 400&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="b6384218-b116-4992-a825-cae6d4f79fa3" testId="2e949a77-4150-cce7-9f54-0a2c3a783469" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: HistoricCommitmentKeyUnavailable, status: 503, code: &quot;RAW_EXPORT_SOURCE_HISTORIC_COMMITMENT_KEY_UNAVAILA&quot;···)" computerName="LEARNPC" duration="00:00:00.0111594" startTime="2026-09-24T00:11:54.9863137+07:00" endTime="2026-09-24T00:11:54.9863138+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b6384218-b116-4992-a825-cae6d4f79fa3">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 1&#xD;
+Actual:   0</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 209&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="b622bb3f-93fe-4a12-add8-82056327f36d" testId="1d886a94-aa55-d3df-a751-2b7a437ec0b4" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ContentCommitmentMismatch, status: 422, code: &quot;CONTENT_COMMITMENT_MISMATCH&quot;)" computerName="LEARNPC" duration="00:00:00.0099950" startTime="2026-09-24T00:11:55.0703696+07:00" endTime="2026-09-24T00:11:55.0703697+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b622bb3f-93fe-4a12-add8-82056327f36d">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 422&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="a20d4c14-4a73-4293-b553-4f4e38e27fae" testId="bf83e683-e4e4-a34a-9c97-1f78e5bd0fb4" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: TemporarilyUnavailable, status: 503, code: &quot;RAW_EXPORT_SOURCE_TEMPORARILY_UNAVAILABLE&quot;)" computerName="LEARNPC" duration="00:00:00.0119247" startTime="2026-09-24T00:11:55.1224518+07:00" endTime="2026-09-24T00:11:55.1224520+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a20d4c14-4a73-4293-b553-4f4e38e27fae">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 1&#xD;
+Actual:   0</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 209&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="976f6b85-3121-4150-82e7-459787535544" testId="3cecf18e-ba2b-9e1b-6268-ec299f20f05e" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: Available, status: 200, code: &quot;RAW_EXPORT_SOURCE_AVAILABLE&quot;)" computerName="LEARNPC" duration="00:00:00.0111540" startTime="2026-09-24T00:11:55.1667240+07:00" endTime="2026-09-24T00:11:55.1667242+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="976f6b85-3121-4150-82e7-459787535544">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 200&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="491d6e4d-3c60-4417-9f49-bd2a0410e561" testId="367ee804-71c6-c0dc-1e9e-d1380dd342d6" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressEvaluation_RetryHorizonIsAllowedWithoutOtherFields" computerName="LEARNPC" duration="00:00:00.0116450" startTime="2026-09-24T00:11:55.1925205+07:00" endTime="2026-09-24T00:11:55.1925207+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="491d6e4d-3c60-4417-9f49-bd2a0410e561">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 409&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressEvaluation_RetryHorizonIsAllowedWithoutOtherFields() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 240&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressEvaluation_RetryHorizonIsAllowedWithoutOtherFields() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 247&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0281c56b-badd-4f15-b95e-69bcb4c0e848" testId="66c21ea4-beba-3be2-2449-8c8a6313ec60" testName="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: BindingInvalid, status: 403, code: &quot;RAW_EXPORT_SOURCE_BINDING_INVALID&quot;)" computerName="LEARNPC" duration="00:00:00.0090714" startTime="2026-09-24T00:11:55.0307486+07:00" endTime="2026-09-24T00:11:55.0307487+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0281c56b-badd-4f15-b95e-69bcb4c0e848">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 403&#xD;
+Actual:   503</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 207&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs:line 225&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f73215bd-1a5f-47c3-8a34-7c199e2f5035" testId="18ff5b23-5aac-1482-8e95-d521fc513749" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(rawClass: &quot;ChipDg2Portrait&quot;)" computerName="LEARNPC" duration="00:00:00.2916577" startTime="2026-09-24T00:11:56.1252926+07:00" endTime="2026-09-24T00:11:56.1252927+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f73215bd-1a5f-47c3-8a34-7c199e2f5035">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+                 ↓ (pos 6)&#xD;
+Expected: "20260913120000_Tip88C1C6BA3RetainedIngres"···&#xD;
+Actual:   "20260923090000_RawExportAssemblyDurableWo"···&#xD;
+                 ↑ (pos 6)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA3ConsentRetentionTests.Prepare(DisposableCurrentDatabase isolated) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3ConsentRetentionTests.cs:line 795&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3ConsentRetentionTests.Prepare(DisposableCurrentDatabase isolated) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3ConsentRetentionTests.cs:line 795&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(String rawClass) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3R2TerminalProjectionTests.cs:line 37&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(String rawClass) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3R2TerminalProjectionTests.cs:line 148&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: AlreadyAvailable, status: 200, code: &quot;RAW_EXPORT_SOURCE_ALREADY_AVAILABLE&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="e7767f57-823d-514b-0a5f-44dd33f241ad">
+      <Execution id="0a873e5e-fd42-49b6-b37c-3176eb75b7b2" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: RecaptureRequired, status: 409, code: &quot;RECAPTURE_REQUIRED&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="a29a227f-5d8a-5d49-0616-17e7d77788d2">
+      <Execution id="a564d361-dbbd-4a43-b13f-a47b14b20819" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: HistoricCommitmentKeyUnavailable, status: 503, code: &quot;RAW_EXPORT_SOURCE_HISTORIC_COMMITMENT_KEY_UNAVAILA&quot;···)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2e949a77-4150-cce7-9f54-0a2c3a783469">
+      <Execution id="b6384218-b116-4992-a825-cae6d4f79fa3" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: SourceRetentionNotAuthorized, status: 403, code: &quot;SOURCE_RETENTION_NOT_AUTHORIZED&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0fb030b9-2e2b-7184-4190-d333219794c4">
+      <Execution id="01d1e329-d126-4147-8723-c09c35eccd49" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(rawClass: &quot;ChipDg2Portrait&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="18ff5b23-5aac-1482-8e95-d521fc513749">
+      <Execution id="f73215bd-1a5f-47c3-8a34-7c199e2f5035" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests" name="ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: PlaintextRetentionInvalid, status: 422, code: &quot;RAW_EXPORT_SOURCE_PLAINTEXT_RETENTION_INVALID&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="1213e76e-c3f4-6ba6-81f4-9aecf6f0f2fa">
+      <Execution id="30131776-b067-4b65-aa04-09a596055527" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: EvaluationInProgress, status: 409, code: &quot;RAW_EXPORT_SOURCE_CLAIM_EVALUATION_IN_PROGRESS&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="4514e7f5-bd10-a416-2c56-b38ba487ac54">
+      <Execution id="c249ff67-f1e4-4042-b100-05f4e3db08b0" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: NotFoundOrNotAllowed, status: 403, code: &quot;NOT_FOUND_OR_NOT_ALLOWED&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="569713f9-3dda-fe40-0bd1-6d010b258bac">
+      <Execution id="4dffc9f2-16ad-46dc-874b-65d5d7f9ef3a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ResumePending, status: 202, code: &quot;RAW_EXPORT_SOURCE_RESUME_PENDING&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="447aec9a-d508-8fad-c9e2-c704edf6691f">
+      <Execution id="bf99f288-224b-45a6-8b17-2ef6bd6e40b8" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: BindingInvalid, status: 403, code: &quot;RAW_EXPORT_SOURCE_BINDING_INVALID&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="66c21ea4-beba-3be2-2449-8c8a6313ec60">
+      <Execution id="0281c56b-badd-4f15-b95e-69bcb4c0e848" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: IdempotencyBusy, status: 409, code: &quot;RAW_EXPORT_SOURCE_IDEMPOTENCY_BUSY&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="bfc584f2-6661-7a80-c248-24bf328efa20">
+      <Execution id="92b9db84-2ad0-4640-ae5d-480d618c38d3" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(rawClass: &quot;LiveSelfieImage&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="530c8956-eb3d-bbac-9f1d-611eaa318021">
+      <Execution id="cf4c84c9-878e-46ea-8925-2f8ce4e302c8" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests" name="ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ClaimRestartRequired, status: 409, code: &quot;RAW_EXPORT_SOURCE_CLAIM_RESTART_REQUIRED&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="86de0940-0a76-48d4-9d3f-c1c5271d8ab4">
+      <Execution id="b78cfc19-1c8f-41fa-b829-39540c35210d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ContentCommitmentMismatch, status: 422, code: &quot;CONTENT_COMMITMENT_MISMATCH&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="1d886a94-aa55-d3df-a751-2b7a437ec0b4">
+      <Execution id="b622bb3f-93fe-4a12-add8-82056327f36d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: FingerprintConflict, status: 409, code: &quot;RAW_EXPORT_SOURCE_FINGERPRINT_CONFLICT&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="970a6224-d4d3-6010-9596-d0fcf8bbb135">
+      <Execution id="493ef533-9637-4f1a-a439-653e13142cca" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ArtifactSizeLimitExceeded, status: 413, code: &quot;RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="44a8a986-0b38-cc4e-4036-8137e89a0a24">
+      <Execution id="d626836a-3e7c-4fb0-bd3a-9a36c7a93dca" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: Available, status: 200, code: &quot;RAW_EXPORT_SOURCE_AVAILABLE&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="3cecf18e-ba2b-9e1b-6268-ec299f20f05e">
+      <Execution id="976f6b85-3121-4150-82e7-459787535544" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ReservationBusy, status: 409, code: &quot;RAW_EXPORT_SOURCE_RESERVATION_BUSY&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="927a5e7e-a692-662a-f776-35473b93485c">
+      <Execution id="8a0b6fca-2477-46f1-8061-29a7efa51caf" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: CapabilityUnavailable, status: 503, code: &quot;RAW_EXPORT_SOURCE_CAPABILITY_UNAVAILABLE&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="1944480b-a936-77b8-bead-048a78cde4f5">
+      <Execution id="8072502e-b08f-439f-ab5d-3182c65c369e" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: TemporarilyUnavailable, status: 503, code: &quot;RAW_EXPORT_SOURCE_TEMPORARILY_UNAVAILABLE&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="bf83e683-e4e4-a34a-9c97-1f78e5bd0fb4">
+      <Execution id="a20d4c14-4a73-4293-b553-4f4e38e27fae" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressEvaluation_RetryHorizonIsAllowedWithoutOtherFields" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="367ee804-71c6-c0dc-1e9e-d1380dd342d6">
+      <Execution id="491d6e4d-3c60-4417-9f49-bd2a0410e561" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressEvaluation_RetryHorizonIsAllowedWithoutOtherFields" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ClaimTokenInvalid, status: 403, code: &quot;RAW_EXPORT_SOURCE_CLAIM_TOKEN_INVALID&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="4bb8c475-be1a-7c66-0f4b-dfcceee2ee46">
+      <Execution id="0caed4fa-00b5-4a84-929d-ed5ad06e6378" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: CapacityUnavailable, status: 503, code: &quot;RAW_EXPORT_SOURCE_CAPACITY_UNAVAILABLE&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b932cc1f-c9d7-96cf-5761-8ae6b5bf0195">
+      <Execution id="08a57779-475b-46a7-8ab5-9166b3bcc891" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: TransportProtocolInvalid, status: 400, code: &quot;RAW_EXPORT_SOURCE_TRANSPORT_PROTOCOL_INVALID&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f2db3e28-f302-317e-a4b7-7899a126fd2c">
+      <Execution id="85a68586-b8d5-4184-bb0c-72b4c31d2bbc" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests" name="RawIngressA3Outcome_MapsWithoutReadingBody" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="4bb8c475-be1a-7c66-0f4b-dfcceee2ee46" executionId="0caed4fa-00b5-4a84-929d-ed5ad06e6378" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b932cc1f-c9d7-96cf-5761-8ae6b5bf0195" executionId="08a57779-475b-46a7-8ab5-9166b3bcc891" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1213e76e-c3f4-6ba6-81f4-9aecf6f0f2fa" executionId="30131776-b067-4b65-aa04-09a596055527" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="447aec9a-d508-8fad-c9e2-c704edf6691f" executionId="bf99f288-224b-45a6-8b17-2ef6bd6e40b8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="569713f9-3dda-fe40-0bd1-6d010b258bac" executionId="4dffc9f2-16ad-46dc-874b-65d5d7f9ef3a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4514e7f5-bd10-a416-2c56-b38ba487ac54" executionId="c249ff67-f1e4-4042-b100-05f4e3db08b0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="530c8956-eb3d-bbac-9f1d-611eaa318021" executionId="cf4c84c9-878e-46ea-8925-2f8ce4e302c8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="927a5e7e-a692-662a-f776-35473b93485c" executionId="8a0b6fca-2477-46f1-8061-29a7efa51caf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="44a8a986-0b38-cc4e-4036-8137e89a0a24" executionId="d626836a-3e7c-4fb0-bd3a-9a36c7a93dca" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a29a227f-5d8a-5d49-0616-17e7d77788d2" executionId="a564d361-dbbd-4a43-b13f-a47b14b20819" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="970a6224-d4d3-6010-9596-d0fcf8bbb135" executionId="493ef533-9637-4f1a-a439-653e13142cca" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e7767f57-823d-514b-0a5f-44dd33f241ad" executionId="0a873e5e-fd42-49b6-b37c-3176eb75b7b2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1944480b-a936-77b8-bead-048a78cde4f5" executionId="8072502e-b08f-439f-ab5d-3182c65c369e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="86de0940-0a76-48d4-9d3f-c1c5271d8ab4" executionId="b78cfc19-1c8f-41fa-b829-39540c35210d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0fb030b9-2e2b-7184-4190-d333219794c4" executionId="01d1e329-d126-4147-8723-c09c35eccd49" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bfc584f2-6661-7a80-c248-24bf328efa20" executionId="92b9db84-2ad0-4640-ae5d-480d618c38d3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f2db3e28-f302-317e-a4b7-7899a126fd2c" executionId="85a68586-b8d5-4184-bb0c-72b4c31d2bbc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2e949a77-4150-cce7-9f54-0a2c3a783469" executionId="b6384218-b116-4992-a825-cae6d4f79fa3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1d886a94-aa55-d3df-a751-2b7a437ec0b4" executionId="b622bb3f-93fe-4a12-add8-82056327f36d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bf83e683-e4e4-a34a-9c97-1f78e5bd0fb4" executionId="a20d4c14-4a73-4293-b553-4f4e38e27fae" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3cecf18e-ba2b-9e1b-6268-ec299f20f05e" executionId="976f6b85-3121-4150-82e7-459787535544" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="367ee804-71c6-c0dc-1e9e-d1380dd342d6" executionId="491d6e4d-3c60-4417-9f49-bd2a0410e561" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="66c21ea4-beba-3be2-2449-8c8a6313ec60" executionId="0281c56b-badd-4f15-b95e-69bcb4c0e848" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="18ff5b23-5aac-1482-8e95-d521fc513749" executionId="f73215bd-1a5f-47c3-8a34-7c199e2f5035" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="24" executed="24" passed="0" failed="24" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.16]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.33]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.34]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:12.37]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.37]       Expected: 1&#xD;
+[xUnit.net 00:00:12.37]       Actual:   0&#xD;
+[xUnit.net 00:00:12.37]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.37]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(209,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.37]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.37]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.39]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.39]       Expected: 400&#xD;
+[xUnit.net 00:00:12.39]       Actual:   503&#xD;
+[xUnit.net 00:00:12.39]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.39]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.39]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.39]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.40]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.40]       Expected: 1&#xD;
+[xUnit.net 00:00:12.40]       Actual:   0&#xD;
+[xUnit.net 00:00:12.40]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.40]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(209,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.40]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.40]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.42]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.42]       Expected: 409&#xD;
+[xUnit.net 00:00:12.42]       Actual:   503&#xD;
+[xUnit.net 00:00:12.42]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.42]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.42]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.42]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.43]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.43]       Expected: 409&#xD;
+[xUnit.net 00:00:12.43]       Actual:   503&#xD;
+[xUnit.net 00:00:12.43]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.43]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.43]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.43]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.43]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.44]       Expected: 409&#xD;
+[xUnit.net 00:00:12.44]       Actual:   503&#xD;
+[xUnit.net 00:00:12.44]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.44]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.44]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.44]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.44]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.44]       Expected: 403&#xD;
+[xUnit.net 00:00:12.44]       Actual:   503&#xD;
+[xUnit.net 00:00:12.44]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.44]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.44]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.44]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.45]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.45]       Expected: 403&#xD;
+[xUnit.net 00:00:12.45]       Actual:   503&#xD;
+[xUnit.net 00:00:12.45]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.45]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.45]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.45]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.46]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.46]       Expected: 202&#xD;
+[xUnit.net 00:00:12.46]       Actual:   503&#xD;
+[xUnit.net 00:00:12.46]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.46]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.46]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.46]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.47]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.47]       Expected: 1&#xD;
+[xUnit.net 00:00:12.47]       Actual:   0&#xD;
+[xUnit.net 00:00:12.47]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.47]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(209,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.47]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.47]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.48]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.48]       Expected: 422&#xD;
+[xUnit.net 00:00:12.48]       Actual:   503&#xD;
+[xUnit.net 00:00:12.48]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.48]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.48]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.48]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.50]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.50]       Expected: 403&#xD;
+[xUnit.net 00:00:12.50]       Actual:   503&#xD;
+[xUnit.net 00:00:12.50]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.50]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.50]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.50]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.51]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.51]       Expected: 409&#xD;
+[xUnit.net 00:00:12.51]       Actual:   503&#xD;
+[xUnit.net 00:00:12.51]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.51]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.51]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.51]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.51]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.51]       Expected: 403&#xD;
+[xUnit.net 00:00:12.51]       Actual:   503&#xD;
+[xUnit.net 00:00:12.51]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.51]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.51]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.51]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.52]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.52]       Expected: 200&#xD;
+[xUnit.net 00:00:12.52]       Actual:   503&#xD;
+[xUnit.net 00:00:12.52]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.52]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.54]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.54]       Expected: 1&#xD;
+[xUnit.net 00:00:12.54]       Actual:   0&#xD;
+[xUnit.net 00:00:12.54]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.54]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(209,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.54]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.54]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.55]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.55]       Expected: 422&#xD;
+[xUnit.net 00:00:12.55]       Actual:   503&#xD;
+[xUnit.net 00:00:12.55]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.55]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.56]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.56]       Expected: 409&#xD;
+[xUnit.net 00:00:12.56]       Actual:   503&#xD;
+[xUnit.net 00:00:12.56]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.56]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.56]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.56]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.57]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.57]       Expected: 413&#xD;
+[xUnit.net 00:00:12.57]       Actual:   503&#xD;
+[xUnit.net 00:00:12.57]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.57]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.57]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.57]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.58]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.58]       Expected: 200&#xD;
+[xUnit.net 00:00:12.58]       Actual:   503&#xD;
+[xUnit.net 00:00:12.58]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.58]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.58]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.58]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.59]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.59]       Expected: 409&#xD;
+[xUnit.net 00:00:12.59]       Actual:   503&#xD;
+[xUnit.net 00:00:12.59]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.59]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(207,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.59]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(225,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(CaptureRuntimeRawIngressOutcome outcome, Int32 status, String code)&#xD;
+[xUnit.net 00:00:12.59]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.61]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:12.61]       Expected: 409&#xD;
+[xUnit.net 00:00:12.61]       Actual:   503&#xD;
+[xUnit.net 00:00:12.61]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.61]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(240,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressEvaluation_RetryHorizonIsAllowedWithoutOtherFields()&#xD;
+[xUnit.net 00:00:12.61]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA1RawIngressBoundaryTests.cs(247,0): at TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressEvaluation_RetryHorizonIsAllowedWithoutOtherFields()&#xD;
+[xUnit.net 00:00:12.61]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:13.25]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:13.25]                        ↓ (pos 6)&#xD;
+[xUnit.net 00:00:13.25]       Expected: "20260913120000_Tip88C1C6BA3RetainedIngres"···&#xD;
+[xUnit.net 00:00:13.25]       Actual:   "20260923090000_RawExportAssemblyDurableWo"···&#xD;
+[xUnit.net 00:00:13.25]                        ↑ (pos 6)&#xD;
+[xUnit.net 00:00:13.25]       Stack Trace:&#xD;
+[xUnit.net 00:00:13.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3ConsentRetentionTests.cs(795,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3ConsentRetentionTests.Prepare(DisposableCurrentDatabase isolated)&#xD;
+[xUnit.net 00:00:13.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3ConsentRetentionTests.cs(795,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3ConsentRetentionTests.Prepare(DisposableCurrentDatabase isolated)&#xD;
+[xUnit.net 00:00:13.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3R2TerminalProjectionTests.cs(37,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(String rawClass)&#xD;
+[xUnit.net 00:00:13.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3R2TerminalProjectionTests.cs(148,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(String rawClass)&#xD;
+[xUnit.net 00:00:13.25]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:13.54]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:13.54]                        ↓ (pos 6)&#xD;
+[xUnit.net 00:00:13.54]       Expected: "20260913120000_Tip88C1C6BA3RetainedIngres"···&#xD;
+[xUnit.net 00:00:13.54]       Actual:   "20260923090000_RawExportAssemblyDurableWo"···&#xD;
+[xUnit.net 00:00:13.54]                        ↑ (pos 6)&#xD;
+[xUnit.net 00:00:13.54]       Stack Trace:&#xD;
+[xUnit.net 00:00:13.54]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3ConsentRetentionTests.cs(795,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3ConsentRetentionTests.Prepare(DisposableCurrentDatabase isolated)&#xD;
+[xUnit.net 00:00:13.54]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3ConsentRetentionTests.cs(795,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3ConsentRetentionTests.Prepare(DisposableCurrentDatabase isolated)&#xD;
+[xUnit.net 00:00:13.54]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3R2TerminalProjectionTests.cs(37,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(String rawClass)&#xD;
+[xUnit.net 00:00:13.54]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3R2TerminalProjectionTests.cs(148,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(String rawClass)&#xD;
+[xUnit.net 00:00:13.54]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:14.18]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:54.9532001+07:00">
+        <Text>[xUnit.net 00:00:12.37]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: CapabilityUnavailable, status: 503, code: "RAW_EXPORT_SOURCE_CAPABILITY_UNAVAILABLE") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:54.9748904+07:00">
+        <Text>[xUnit.net 00:00:12.39]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: TransportProtocolInvalid, status: 400, code: "RAW_EXPORT_SOURCE_TRANSPORT_PROTOCOL_INVALID") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:54.9863365+07:00">
+        <Text>[xUnit.net 00:00:12.40]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: HistoricCommitmentKeyUnavailable, status: 503, code: "RAW_EXPORT_SOURCE_HISTORIC_COMMITMENT_KEY_UNAVAILA"···) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0016258+07:00">
+        <Text>[xUnit.net 00:00:12.42]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: FingerprintConflict, status: 409, code: "RAW_EXPORT_SOURCE_FINGERPRINT_CONFLICT") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0118000+07:00">
+        <Text>[xUnit.net 00:00:12.43]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ClaimRestartRequired, status: 409, code: "RAW_EXPORT_SOURCE_CLAIM_RESTART_REQUIRED") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0213993+07:00">
+        <Text>[xUnit.net 00:00:12.43]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: IdempotencyBusy, status: 409, code: "RAW_EXPORT_SOURCE_IDEMPOTENCY_BUSY") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0307640+07:00">
+        <Text>[xUnit.net 00:00:12.44]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: BindingInvalid, status: 403, code: "RAW_EXPORT_SOURCE_BINDING_INVALID") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0399688+07:00">
+        <Text>[xUnit.net 00:00:12.45]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ClaimTokenInvalid, status: 403, code: "RAW_EXPORT_SOURCE_CLAIM_TOKEN_INVALID") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0499082+07:00">
+        <Text>[xUnit.net 00:00:12.46]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ResumePending, status: 202, code: "RAW_EXPORT_SOURCE_RESUME_PENDING") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0762342+07:00">
+        <Text>[xUnit.net 00:00:12.47]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: CapacityUnavailable, status: 503, code: "RAW_EXPORT_SOURCE_CAPACITY_UNAVAILABLE") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0762924+07:00">
+        <Text>[xUnit.net 00:00:12.48]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ContentCommitmentMismatch, status: 422, code: "CONTENT_COMMITMENT_MISMATCH") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0814843+07:00">
+        <Text>[xUnit.net 00:00:12.49]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: SourceRetentionNotAuthorized, status: 403, code: "SOURCE_RETENTION_NOT_AUTHORIZED") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.0915576+07:00">
+        <Text>[xUnit.net 00:00:12.50]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: RecaptureRequired, status: 409, code: "RECAPTURE_REQUIRED") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.1008111+07:00">
+        <Text>[xUnit.net 00:00:12.51]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: NotFoundOrNotAllowed, status: 403, code: "NOT_FOUND_OR_NOT_ALLOWED") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.1101234+07:00">
+        <Text>[xUnit.net 00:00:12.52]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: AlreadyAvailable, status: 200, code: "RAW_EXPORT_SOURCE_ALREADY_AVAILABLE") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.1224349+07:00">
+        <Text>[xUnit.net 00:00:12.54]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: TemporarilyUnavailable, status: 503, code: "RAW_EXPORT_SOURCE_TEMPORARILY_UNAVAILABLE") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.1324976+07:00">
+        <Text>[xUnit.net 00:00:12.55]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: PlaintextRetentionInvalid, status: 422, code: "RAW_EXPORT_SOURCE_PLAINTEXT_RETENTION_INVALID") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.1420495+07:00">
+        <Text>[xUnit.net 00:00:12.56]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: EvaluationInProgress, status: 409, code: "RAW_EXPORT_SOURCE_CLAIM_EVALUATION_IN_PROGRESS") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.1549442+07:00">
+        <Text>[xUnit.net 00:00:12.57]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ArtifactSizeLimitExceeded, status: 413, code: "RAW_EXPORT_SOURCE_ARTIFACT_SIZE_LIMIT_EXCEEDED") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.1666887+07:00">
+        <Text>[xUnit.net 00:00:12.58]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: Available, status: 200, code: "RAW_EXPORT_SOURCE_AVAILABLE") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.1793051+07:00">
+        <Text>[xUnit.net 00:00:12.59]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressA3Outcome_MapsWithoutReadingBody(outcome: ReservationBusy, status: 409, code: "RAW_EXPORT_SOURCE_RESERVATION_BUSY") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.1924889+07:00">
+        <Text>[xUnit.net 00:00:12.61]     TagEkyc.IntegrationTests.Tip88C1C6BA1RawIngressBoundaryTests.RawIngressEvaluation_RetryHorizonIsAllowedWithoutOtherFields [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:55.8331459+07:00">
+        <Text>[xUnit.net 00:00:13.25]     TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(rawClass: "LiveSelfieImage") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-24T00:11:56.1250690+07:00">
+        <Text>[xUnit.net 00:00:13.54]     TagEkyc.IntegrationTests.Tip88C1C6BA3R2TerminalProjectionTests.ActivatedHttpRoute_UsesBrokerAndBodyPipelineToPublishBothRawClasses(rawClass: "ChipDg2Portrait") [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

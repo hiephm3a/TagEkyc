@@ -1,0 +1,59 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="2abbe7b7-c6bb-48ab-8939-8cfe0f319365" name="3AVNN@LEARNPC 2026-09-23 19:37:33" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-23T19:37:33.7669513+07:00" queuing="2026-09-23T19:37:33.7669515+07:00" start="2026-09-23T19:37:31.0775227+07:00" finish="2026-09-23T19:37:33.7734444+07:00" />
+  <TestSettings name="default" id="3beb1883-17e3-4c0b-abdb-564ede39f616">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-23_19_37_33" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="f16cc2fe-7258-4f33-9896-97e756573687" testId="61105ab0-7c86-24e9-0faf-6bbbd0551ce7" testName="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" computerName="LEARNPC" duration="00:00:00.0010000" startTime="2026-09-23T19:37:33.3863678+07:00" endTime="2026-09-23T19:37:33.3863895+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f16cc2fe-7258-4f33-9896-97e756573687">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : docker compose failed with exit code 1.&#xD;
+&#xD;
+unable to get image 'postgres:16': failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.RunDockerComposeAsync(String arguments, Boolean allowFailure) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 363&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 33&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 39</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="61105ab0-7c86-24e9-0faf-6bbbd0551ce7">
+      <Execution id="f16cc2fe-7258-4f33-9896-97e756573687" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests" name="Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="61105ab0-7c86-24e9-0faf-6bbbd0551ce7" executionId="f16cc2fe-7258-4f33-9896-97e756573687" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.44]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.59]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.60]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.97]       System.InvalidOperationException : docker compose failed with exit code 1.&#xD;
+[xUnit.net 00:00:01.97]       &#xD;
+[xUnit.net 00:00:01.97]       unable to get image 'postgres:16': failed to connect to the docker API at npipe:////./pipe/dockerDesktopLinuxEngine; check if the path is correct and if the daemon is running: open //./pipe/dockerDesktopLinuxEngine: The system cannot find the file specified.
+&#xD;
+[xUnit.net 00:00:01.97]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.97]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(363,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.RunDockerComposeAsync(String arguments, Boolean allowFailure)&#xD;
+[xUnit.net 00:00:01.97]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(33,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync()&#xD;
+[xUnit.net 00:00:01.97]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(39,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync()&#xD;
+[xUnit.net 00:00:02.28]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-23T19:37:33.3901602+07:00">
+        <Text>[xUnit.net 00:00:01.97]     TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

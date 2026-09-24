@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="c4845d11-1157-424a-815a-7278836b1c43" name="3AVNN@LEARNPC 2026-09-23 23:58:47" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-23T23:58:47.6258249+07:00" queuing="2026-09-23T23:58:47.6258252+07:00" start="2026-09-23T23:58:29.5591694+07:00" finish="2026-09-23T23:58:47.6299579+07:00" />
+  <TestSettings name="default" id="eaac7bce-627d-4d2b-8819-5561d86ac27a">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-23_23_58_47" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="6d661e62-7d17-4c7d-8a6a-2acfd084eaab" testId="61105ab0-7c86-24e9-0faf-6bbbd0551ce7" testName="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" computerName="LEARNPC" duration="00:00:00.6269576" startTime="2026-09-23T23:58:46.4825900+07:00" endTime="2026-09-23T23:58:46.4826151+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6d661e62-7d17-4c7d-8a6a-2acfd084eaab">
+      <Output>
+        <ErrorInfo>
+          <Message>TagEkyc.Domain.RawExportJobException : RAW_EXPORT_JOB_REQUEST_VALIDATION_FAILED</Message>
+          <StackTrace>   at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ValidateLeaseCommand(AuthenticatedRawExportActor actor, Guid job, Int64 revision, Int64 fence, Guid owner) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 970&#xD;
+   at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.AcquireOrReclaimLeaseAsync(AcquireOrReclaimRawExportJobLeaseCommand command, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 77&#xD;
+   at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 167&#xD;
+   at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 177&#xD;
+   at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 177&#xD;
+   at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 177&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs:line 39&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs:line 98&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs:line 98&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="61105ab0-7c86-24e9-0faf-6bbbd0551ce7">
+      <Execution id="6d661e62-7d17-4c7d-8a6a-2acfd084eaab" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests" name="Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="61105ab0-7c86-24e9-0faf-6bbbd0551ce7" executionId="6d661e62-7d17-4c7d-8a6a-2acfd084eaab" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.48]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.63]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.63]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:16.52]       TagEkyc.Domain.RawExportJobException : RAW_EXPORT_JOB_REQUEST_VALIDATION_FAILED&#xD;
+[xUnit.net 00:00:16.52]       Stack Trace:&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs(970,0): at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ValidateLeaseCommand(AuthenticatedRawExportActor actor, Guid job, Int64 revision, Int64 fence, Guid owner)&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs(77,0): at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.AcquireOrReclaimLeaseAsync(AcquireOrReclaimRawExportJobLeaseCommand command, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs(167,0): at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs(177,0): at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs(177,0): at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs(177,0): at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs(39,0): at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts()&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs(98,0): at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts()&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs(98,0): at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts()&#xD;
+[xUnit.net 00:00:16.52]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:17.51]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-23T23:58:46.4803520+07:00">
+        <Text>[xUnit.net 00:00:16.52]     TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

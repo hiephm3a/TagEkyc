@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="a10e3fbd-f14f-4e4a-bd60-044ef83a0f59" name="3AVNN@LEARNPC 2026-09-23 19:38:25" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-23T19:38:25.9016312+07:00" queuing="2026-09-23T19:38:25.9016316+07:00" start="2026-09-23T19:38:07.7472664+07:00" finish="2026-09-23T19:38:25.9059887+07:00" />
+  <TestSettings name="default" id="0e752786-408f-46d7-9553-5ce2c7d368f0">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-23_19_38_25" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="9d002225-fb2b-411b-ae8c-607b6169c253" testId="61105ab0-7c86-24e9-0faf-6bbbd0551ce7" testName="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" computerName="LEARNPC" duration="00:00:00.7505430" startTime="2026-09-23T19:38:24.7521194+07:00" endTime="2026-09-23T19:38:24.7521674+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9d002225-fb2b-411b-ae8c-607b6169c253">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: Claimed&#xD;
+Actual:   Assembling</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs:line 56&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs:line 93&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs:line 93&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs:line 93&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="61105ab0-7c86-24e9-0faf-6bbbd0551ce7">
+      <Execution id="9d002225-fb2b-411b-ae8c-607b6169c253" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests" name="Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="61105ab0-7c86-24e9-0faf-6bbbd0551ce7" executionId="9d002225-fb2b-411b-ae8c-607b6169c253" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.15]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.30]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.30]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:16.66]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:16.66]       Expected: Claimed&#xD;
+[xUnit.net 00:00:16.66]       Actual:   Assembling&#xD;
+[xUnit.net 00:00:16.67]       Stack Trace:&#xD;
+[xUnit.net 00:00:16.67]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs(56,0): at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts()&#xD;
+[xUnit.net 00:00:16.67]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs(93,0): at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts()&#xD;
+[xUnit.net 00:00:16.67]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs(93,0): at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts()&#xD;
+[xUnit.net 00:00:16.67]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyDurableWorkSourceTests.cs(93,0): at TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts()&#xD;
+[xUnit.net 00:00:16.67]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:17.65]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-23T19:38:24.7492503+07:00">
+        <Text>[xUnit.net 00:00:16.66]     TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

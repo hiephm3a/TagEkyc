@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="7eaeac59-a041-4137-adf3-bd30d14bbdf8" name="3AVNN@LEARNPC 2026-09-24 00:10:01" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-24T00:10:01.2140425+07:00" queuing="2026-09-24T00:10:01.2140426+07:00" start="2026-09-24T00:10:00.4028268+07:00" finish="2026-09-24T00:10:01.2184194+07:00" />
+  <TestSettings name="default" id="0a21ec61-03b5-41b4-bd0c-a3aa0e62b6cd">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-24_00_10_01" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="4c55ed1a-2b4a-439c-91b9-8bc549d305ef" testId="9fe16a7c-bcc6-6a34-f2d3-dc7c1e30b8e4" testName="TagEkyc.UnitTests.RawExportControlPlaneApplicationTests.Scope_identity_and_exact_class_validation_precede_repository_access" computerName="LEARNPC" duration="00:00:00.0018028" startTime="2026-09-24T00:10:01.1255126+07:00" endTime="2026-09-24T00:10:01.1255128+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4c55ed1a-2b4a-439c-91b9-8bc549d305ef" />
+    <UnitTestResult executionId="30178881-29b8-474e-89dd-443c3d6771ab" testId="54d7124f-df7c-c826-33ff-4645570e7289" testName="TagEkyc.UnitTests.RawExportControlPlaneApplicationTests.Existing_authorization_and_job_repositories_are_the_only_write_boundaries" computerName="LEARNPC" duration="00:00:00.0253036" startTime="2026-09-24T00:10:01.1227556+07:00" endTime="2026-09-24T00:10:01.1227888+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="30178881-29b8-474e-89dd-443c3d6771ab" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.UnitTests.RawExportControlPlaneApplicationTests.Existing_authorization_and_job_repositories_are_the_only_write_boundaries" storage="d:\task\remote signing\tagekyc\tests\tagekyc.unittests\bin\debug\net8.0\tagekyc.unittests.dll" id="54d7124f-df7c-c826-33ff-4645570e7289">
+      <Execution id="30178881-29b8-474e-89dd-443c3d6771ab" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.UnitTests\bin\Debug\net8.0\TagEkyc.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.UnitTests.RawExportControlPlaneApplicationTests" name="Existing_authorization_and_job_repositories_are_the_only_write_boundaries" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.UnitTests.RawExportControlPlaneApplicationTests.Scope_identity_and_exact_class_validation_precede_repository_access" storage="d:\task\remote signing\tagekyc\tests\tagekyc.unittests\bin\debug\net8.0\tagekyc.unittests.dll" id="9fe16a7c-bcc6-6a34-f2d3-dc7c1e30b8e4">
+      <Execution id="4c55ed1a-2b4a-439c-91b9-8bc549d305ef" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.UnitTests\bin\Debug\net8.0\TagEkyc.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.UnitTests.RawExportControlPlaneApplicationTests" name="Scope_identity_and_exact_class_validation_precede_repository_access" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="9fe16a7c-bcc6-6a34-f2d3-dc7c1e30b8e4" executionId="4c55ed1a-2b4a-439c-91b9-8bc549d305ef" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="54d7124f-df7c-c826-33ff-4645570e7289" executionId="30178881-29b8-474e-89dd-443c3d6771ab" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="2" executed="2" passed="2" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.20]   Discovering: TagEkyc.UnitTests&#xD;
+[xUnit.net 00:00:00.27]   Discovered:  TagEkyc.UnitTests&#xD;
+[xUnit.net 00:00:00.28]   Starting:    TagEkyc.UnitTests&#xD;
+[xUnit.net 00:00:00.34]   Finished:    TagEkyc.UnitTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

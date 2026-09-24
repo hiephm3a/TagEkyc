@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="6c9fdfae-7954-46e9-81d0-b7dfccf694cb" name="3AVNN@LEARNPC 2026-09-23 23:57:31" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-23T23:57:31.8098442+07:00" queuing="2026-09-23T23:57:31.8098446+07:00" start="2026-09-23T23:57:29.9368048+07:00" finish="2026-09-23T23:57:49.0693394+07:00" />
+  <TestSettings name="default" id="2956d078-733b-41a4-b013-d7c85a9367a5">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-23_23_57_31" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="f9e1ea91-3b6c-4f83-9f39-7d779a6299a2" testId="0ca90055-6c6a-ebaf-67d9-5c055cc2cba5" testName="TagEkyc.IntegrationTests.RawExportControlPlaneHttpTests.Raw_export_control_plane_rejects_unauthenticated_request_before_service" computerName="LEARNPC" duration="00:00:00.1736317" startTime="2026-09-23T23:57:31.0023614+07:00" endTime="2026-09-23T23:57:31.0023889+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f9e1ea91-3b6c-4f83-9f39-7d779a6299a2" />
+    <UnitTestResult executionId="d634736d-9d75-4207-9e0d-6f52173666aa" testId="61105ab0-7c86-24e9-0faf-6bbbd0551ce7" testName="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" computerName="LEARNPC" duration="00:00:01.6108811" startTime="2026-09-23T23:57:48.1823157+07:00" endTime="2026-09-23T23:57:48.1823159+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d634736d-9d75-4207-9e0d-6f52173666aa" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests.Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="61105ab0-7c86-24e9-0faf-6bbbd0551ce7">
+      <Execution id="d634736d-9d75-4207-9e0d-6f52173666aa" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportAssemblyDurableWorkSourceTests" name="Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportControlPlaneHttpTests.Raw_export_control_plane_rejects_unauthenticated_request_before_service" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0ca90055-6c6a-ebaf-67d9-5c055cc2cba5">
+      <Execution id="f9e1ea91-3b6c-4f83-9f39-7d779a6299a2" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportControlPlaneHttpTests" name="Raw_export_control_plane_rejects_unauthenticated_request_before_service" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="0ca90055-6c6a-ebaf-67d9-5c055cc2cba5" executionId="f9e1ea91-3b6c-4f83-9f39-7d779a6299a2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="61105ab0-7c86-24e9-0faf-6bbbd0551ce7" executionId="d634736d-9d75-4207-9e0d-6f52173666aa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="2" executed="2" passed="2" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.31]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.48]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.48]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:18.63]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
