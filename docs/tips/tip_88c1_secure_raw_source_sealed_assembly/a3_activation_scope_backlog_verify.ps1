@@ -9,7 +9,7 @@ $retained = @(Import-Csv -LiteralPath (Join-Path $DocDir 'a3_activation_scope_pa
 $ownership = @(Import-Csv -LiteralPath (Join-Path $DocDir 'a3_outcome_ownership_table_v1.tsv') -Delimiter "`t")
 $outputPath = Join-Path $DocDir 'a3_activation_scope_deferred_backlog_v1.tsv'
 
-if ($oldPartition.Count -ne 46 -or $retained.Count -ne 0) {
+if ($oldPartition.Count -ne 46 -or $retained.Count -ne 8) {
     throw "ACTIVATION_SCOPE_INPUT_COUNT_INVALID prior=$($oldPartition.Count) retained=$($retained.Count)"
 }
 $priorIds = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
@@ -71,11 +71,7 @@ foreach ($row in $oldPartition) {
         $siteQualification++
         continue
     }
-    if ($owner.SharedMechanism -ceq 'ASSEMBLY-WORK-SOURCE' -and
-        $owner.AuthorityStatus -ceq 'OPERATIVE_IMPLEMENTATION_AUTHORITY') {
-        $reason = 'ASSEMBLY_NOT_ACTIVATION_PREREQUISITE'
-        $assembly++
-    } elseif ($owner.AuthorityStatus -ceq 'CANDIDATE_ONLY') {
+    if ($owner.AuthorityStatus -ceq 'CANDIDATE_ONLY') {
         $reason = 'CANDIDATE_AUTHORITY_NOT_OPERATIVE_FOR_DELIVERY'
         $candidate++
     } else {
@@ -89,8 +85,8 @@ foreach ($row in $oldPartition) {
     }
     $lines.Add([string]::Join("`t", $values))
 }
-if ($assembly -ne 8 -or $candidate -ne 30 -or $reconciled -ne 1 -or
-    $ratifiedSuccessor -ne 3 -or $siteQualification -ne 4 -or $lines.Count -ne 39) {
+if ($assembly -ne 0 -or $candidate -ne 30 -or $reconciled -ne 1 -or
+    $ratifiedSuccessor -ne 3 -or $siteQualification -ne 4 -or $lines.Count -ne 31) {
     throw "ACTIVATION_SCOPE_DISPOSITION_COUNT_INVALID assembly=$assembly candidate=$candidate reconciled=$reconciled ratified_successor=$ratifiedSuccessor site_qualification=$siteQualification"
 }
 $content = [string]::Join("`n", $lines) + "`n"

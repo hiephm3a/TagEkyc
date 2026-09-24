@@ -59,16 +59,17 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
     }
 
     [Fact]
-    public void ActivatedWithCurrentGeneratedZeroOpenSealStartsWithMatchingSiteQualification()
+    public void ActivatedWithCurrentGeneratedAssemblyGateSealFailsIncompleteBeforeRoutesStart()
     {
         using var factory = StartupSelectionFactory(activated: true, seal: null,
-            useGeneratedSeal: true);
-        using var client = factory.CreateClient();
-        Assert.NotNull(client);
-        var seal = factory.Services.GetRequiredService<ICaptureRuntimeActivationEvidenceSealProvider>().Current;
-        Assert.Equal(0, seal!.ApprovedAuthorityOpenRowCount);
-        Assert.True(seal.ApprovedSiteTransportQualificationRequired);
-        Assert.Equal(1, seal.ApprovedSiteTransportQualificationPolicyVersion);
+            assemblyTopology: "DurableWorker", useGeneratedSeal: true);
+        var failure = Assert.ThrowsAny<Exception>(() => factory.CreateClient());
+        Assert.Contains("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INCOMPLETE", failure.ToString(),
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INVALID", failure.ToString(),
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("CAPTURE_RUNTIME_STARTUP_NOT_READY", failure.ToString(),
+            StringComparison.Ordinal);
     }
 
     [Fact]
@@ -191,9 +192,21 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
                     services.AddSingleton<ICaptureRuntimeA3Readiness, Ready>();
                     services.RemoveAll<ICaptureRuntimeRawIngressAdmission>();
                     services.AddSingleton<ICaptureRuntimeRawIngressAdmission, NeverAdmission>();
+                    if (assemblyTopology == "DurableWorker")
+                    {
+                        // This host proof isolates the activation-evidence gate. The InMemory
+                        // fixture intentionally has no durable assembly database/provider graph.
+                        services.RemoveAll<IRawExportAssemblyWorkSource>();
+                        services.RemoveAll<RawExportFramedSourceVerificationService>();
+                        services.RemoveAll<RawExportAssemblySourceResolver>();
+                        services.RemoveAll<RawExportAssemblyOrchestrator>();
+                        services.RemoveAll<IRawExportAssemblyOrchestrator>();
+                        services.RemoveAll<RawExportControlPlaneApplicationService>();
+                    }
                     foreach (var descriptor in services.Where(item =>
                                  item.ServiceType == typeof(Microsoft.Extensions.Hosting.IHostedService) &&
-                                 item.ImplementationType?.Name == "CaptureRuntimeA3HostedService").ToArray())
+                                 item.ImplementationType?.Name is "CaptureRuntimeA3HostedService"
+                                     or "RawExportAssemblyHostedService").ToArray())
                         services.Remove(descriptor);
                 });
             });

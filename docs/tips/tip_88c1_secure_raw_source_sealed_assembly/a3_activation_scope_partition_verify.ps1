@@ -83,7 +83,24 @@ foreach ($row in $ownership) {
         throw "SCOPE_OWNERSHIP_DUPLICATE row=$($row.RowId)"
     }
 }
-$expected = [ordered]@{}
+$expected = [ordered]@{
+    'P29 A3_S02_O29_ExactOutcomeShapeStatusAndResidue' =
+        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
+    'P30 A3_S02_O30_ExactOutcomeShapeStatusAndResidue' =
+        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
+    'P31 A3_S02_O31_ExactOutcomeShapeStatusAndResidue' =
+        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
+    'P32 A3_S02_O32_ExactOutcomeShapeStatusAndResidue' =
+        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
+    'P33 A3_S02_O33_ExactOutcomeShapeStatusAndResidue' =
+        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
+    'P34 A3_S02_O34_ExactOutcomeShapeStatusAndResidue' =
+        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
+    'P35 A3_S02_O35_ExactOutcomeShapeStatusAndResidue' =
+        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
+    'P36 A3_S02_O36_ExactOutcomeShapeStatusAndResidue' =
+        @('OPERATIVE_IMPLEMENTATION_AUTHORITY', 'ASSEMBLY-WORK-SOURCE')
+}
 $seen = [Collections.Generic.HashSet[string]]::new([StringComparer]::Ordinal)
 foreach ($row in $current) {
     $id = Normalize-RowId $row.RowId
@@ -96,7 +113,7 @@ foreach ($row in $current) {
         throw "SCOPE_RETAINED_ROW_INVALID row=$id"
     }
 }
-if ($seen.Count -ne 0) { throw "SCOPE_RETAINED_COUNT_INVALID actual=$($seen.Count)" }
+if ($seen.Count -ne 8) { throw "SCOPE_RETAINED_COUNT_INVALID actual=$($seen.Count)" }
 foreach ($id in $ratifiedSuccessors) {
     if (-not $owners.ContainsKey($id) -or
         $owners[$id].AuthorityStatus -cne 'HOMEOWNER_RATIFIED' -or
@@ -128,7 +145,7 @@ foreach ($id in $prior) {
         throw "SCOPE_UNASSIGNED_PRIOR_ROW row=$id"
     }
 }
-if ($backlogSet.Count -ne 38 -or
+if ($backlogSet.Count -ne 30 -or
     $seen.Count + $backlogSet.Count + 1 + $ratifiedSuccessors.Count + $siteQualified.Count -ne $prior.Count) {
     throw 'SCOPE_PARTITION_ARITHMETIC_INVALID'
 }
@@ -149,4 +166,5 @@ if ($backlogSet.Count -ne 38 -or
 "mechanism_ADMISSION-CAPABILITY=0"
 "mechanism_TRANSPORT-EXPECT-FENCE=0"
 "mechanism_ADMISSION-CAPACITY=0"
+"mechanism_ASSEMBLY-WORK-SOURCE=8"
 "ownership_registry_sha256=$((Get-FileHash -LiteralPath $ownershipPath -Algorithm SHA256).Hash)"
