@@ -1137,6 +1137,7 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
             listen => listen.UseHttps(certificate)));
         builder.Services.AddSingleton<ICaptureRuntimeRequestAuthenticator, AcceptedRuntimeAuthenticator>();
         builder.Services.AddSingleton<ICaptureRuntimeRawIngressAdmission>(admission);
+        builder.Services.AddCurrentSiteQualificationForRawIngressTests();
         await using var app = builder.Build();
         var rawPosts = 0;
         var serverBodyProbe = new ExpectFenceServerBodyProbe(observerConnection);

@@ -5,7 +5,8 @@ param(
     [Parameter(ParameterSetName = 'Probe', Mandatory = $true)][string]$OutputRecordPath,
     [Parameter(ParameterSetName = 'Probe')][ValidateRange(1, 168)][int]$ValidForHours = 8,
     [Parameter(ParameterSetName = 'Probe')][ValidateRange(5, 120)][int]$TimeoutSeconds = 30,
-    [Parameter(ParameterSetName = 'SelfTest', Mandatory = $true)][switch]$SelfTest
+    [Parameter(ParameterSetName = 'SelfTest', Mandatory = $true)][switch]$SelfTest,
+    [Parameter(ParameterSetName = 'SelfTest')][string]$SelfTestOutputRecordPath
 )
 
 $ErrorActionPreference = 'Stop'
@@ -85,6 +86,40 @@ function Assert-QualifyingFinal([System.IO.Stream]$Stream) {
     [pscustomobject]@{ Status = $response.Status; Code = [string]$body.code }
 }
 
+function Write-MeasurementIncompleteCandidate(
+    [string]$CandidateSiteId,
+    [string]$CandidateEndpointOrigin,
+    [string]$CandidateDeploymentRevision,
+    [string]$CandidateOutputRecordPath,
+    [int]$CandidateValidForHours) {
+    $observed = [DateTimeOffset]::UtcNow
+    # Only EarlyOrIntermediaryContinueObserved has a live production-site
+    # measurement owner today. Keep the existing 15-field schema for diagnosis,
+    # but never authorize installation from the six safe placeholders.
+    $record = [ordered]@{
+        formatVersion = 1
+        qualificationId = "a3-site-$([Guid]::NewGuid().ToString('N'))"
+        siteId = $CandidateSiteId
+        endpointOrigin = $CandidateEndpointOrigin
+        deploymentRevision = $CandidateDeploymentRevision
+        status = 'MEASUREMENT_INCOMPLETE'
+        observedAtUtc = $observed.ToString('O')
+        validUntilUtc = $observed.AddHours($CandidateValidForHours).ToString('O')
+        agentBodySendsWhileBOrR1Held = 0
+        serverApplicationBodyReadsWhileBOrR1Held = 0
+        rawPostCount = 1
+        kestrelContinueRelayedAfterCommit = $true
+        earlyOrIntermediaryContinueObserved = $false
+        applicationPrebufferObserved = $false
+        hiddenRetryObserved = $false
+    }
+    $target = [IO.Path]::GetFullPath($CandidateOutputRecordPath)
+    [IO.Directory]::CreateDirectory((Split-Path -Parent $target)) | Out-Null
+    [IO.File]::WriteAllText($target, ($record | ConvertTo-Json -Compress),
+        [Text.UTF8Encoding]::new($false))
+    $target
+}
+
 if ($SelfTest) {
     $valid = "HTTP/1.1 503 Service Unavailable`r`nContent-Type: application/json; charset=utf-8`r`nContent-Length: 94`r`n`r`n" +
         '{"code":"CAPTURE_RUNTIME_SITE_RAW_INGRESS_TRANSPORT_QUALIFICATION_INVALID","correlationId":"q"}'
@@ -100,6 +135,14 @@ if ($SelfTest) {
     $stream = [IO.MemoryStream]::new($early)
     try { Assert-QualifyingFinal $stream; throw 'SITE_PROBE_SELF_TEST_EARLY_CONTINUE_WAS_ACCEPTED' }
     catch { if ($_.Exception.Message -cne 'SITE_QUALIFICATION_EARLY_CONTINUE_OBSERVED') { throw } }
+    if (-not [string]::IsNullOrWhiteSpace($SelfTestOutputRecordPath)) {
+        $selfTestRecord = Write-MeasurementIncompleteCandidate `
+            'synthetic-site' 'https://synthetic.invalid:8443' 'synthetic-deployment-1' `
+            $SelfTestOutputRecordPath 8
+        Write-Output 'SITE_ENDPOINT_TRANSPORT_QUALIFICATION=MEASUREMENT_INCOMPLETE'
+        Write-Output "QUALIFICATION_RECORD=$selfTestRecord"
+        Write-Output "QUALIFICATION_RECORD_SHA256=$((Get-FileHash -LiteralPath $selfTestRecord -Algorithm SHA256).Hash)"
+    }
     Write-Output 'SITE_PROBE_SELF_TEST=PASS'
     return
 }
@@ -141,28 +184,9 @@ try {
         # the application final response; a terminating intermediary that emits
         # 100 on its own is detected before any body can leave this process.
         $final = Assert-QualifyingFinal $tls
-        $observed = [DateTimeOffset]::UtcNow
-        $record = [ordered]@{
-            formatVersion = 1
-            qualificationId = "a3-site-$([Guid]::NewGuid().ToString('N'))"
-            siteId = $SiteId
-            endpointOrigin = $normalizedOrigin
-            deploymentRevision = $DeploymentRevision
-            status = 'PASS'
-            observedAtUtc = $observed.ToString('O')
-            validUntilUtc = $observed.AddHours($ValidForHours).ToString('O')
-            agentBodySendsWhileBOrR1Held = 0
-            serverApplicationBodyReadsWhileBOrR1Held = 0
-            rawPostCount = 1
-            kestrelContinueRelayedAfterCommit = $true
-            earlyOrIntermediaryContinueObserved = $false
-            applicationPrebufferObserved = $false
-            hiddenRetryObserved = $false
-        }
-        $target = [IO.Path]::GetFullPath($OutputRecordPath)
-        [IO.Directory]::CreateDirectory((Split-Path -Parent $target)) | Out-Null
-        [IO.File]::WriteAllText($target, ($record | ConvertTo-Json -Compress), [Text.UTF8Encoding]::new($false))
-        Write-Output 'SITE_ENDPOINT_TRANSPORT_QUALIFICATION=PASS'
+        $target = Write-MeasurementIncompleteCandidate $SiteId $normalizedOrigin `
+            $DeploymentRevision $OutputRecordPath $ValidForHours
+        Write-Output 'SITE_ENDPOINT_TRANSPORT_QUALIFICATION=MEASUREMENT_INCOMPLETE'
         Write-Output "SITE_ID=$SiteId"
         Write-Output "ENDPOINT_ORIGIN=$normalizedOrigin"
         Write-Output 'TLS_PLATFORM_VALIDATION=PASS'

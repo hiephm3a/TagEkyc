@@ -2,7 +2,7 @@
 
 A3-Ratification-Decision: RATIFIED
 A3-Authority-Open-After: 0
-A3-Reviewed-Manifest-SHA256: 7E5138787ED07D97343F47BE2A58ABF23C0CD7E233EAEA02C6E91211D29C0DAE
+A3-Reviewed-Manifest-SHA256: A09FEC633C154C3C334F6EAE7C79D854E49C2CCC088A6B1301BBD01CBDE3FB0D
 
 Decision source: the Homeowner's explicit instruction on 2026-09-24: “Tôi ratify P29–P36 tại a6d8405, gộp luôn hai điều nhỏ kia”.
 
@@ -17,3 +17,5 @@ The PowerShell 5.1 technical-review verifier reads the immutable reviewed eviden
 The retained site-gate TRX exercises generated seal revision 14. Adding that TRX and the current PowerShell 5.1 transcript changes only evidence bytes and therefore produces the revision-15 evidence-only successor; it does not change runtime, product, SDK, partition, topology, count, or site-policy semantics.
 
 The revision-16 evidence-only successor retains the focused eight-case site-qualification run: one positive qualification control and seven single-field negative variants for the existing transport-measurement guards. Each negative variant proves the live raw-ingress request gate returns the site-qualification invalid code before admission or body consumption. This successor changes no product, SDK, partition, topology, count, site-policy, or previously ratified semantics.
+
+The revision-17 evidence-only successor closes the production-site false-PASS capability while the six missing measurement owners remain unimplemented. `ProbeSite` now emits the unchanged 15-field candidate with `status=MEASUREMENT_INCOMPLETE`; both its `-InstallOnPass` path and the existing direct installer reject that candidate without replacing the target qualification. `PrepareSite` and the isolated `DevelopmentHarness` retain their prior behavior. This is not Layer 2 measurement-plane implementation and changes no runtime policy, schema, raw ingress, Agent, SDK, partition, topology, count, site-policy, or ratified semantics.

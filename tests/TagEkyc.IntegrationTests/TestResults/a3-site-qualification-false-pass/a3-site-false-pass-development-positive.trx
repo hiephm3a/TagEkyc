@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="aa12a54f-ef40-47dc-a8ca-4d8092975339" name="@ad8d409a8b4c 2026-09-25 07:53:34" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-25T07:53:34.6451031+00:00" queuing="2026-09-25T07:53:34.6451032+00:00" start="2026-09-25T07:53:22.3249125+00:00" finish="2026-09-25T07:53:34.6501501+00:00" />
+  <TestSettings name="default" id="d15d9f37-3811-4aff-a2b2-e4fb95f8078d">
+    <Deployment runDeploymentRoot="_ad8d409a8b4c_2026-09-25_07_53_34" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="43366929-3b82-46a8-8d2e-6d19185973df" testId="a3f160e1-1532-7b35-12d6-f4ac19799a76" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3R2R6ClusterHttpTests.ExpectFence_IntermediaryCannotQualifyBySendingItsOwnContinue" computerName="ad8d409a8b4c" duration="00:00:01.5936316" startTime="2026-09-25T07:53:34.1712910+00:00" endTime="2026-09-25T07:53:34.1713061+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="43366929-3b82-46a8-8d2e-6d19185973df" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3R2R6ClusterHttpTests.ExpectFence_IntermediaryCannotQualifyBySendingItsOwnContinue" storage="/work/tagekyc/tests/tagekyc.integrationtests/bin/debug/net8.0/tagekyc.integrationtests.dll" id="a3f160e1-1532-7b35-12d6-f4ac19799a76">
+      <Execution id="43366929-3b82-46a8-8d2e-6d19185973df" />
+      <TestMethod codeBase="/work/TagEkyc/tests/TagEkyc.IntegrationTests/bin/Debug/net8.0/TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3R2R6ClusterHttpTests" name="ExpectFence_IntermediaryCannotQualifyBySendingItsOwnContinue" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="a3f160e1-1532-7b35-12d6-f4ac19799a76" executionId="43366929-3b82-46a8-8d2e-6d19185973df" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="1" executed="1" passed="1" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.23]   Discovering: TagEkyc.IntegrationTests
+[xUnit.net 00:00:00.43]   Discovered:  TagEkyc.IntegrationTests
+[xUnit.net 00:00:00.43]   Starting:    TagEkyc.IntegrationTests
+warn: Microsoft.AspNetCore.Server.Kestrel[0]
+      Overriding address(es) 'http://*:8080'. Binding to endpoints defined via IConfiguration and/or UseKestrel() instead.
+info: Microsoft.Hosting.Lifetime[14]
+      Now listening on: https://127.0.0.1:36099
+info: Microsoft.Hosting.Lifetime[0]
+      Application started. Press Ctrl+C to shut down.
+info: Microsoft.Hosting.Lifetime[0]
+      Hosting environment: Testing
+info: Microsoft.Hosting.Lifetime[0]
+      Content root path: /work/TagEkyc/tests/TagEkyc.IntegrationTests/bin/Debug/net8.0
+[xUnit.net 00:00:11.87]   Finished:    TagEkyc.IntegrationTests
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

@@ -16,6 +16,26 @@ function Resolve-OperationalPath([string]$Path) {
     [IO.Path]::GetFullPath((Join-Path $repoRoot $Path))
 }
 
+function Complete-ProbeSiteCandidate(
+    [string]$ConfigurationFile,
+    [string]$CandidateRecord,
+    [bool]$InstallCandidate) {
+    $candidateValue = Get-Content -LiteralPath $CandidateRecord -Raw | ConvertFrom-Json
+    if ([string]$candidateValue.status -cne 'PASS') {
+        Write-Output "SITE_QUALIFICATION_INSTALLATION=BLOCKED_$([string]$candidateValue.status)"
+        if ($InstallCandidate) {
+            throw 'SITE_QUALIFICATION_INSTALL_BLOCKED_MEASUREMENT_INCOMPLETE'
+        }
+        return
+    }
+    if ($InstallCandidate) {
+        & (Join-Path $PSScriptRoot 'Install-A3SiteRawIngressTransportQualification.ps1') `
+            -ConfigurationPath $ConfigurationFile -CandidateRecordPath $CandidateRecord
+    } else {
+        Write-Output 'SITE_QUALIFICATION_INSTALLATION=PENDING_EXPLICIT_INSTALL_ON_PASS'
+    }
+}
+
 if ($Mode -ceq 'PrepareSite') {
     if ([string]::IsNullOrWhiteSpace($SiteId) -or $SiteId -ceq 'development-loopback' -or
         [string]::IsNullOrWhiteSpace($DeploymentRevision) -or [string]::IsNullOrWhiteSpace($EndpointOrigin)) {
@@ -58,12 +78,7 @@ if ($Mode -ceq 'ProbeSite') {
         -EndpointOrigin $configuration[$prefix + 'EndpointOrigin'] `
         -DeploymentRevision $configuration[$prefix + 'DeploymentRevision'] `
         -OutputRecordPath $candidate
-    if ($InstallOnPass) {
-        & (Join-Path $PSScriptRoot 'Install-A3SiteRawIngressTransportQualification.ps1') `
-            -ConfigurationPath $configurationFile -CandidateRecordPath $candidate
-    } else {
-        Write-Output 'SITE_QUALIFICATION_INSTALLATION=PENDING_EXPLICIT_INSTALL_ON_PASS'
-    }
+    Complete-ProbeSiteCandidate $configurationFile $candidate $InstallOnPass.IsPresent
     return
 }
 
