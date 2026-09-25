@@ -1,0 +1,2 @@
+"run"	"disposition"	"expected"	"reason"	"successor"
+"raw-bio-retained-mode-predicate-mutant.trx"	"EVIDENCE_RED"	"YES"	"Removing only EncryptedRawVaultRetained from the production candidate predicate prevents DurableRawExportAssemblyWorkSource from acquiring the SDK-created retained-mode job."	"raw-bio-ingress-to-sdk-restored.trx"

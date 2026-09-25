@@ -2156,6 +2156,138 @@ public sealed class Tip88C1C6BA3RetentionCheckpointTests(PostgresPersistenceFixt
         return new(session.Id,policy,reference,permit,runtimeBinding,acceptance,artifact);
     }
 
+    internal static async Task<ExistingSessionRawIngressScope> SeedRawIngressForExistingSession(
+        PostgresPersistenceFixture postgres,
+        Guid verificationSessionId,
+        Guid clientApplicationId)
+    {
+        await using var db = postgres.CreateDbContext();
+        await Grant(db, "SubjectConsentRecorder", clientApplicationId: clientApplicationId);
+        var rawIngressPolicyId = await ApprovedRetentionPolicy(db, crossBorder: false);
+        var now = DateTimeOffset.UtcNow;
+        var root = new DirectoryInfo(AppContext.BaseDirectory);
+        while (root is not null && !File.Exists(Path.Combine(root.FullName, "TagEkyc.sln"))) root = root.Parent;
+        Assert.NotNull(root);
+        var source = File.ReadAllText(Path.Combine(root.FullName,
+            "docs/tips/tip_88c1_secure_raw_source_sealed_assembly/tip_88c1_c6b_a1_postgresql16_runtime_proof_companion.md"));
+        var start = source.IndexOf("INSERT INTO tagekyc.platform_operator_credentials", StringComparison.Ordinal);
+        var end = source.IndexOf("-- Publish newer heads", start, StringComparison.Ordinal);
+        Assert.True(start > 0 && end > start);
+
+        await using var tx = await db.Database.BeginTransactionAsync();
+        await db.Database.ExecuteSqlRawAsync(source[start..end].Replace(
+            "ARRAY['Configuration']", "ARRAY['Bind','CaptureObservation','RawIngress','TrustedEvidence']",
+            StringComparison.Ordinal));
+        await Actor(db, Principal);
+        var bindingJson = await db.Database.SqlQuery<string>($"""
+            SELECT to_jsonb(result)::text AS "Value" FROM tagekyc.raw_source_record_consent_reference(
+             {Principal},{clientApplicationId},{verificationSessionId},
+             {"same-job-raw-ingress-" + Guid.NewGuid().ToString("N")},'source-v1',0,'text-v1','source-hash',
+             {now.AddMinutes(-1)},{now.AddHours(1)},{Guid.NewGuid()},{new byte[32]}) AS result
+            """).SingleAsync();
+        using var bindingDocument = System.Text.Json.JsonDocument.Parse(bindingJson);
+        Assert.Equal("Bound", bindingDocument.RootElement.GetProperty("result_code").GetString());
+        var binding = bindingDocument.RootElement.GetProperty("consent_binding_id").GetGuid();
+        var profile = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            PolicyId = rawIngressPolicyId,
+            PolicyVersion = 1,
+            RawClasses = new[] { "ChipDg2Portrait", "LiveSelfieImage" },
+            ControllerIdentity = "synthetic-controller",
+            StableDataScopeId = "synthetic-scope",
+            RetentionPolicyId = "synthetic-retention",
+            RetentionPolicyVersion = 1,
+            RetentionClass = "synthetic-class",
+            RevocationPolicyId = "synthetic-revoke",
+            PurgePolicyId = "synthetic-purge",
+            LegalHoldPolicyId = "synthetic-hold",
+            MaximumRetentionSeconds = 300
+        });
+        var capability = Guid.NewGuid();
+        Assert.Equal("CREATED", await db.Database.SqlQuery<string>($"""
+            SELECT result_code AS "Value" FROM tagekyc.capture_runtime_issue_or_replace_capability(
+             {clientApplicationId},{verificationSessionId},'Issue',NULL::uuid,NULL::bigint,
+             {Guid.NewGuid()},{capability},'abcdefghijkl',{new byte[32]},1,{new byte[32]},
+             clock_timestamp(),{Principal},{binding},CAST({profile} AS jsonb))
+            """).SingleAsync());
+        var runtimeBinding = await db.Database.SqlQuery<Guid>($"""
+            SELECT binding_id AS "Value" FROM tagekyc.capture_runtime_bind_capability(
+             '40000000-0000-4000-8000-000000000001','50000000-0000-4000-8000-000000000001',
+             '60000000-0000-4000-8000-000000000001',1,{capability},true,{Guid.NewGuid()},
+             {new byte[32]},clock_timestamp())
+            """).SingleAsync();
+        var executionBinding = await db.Set<CaptureExecutionBindingsRow>()
+            .AsNoTracking()
+            .SingleAsync(row => row.CaptureExecutionBindingId == runtimeBinding);
+        var sessionChallengeHash = await db.Database.SqlQuery<string>($"""
+            SELECT "BindingNonceHash" AS "Value"
+            FROM tagekyc.verification_sessions
+            WHERE "Id" = {verificationSessionId}
+            """).SingleAsync();
+
+        async Task<ExistingSessionRawIngressClass> AddClass(string rawClass)
+        {
+            var artifact = Guid.NewGuid();
+            db.Set<CaptureArtifactRow>().Add(new()
+            {
+                Id = artifact,
+                VerificationSessionId = verificationSessionId,
+                ArtifactType = rawClass == "ChipDg2Portrait" ? "NfcDg2Portrait" : "SelfieImage",
+                CaptureSource = rawClass == "ChipDg2Portrait" ? "Nfc" : "MobileSdk",
+                CaptureAgentId = "40000000000040008000000000000001",
+                DeviceId = "50000000000040008000000000000001",
+                ArtifactHash = "sha256:" + new string('a', 64),
+                MetadataHash = "sha256:" + new string('b', 64),
+                QualityState = "Accepted",
+                RequestId = "same-job-raw-ingress",
+                CorrelationId = "same-job-raw-ingress",
+                CreatedAt = now,
+                ExpiresAt = now.AddHours(1)
+            });
+            await db.SaveChangesAsync();
+            var acceptance = await db.Database.SqlQuery<Guid>($"""
+                SELECT tagekyc.raw_export_append_capture_acceptance(
+                 {verificationSessionId},{clientApplicationId},{rawClass},{artifact},1,
+                 {sessionChallengeHash},'same-job-raw-ingress-evidence','synthetic-acceptance-policy',1) AS "Value"
+                """).SingleAsync();
+            return new(rawClass, artifact, acceptance);
+        }
+
+        var dg2 = await AddClass("ChipDg2Portrait");
+        var selfie = await AddClass("LiveSelfieImage");
+        await tx.CommitAsync();
+        return new(
+            Principal,
+            rawIngressPolicyId,
+            runtimeBinding,
+            executionBinding.RolePolicyId,
+            executionBinding.RolePolicyRevision,
+            executionBinding.RuntimeRevision,
+            executionBinding.InstallationRevision,
+            executionBinding.CredentialRevision,
+            executionBinding.PublicKeyThumbprint,
+            dg2,
+            selfie);
+    }
+
+    internal sealed record ExistingSessionRawIngressClass(
+        string RawClass,
+        Guid CaptureArtifactId,
+        Guid CaptureAcceptanceId);
+
+    internal sealed record ExistingSessionRawIngressScope(
+        Guid ActorPrincipalId,
+        Guid RawIngressPolicyId,
+        Guid RuntimeBindingId,
+        Guid RolePolicyId,
+        long RolePolicyRevision,
+        long RuntimeRevision,
+        long InstallationRevision,
+        long CredentialRevision,
+        byte[] PublicKeyThumbprint,
+        ExistingSessionRawIngressClass ChipDg2Portrait,
+        ExistingSessionRawIngressClass LiveSelfieImage);
+
     // Test preconditions for the E01 issue-first race: reuse the permit minted by
     // its real HTTP Issue, bind that exact capability, then prepare an actual R1
     // candidate while the reference is still current. The returned action does

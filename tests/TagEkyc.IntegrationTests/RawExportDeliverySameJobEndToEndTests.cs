@@ -1,6 +1,9 @@
 using System.Net;
 using System.Net.Http.Json;
+using System.Net.Http.Headers;
+using System.Globalization;
 using System.Security.Cryptography;
+using System.Text.Json;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -15,6 +18,7 @@ using TagEkyc.Application.Ports;
 using TagEkyc.Application.RawExport;
 using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Contracts.RawExport;
+using TagEkyc.Contracts.CaptureRuntime;
 using TagEkyc.Domain;
 using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.Persistence;
@@ -33,36 +37,108 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
-    public async Task Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode()
+    public Task Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode() =>
+        AssertPublicDeliveryAsync(publishThroughRawIngress: false);
+
+    [Fact]
+    public Task Raw_ingress_publications_feed_the_same_job_durable_delivery_and_sdk_decode() =>
+        AssertPublicDeliveryAsync(publishThroughRawIngress: true);
+
+    private async Task AssertPublicDeliveryAsync(bool publishThroughRawIngress)
     {
         await using var minio = await DurableObjectMinioFixture.StartAsync();
         using var recipientRsa = RSA.Create(3072);
         var recipient = Tip88B34AuthorizationEngineTests.ClientApplicationId;
-        var principal = Tip88B34AuthorizationEngineTests.ConsumerPrincipal;
+        var principal = publishThroughRawIngress
+            ? Tip88C1C6BA3ConsentRetentionTests.Principal
+            : Tip88B34AuthorizationEngineTests.ConsumerPrincipal;
         const string recipientKeyId = "sdk-e2e-recipient-key";
         var credential = await ProvisionRecipientAsync(
             recipient, principal, recipientRsa, recipientKeyId);
 
         await using var setup = postgres.CreateDbContext();
         var classes = new[] { RawExportRawClass.ChipDg2Portrait, RawExportRawClass.LiveSelfieImage };
-        var packetAuthority = await Tip88B4RawExportJobFoundationTests
-            .CreateAuthorizedPacketPermitAsync(setup, classes);
-        var sessionId = packetAuthority.SessionId;
-        var policyId = packetAuthority.PolicyId;
-
         var portrait = "same-job-production-dg2"u8.ToArray();
         var selfie = "same-job-production-selfie"u8.ToArray();
-        var sourceFactory = new Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(postgres);
-        var dg2 = await sourceFactory.CreateR3VerifiedSourceForExistingSessionAsync(
-            portrait, minio, principal, recipient, sessionId, policyId,
-            RawExportRawClass.ChipDg2Portrait);
-        await MakeAvailableAsync(dg2);
-        var live = await sourceFactory.CreateR3VerifiedSourceForExistingSessionAsync(
-            selfie, minio, principal, recipient, sessionId, policyId,
-            RawExportRawClass.LiveSelfieImage);
-        await MakeAvailableAsync(live);
-        await SelectAcceptanceAsync(dg2);
-        await SelectAcceptanceAsync(live);
+        Guid sessionId;
+        Guid policyId;
+        if (publishThroughRawIngress)
+        {
+            var now = DateTimeOffset.UtcNow;
+            var activeSession = VerificationSession.Create(
+                recipient,
+                $"subject:same-job-raw-ingress:{Guid.NewGuid():N}",
+                VerificationProfile.ChallengeBoundEkycProfile,
+                "same-job-raw-ingress-snapshot",
+                [RequiredCheckType.DocumentNfc],
+                now.AddHours(1),
+                now,
+                challenge: "same-job-raw-ingress-challenge");
+            await new EfVerificationSessionRepository(setup).AddAsync(activeSession);
+            var activeSessionId = activeSession.Id;
+            var ingress = await PublishThroughRawIngressAsync(
+                minio, recipient, activeSessionId, portrait, selfie);
+            await SelectAcceptanceAsync(
+                ingress.ActorPrincipalId, activeSessionId,
+                ingress.ChipDg2Portrait.RawClass,
+                ingress.ChipDg2Portrait.CaptureAcceptanceId);
+            await SelectAcceptanceAsync(
+                ingress.ActorPrincipalId, activeSessionId,
+                ingress.LiveSelfieImage.RawClass,
+                ingress.LiveSelfieImage.CaptureAcceptanceId);
+            await new EfVerificationSessionRepository(setup)
+                .SetStateAsync(activeSessionId, VerificationSessionState.Completed);
+            var exportAdmin = Guid.Parse("a3000000-0000-4000-8000-000000000003");
+            await setup.Database.ExecuteSqlInterpolatedAsync($"""
+                SELECT tagekyc.raw_export_bootstrap_global_authority(
+                    {exportAdmin},'GrantAdmin','same-job-raw-ingress-export-root')
+                """);
+            var control = new EfRawExportControlPlaneRepository(setup);
+            await control.GrantExportPolicyAsync(new(
+                exportAdmin,
+                principal,
+                ingress.RawIngressPolicyId,
+                1,
+                ExpectedRevision: 0,
+                ClientApplicationId: null,
+                "same-job-raw-ingress-export-grant"));
+            await new EfRawExportSubjectConsentRepository(setup)
+                .RecordSubjectConsentGrantedAsync(new(
+                    principal,
+                    activeSessionId,
+                    ingress.RawIngressPolicyId,
+                    1,
+                    new HashSet<RawExportRawClass>(classes),
+                    "same-job-raw-ingress-text-v1",
+                    "same-job-raw-ingress-source-hash",
+                    "same-job-raw-ingress-consent",
+                    null,
+                    DateTimeOffset.UtcNow.AddMinutes(5)));
+            sessionId = activeSessionId;
+            policyId = ingress.RawIngressPolicyId;
+        }
+        else
+        {
+            var packetAuthority = await Tip88B4RawExportJobFoundationTests
+                .CreateAuthorizedPacketPermitAsync(setup, classes);
+            var directSessionId = packetAuthority.SessionId;
+            var directPolicyId = packetAuthority.PolicyId;
+            var sourceFactory = new Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(postgres);
+            var dg2 = await sourceFactory.CreateR3VerifiedSourceForExistingSessionAsync(
+                portrait, minio, principal, recipient, directSessionId, directPolicyId,
+                RawExportRawClass.ChipDg2Portrait);
+            await MakeAvailableAsync(dg2);
+            var live = await sourceFactory.CreateR3VerifiedSourceForExistingSessionAsync(
+                selfie, minio, principal, recipient, directSessionId, directPolicyId,
+                RawExportRawClass.LiveSelfieImage);
+            await MakeAvailableAsync(live);
+            await SelectAcceptanceAsync(
+                dg2.ActorPrincipalId, dg2.VerificationSessionId, dg2.RawClass, dg2.CaptureAcceptanceId);
+            await SelectAcceptanceAsync(
+                live.ActorPrincipalId, live.VerificationSessionId, live.RawClass, live.CaptureAcceptanceId);
+            sessionId = packetAuthority.SessionId;
+            policyId = packetAuthority.PolicyId;
+        }
 
         var provider = minio.RecipientPackageConfiguration();
         var c2Options = new RecipientPackageOptions(
@@ -87,6 +163,9 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
 
         var cursorKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
             .TrimEnd('=').Replace('+', '-').Replace('/', '_');
+        await using var joinedControlDb = publishThroughRawIngress
+            ? postgres.CreateDbContext()
+            : null;
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
@@ -101,14 +180,29 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
         });
         builder.Services.Configure<Microsoft.AspNetCore.Routing.RouteOptions>(options =>
             options.ConstraintMap["D"] = typeof(DFormatGuidRouteConstraint));
-        builder.Services.AddTagEkycPostgresPersistence(postgres.ConnectionString);
-        builder.Services.AddScoped<IApiKeyAuthenticator>(services => new ManagedAuthenticator(
-            new RecipientCredentialAuthenticationPolicy(
-                new PostgresHashedApiKeyStore(
-                    services.GetRequiredService<TagEkycDbContext>(), new ApiKeyStorePepper(Pepper)),
-                new NoGlobalPolicyProvider())));
-        builder.Services.AddScoped<IRawExportControlPlaneApplicationService,
-            RawExportControlPlaneApplicationService>();
+        if (joinedControlDb is null)
+        {
+            builder.Services.AddTagEkycPostgresPersistence(postgres.ConnectionString);
+            builder.Services.AddScoped<IApiKeyAuthenticator>(services => new ManagedAuthenticator(
+                new RecipientCredentialAuthenticationPolicy(
+                    new PostgresHashedApiKeyStore(
+                        services.GetRequiredService<TagEkycDbContext>(), new ApiKeyStorePepper(Pepper)),
+                    new NoGlobalPolicyProvider())));
+            builder.Services.AddScoped<IRawExportControlPlaneApplicationService,
+                RawExportControlPlaneApplicationService>();
+        }
+        else
+        {
+            builder.Services.AddSingleton<IApiKeyAuthenticator>(new ManagedAuthenticator(
+                new RecipientCredentialAuthenticationPolicy(
+                    new PostgresHashedApiKeyStore(joinedControlDb, new ApiKeyStorePepper(Pepper)),
+                    new NoGlobalPolicyProvider())));
+            builder.Services.AddSingleton<IRawExportControlPlaneApplicationService>(
+                new RawExportControlPlaneApplicationService(
+                    Tip88B34AuthorizationEngineTests.CreateRepository(joinedControlDb),
+                    Tip88B4RawExportJobFoundationTests.CreateJobRepository(joinedControlDb),
+                    new EfRawExportJobPackageProjectionReader(joinedControlDb)));
+        }
         builder.Services.AddSingleton<IRecipientPackageDeliveryApplicationService>(
             new RecipientPackageDeliveryApplicationService(deliveryCoordinator));
         builder.Services.AddTagEkycRecipientPackageReference(builder.Configuration);
@@ -136,7 +230,7 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
             new FixedPrivateKeySource(recipientRsa.ExportPkcs8PrivateKey()));
         var acquire = sdk.AcquireAsync(new(sessionId, Guid.NewGuid()));
 
-        var jobId = await WaitForJobAsync(sessionId, recipient);
+        var jobId = await WaitForJobAsync(sessionId, recipient, acquire);
         await using var workDb = postgres.CreateDbContext();
         var workSource = new DurableRawExportAssemblyWorkSource(
             new AssemblyConnectionFactory(postgres.ConnectionString),
@@ -235,6 +329,124 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
         return issued.Value!.Value.PresentedKey!;
     }
 
+    private async Task<Tip88C1C6BA3RetentionCheckpointTests.ExistingSessionRawIngressScope>
+        PublishThroughRawIngressAsync(
+            DurableObjectMinioFixture minio,
+            Guid clientApplicationId,
+            Guid verificationSessionId,
+            byte[] portrait,
+            byte[] selfie)
+    {
+        var scope = await Tip88C1C6BA3RetentionCheckpointTests.SeedRawIngressForExistingSession(
+            postgres, verificationSessionId, clientApplicationId);
+        await using var observer = postgres.CreateDbContext();
+        await using var logins = await Tip88C1C6BA3SyntheticComposition.CustodyLogins(
+            observer.Database.GetConnectionString()!);
+        await using var owners = Tip88C1C6BA3ContinuationWorkerTests.Owners(logins.Connections, minio);
+        var brokerLogin = await Tip88C1C6BA3SyntheticComposition.BrokerLogin(
+            observer.Database.GetConnectionString()!);
+        await using var brokerSource = NpgsqlDataSource.Create(brokerLogin);
+        await using var journalWrite = postgres.CreateDbContext();
+        await using var journalRead = postgres.CreateDbContext();
+        var keys = new FixtureDurableKekOperationProvider(
+            new PostgresFixtureKekJournal(journalWrite),
+            new PostgresFixtureKekJournal(journalRead));
+        await using var preflight = Tip88C1C6BA3SyntheticComposition.PreflightServices();
+        var brokerOptions = RawIngressBrokerOptions.Read(
+            Tip88C1C6BA3SyntheticComposition.BrokerConfiguration());
+        var broker = Tip88C1C6BA3SyntheticComposition.Broker(
+            brokerSource,
+            preflight.GetRequiredService<IContentCommitmentService>(),
+            preflight.GetRequiredService<ISubjectRefTokenService>());
+        var pipeline = new CaptureRuntimeRawIngressBodyPipeline(
+            owners,
+            keys,
+            keys,
+            preflight.GetRequiredService<IContentCommitmentService>(),
+            DurableKeyCustodyOptions.Resolve(new ConfigurationManager()),
+            brokerOptions,
+            CancellationToken.None);
+        var admission = new CaptureRuntimeRawIngressAdmissionService(
+            new RawExportIngressCapacity(2, 2, 1_048_576, 2_097_152),
+            broker,
+            pipeline,
+            1_048_576);
+
+        var builder = WebApplication.CreateBuilder();
+        builder.WebHost.UseTestServer();
+        builder.Services.AddCurrentSiteQualificationForRawIngressTests();
+        builder.Services.AddSingleton<ICaptureRuntimeRequestAuthenticator>(
+            new SameJobRuntimeAuthenticator(scope));
+        builder.Services.AddSingleton<ICaptureRuntimeRawIngressAdmission>(admission);
+        await using var app = builder.Build();
+        app.MapCaptureRuntimeRawIngressEndpoints();
+        await app.StartAsync();
+        using var client = app.GetTestClient();
+
+        var dg2Source = await PublishRawClassAsync(
+            client, scope.ChipDg2Portrait, verificationSessionId, portrait);
+        var selfieSource = await PublishRawClassAsync(
+            client, scope.LiveSelfieImage, verificationSessionId, selfie);
+        Assert.NotEqual(Guid.Empty, dg2Source);
+        Assert.NotEqual(Guid.Empty, selfieSource);
+        Assert.NotEqual(dg2Source, selfieSource);
+        Assert.Equal(2, await observer.RawExportSourcePublications.AsNoTracking()
+            .CountAsync(row => (row.SourceArtifactId == dg2Source || row.SourceArtifactId == selfieSource)
+                && row.PublicationState == "Available"));
+        return scope;
+    }
+
+    private static async Task<Guid> PublishRawClassAsync(
+        HttpClient client,
+        Tip88C1C6BA3RetentionCheckpointTests.ExistingSessionRawIngressClass source,
+        Guid verificationSessionId,
+        byte[] plaintext)
+    {
+        var now = DateTimeOffset.UtcNow;
+        using var request = new HttpRequestMessage(
+            HttpMethod.Post,
+            "/api/ekyc/raw-export/source-ingress");
+        request.Content = new ByteArrayContent(plaintext);
+        request.Content.Headers.ContentType = new MediaTypeHeaderValue("image/jpeg");
+        request.Content.Headers.ContentLength = plaintext.Length;
+        request.Headers.Add("X-TagEkyc-Agent-Configuration-Revision", "1");
+        request.Headers.Add("X-TagEkyc-Verification-Session-Id", verificationSessionId.ToString("N"));
+        request.Headers.Add("X-TagEkyc-Capture-Artifact-Id", source.CaptureArtifactId.ToString("N"));
+        request.Headers.Add("X-TagEkyc-Capture-Revision", "1");
+        request.Headers.Add("X-TagEkyc-Raw-Class", source.RawClass);
+        request.Headers.Add("Idempotency-Key", Guid.NewGuid().ToString("N"));
+        request.Headers.Add("X-TagEkyc-Plaintext-Sha256",
+            Convert.ToHexString(SHA256.HashData(plaintext)).ToLowerInvariant());
+        request.Headers.Add("X-TagEkyc-Captured-At-Utc",
+            now.AddSeconds(-5).ToString("O", CultureInfo.InvariantCulture));
+        request.Headers.Add("X-TagEkyc-Retention-Started-At-Utc",
+            now.AddSeconds(-4).ToString("O", CultureInfo.InvariantCulture));
+        request.Headers.Add("X-TagEkyc-Retention-Expires-At-Utc",
+            now.AddMinutes(5).ToString("O", CultureInfo.InvariantCulture));
+        request.Headers.Add("X-TagEkyc-Retention-Budget-Seconds", "300");
+        request.Headers.Add(CaptureRuntimeCrt1RequestParser.CredentialIdHeader,
+            SameJobRuntimeAuthenticator.CredentialId.ToString("N"));
+        request.Headers.Add(CaptureRuntimeCrt1RequestParser.CredentialGenerationHeader, "1");
+        request.Headers.Add(CaptureRuntimeCrt1RequestParser.TimestampHeader,
+            now.UtcDateTime.ToString("yyyy-MM-dd'T'HH:mm:ss.fffffff'Z'", CultureInfo.InvariantCulture));
+        request.Headers.Add(CaptureRuntimeCrt1RequestParser.NonceHeader,
+            Base64Url(RandomNumberGenerator.GetBytes(32)));
+        request.Headers.Add(CaptureRuntimeCrt1RequestParser.SignatureHeader,
+            Base64Url(new byte[64]));
+
+        using var response = await client.SendAsync(request);
+        var responseBody = await response.Content.ReadAsByteArrayAsync();
+        Assert.True(response.StatusCode == HttpStatusCode.OK,
+            $"Expected 200 but received {(int)response.StatusCode}: {System.Text.Encoding.UTF8.GetString(responseBody)}");
+        using var json = JsonDocument.Parse(responseBody);
+        Assert.Equal(RawExportSourceIngressCodes.Available,
+            json.RootElement.GetProperty("outcomeCode").GetString());
+        return json.RootElement.GetProperty("sourceArtifactId").GetGuid();
+    }
+
+    private static string Base64Url(byte[] value) =>
+        Convert.ToBase64String(value).TrimEnd('=').Replace('+', '-').Replace('/', '_');
+
     private async Task MakeAvailableAsync(
         Tip88C1B2R2DurableCustodyEncryptionDatabaseTests.R3VerifiedSourceFixture source)
     {
@@ -261,7 +473,10 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
     }
 
     private async Task SelectAcceptanceAsync(
-        Tip88C1B2R2DurableCustodyEncryptionDatabaseTests.R3VerifiedSourceFixture source)
+        Guid actorPrincipalId,
+        Guid verificationSessionId,
+        string rawClass,
+        Guid captureAcceptanceId)
     {
         await using var connection = new NpgsqlConnection(postgres.ConnectionString);
         await connection.OpenAsync();
@@ -269,7 +484,7 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
         await using (var actor = new NpgsqlCommand(
             "SELECT pg_catalog.set_config('tagekyc.actor_principal_id',@actor,true)", connection, transaction))
         {
-            actor.Parameters.AddWithValue("actor", source.ActorPrincipalId.ToString("D"));
+            actor.Parameters.AddWithValue("actor", actorPrincipalId.ToString("D"));
             await actor.ExecuteNonQueryAsync();
         }
         await using (var command = new NpgsqlCommand(
@@ -277,18 +492,23 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
             connection,
             transaction))
         {
-            command.Parameters.AddWithValue("session", source.VerificationSessionId);
-            command.Parameters.AddWithValue("class", source.RawClass);
-            command.Parameters.AddWithValue("acceptance", source.CaptureAcceptanceId);
+            command.Parameters.AddWithValue("session", verificationSessionId);
+            command.Parameters.AddWithValue("class", rawClass);
+            command.Parameters.AddWithValue("acceptance", captureAcceptanceId);
             Assert.NotEqual(Guid.Empty, (Guid)(await command.ExecuteScalarAsync())!);
         }
         await transaction.CommitAsync();
     }
 
-    private async Task<Guid> WaitForJobAsync(Guid sessionId, Guid recipient)
+    private async Task<Guid> WaitForJobAsync(Guid sessionId, Guid recipient, Task acquisition)
     {
         for (var attempt = 0; attempt < 400; attempt++)
         {
+            if (acquisition.IsCompleted)
+            {
+                await acquisition;
+                throw new InvalidOperationException("The SDK completed without creating its raw-export job.");
+            }
             await using var db = postgres.CreateDbContext();
             var job = await db.RawExportJobIdentities.AsNoTracking()
                 .Where(row => row.VerificationSessionId == sessionId
@@ -340,6 +560,32 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
             int keyVersion,
             CancellationToken cancellationToken = default) =>
             ValueTask.FromResult(new TagEkycRecipientPrivateKeyLease((byte[])privateKey.Clone()));
+    }
+
+    private sealed class SameJobRuntimeAuthenticator(
+        Tip88C1C6BA3RetentionCheckpointTests.ExistingSessionRawIngressScope scope)
+        : ICaptureRuntimeRequestAuthenticator
+    {
+        internal static readonly Guid CredentialId =
+            Guid.Parse("60000000-0000-4000-8000-000000000001");
+
+        public Task<SessionOperationResult<AuthenticatedCaptureRuntimeContext>> AuthenticateAsync(
+            CaptureRuntimeSignedRequest request,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(SessionOperationResult<AuthenticatedCaptureRuntimeContext>.Success(new(
+                Guid.Parse("40000000-0000-4000-8000-000000000001"),
+                Guid.Parse("50000000-0000-4000-8000-000000000001"),
+                CredentialId,
+                1,
+                scope.PublicKeyThumbprint,
+                scope.RolePolicyId,
+                scope.RolePolicyRevision,
+                scope.RuntimeRevision,
+                scope.InstallationRevision,
+                scope.CredentialRevision,
+                request.SignedAtUtc,
+                request.Nonce,
+                SHA256.HashData(request.ExactSignedPreimage.Span))));
     }
 
     private sealed class ManagedAuthenticator(RecipientCredentialAuthenticationPolicy policy)
