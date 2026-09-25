@@ -21,6 +21,7 @@ using Npgsql;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.RawExport;
 using TagEkyc.Application.CaptureRuntime;
+using TagEkyc.Contracts.CaptureRuntime;
 using TagEkyc.Contracts.RawExport;
 using TagEkyc.Api;
 using TagEkyc.Infrastructure.RawExport;
@@ -78,6 +79,83 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
             StringComparison.Ordinal);
         Assert.DoesNotContain("CAPTURE_RUNTIME_STARTUP_NOT_READY", failure,
             StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public Task SiteQualificationAgentBodySendsWhileBOrR1HeldFailsClosed() =>
+        AssertSiteQualificationMeasurementFailsClosedAsync(
+            ValidSiteQualification() with { AgentBodySendsWhileBOrR1Held = 1 });
+
+    [Fact]
+    public Task SiteQualificationServerApplicationBodyReadsWhileBOrR1HeldFailsClosed() =>
+        AssertSiteQualificationMeasurementFailsClosedAsync(
+            ValidSiteQualification() with { ServerApplicationBodyReadsWhileBOrR1Held = 1 });
+
+    [Fact]
+    public Task SiteQualificationRawPostCountFailsClosed() =>
+        AssertSiteQualificationMeasurementFailsClosedAsync(
+            ValidSiteQualification() with { RawPostCount = 2 });
+
+    [Fact]
+    public Task SiteQualificationKestrelContinueRelayedAfterCommitFailsClosed() =>
+        AssertSiteQualificationMeasurementFailsClosedAsync(
+            ValidSiteQualification() with { KestrelContinueRelayedAfterCommit = false });
+
+    [Fact]
+    public Task SiteQualificationEarlyOrIntermediaryContinueObservedFailsClosed() =>
+        AssertSiteQualificationMeasurementFailsClosedAsync(
+            ValidSiteQualification() with { EarlyOrIntermediaryContinueObserved = true });
+
+    [Fact]
+    public Task SiteQualificationApplicationPrebufferObservedFailsClosed() =>
+        AssertSiteQualificationMeasurementFailsClosedAsync(
+            ValidSiteQualification() with { ApplicationPrebufferObserved = true });
+
+    [Fact]
+    public Task SiteQualificationHiddenRetryObservedFailsClosed() =>
+        AssertSiteQualificationMeasurementFailsClosedAsync(
+            ValidSiteQualification() with { HiddenRetryObserved = true });
+
+    [Fact]
+    public async Task SiteQualificationAllSafeMeasurementsPassTheLiveGate()
+    {
+        var qualification = ValidSiteQualification();
+        Assert.Equal(1, qualification.FormatVersion);
+        Assert.Equal("integration-qualification", qualification.QualificationId);
+        Assert.Equal("integration-site", qualification.SiteId);
+        Assert.Equal("integration-deployment-1", qualification.DeploymentRevision);
+        Assert.Equal("PASS", qualification.Status);
+        Assert.Equal(ActivationEvidenceTestSeals.QualificationShaForTests,
+            qualification.RecordSha256);
+        Assert.True(qualification.ObservedAtUtc < DateTimeOffset.UtcNow);
+        Assert.True(qualification.ValidUntilUtc > DateTimeOffset.UtcNow);
+
+        var seal = DurableWorkerZeroOpenSeal();
+        var evaluation = CaptureRuntimeSiteTransportQualificationPolicy.Evaluate(
+            seal,
+            new ActivationEvidenceTestSeals.QualificationSettingsProvider().Current,
+            qualification, DateTimeOffset.UtcNow);
+        Assert.Equal(CaptureRuntimeSiteTransportQualificationState.Qualified, evaluation.State);
+        Assert.True(evaluation.AllowsRawIngress);
+
+        var admission = new CountingAdmission();
+        var body = new RequestBodyReadProbe();
+        using var factory = StartupSelectionFactory(activated: true,
+            seal, assemblyTopology: "DurableWorker",
+            siteQualification: new ActivationEvidenceTestSeals.MutableQualificationProvider
+                { Current = qualification },
+            rawAdmission: admission, bodyReadProbe: body);
+        using var client = factory.CreateClient();
+        using var response = await client.PostAsync("/api/ekyc/raw-export/source-ingress",
+            new ByteArrayContent([0x01]));
+        var payload = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        Assert.Contains(CaptureRuntimeErrorCodes.RequestInvalid, payload, StringComparison.Ordinal);
+        Assert.DoesNotContain(CaptureRuntimeSiteTransportQualificationPolicy.InvalidCode,
+            payload, StringComparison.Ordinal);
+        Assert.Equal(0, admission.Calls);
+        Assert.Equal(0, body.ReadCalls);
     }
 
     [Fact]
@@ -159,7 +237,9 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
     private static WebApplicationFactory<Program> StartupSelectionFactory(bool activated,
         CaptureRuntimeActivationEvidenceSeal? seal, string assemblyTopology = "Disabled",
         bool useGeneratedSeal = false,
-        ICaptureRuntimeSiteTransportQualificationProvider? siteQualification = null) =>
+        ICaptureRuntimeSiteTransportQualificationProvider? siteQualification = null,
+        ICaptureRuntimeRawIngressAdmission? rawAdmission = null,
+        RequestBodyReadProbe? bodyReadProbe = null) =>
         new HistoricalPreparedWebApplicationFactory()
             .WithWebHostBuilder(builder =>
             {
@@ -199,7 +279,11 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
                     services.RemoveAll<ICaptureRuntimeA3Readiness>();
                     services.AddSingleton<ICaptureRuntimeA3Readiness, Ready>();
                     services.RemoveAll<ICaptureRuntimeRawIngressAdmission>();
-                    services.AddSingleton<ICaptureRuntimeRawIngressAdmission, NeverAdmission>();
+                    services.AddSingleton<ICaptureRuntimeRawIngressAdmission>(
+                        rawAdmission ?? new NeverAdmission());
+                    if (bodyReadProbe is not null)
+                        services.AddSingleton<IStartupFilter>(
+                            new RequestBodyReadProbeStartupFilter(bodyReadProbe));
                     if (assemblyTopology == "DurableWorker")
                     {
                         // This host proof isolates the activation-evidence gate. The InMemory
@@ -218,6 +302,49 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
                         services.Remove(descriptor);
                 });
             });
+
+    private static CaptureRuntimeSiteTransportQualification ValidSiteQualification() =>
+        new ActivationEvidenceTestSeals.QualificationProvider().Current;
+
+    private static CaptureRuntimeActivationEvidenceSeal DurableWorkerZeroOpenSeal()
+    {
+        var seal = ActivationEvidenceTestSeals.Valid(0);
+        return seal with
+        {
+            ApprovedAssemblyTopology = "DurableWorker",
+            BuildAssemblyTopology = "DurableWorker"
+        };
+    }
+
+    private static async Task AssertSiteQualificationMeasurementFailsClosedAsync(
+        CaptureRuntimeSiteTransportQualification qualification)
+    {
+        var seal = DurableWorkerZeroOpenSeal();
+        var evaluation = CaptureRuntimeSiteTransportQualificationPolicy.Evaluate(
+            seal,
+            new ActivationEvidenceTestSeals.QualificationSettingsProvider().Current,
+            qualification, DateTimeOffset.UtcNow);
+        Assert.Equal(CaptureRuntimeSiteTransportQualificationState.Invalid, evaluation.State);
+        Assert.False(evaluation.AllowsRawIngress);
+
+        var admission = new CountingAdmission();
+        var body = new RequestBodyReadProbe();
+        using var factory = StartupSelectionFactory(activated: true,
+            seal, assemblyTopology: "DurableWorker",
+            siteQualification: new ActivationEvidenceTestSeals.MutableQualificationProvider
+                { Current = qualification },
+            rawAdmission: admission, bodyReadProbe: body);
+        using var client = factory.CreateClient();
+        using var response = await client.PostAsync("/api/ekyc/raw-export/source-ingress",
+            new ByteArrayContent([0x01]));
+        var payload = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Contains(CaptureRuntimeSiteTransportQualificationPolicy.InvalidCode,
+            payload, StringComparison.Ordinal);
+        Assert.Equal(0, admission.Calls);
+        Assert.Equal(0, body.ReadCalls);
+    }
 
     [Fact]
     public void OrdinaryProgramPreparedHostRegistersA3PortsWithoutConstructingOwners()
@@ -289,6 +416,73 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
             CaptureRuntimeRawIngressAdmissionContext context, Stream body, CancellationToken cancellationToken) =>
             throw new InvalidOperationException("Startup selection must not admit a body.");
     }
+
+    private sealed class CountingAdmission : ICaptureRuntimeRawIngressAdmission
+    {
+        internal int Calls;
+
+        public ValueTask<CaptureRuntimeRawIngressAdmissionResult> AdmitAsync(
+            CaptureRuntimeRawIngressAdmissionContext context, Stream body,
+            CancellationToken cancellationToken)
+        {
+            Interlocked.Increment(ref Calls);
+            throw new InvalidOperationException("Site qualification must reject before admission.");
+        }
+    }
+
+    private sealed class RequestBodyReadProbe
+    {
+        internal int ReadCalls;
+    }
+
+    private sealed class RequestBodyReadProbeStartupFilter(RequestBodyReadProbe probe) : IStartupFilter
+    {
+        public Action<IApplicationBuilder> Configure(Action<IApplicationBuilder> next) => app =>
+        {
+            app.Use(async (context, continuation) =>
+            {
+                context.Request.Body = new CountingServerRequestStream(
+                    context.Request.Body, () => Interlocked.Increment(ref probe.ReadCalls));
+                await continuation();
+            });
+            next(app);
+        };
+    }
+
+    private sealed class CountingServerRequestStream(Stream inner, Action onRead) : Stream
+    {
+        public override bool CanRead => inner.CanRead;
+        public override bool CanSeek => inner.CanSeek;
+        public override bool CanWrite => inner.CanWrite;
+        public override long Length => inner.Length;
+        public override long Position { get => inner.Position; set => inner.Position = value; }
+        public override void Flush() => inner.Flush();
+        public override long Seek(long offset, SeekOrigin origin) => inner.Seek(offset, origin);
+        public override void SetLength(long value) => inner.SetLength(value);
+        public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
+        public override int Read(byte[] buffer, int offset, int count)
+        {
+            onRead();
+            return inner.Read(buffer, offset, count);
+        }
+        public override int Read(Span<byte> buffer)
+        {
+            onRead();
+            return inner.Read(buffer);
+        }
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer,
+            CancellationToken cancellationToken = default)
+        {
+            onRead();
+            return inner.ReadAsync(buffer, cancellationToken);
+        }
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count,
+            CancellationToken cancellationToken)
+        {
+            onRead();
+            return inner.ReadAsync(buffer, offset, count, cancellationToken);
+        }
+    }
 }
 
 internal static class ActivationEvidenceTestSeals
@@ -298,6 +492,7 @@ internal static class ActivationEvidenceTestSeals
     private const string ManifestSha = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
     private const string RecordSha = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD";
     private const string QualificationSha = "FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF";
+    internal const string QualificationShaForTests = QualificationSha;
     public const string OtherSha = "EEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
 
     public static CaptureRuntimeActivationEvidenceSeal Valid(int authorityOpenRows) => new(

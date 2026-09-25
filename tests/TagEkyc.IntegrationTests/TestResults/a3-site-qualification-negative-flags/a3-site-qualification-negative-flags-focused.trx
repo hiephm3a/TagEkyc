@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="16d7b167-6612-4913-8948-0fb4b6d5193e" name="3AVNN@LEARNPC 2026-09-25 09:52:34" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-25T09:52:34.9349406+07:00" queuing="2026-09-25T09:52:34.9349410+07:00" start="2026-09-25T09:52:33.0892576+07:00" finish="2026-09-25T09:52:34.9861518+07:00" />
+  <TestSettings name="default" id="c493f1c6-d3f5-4bed-ba7c-0756a0944518">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-25_09_52_34" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="7c005780-a768-4c24-81df-3229d3908788" testId="a057d62b-8c19-53ca-1dc0-d1742c8ddeab" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationServerApplicationBodyReadsWhileBOrR1HeldFailsClosed" computerName="LEARNPC" duration="00:00:00.0652709" startTime="2026-09-25T09:52:34.6284332+07:00" endTime="2026-09-25T09:52:34.6284334+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7c005780-a768-4c24-81df-3229d3908788" />
+    <UnitTestResult executionId="30b1bf4e-eb9d-4d10-9a65-0e6fd57e5b8a" testId="71b6d650-64e0-6abe-5570-cf4ebca8e48f" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationAgentBodySendsWhileBOrR1HeldFailsClosed" computerName="LEARNPC" duration="00:00:00.0769056" startTime="2026-09-25T09:52:34.7690365+07:00" endTime="2026-09-25T09:52:34.7690367+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="30b1bf4e-eb9d-4d10-9a65-0e6fd57e5b8a" />
+    <UnitTestResult executionId="9c302ff3-1519-4813-bcc1-b2a4b9bb6c12" testId="9e32a320-1982-b83a-fb9d-bb3bd49f6a46" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationHiddenRetryObservedFailsClosed" computerName="LEARNPC" duration="00:00:00.0634629" startTime="2026-09-25T09:52:34.6919983+07:00" endTime="2026-09-25T09:52:34.6919985+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9c302ff3-1519-4813-bcc1-b2a4b9bb6c12" />
+    <UnitTestResult executionId="b304f641-061e-4c36-a0fa-c05a83feaba1" testId="6044e02b-f8b7-f7a5-8dfa-618b19145288" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationAllSafeMeasurementsPassTheLiveGate" computerName="LEARNPC" duration="00:00:00.0801872" startTime="2026-09-25T09:52:34.4872820+07:00" endTime="2026-09-25T09:52:34.4872821+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b304f641-061e-4c36-a0fa-c05a83feaba1" />
+    <UnitTestResult executionId="ee1a2d39-fd4c-419e-bb99-ba1305be496f" testId="41307666-f406-29f1-9aa9-39c85d1921b1" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationRawPostCountFailsClosed" computerName="LEARNPC" duration="00:00:00.4922857" startTime="2026-09-25T09:52:34.4063083+07:00" endTime="2026-09-25T09:52:34.4063438+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ee1a2d39-fd4c-419e-bb99-ba1305be496f" />
+    <UnitTestResult executionId="7cb0cca9-bb32-418c-94ac-c0e384e545e0" testId="676eda65-1575-e29a-d353-424b8cb13db1" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationEarlyOrIntermediaryContinueObservedFailsClosed" computerName="LEARNPC" duration="00:00:00.0632696" startTime="2026-09-25T09:52:34.8324002+07:00" endTime="2026-09-25T09:52:34.8324004+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7cb0cca9-bb32-418c-94ac-c0e384e545e0" />
+    <UnitTestResult executionId="dc7afd8b-eaea-4f8b-84a4-6f1463b62883" testId="8810f982-879b-606c-3023-1298002f4fa4" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationApplicationPrebufferObservedFailsClosed" computerName="LEARNPC" duration="00:00:00.0756782" startTime="2026-09-25T09:52:34.5630566+07:00" endTime="2026-09-25T09:52:34.5630569+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dc7afd8b-eaea-4f8b-84a4-6f1463b62883" />
+    <UnitTestResult executionId="cb5d8556-04b7-4e85-9b8c-e85d415a9775" testId="5d20a5c2-c629-708e-3847-56b81a7050f5" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationKestrelContinueRelayedAfterCommitFailsClosed" computerName="LEARNPC" duration="00:00:00.0793774" startTime="2026-09-25T09:52:34.9119228+07:00" endTime="2026-09-25T09:52:34.9119234+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cb5d8556-04b7-4e85-9b8c-e85d415a9775" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationApplicationPrebufferObservedFailsClosed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="8810f982-879b-606c-3023-1298002f4fa4">
+      <Execution id="dc7afd8b-eaea-4f8b-84a4-6f1463b62883" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests" name="SiteQualificationApplicationPrebufferObservedFailsClosed" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationAgentBodySendsWhileBOrR1HeldFailsClosed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="71b6d650-64e0-6abe-5570-cf4ebca8e48f">
+      <Execution id="30b1bf4e-eb9d-4d10-9a65-0e6fd57e5b8a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests" name="SiteQualificationAgentBodySendsWhileBOrR1HeldFailsClosed" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationHiddenRetryObservedFailsClosed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9e32a320-1982-b83a-fb9d-bb3bd49f6a46">
+      <Execution id="9c302ff3-1519-4813-bcc1-b2a4b9bb6c12" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests" name="SiteQualificationHiddenRetryObservedFailsClosed" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationAllSafeMeasurementsPassTheLiveGate" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6044e02b-f8b7-f7a5-8dfa-618b19145288">
+      <Execution id="b304f641-061e-4c36-a0fa-c05a83feaba1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests" name="SiteQualificationAllSafeMeasurementsPassTheLiveGate" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationKestrelContinueRelayedAfterCommitFailsClosed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5d20a5c2-c629-708e-3847-56b81a7050f5">
+      <Execution id="cb5d8556-04b7-4e85-9b8c-e85d415a9775" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests" name="SiteQualificationKestrelContinueRelayedAfterCommitFailsClosed" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationEarlyOrIntermediaryContinueObservedFailsClosed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="676eda65-1575-e29a-d353-424b8cb13db1">
+      <Execution id="7cb0cca9-bb32-418c-94ac-c0e384e545e0" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests" name="SiteQualificationEarlyOrIntermediaryContinueObservedFailsClosed" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationServerApplicationBodyReadsWhileBOrR1HeldFailsClosed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="a057d62b-8c19-53ca-1dc0-d1742c8ddeab">
+      <Execution id="7c005780-a768-4c24-81df-3229d3908788" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests" name="SiteQualificationServerApplicationBodyReadsWhileBOrR1HeldFailsClosed" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests.SiteQualificationRawPostCountFailsClosed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="41307666-f406-29f1-9aa9-39c85d1921b1">
+      <Execution id="ee1a2d39-fd4c-419e-bb99-ba1305be496f" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3ApiHostGraphTests" name="SiteQualificationRawPostCountFailsClosed" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="a057d62b-8c19-53ca-1dc0-d1742c8ddeab" executionId="7c005780-a768-4c24-81df-3229d3908788" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="71b6d650-64e0-6abe-5570-cf4ebca8e48f" executionId="30b1bf4e-eb9d-4d10-9a65-0e6fd57e5b8a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9e32a320-1982-b83a-fb9d-bb3bd49f6a46" executionId="9c302ff3-1519-4813-bcc1-b2a4b9bb6c12" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6044e02b-f8b7-f7a5-8dfa-618b19145288" executionId="b304f641-061e-4c36-a0fa-c05a83feaba1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="41307666-f406-29f1-9aa9-39c85d1921b1" executionId="ee1a2d39-fd4c-419e-bb99-ba1305be496f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="676eda65-1575-e29a-d353-424b8cb13db1" executionId="7cb0cca9-bb32-418c-94ac-c0e384e545e0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8810f982-879b-606c-3023-1298002f4fa4" executionId="dc7afd8b-eaea-4f8b-84a4-6f1463b62883" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5d20a5c2-c629-708e-3847-56b81a7050f5" executionId="cb5d8556-04b7-4e85-9b8c-e85d415a9775" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="8" executed="8" passed="8" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.28]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.44]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.44]   Starting:    TagEkyc.IntegrationTests&#xD;
+fail: TagEkyc.Api.SiteRawIngressTransportQualificationMonitor[0]&#xD;
+      CAPTURE_RUNTIME_SITE_RAW_INGRESS_TRANSPORT_QUALIFICATION_INVALID state=Invalid validUntilUtc=2026-09-25T03:52:33.9110356+00:00&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+fail: TagEkyc.Api.SiteRawIngressTransportQualificationMonitor[0]&#xD;
+      CAPTURE_RUNTIME_SITE_RAW_INGRESS_TRANSPORT_QUALIFICATION_INVALID state=Invalid validUntilUtc=2026-09-25T03:52:34.4873860+00:00&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+fail: TagEkyc.Api.SiteRawIngressTransportQualificationMonitor[0]&#xD;
+      CAPTURE_RUNTIME_SITE_RAW_INGRESS_TRANSPORT_QUALIFICATION_INVALID state=Invalid validUntilUtc=2026-09-25T03:52:34.5632497+00:00&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+fail: TagEkyc.Api.SiteRawIngressTransportQualificationMonitor[0]&#xD;
+      CAPTURE_RUNTIME_SITE_RAW_INGRESS_TRANSPORT_QUALIFICATION_INVALID state=Invalid validUntilUtc=2026-09-25T03:52:34.6285831+00:00&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+fail: TagEkyc.Api.SiteRawIngressTransportQualificationMonitor[0]&#xD;
+      CAPTURE_RUNTIME_SITE_RAW_INGRESS_TRANSPORT_QUALIFICATION_INVALID state=Invalid validUntilUtc=2026-09-25T03:52:34.6921431+00:00&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+fail: TagEkyc.Api.SiteRawIngressTransportQualificationMonitor[0]&#xD;
+      CAPTURE_RUNTIME_SITE_RAW_INGRESS_TRANSPORT_QUALIFICATION_INVALID state=Invalid validUntilUtc=2026-09-25T03:52:34.7691958+00:00&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+fail: TagEkyc.Api.SiteRawIngressTransportQualificationMonitor[0]&#xD;
+      CAPTURE_RUNTIME_SITE_RAW_INGRESS_TRANSPORT_QUALIFICATION_INVALID state=Invalid validUntilUtc=2026-09-25T03:52:34.8325645+00:00&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+[xUnit.net 00:00:01.48]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
