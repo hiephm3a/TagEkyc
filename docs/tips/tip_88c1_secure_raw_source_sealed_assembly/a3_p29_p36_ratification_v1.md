@@ -2,7 +2,7 @@
 
 A3-Ratification-Decision: RATIFIED
 A3-Authority-Open-After: 0
-A3-Reviewed-Manifest-SHA256: A09FEC633C154C3C334F6EAE7C79D854E49C2CCC088A6B1301BBD01CBDE3FB0D
+A3-Reviewed-Manifest-SHA256: 6545474C6D712431F8410693BB2E8369020A6757030712E3F94B284CA0694E4A
 
 Decision source: the Homeowner's explicit instruction on 2026-09-24: “Tôi ratify P29–P36 tại a6d8405, gộp luôn hai điều nhỏ kia”.
 
@@ -19,3 +19,5 @@ The retained site-gate TRX exercises generated seal revision 14. Adding that TRX
 The revision-16 evidence-only successor retains the focused eight-case site-qualification run: one positive qualification control and seven single-field negative variants for the existing transport-measurement guards. Each negative variant proves the live raw-ingress request gate returns the site-qualification invalid code before admission or body consumption. This successor changes no product, SDK, partition, topology, count, site-policy, or previously ratified semantics.
 
 The revision-17 evidence-only successor closes the production-site false-PASS capability while the six missing measurement owners remain unimplemented. `ProbeSite` now emits the unchanged 15-field candidate with `status=MEASUREMENT_INCOMPLETE`; both its `-InstallOnPass` path and the existing direct installer reject that candidate without replacing the target qualification. `PrepareSite` and the isolated `DevelopmentHarness` retain their prior behavior. This is not Layer 2 measurement-plane implementation and changes no runtime policy, schema, raw ingress, Agent, SDK, partition, topology, count, site-policy, or ratified semantics.
+
+The revision-18 bounded correction successor records the independently reviewed retained-mode work-source fix at commit `090cfed2fdf7886fa02762a57ed8cca0e9cbd86c`. The new migration extends `raw_export_next_assembly_candidate` from `EncryptedExportPacket` alone to both retained export modes while continuing to exclude `ExternalExportOnlyNoRetain`. The existing same-Job delivery proof was extended through production raw ingress and the production durable work source to SDK decryption of the exact DG2 and selfie bytes; reverting only the selector predicate produced the retained RED and restoring it returned GREEN. Both independent reviewers reported PASS with no actionable finding. This successor does not create a new ratification and changes no partition, ledger, scope decision, ownership table, authority-open count, approved topology, site policy, Agent, SDK, or previously ratified semantics.
