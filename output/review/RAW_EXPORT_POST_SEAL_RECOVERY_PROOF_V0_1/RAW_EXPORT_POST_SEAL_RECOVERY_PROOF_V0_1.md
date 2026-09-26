@@ -368,8 +368,10 @@ The report and manifest exclude their own hashes to avoid a circular
 dependency.
 
 The final manifest contains **77 entries**, all hashed from Git object content
-at evidence snapshot `4fbafd2`. Its SHA-256 is
-`B058ADFA76BFEBD229A852C6095F3EF8EB43B2EE3BD6A4015AC385DAB437E1CC`.
+at evidence snapshot `4fbafd2`. The manifest's own Git-object-content SHA-256
+is `7173DEA12FA62687A7F38C50B017B93B984B3F4CD00E903B5A1B5A0ACE3F6792`.
+That value, rather than a line-ending-converted working-tree hash, is the
+portable review identity.
 
 ## Final boundary
 
