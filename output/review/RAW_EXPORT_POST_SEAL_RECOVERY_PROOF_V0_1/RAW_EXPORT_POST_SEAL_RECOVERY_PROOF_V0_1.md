@@ -5,7 +5,9 @@
 The original four accepted defects are corrected at TagEkyc commit
 `75c890347a013840c67646ce3e221e5b615b6270`. The bounded review correction
 requested after the first independent review is committed at
-`b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b`.
+`b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b`. The final bounded correction
+for post-lock claim revalidation and explicit NULL duration rejection is
+committed at `d6e899c04d3f739062d3bb4d670f4a093c117357`.
 
 | Area | Result |
 |---|---|
@@ -15,6 +17,7 @@ requested after the first independent review is committed at
 | C116 exact concurrent replay joins committed result | **PASS** |
 | Exact digest/authentication/fingerprint match | **PASS** |
 | Claim owner + generation fencing | **PASS** |
+| Claim eligibility revalidated after current claim row lock | **PASS** |
 | Mandatory NULL/shape rejection at recovery capability boundaries | **PASS** |
 | Lease time sampled after row-lock acquisition | **PASS** |
 | C116 winner-completes-before-loser-`RecordPending` join | **PASS** |
@@ -26,8 +29,9 @@ requested after the first independent review is committed at
 | Process kill / OS restart | **NOT PROVEN** |
 | Layer 2 site measurement ownership | **PAUSED / UNCHANGED** |
 
-The current runtime gate is **20/20 PASS, zero skip** and the migration
-Down/Reapply gate is **1/1 PASS, zero skip**. Eleven credited mutations
+The final combined affected gate is **23/23 PASS, zero skip**, including the
+current post-seal runtime set and migration Down/Reapply on the same restored
+source bytes. Thirteen credited mutations
 fail at the named boundary. Two earlier attempted mutants stayed green and are
 retained as `NON_DISCRIMINATING_MUTANT`; neither is credited.
 
@@ -38,6 +42,7 @@ Baseline product HEAD       c43bc9bb0c4bd08c35bab65c1fe0696f88ce3610
 Characterization commit     578590a290dff4a97eb2e9d1c406038d5930f3fb
 Correction commit           75c890347a013840c67646ce3e221e5b615b6270
 Review correction commit    b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b
+Final correction commit     d6e899c04d3f739062d3bb4d670f4a093c117357
 Push                        NO
 Deploy                      NO
 Seal/governance re-freeze   NO
@@ -146,6 +151,17 @@ The new durable claim has:
   Sealer-only EXECUTE grants;
 - no direct table write grants.
 
+`claim_next` locks each candidate preparation and then reads/locks the current
+claim row before deciding eligibility. A lease or retry backoff committed after
+candidate selection is therefore preserved rather than overwritten by an
+unconditional upsert. Two controlled lock-wait tests install those states after
+the contender has selected the candidate; both contenders return no claim.
+
+Lease and retry durations reject SQL `NULL` explicitly before any mutation.
+The proof covers both existing-claim and absent-claim states for the claim
+capabilities, and verifies that a NULL retry base cannot clear an owner or
+install the PostgreSQL `LEAST` fallback delay.
+
 A displaced owner cannot defer the successor claim and cannot mark it
 finalized. Same-owner stale generations are rejected independently from owner
 fencing. Expired jobs may finish the already-sealed obligation without
@@ -198,7 +214,9 @@ migration tripwires now point at this migration.
 The predecessor failed-run census is stated consistently as **13/13** before
 the first correction's runs are added. The consolidated successor census,
 including the independent pre-correction investigation, is now **83/83 across
-34 retained failed runs**.
+34 retained failed runs before the final review correction. The final census
+is **86/86 across 36 retained failed runs** after adding the two discriminating
+R1/R2 mutation runs.
 
 `runs/sql-lock-final/post-seal-sql-lock-final.trx` retains the database query
 output for `raw_export_lock_job_for_attempt(uuid,uuid,uuid,bigint,bigint)`,
@@ -208,20 +226,21 @@ direct lock/acquire link.
 
 ## Focused restored proof
 
-`runs/correction2-runtime-restored-final-v4/post-seal-correction2-runtime-restored-final-v4.trx`
-is the current **20/20 PASS** runtime gate. The migration proof is retained
-separately as
-`runs/correction2-migration-restored/post-seal-correction2-migration-restored.trx`
-at **1/1 PASS**, so Down/Reapply cannot interfere with runtime tests sharing
-the PostgreSQL fixture.
+`runs/correction3-restored-final/post-seal-correction3-restored-final.trx`
+is the current **23/23 PASS** affected gate on the final restored bytes. It
+contains the complete current `PostSealRecovery_*` runtime set and the focused
+migration Up/Down/Reapply proofs in one retained run. The previous separate
+20/20 runtime and 1/1 migration gates remain predecessor evidence, not counters
+summed to manufacture the final result.
 
-Together with the predecessor 20/20 gate, the current proof covers:
+The current proof covers:
 
 - fresh rediscovery for both shipping modes;
 - provider-finalized/C1-SealCommitted rediscovery;
 - retryable and terminal post-seal recording;
 - real Generic Host record-stage behavior;
 - two-host acquire contention;
+- the losing contender continuing to a later obligation under `StopHost`;
 - original C116 plus the explicit post-seal C116 scenario;
 - original runner versus fresh recovery-worker exclusion;
 - exact fingerprint mismatch;
@@ -230,6 +249,8 @@ Together with the predecessor 20/20 gate, the current proof covers:
 - expired-job completion without changing the job expiry timestamp;
 - same-owner stale-generation rejection;
 - direct NULL/shape capability rejection with no residue mutation;
+- NULL lease rejection with and without an existing claim;
+- post-selection lease/backoff preservation under controlled row-lock waits;
 - lock-wait expiry at exact claim, defer and finalize boundaries;
 - pre-`RecordPending` C116 committed-result recovery;
 - bounded recovery selection while normal work remains eligible;
@@ -265,6 +286,8 @@ It is classified, not deleted.
 | Disable bounded recovery-first scheduling | 0/1 |
 | Restore SQL NULL comparison bypass | 0/1 |
 | Sample lease time before row locks | 0/1 |
+| Disable post-lock claim eligibility revalidation | 0/2 |
+| Remove explicit NULL duration rejection | 0/1 |
 
 Two trial mutants were rejected rather than credited:
 
@@ -274,8 +297,8 @@ Two trial mutants were rejected rather than credited:
   comparison still fenced the stale claimant; separate owner+generation
   mutants then failed defer and finalize independently.
 
-Every mutated product file was restored before the current 20/20 gate. Current
-Git-object SHA-256 values at `b6f1e66` are:
+Every mutated product file was restored before the final 23/23 gate. Current
+Git-object SHA-256 values at `d6e899c` for the final changed files are:
 
 ```text
 RawExportAssemblyRuntimeInfrastructure.cs
@@ -283,7 +306,9 @@ RawExportAssemblyRuntimeInfrastructure.cs
 RawExportAssemblyOrchestrator.cs
   BB5003D913A3BDBE4BEC0098C209AAE531AE6491F55B70C78314743C5E6928CF
 20260926120000_RawExportAssemblyPostSealRecovery.cs
-  8C4CD8814724D3B924416DC650C82D1E48A0C804CB8518055FCCBDEF4A1542AA
+  F539FC17A2724A7F29AAA04FE316F95D34892FB109E8751AF88EB251AF4ACE91
+Tip88C1C1ResolverAssemblyTests.cs
+  107023C170160C4C34605196592AAA3A1A81ABA6E24E7245CA25904B2A622CC3
 ```
 
 ## Exact correction write-set
@@ -319,16 +344,22 @@ orchestrator, durable work-source implementation and the existing resolver
 assembly test file. It adds no API, endpoint, schema object, engine, client or
 SDK surface.
 
+The final correction `d6e899c` changes only that existing migration and the
+existing resolver assembly test file. It adds no schema object or public
+surface. It also renames the remaining defect-era tests so their names now
+describe the corrected behavior rather than the historical failure.
+
 ## Evidence accounting and hashing
 
-`failed_run_census_v1.tsv` classifies **83/83** failed results across 34
+`failed_run_census_v1.tsv` classifies **86/86** failed results across 36
 retained runs. Mutation REDs and superseded harness failures are not relabeled
 as PASS.
 
 `evidence_manifest_v1.tsv` names the hash basis per row:
 
-- product/test SHA-256 values are over Git object content at review correction
-  commit `b6f1e66`;
+- product/test SHA-256 values are over Git object content at final correction
+  commit `d6e899c` for changed entries and their recorded snapshot for unchanged
+  predecessor entries;
 - retained evidence SHA-256 values are over Git object content at the evidence
   snapshot named by the manifest.
 
@@ -341,6 +372,7 @@ dependency.
 POST-SEAL RECOVERY CORRECTION       TECHNICAL PASS / READY FOR REVIEW
 Correction commit                  75c890347a013840c67646ce3e221e5b615b6270
 Review correction commit           b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b
+Final correction commit            d6e899c04d3f739062d3bb4d670f4a093c117357
 Seal/governance                    INTENTIONALLY STALE; NOT RE-MINTED
 Process kill / OS restart          NOT PROVEN
 C125                               OUT OF SCOPE / UNCHANGED

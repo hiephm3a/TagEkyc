@@ -1,0 +1,65 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="ed1969dc-f18c-4475-89ca-82b6c61c60bf" name="3AVNN@LEARNPC 2026-09-26 15:07:57" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-26T15:07:57.7042023+07:00" queuing="2026-09-26T15:07:57.7042026+07:00" start="2026-09-26T15:07:27.4977995+07:00" finish="2026-09-26T15:08:00.1685433+07:00" />
+  <TestSettings name="default" id="1d1a4e00-be71-4c1b-9663-631a24189b23">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-26_15_07_57" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="8ef8792b-16af-4153-80f4-ec82fcb19a78" testId="b36450b3-27ef-0815-eef6-8b7ad31054a7" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation" computerName="LEARNPC" duration="00:00:17.1389761" startTime="2026-09-26T15:07:56.8388993+07:00" endTime="2026-09-26T15:07:56.8389141+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8ef8792b-16af-4153-80f4-ec82fcb19a78">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: No exception was thrown&#xD;
+Expected: typeof(Npgsql.PostgresException)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.&lt;&gt;c__DisplayClass59_0.&lt;&lt;PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation&gt;g__Reject|0&gt;d.MoveNext() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1960&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.&lt;&gt;c__DisplayClass59_0.&lt;&lt;PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation&gt;g__Reject|0&gt;d.MoveNext() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1961&#xD;
+--- End of stack trace from previous location ---&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1965&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1975&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1975&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b36450b3-27ef-0815-eef6-8b7ad31054a7">
+      <Execution id="8ef8792b-16af-4153-80f4-ec82fcb19a78" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="b36450b3-27ef-0815-eef6-8b7ad31054a7" executionId="8ef8792b-16af-4153-80f4-ec82fcb19a78" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.52]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.67]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.67]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:29.00]       Assert.Throws() Failure: No exception was thrown&#xD;
+[xUnit.net 00:00:29.01]       Expected: typeof(Npgsql.PostgresException)&#xD;
+[xUnit.net 00:00:29.01]       Stack Trace:&#xD;
+[xUnit.net 00:00:29.01]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1960,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.&lt;&gt;c__DisplayClass59_0.&lt;&lt;PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation&gt;g__Reject|0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:29.01]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:29.01]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1961,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.&lt;&gt;c__DisplayClass59_0.&lt;&lt;PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation&gt;g__Reject|0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:29.01]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:29.01]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1965,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation()&#xD;
+[xUnit.net 00:00:29.01]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1975,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation()&#xD;
+[xUnit.net 00:00:29.01]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1975,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation()&#xD;
+[xUnit.net 00:00:29.01]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:32.28]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T15:07:56.8366048+07:00">
+        <Text>[xUnit.net 00:00:29.00]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
