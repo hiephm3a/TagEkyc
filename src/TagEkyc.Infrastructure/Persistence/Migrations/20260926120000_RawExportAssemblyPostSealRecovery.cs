@@ -92,17 +92,17 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
             LANGUAGE plpgsql SECURITY DEFINER SET search_path=pg_catalog AS $function$
             DECLARE
               candidate record; claim_ tagekyc.raw_export_assembly_post_seal_recovery_claims%ROWTYPE;
-              now_ timestamptz; previous_context text;
+              now_ timestamptz; previous_context text; claim_found boolean;
             BEGIN
               IF p_claim_owner_id IS NULL OR p_claim_owner_id='00000000-0000-0000-0000-000000000000'::uuid
-                 OR p_lease_seconds NOT BETWEEN 1 AND 3600
+                 OR p_lease_seconds IS NULL OR p_lease_seconds NOT BETWEEN 1 AND 3600
               THEN RAISE EXCEPTION 'RAW_EXPORT_POST_SEAL_RECOVERY_CLAIM_INVALID'; END IF;
-              now_:=pg_catalog.clock_timestamp();
+              previous_context:=pg_catalog.current_setting('tagekyc.raw_export_post_seal_recovery_context',true);
+              FOR candidate IN
               SELECT p."C2PreparationId",p."AssemblyId",p."JobId",p."AttemptId",p."FencingToken",
                      p."AssemblyFingerprint",p."PreparationFingerprint",p."RowRevision",
                      i."PrincipalId",i."ExportMode",i."JobExpiresAt",h."Revision",
                      a."AssemblyDigest",a."ManifestDigest",a."AssemblyAuthenticationValue"
-              INTO candidate
               FROM tagekyc.raw_export_assembly_preparation_dispositions p
               JOIN tagekyc.raw_export_assembly_identities a
                 ON a."C2PreparationId"=p."C2PreparationId" AND a."AssemblyId"=p."AssemblyId"
@@ -110,8 +110,6 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
                AND a."FencingToken"=p."FencingToken" AND a."AssemblyFingerprint"=p."AssemblyFingerprint"
               JOIN tagekyc.raw_export_job_identities i ON i."JobId"=p."JobId"
               JOIN tagekyc.raw_export_job_operational_heads h ON h."JobId"=p."JobId"
-              LEFT JOIN tagekyc.raw_export_assembly_post_seal_recovery_claims c
-                ON c."C2PreparationId"=p."C2PreparationId"
               WHERE p."Disposition"='SealCommitted'
                 AND i."ExportMode" IN ('EncryptedExportPacket','EncryptedRawVaultRetained')
                 AND h."CurrentState"='AssemblySealed' AND h."CurrentAttemptId"=p."AttemptId"
@@ -124,35 +122,51 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
                     AND t."FencingToken"=p."FencingToken")
                 AND a."ItemCount"=(SELECT pg_catalog.count(*) FROM tagekyc.raw_export_assembly_items x
                                    WHERE x."AssemblyId"=a."AssemblyId")
-                AND (c."C2PreparationId" IS NULL OR (
-                  c."CompletedAtUtc" IS NULL
-                  AND (c."RetryNotBeforeUtc" IS NULL OR c."RetryNotBeforeUtc"<=now_)
-                  AND (c."ClaimOwnerId" IS NULL OR c."ClaimExpiresAtUtc"<=now_)))
-              ORDER BY COALESCE(c."RetryNotBeforeUtc",p."SealCommittedAtUtc"),p."SealCommittedAtUtc",p."JobId"
+              ORDER BY p."SealCommittedAtUtc",p."JobId"
               FOR UPDATE OF p SKIP LOCKED
-              LIMIT 1;
-              IF NOT FOUND THEN RETURN; END IF;
+              LOOP
+                SELECT c.* INTO claim_
+                  FROM tagekyc.raw_export_assembly_post_seal_recovery_claims AS c
+                  WHERE c."C2PreparationId"=candidate."C2PreparationId"
+                  FOR UPDATE;
+                claim_found:=FOUND;
+                -- Eligibility is decided only after the current claim row is locked.
+                -- A contender must not overwrite a lease or backoff installed after
+                -- the candidate preparation was selected.
+                now_:=pg_catalog.clock_timestamp();
+                IF claim_found AND (
+                     claim_."CompletedAtUtc" IS NOT NULL
+                     OR (claim_."RetryNotBeforeUtc" IS NOT NULL AND claim_."RetryNotBeforeUtc">now_)
+                     OR (claim_."ClaimOwnerId" IS NOT NULL
+                         AND (claim_."ClaimExpiresAtUtc" IS NULL OR claim_."ClaimExpiresAtUtc">now_)))
+                THEN CONTINUE; END IF;
 
-              previous_context:=pg_catalog.current_setting('tagekyc.raw_export_post_seal_recovery_context',true);
-              PERFORM pg_catalog.set_config('tagekyc.raw_export_post_seal_recovery_context','claim',true);
-              INSERT INTO tagekyc.raw_export_assembly_post_seal_recovery_claims(
-                "C2PreparationId","JobId","ClaimOwnerId","ClaimGeneration","ClaimExpiresAtUtc",
-                "FailureCount","RetryNotBeforeUtc","LastOutcome","CreatedAtUtc","UpdatedAtUtc","CompletedAtUtc","SchemaVersion")
-              VALUES(candidate."C2PreparationId",candidate."JobId",p_claim_owner_id,1,
-                     now_+pg_catalog.make_interval(secs=>p_lease_seconds),0,NULL,NULL,now_,now_,NULL,1)
-              ON CONFLICT ON CONSTRAINT "raw_export_assembly_post_seal_recovery_claims_pkey" DO UPDATE SET
-                "ClaimOwnerId"=p_claim_owner_id,
-                "ClaimGeneration"=tagekyc.raw_export_assembly_post_seal_recovery_claims."ClaimGeneration"+1,
-                "ClaimExpiresAtUtc"=now_+pg_catalog.make_interval(secs=>p_lease_seconds),
-                "RetryNotBeforeUtc"=NULL,"UpdatedAtUtc"=now_
-              RETURNING * INTO claim_;
-              PERFORM pg_catalog.set_config('tagekyc.raw_export_post_seal_recovery_context',COALESCE(previous_context,''),true);
-              RETURN QUERY SELECT 'Claimed'::text,candidate."C2PreparationId",candidate."AssemblyId",
-                candidate."JobId",candidate."AttemptId",candidate."FencingToken",candidate."PrincipalId",
-                candidate."Revision",candidate."RowRevision",claim_."ClaimGeneration",
-                candidate."AssemblyFingerprint",candidate."PreparationFingerprint",candidate."AssemblyDigest",
-                candidate."ManifestDigest",candidate."AssemblyAuthenticationValue",candidate."ExportMode"::text,
-                candidate."JobExpiresAt";
+                PERFORM pg_catalog.set_config('tagekyc.raw_export_post_seal_recovery_context','claim',true);
+                IF claim_found THEN
+                  UPDATE tagekyc.raw_export_assembly_post_seal_recovery_claims AS c SET
+                    "ClaimOwnerId"=p_claim_owner_id,"ClaimGeneration"=c."ClaimGeneration"+1,
+                    "ClaimExpiresAtUtc"=now_+pg_catalog.make_interval(secs=>p_lease_seconds),
+                    "RetryNotBeforeUtc"=NULL,"UpdatedAtUtc"=now_
+                  WHERE c."C2PreparationId"=candidate."C2PreparationId"
+                  RETURNING c.* INTO claim_;
+                ELSE
+                  INSERT INTO tagekyc.raw_export_assembly_post_seal_recovery_claims(
+                    "C2PreparationId","JobId","ClaimOwnerId","ClaimGeneration","ClaimExpiresAtUtc",
+                    "FailureCount","RetryNotBeforeUtc","LastOutcome","CreatedAtUtc","UpdatedAtUtc","CompletedAtUtc","SchemaVersion")
+                  VALUES(candidate."C2PreparationId",candidate."JobId",p_claim_owner_id,1,
+                         now_+pg_catalog.make_interval(secs=>p_lease_seconds),0,NULL,NULL,now_,now_,NULL,1)
+                  RETURNING * INTO claim_;
+                END IF;
+                PERFORM pg_catalog.set_config('tagekyc.raw_export_post_seal_recovery_context',COALESCE(previous_context,''),true);
+                RETURN QUERY SELECT 'Claimed'::text,candidate."C2PreparationId",candidate."AssemblyId",
+                  candidate."JobId",candidate."AttemptId",candidate."FencingToken",candidate."PrincipalId",
+                  candidate."Revision",candidate."RowRevision",claim_."ClaimGeneration",
+                  candidate."AssemblyFingerprint",candidate."PreparationFingerprint",candidate."AssemblyDigest",
+                  candidate."ManifestDigest",candidate."AssemblyAuthenticationValue",candidate."ExportMode"::text,
+                  candidate."JobExpiresAt";
+                RETURN;
+              END LOOP;
+              RETURN;
             EXCEPTION WHEN OTHERS THEN
               PERFORM pg_catalog.set_config('tagekyc.raw_export_post_seal_recovery_context',COALESCE(previous_context,''),true);
               RAISE;
@@ -180,7 +194,7 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
                  OR p_expected_job_revision IS NULL OR p_expected_job_revision<1
                  OR p_expected_fence IS NULL OR p_expected_fence<1
                  OR p_claim_owner_id IS NULL OR p_claim_owner_id='00000000-0000-0000-0000-000000000000'::uuid
-                 OR p_lease_seconds NOT BETWEEN 1 AND 3600
+                 OR p_lease_seconds IS NULL OR p_lease_seconds NOT BETWEEN 1 AND 3600
                  OR (p_assembly_digest IS NOT NULL AND pg_catalog.octet_length(p_assembly_digest)<>32)
                  OR (p_manifest_digest IS NOT NULL AND pg_catalog.octet_length(p_manifest_digest)<>32)
                  OR (p_authentication_value IS NOT NULL AND pg_catalog.octet_length(p_authentication_value)<>32)
@@ -290,7 +304,7 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
                  OR p_claim_owner_id IS NULL
                  OR p_claim_owner_id='00000000-0000-0000-0000-000000000000'::uuid
                  OR p_claim_generation IS NULL OR p_claim_generation<1
-                 OR p_retry_base_seconds NOT BETWEEN 1 AND 60 OR p_outcome IS NULL
+                 OR p_retry_base_seconds IS NULL OR p_retry_base_seconds NOT BETWEEN 1 AND 60 OR p_outcome IS NULL
                  OR pg_catalog.length(p_outcome) NOT BETWEEN 1 AND 64
               THEN RAISE EXCEPTION 'RAW_EXPORT_POST_SEAL_RECOVERY_DEFER_INVALID'; END IF;
               SELECT p.* INTO prep FROM tagekyc.raw_export_assembly_preparation_dispositions AS p

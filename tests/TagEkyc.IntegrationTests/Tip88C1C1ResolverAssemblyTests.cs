@@ -1500,7 +1500,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     }
 
     [Fact]
-    public async Task PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision()
+    public async Task PostSealRecovery_F2_preparation_conflict_preserves_sealed_obligation_for_recovery()
     {
         await postgres.ResetDatabaseAsync();
         var provider = new BoundedFixtureC2Provider(conflictFirstFinalize: true);
@@ -1520,7 +1520,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     }
 
     [Fact]
-    public async Task PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it()
+    public async Task PostSealRecovery_F2_record_conflict_is_absorbed_without_stopping_real_generic_host()
     {
         await postgres.ResetDatabaseAsync();
         var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
@@ -1545,21 +1545,23 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     }
 
     [Fact]
-    public async Task PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host()
+    public async Task PostSealRecovery_acquire_contention_losing_contender_continues_to_later_obligation()
     {
         await postgres.ResetDatabaseAsync();
         await using var prepared = await PrepareRediscoverableCandidateAsync();
         var barrier = new TwoPartyAcquireBarrier();
+        var resumeAfterAcquireConflict = new TaskCompletionSource(
+            TaskCreationOptions.RunContinuationsAsynchronously);
         var firstObservation = new HostedWorkerObservation("contender-a");
         var secondObservation = new HostedWorkerObservation("contender-b");
         await using var firstOrchestrator = CreateIndependentOrchestrator(prepared.Minio, prepared.C2);
         await using var secondOrchestrator = CreateIndependentOrchestrator(prepared.Minio, prepared.C2);
         using var firstHost = CreateDurableWorkerHost(
             firstOrchestrator.Orchestrator, firstObservation, barrier,
-            pauseAfterAcquireConflict: true);
+            resumeAfterAcquireConflict.Task);
         using var secondHost = CreateDurableWorkerHost(
             secondOrchestrator.Orchestrator, secondObservation, barrier,
-            pauseAfterAcquireConflict: true);
+            resumeAfterAcquireConflict.Task);
 
         var firstRun = firstHost.RunAsync();
         var secondRun = secondHost.RunAsync();
@@ -1604,15 +1606,23 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Single(new[] { firstObservation, secondObservation }
             .Where(observation => observation.ExecutionRequests.Count != 0));
 
-        failedObservation.TestRequestedStop = true;
         winnerObservation.TestRequestedStop = true;
         var failedHost = ReferenceEquals(failedObservation, firstObservation) ? firstHost : secondHost;
-        await failedHost.StopAsync();
         await winnerHost.StopAsync();
-        await failedHostRun.WaitAsync(TimeSpan.FromSeconds(30));
         await winnerRun.WaitAsync(TimeSpan.FromSeconds(30));
-        await failedObservation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
         await winnerObservation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
+
+        await using var later = await PrepareRediscoverableCandidateAsync();
+        resumeAfterAcquireConflict.TrySetResult();
+        var laterRecorded = await failedObservation.Recorded.Task.WaitAsync(TimeSpan.FromMinutes(2));
+        Assert.Equal(later.JobId, laterRecorded.Request.JobId);
+        Assert.False(failedObservation.Stopping.Task.IsCompleted);
+        Assert.Equal(2, failedObservation.ExecutionRequests.Count + winnerObservation.ExecutionRequests.Count);
+
+        failedObservation.TestRequestedStop = true;
+        await failedHost.StopAsync();
+        await failedHostRun.WaitAsync(TimeSpan.FromSeconds(30));
+        await failedObservation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
     }
 
     [Fact]
@@ -1939,6 +1949,10 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         {
             await using var command = new NpgsqlCommand(sql, connection);
             command.Parameters.AddWithValue("preparation", preparationId);
+            command.Parameters.AddWithValue("job", prepared.Request.JobId);
+            command.Parameters.AddWithValue("attempt", prepared.Request.AttemptId);
+            command.Parameters.AddWithValue("expected_job_revision", prepared.Request.ExpectedJobRevision);
+            command.Parameters.AddWithValue("fence", prepared.Request.ExpectedFence);
             command.Parameters.AddWithValue("owner", prepared.Request.RecoveryClaimOwnerId);
             command.Parameters.AddWithValue("generation", generation);
             command.Parameters.AddWithValue("revision", before.PreparationRevision);
@@ -1948,9 +1962,124 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         }
 
         await Reject("SELECT * FROM tagekyc.raw_export_defer_post_seal_recovery(@preparation,@owner,NULL::bigint,'NULL_GENERATION',1)");
+        await Reject("SELECT * FROM tagekyc.raw_export_defer_post_seal_recovery(@preparation,@owner,@generation,'NULL_RETRY_BASE',NULL::integer)");
+        await Reject("SELECT * FROM tagekyc.raw_export_claim_next_post_seal_recovery(@owner,NULL::integer)");
+        await Reject("SELECT * FROM tagekyc.raw_export_claim_exact_post_seal_recovery(@job,@attempt,@expected_job_revision,@fence,@owner,NULL::integer,NULL::bytea,NULL::bytea,NULL::bytea,NULL::bytea)");
         await Reject("SELECT * FROM tagekyc.raw_export_record_claimed_assembly_finalized(@preparation,NULL::bigint,@fingerprint,@owner,@generation)");
         await Reject("SELECT * FROM tagekyc.raw_export_record_claimed_assembly_finalized(@preparation,@revision,NULL::bytea,@owner,@generation)");
         await Reject("SELECT * FROM tagekyc.raw_export_record_claimed_assembly_finalized(@preparation,@revision,@fingerprint,@owner,NULL::bigint)");
+
+        await DeletePostSealClaimAsync(preparationId);
+        Assert.Equal(0, await CountPostSealClaimsAsync(preparationId));
+        await RejectWithoutClaim("SELECT * FROM tagekyc.raw_export_claim_next_post_seal_recovery(@owner,NULL::integer)");
+        await RejectWithoutClaim("SELECT * FROM tagekyc.raw_export_claim_exact_post_seal_recovery(@job,@attempt,@expected_job_revision,@fence,@owner,NULL::integer,NULL::bytea,NULL::bytea,NULL::bytea,NULL::bytea)");
+
+        async Task RejectWithoutClaim(string sql)
+        {
+            await using var command = new NpgsqlCommand(sql, connection);
+            command.Parameters.AddWithValue("job", prepared.Request.JobId);
+            command.Parameters.AddWithValue("attempt", prepared.Request.AttemptId);
+            command.Parameters.AddWithValue("expected_job_revision", prepared.Request.ExpectedJobRevision);
+            command.Parameters.AddWithValue("fence", prepared.Request.ExpectedFence);
+            command.Parameters.AddWithValue("owner", prepared.Request.RecoveryClaimOwnerId);
+            await Assert.ThrowsAsync<PostgresException>(() => command.ExecuteNonQueryAsync());
+            Assert.Equal(0, await CountPostSealClaimsAsync(preparationId));
+        }
+    }
+
+    [Fact]
+    public Task PostSealRecovery_claim_next_does_not_overwrite_claim_acquired_after_candidate_snapshot() =>
+        AssertClaimNextPreservesConcurrentClaimMutationAsync(deferAfterSnapshot: false);
+
+    [Fact]
+    public Task PostSealRecovery_claim_next_does_not_clear_backoff_deferred_after_candidate_snapshot() =>
+        AssertClaimNextPreservesConcurrentClaimMutationAsync(deferAfterSnapshot: true);
+
+    private async Task AssertClaimNextPreservesConcurrentClaimMutationAsync(bool deferAfterSnapshot)
+    {
+        await postgres.ResetDatabaseAsync();
+        var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var preparationId = Assert.IsType<Guid>(result.C2PreparationId);
+        var repository = new RawExportAssemblyRepository(
+            new RoleConnectionFactory(postgres.ConnectionString));
+        Assert.Equal("Deferred", (await repository.DeferPostSealRecoveryAsync(
+            preparationId,
+            prepared.Request.RecoveryClaimOwnerId,
+            Assert.IsType<long>(result.RecoveryClaimGeneration),
+            result.Outcome.ToString(),
+            1,
+            default)).Outcome);
+        await WaitForEligiblePostSealRecoveryAsync(prepared.JobId);
+        var before = await ReadPostSealClaimStateAsync(preparationId);
+
+        await using var blockerConnection = await OpenAsync();
+        await using var blockerTransaction = await blockerConnection.BeginTransactionAsync();
+        await using (var contextCommand = new NpgsqlCommand("""
+            SET LOCAL ROLE tagekyc_raw_export_deployer;
+            SELECT pg_catalog.set_config(
+              'tagekyc.raw_export_post_seal_recovery_context','claim',true);
+            """, blockerConnection, blockerTransaction))
+        {
+            await contextCommand.ExecuteNonQueryAsync();
+        }
+        await using (var lockCommand = new NpgsqlCommand("""
+            SELECT 1
+            FROM tagekyc.raw_export_assembly_post_seal_recovery_claims
+            WHERE "C2PreparationId"=@preparation
+            FOR UPDATE;
+            """, blockerConnection, blockerTransaction))
+        {
+            lockCommand.Parameters.AddWithValue("preparation", preparationId);
+            Assert.Equal(1, await lockCommand.ExecuteScalarAsync());
+        }
+
+        await using var contenderConnection = await new RoleConnectionFactory(postgres.ConnectionString)
+            .OpenAsync(RawExportAssemblyDatabaseCapability.Sealer, default);
+        var contenderOwner = Guid.NewGuid();
+        var contender = ClaimNextReturnsRowAsync(contenderConnection, contenderOwner, 300);
+        await WaitForBackendLockAsync(contenderConnection.ProcessID);
+
+        var successorOwner = deferAfterSnapshot ? (Guid?)null : Guid.NewGuid();
+        await using (var mutateCommand = new NpgsqlCommand("""
+            UPDATE tagekyc.raw_export_assembly_post_seal_recovery_claims SET
+              "ClaimOwnerId"=@owner,
+              "ClaimGeneration"="ClaimGeneration"+1,
+              "ClaimExpiresAtUtc"=CASE WHEN @deferred THEN NULL ELSE pg_catalog.clock_timestamp()+interval '5 minutes' END,
+              "FailureCount"="FailureCount"+CASE WHEN @deferred THEN 1 ELSE 0 END,
+              "RetryNotBeforeUtc"=CASE WHEN @deferred THEN pg_catalog.clock_timestamp()+interval '5 minutes' ELSE NULL END,
+              "LastOutcome"=CASE WHEN @deferred THEN 'CONCURRENT_DEFER' ELSE "LastOutcome" END,
+              "UpdatedAtUtc"=pg_catalog.clock_timestamp()
+            WHERE "C2PreparationId"=@preparation;
+            """, blockerConnection, blockerTransaction))
+        {
+            mutateCommand.Parameters.AddWithValue("owner", (object?)successorOwner ?? DBNull.Value);
+            mutateCommand.Parameters.AddWithValue("deferred", deferAfterSnapshot);
+            mutateCommand.Parameters.AddWithValue("preparation", preparationId);
+            Assert.Equal(1, await mutateCommand.ExecuteNonQueryAsync());
+        }
+        await blockerTransaction.CommitAsync();
+
+        Assert.False(await contender.WaitAsync(TimeSpan.FromSeconds(30)));
+        var after = await ReadPostSealClaimStateAsync(preparationId);
+        Assert.Equal(before.ClaimGeneration + 1, after.ClaimGeneration);
+        Assert.NotEqual(contenderOwner, after.ClaimOwnerId);
+        if (deferAfterSnapshot)
+        {
+            Assert.Null(after.ClaimOwnerId);
+            Assert.Null(after.ClaimExpiresAtUtc);
+            Assert.Equal(before.FailureCount + 1, after.FailureCount);
+            Assert.True(after.RetryNotBeforeUtc > DateTimeOffset.UtcNow);
+        }
+        else
+        {
+            Assert.Equal(successorOwner, after.ClaimOwnerId);
+            Assert.True(after.ClaimExpiresAtUtc > DateTimeOffset.UtcNow);
+            Assert.Null(after.RetryNotBeforeUtc);
+            Assert.Equal(before.FailureCount, after.FailureCount);
+        }
     }
 
     [Fact]
@@ -2263,7 +2392,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         IRawExportAssemblyOrchestrator orchestrator,
         HostedWorkerObservation observation,
         TwoPartyAcquireBarrier? acquireBarrier = null,
-        bool pauseAfterAcquireConflict = false)
+        Task? resumeAfterAcquireConflict = null)
     {
         var host = Host.CreateDefaultBuilder()
             .ConfigureServices(services =>
@@ -2291,7 +2420,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                         provider.GetRequiredService<IRawExportJobRepository>(),
                         new RawExportAssemblyWorkerIdentity(observation.WorkerId));
                     return new ObservedAssemblyWorkSource(
-                        inner, observation, pauseAfterAcquireConflict);
+                        inner, observation, resumeAfterAcquireConflict);
                 });
                 services.AddHostedService<RawExportAssemblyHostedService>();
             })
@@ -2409,6 +2538,66 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         command.Parameters.AddWithValue("preparation", preparationId);
         Assert.Equal(1, await command.ExecuteScalarAsync());
         return new(connection, transaction);
+    }
+
+    private async Task DeletePostSealClaimAsync(Guid preparationId)
+    {
+        await using var connection = await OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await using var command = new NpgsqlCommand("""
+            SET LOCAL ROLE tagekyc_raw_export_deployer;
+            SELECT pg_catalog.set_config(
+              'tagekyc.raw_export_post_seal_recovery_context','claim',true);
+            DELETE FROM tagekyc.raw_export_assembly_post_seal_recovery_claims
+            WHERE "C2PreparationId"=@preparation;
+            """, connection, transaction);
+        command.Parameters.AddWithValue("preparation", preparationId);
+        Assert.Equal(1, await command.ExecuteNonQueryAsync());
+        await transaction.CommitAsync();
+    }
+
+    private async Task<int> CountPostSealClaimsAsync(Guid preparationId)
+    {
+        await using var connection = await OpenAsync();
+        await using var command = new NpgsqlCommand("""
+            SELECT pg_catalog.count(*)::integer
+            FROM tagekyc.raw_export_assembly_post_seal_recovery_claims
+            WHERE "C2PreparationId"=@preparation
+            """, connection);
+        command.Parameters.AddWithValue("preparation", preparationId);
+        return Assert.IsType<int>(await command.ExecuteScalarAsync());
+    }
+
+    private static async Task<bool> ClaimNextReturnsRowAsync(
+        NpgsqlConnection connection,
+        Guid owner,
+        int leaseSeconds)
+    {
+        await using var command = new NpgsqlCommand(
+            "SELECT * FROM tagekyc.raw_export_claim_next_post_seal_recovery(@owner,@lease_seconds)",
+            connection);
+        command.Parameters.AddWithValue("owner", owner);
+        command.Parameters.AddWithValue("lease_seconds", leaseSeconds);
+        await using var reader = await command.ExecuteReaderAsync();
+        return await reader.ReadAsync();
+    }
+
+    private async Task WaitForBackendLockAsync(int processId)
+    {
+        var deadline = DateTimeOffset.UtcNow + TimeSpan.FromSeconds(10);
+        while (DateTimeOffset.UtcNow < deadline)
+        {
+            await using var connection = await OpenAsync();
+            await using var command = new NpgsqlCommand("""
+                SELECT "wait_event_type"='Lock'
+                FROM pg_catalog.pg_stat_activity
+                WHERE "pid"=@pid
+                """, connection);
+            command.Parameters.AddWithValue("pid", processId);
+            if (await command.ExecuteScalarAsync() is true) return;
+            await Task.Delay(25);
+        }
+        throw new TimeoutException("POST_SEAL_RECOVERY_CONTENDER_DID_NOT_REACH_CLAIM_LOCK");
     }
 
     private sealed class LockedRow(
@@ -3107,7 +3296,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     private sealed class ObservedAssemblyWorkSource(
         DurableRawExportAssemblyWorkSource inner,
         HostedWorkerObservation observation,
-        bool pauseAfterAcquireConflict = false) : IRawExportAssemblyWorkSource
+        Task? resumeAfterAcquireConflict = null) : IRawExportAssemblyWorkSource
     {
         public async ValueTask<RawExportAssemblyExecutionRequest?> TryAcquireAsync(
             CancellationToken cancellationToken = default)
@@ -3115,9 +3304,9 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             try
             {
                 var request = await inner.TryAcquireAsync(cancellationToken);
-                if (request is null && pauseAfterAcquireConflict
+                if (request is null && resumeAfterAcquireConflict is not null
                     && observation.AcquireException.Task.IsCompleted)
-                    await Task.Delay(Timeout.InfiniteTimeSpan, cancellationToken);
+                    await resumeAfterAcquireConflict.WaitAsync(cancellationToken);
                 if (request is not null)
                 {
                     observation.ExecutionRequests.Enqueue(request);
