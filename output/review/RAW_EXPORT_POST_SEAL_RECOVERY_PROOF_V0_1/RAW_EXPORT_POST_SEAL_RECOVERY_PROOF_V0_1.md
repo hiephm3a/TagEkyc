@@ -6,10 +6,12 @@ The four accepted post-seal recovery defects, the two accepted R1/R2 review
 corrections, and the remaining legacy-finalize capability finding are corrected
 on current bytes.
 
-The final narrow correction is committed at
-`d9c0e6cb090ef109920da007645d26df2243f1fa`. Its retained evidence and failed-run
-accounting snapshot is
-`64e5aadc15525eb0eb228f59edc4ce5402ea7e68`.
+The final legacy-capability correction is committed at
+`d9c0e6cb090ef109920da007645d26df2243f1fa`. The C116 contract disposition and
+controlled handoff proof are committed at
+`5cb0b037799100189de08ff0bca38595c3fd0500`. Their retained evidence and
+failed-run accounting snapshot is
+`d6ebc20a76ca3760506953e622ee1fc0416b2511`.
 
 | Area | Result |
 |---|---|
@@ -19,7 +21,8 @@ accounting snapshot is
 | R2 mandatory NULL duration rejection | **PASS** |
 | Owner/generation/lease claim fencing | **PASS** |
 | Legacy unfenced finalize capability | **REVOKED FROM CURRENT SEALER / PASS** |
-| Current runtime gate | **24/24 PASS, zero skip** |
+| C116 `ExistingMatch + LeaseLost` claim handoff | **VALID CONTRACT / DURABLE RESIDUE PROVED** |
+| Current runtime gate | **25/25 PASS, zero skip** |
 | Original C105/C116/C124/C126 sentinel set | **6/6 PASS, zero skip** |
 | Adjacent durable source + migration discovery | **2/2 PASS, zero skip** |
 | Same-Job public/RAW-ingress SDK E2E | **2/2 PASS twice, zero skip** |
@@ -36,7 +39,8 @@ the product/test correction.
 ```text
 Baseline reviewed HEAD       e1e4b6782c2ff0e24c4652222e772245acd2e7f4
 Legacy-finalize correction   d9c0e6cb090ef109920da007645d26df2243f1fa
-Evidence snapshot            64e5aadc15525eb0eb228f59edc4ce5402ea7e68
+C116 contract correction     5cb0b037799100189de08ff0bca38595c3fd0500
+Evidence snapshot            d6ebc20a76ca3760506953e622ee1fc0416b2511
 Push                         NO
 Deploy                       NO
 Seal/governance re-freeze    NO
@@ -119,24 +123,68 @@ generation and lease fencing.
 The single mutation changes only the new `REVOKE` back to `GRANT`. The direct
 proof becomes **0/1 RED** because the historical function executes and the
 required insufficient-privilege assertion is not raised. After restoration,
-the proof is present in both the **24/24** runtime gate and the **6/6** sentinel
-gate.
+the proof is present in the current **25/25** runtime gate and its predecessor
+**6/6** capability sentinel gate.
 
 This is a SQL capability-boundary proof. It does not claim an anonymous HTTP
 exploit, duplicate delivery, or process-restart recovery.
+
+## C116 contract disposition
+
+The retained `ExistingMatch + LeaseLost` RED was not a product failure. It was
+a valid ownership handoff rejected by an assertion that required one caller to
+expose the label `Sealed`.
+
+The production code permits two valid schedules after a single durable seal:
+
+```text
+same execution keeps finalize claim     -> Sealed + ExistingMatch/LeaseLost
+successor owns finalize claim first     -> ExistingMatch + LeaseLost
+```
+
+The corrected C116 contract no longer chooses a winning caller. It requires:
+
+- at least one completion/match outcome (`Sealed` or `ExistingMatch`);
+- every caller outcome to be one of `Sealed`, `ExistingMatch`, or `LeaseLost`;
+- no `PreparationConflict`;
+- one provider prepare, one finalize and zero aborts;
+- one durable preparation for the Job;
+- final job state `AssemblySealed` and C1 disposition `Finalized`.
+
+The new proof
+`PostSealRecovery_C116_claim_handoff_can_return_existing_match_plus_lease_lost_only_after_durable_finalize`
+controls the disputed schedule rather than waiting for it randomly:
+
+1. the original execution commits the seal and receives a retryable provider
+   failure;
+2. a successor owner/generation claims the same obligation;
+3. the successor is held inside provider finalize;
+4. replay by the displaced original owner returns `LeaseLost`;
+5. releasing the successor returns `ExistingMatch`;
+6. C2 is finalized, C1 is `Finalized`, the claim is completed with the
+   successor generation, owner/lease/backoff are cleared, no abort occurs, and
+   exactly one preparation/identity/item lineage remains with the same
+   attempt, fence and assembly fingerprint.
+
+The proof is **2/2 PASS twice** with C116 itself. A normal run also produced
+`Sealed + LeaseLost`, confirming that caller labels vary while the durable
+contract remains invariant. C101 independently retains the ordinary-path
+requirement that a non-contended execution returns `Sealed` and durable
+`Finalized` residue. No production source changed for this disposition.
 
 ## Current restored evidence
 
 ### Runtime correction gate
 
-`runs/correction4-runtime-restored-final/post-seal-correction4-runtime-restored-final.trx`
-is **24/24 PASS, zero skip**. It contains the complete current
+`runs/correction5-runtime-restored-final2/post-seal-correction5-runtime-restored-final2.trx`
+is **25/25 PASS, zero skip**. It contains the complete current
 `PostSealRecovery_*` set plus migration Up/Down/Reapply on the final restored
-source bytes. It includes the direct legacy capability proof.
+source bytes. It includes the direct legacy capability proof and controlled
+C116 handoff proof.
 
 ### Original sentinels requested by the independent review
 
-`runs/correction4-sentinels-restored/post-seal-correction4-sentinels-restored.trx`
+`runs/correction5-sentinels-restored-final2/post-seal-correction5-sentinels-restored-final2.trx`
 is **6/6 PASS, zero skip** and contains:
 
 ```text
@@ -145,7 +193,7 @@ C116_global_lock_subsequence_is_preserved
 C124_schema_function_owner_and_acl_shapes_are_exact
 C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only
 Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards
-PostSealRecovery_legacy_finalize_capability_cannot_bypass_current_claim
+PostSealRecovery_C116_claim_handoff_can_return_existing_match_plus_lease_lost_only_after_durable_finalize
 ```
 
 This corrects the predecessor packet's overstatement: C105/C116/C124/C126 were
@@ -239,21 +287,26 @@ tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs
 No SDK, API, raw-ingress, Agent, site-qualification, A3 partition/ledger,
 P29-P36 or project/solution source changed. C125 is untouched.
 
+The C116 disposition changes only
+`tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs`; its
+production/SDK delta is zero.
+
 ## Evidence accounting and portable hashing
 
-`failed_run_census_v1.tsv` classifies **99/99 failed results across 44 retained
-failed runs**. The final correction adds seven classified failures: one
+`failed_run_census_v1.tsv` classifies **101/101 failed results across 46 retained
+failed runs**. The legacy correction adds seven classified failures: one
 discriminating product mutation, three superseded combined-gate failures, one
 superseded migration-test syntax defect and two superseded E2E fixture/lifetime
-failures.
+failures. The C116 disposition adds one contract-characterization RED and one
+explicitly classified stale-test-binary execution; neither is product credit.
 
-`evidence_manifest_v1.tsv` contains **90 entries**. Every recorded SHA-256 and
+`evidence_manifest_v1.tsv` contains **99 entries**. Every recorded SHA-256 and
 byte count is over Git object content at evidence snapshot
-`64e5aadc15525eb0eb228f59edc4ce5402ea7e68`, identified per row as
-`GIT_OBJECT_CONTENT@64e5aad`. The reference verification procedure is:
+`d6ebc20a76ca3760506953e622ee1fc0416b2511`, identified per row as
+`GIT_OBJECT_CONTENT@d6ebc20`. The reference verification procedure is:
 
 ```text
-git cat-file blob 64e5aadc15525eb0eb228f59edc4ce5402ea7e68:<path>
+git cat-file blob d6ebc20a76ca3760506953e622ee1fc0416b2511:<path>
 → byte count and SHA-256 over those exact bytes
 ```
 
@@ -266,7 +319,8 @@ avoid a circular dependency.
 ```text
 POST-SEAL RECOVERY CORRECTION       TECHNICAL PASS / READY FOR REVIEW
 Legacy-finalize correction          d9c0e6cb090ef109920da007645d26df2243f1fa
-Evidence snapshot                   64e5aadc15525eb0eb228f59edc4ce5402ea7e68
+C116 contract correction            5cb0b037799100189de08ff0bca38595c3fd0500
+Evidence snapshot                   d6ebc20a76ca3760506953e622ee1fc0416b2511
 Seal/governance                     INTENTIONALLY STALE; NOT RE-MINTED
 Process kill / OS restart           NOT PROVEN
 C125                                OUT OF SCOPE / UNCHANGED
