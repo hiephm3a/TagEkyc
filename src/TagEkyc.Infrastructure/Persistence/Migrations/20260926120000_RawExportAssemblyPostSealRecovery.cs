@@ -175,8 +175,16 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
               candidate record; claim_ tagekyc.raw_export_assembly_post_seal_recovery_claims%ROWTYPE;
               now_ timestamptz; previous_context text; outcome_ text; claim_found boolean;
             BEGIN
-              IF p_claim_owner_id IS NULL OR p_claim_owner_id='00000000-0000-0000-0000-000000000000'::uuid
+              IF p_job_id IS NULL OR p_job_id='00000000-0000-0000-0000-000000000000'::uuid
+                 OR p_attempt_id IS NULL OR p_attempt_id='00000000-0000-0000-0000-000000000000'::uuid
+                 OR p_expected_job_revision IS NULL OR p_expected_job_revision<1
+                 OR p_expected_fence IS NULL OR p_expected_fence<1
+                 OR p_claim_owner_id IS NULL OR p_claim_owner_id='00000000-0000-0000-0000-000000000000'::uuid
                  OR p_lease_seconds NOT BETWEEN 1 AND 3600
+                 OR (p_assembly_digest IS NOT NULL AND pg_catalog.octet_length(p_assembly_digest)<>32)
+                 OR (p_manifest_digest IS NOT NULL AND pg_catalog.octet_length(p_manifest_digest)<>32)
+                 OR (p_authentication_value IS NOT NULL AND pg_catalog.octet_length(p_authentication_value)<>32)
+                 OR (p_assembly_fingerprint IS NOT NULL AND pg_catalog.octet_length(p_assembly_fingerprint)<>32)
               THEN RAISE EXCEPTION 'RAW_EXPORT_POST_SEAL_RECOVERY_CLAIM_INVALID'; END IF;
               now_:=pg_catalog.clock_timestamp();
               SELECT p."C2PreparationId",p."AssemblyId",p."JobId",p."AttemptId",p."FencingToken",
@@ -197,8 +205,9 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
               THEN RETURN QUERY SELECT 'NotFound'::text,NULL::uuid,NULL::uuid,NULL::uuid,NULL::uuid,NULL::bigint,
                 NULL::uuid,NULL::bigint,NULL::bigint,NULL::bigint,NULL::bytea,NULL::bytea,NULL::bytea,NULL::bytea,
                 NULL::bytea,NULL::text,NULL::timestamptz; RETURN; END IF;
-              IF candidate."AttemptId"<>p_attempt_id OR candidate."FencingToken"<>p_expected_fence
-                 OR candidate."Revision"<>p_expected_job_revision+1
+              IF candidate."AttemptId" IS DISTINCT FROM p_attempt_id
+                 OR candidate."FencingToken" IS DISTINCT FROM p_expected_fence
+                 OR candidate."Revision" IS DISTINCT FROM p_expected_job_revision+1
                  OR candidate."ExportMode" NOT IN (
                       'ExternalExportOnlyNoRetain','EncryptedExportPacket','EncryptedRawVaultRetained')
                  OR NOT EXISTS (SELECT 1 FROM tagekyc.raw_export_job_transitions t
@@ -206,17 +215,21 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
                       AND t."EventType"='AssemblySealed' AND t."FromState"='Assembling'
                       AND t."ToState"='AssemblySealed' AND t."AttemptId"=p_attempt_id
                       AND t."FencingToken"=p_expected_fence)
-                 OR (p_assembly_digest IS NOT NULL AND candidate."AssemblyDigest"<>p_assembly_digest)
-                 OR (p_manifest_digest IS NOT NULL AND candidate."ManifestDigest"<>p_manifest_digest)
-                 OR (p_authentication_value IS NOT NULL AND candidate."AssemblyAuthenticationValue"<>p_authentication_value)
-                 OR (p_assembly_fingerprint IS NOT NULL AND candidate."AssemblyFingerprint"<>p_assembly_fingerprint)
+                 OR (p_assembly_digest IS NOT NULL AND candidate."AssemblyDigest" IS DISTINCT FROM p_assembly_digest)
+                 OR (p_manifest_digest IS NOT NULL AND candidate."ManifestDigest" IS DISTINCT FROM p_manifest_digest)
+                 OR (p_authentication_value IS NOT NULL AND candidate."AssemblyAuthenticationValue" IS DISTINCT FROM p_authentication_value)
+                 OR (p_assembly_fingerprint IS NOT NULL AND candidate."AssemblyFingerprint" IS DISTINCT FROM p_assembly_fingerprint)
               THEN outcome_:='ExactMismatch';
               ELSIF candidate."Disposition"='Finalized' THEN outcome_:='Completed';
               ELSE
-                SELECT c.* INTO claim_
+              SELECT c.* INTO claim_
                 FROM tagekyc.raw_export_assembly_post_seal_recovery_claims AS c
                 WHERE c."C2PreparationId"=candidate."C2PreparationId" FOR UPDATE;
                 claim_found:=FOUND;
+                -- Admission time is sampled only after every row needed for the
+                -- ownership decision is locked. A waiter must not act on a lease
+                -- that expired while it was blocked acquiring these locks.
+                now_:=pg_catalog.clock_timestamp();
                 IF claim_found AND claim_."CompletedAtUtc" IS NOT NULL THEN outcome_:='Completed';
                 ELSIF claim_found AND claim_."ClaimOwnerId" IS DISTINCT FROM p_claim_owner_id
                       AND claim_."ClaimOwnerId" IS NOT NULL AND claim_."ClaimExpiresAtUtc">now_
@@ -272,14 +285,19 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
               claim_ tagekyc.raw_export_assembly_post_seal_recovery_claims%ROWTYPE;
               now_ timestamptz; retry_ timestamptz; previous_context text;
             BEGIN
-              IF p_retry_base_seconds NOT BETWEEN 1 AND 60 OR p_outcome IS NULL
+              IF p_c2_preparation_id IS NULL
+                 OR p_c2_preparation_id='00000000-0000-0000-0000-000000000000'::uuid
+                 OR p_claim_owner_id IS NULL
+                 OR p_claim_owner_id='00000000-0000-0000-0000-000000000000'::uuid
+                 OR p_claim_generation IS NULL OR p_claim_generation<1
+                 OR p_retry_base_seconds NOT BETWEEN 1 AND 60 OR p_outcome IS NULL
                  OR pg_catalog.length(p_outcome) NOT BETWEEN 1 AND 64
               THEN RAISE EXCEPTION 'RAW_EXPORT_POST_SEAL_RECOVERY_DEFER_INVALID'; END IF;
-              now_:=pg_catalog.clock_timestamp();
               SELECT p.* INTO prep FROM tagekyc.raw_export_assembly_preparation_dispositions AS p
                 WHERE p."C2PreparationId"=p_c2_preparation_id FOR UPDATE;
               SELECT c.* INTO claim_ FROM tagekyc.raw_export_assembly_post_seal_recovery_claims AS c
                 WHERE c."C2PreparationId"=p_c2_preparation_id FOR UPDATE;
+              now_:=pg_catalog.clock_timestamp();
               IF prep."Disposition"='Finalized' THEN
                 RETURN QUERY SELECT 'Completed'::text,claim_."ClaimGeneration",NULL::timestamptz; RETURN;
               END IF;
@@ -287,7 +305,8 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
                 RETURN QUERY SELECT 'NotPostSeal'::text,NULL::bigint,NULL::timestamptz; RETURN;
               END IF;
               IF claim_."C2PreparationId" IS NULL OR claim_."ClaimOwnerId" IS DISTINCT FROM p_claim_owner_id
-                 OR claim_."ClaimGeneration"<>p_claim_generation OR claim_."ClaimExpiresAtUtc"<=now_
+                 OR claim_."ClaimGeneration" IS DISTINCT FROM p_claim_generation
+                 OR claim_."ClaimExpiresAtUtc" IS NULL OR claim_."ClaimExpiresAtUtc"<=now_
               THEN RETURN QUERY SELECT 'ClaimLost'::text,claim_."ClaimGeneration",claim_."RetryNotBeforeUtc"; RETURN; END IF;
               retry_:=now_+pg_catalog.make_interval(secs=>LEAST(
                 300,p_retry_base_seconds*(1::integer << LEAST(claim_."FailureCount",5))));
@@ -315,18 +334,29 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
               claim_ tagekyc.raw_export_assembly_post_seal_recovery_claims%ROWTYPE;
               now_ timestamptz; previous_context text;
             BEGIN
-              now_:=pg_catalog.clock_timestamp();
+              IF p_c2_preparation_id IS NULL
+                 OR p_c2_preparation_id='00000000-0000-0000-0000-000000000000'::uuid
+                 OR p_expected_row_revision IS NULL OR p_expected_row_revision<1
+                 OR p_assembly_fingerprint IS NULL OR pg_catalog.octet_length(p_assembly_fingerprint)<>32
+                 OR p_claim_owner_id IS NULL
+                 OR p_claim_owner_id='00000000-0000-0000-0000-000000000000'::uuid
+                 OR p_claim_generation IS NULL OR p_claim_generation<1
+              THEN RAISE EXCEPTION 'RAW_EXPORT_POST_SEAL_RECOVERY_COMPLETE_INVALID'; END IF;
               SELECT p.* INTO prep FROM tagekyc.raw_export_assembly_preparation_dispositions AS p
                 WHERE p."C2PreparationId"=p_c2_preparation_id FOR UPDATE;
               SELECT c.* INTO claim_ FROM tagekyc.raw_export_assembly_post_seal_recovery_claims AS c
                 WHERE c."C2PreparationId"=p_c2_preparation_id FOR UPDATE;
-              IF prep."Disposition"='Finalized' AND prep."AssemblyFingerprint"=p_assembly_fingerprint
+              now_:=pg_catalog.clock_timestamp();
+              IF prep."Disposition"='Finalized'
+                 AND prep."AssemblyFingerprint" IS NOT DISTINCT FROM p_assembly_fingerprint
               THEN RETURN QUERY SELECT 'ExistingMatch'::text,prep."RowRevision"; RETURN; END IF;
-              IF prep."Disposition" IS DISTINCT FROM 'SealCommitted' OR prep."RowRevision"<>p_expected_row_revision
-                 OR prep."AssemblyFingerprint"<>p_assembly_fingerprint
+              IF prep."Disposition" IS DISTINCT FROM 'SealCommitted'
+                 OR prep."RowRevision" IS DISTINCT FROM p_expected_row_revision
+                 OR prep."AssemblyFingerprint" IS DISTINCT FROM p_assembly_fingerprint
               THEN RETURN QUERY SELECT 'StateConflict'::text,NULL::bigint; RETURN; END IF;
               IF claim_."C2PreparationId" IS NULL OR claim_."ClaimOwnerId" IS DISTINCT FROM p_claim_owner_id
-                 OR claim_."ClaimGeneration"<>p_claim_generation OR claim_."ClaimExpiresAtUtc"<=now_
+                 OR claim_."ClaimGeneration" IS DISTINCT FROM p_claim_generation
+                 OR claim_."ClaimExpiresAtUtc" IS NULL OR claim_."ClaimExpiresAtUtc"<=now_
               THEN RETURN QUERY SELECT 'ClaimLost'::text,NULL::bigint; RETURN; END IF;
               UPDATE tagekyc.raw_export_assembly_preparation_dispositions AS p SET
                 "Disposition"='Finalized',"FinalizedAtUtc"=now_,"RowRevision"=p."RowRevision"+1

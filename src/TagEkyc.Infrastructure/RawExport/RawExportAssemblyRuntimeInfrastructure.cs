@@ -139,7 +139,18 @@ internal sealed class ProtectedValueRawExportAssemblyAuthenticationProvider(
     }
 }
 
-internal sealed record RawExportAssemblyWorkerIdentity(Guid Value);
+internal sealed class RawExportAssemblyWorkerIdentity(Guid value)
+{
+    private long schedulingTurn;
+
+    internal Guid Value { get; } = value;
+
+    // The identity is singleton-scoped while work sources are scoped per poll.
+    // Keep the bounded mixed-queue schedule here so recovery cannot starve
+    // merely because each host iteration creates a fresh source instance.
+    internal bool PreferRecoveryThisTurn() =>
+        Interlocked.Increment(ref schedulingTurn) % 4 == 0;
+}
 
 internal sealed class DurableRawExportAssemblyWorkSource(
     IRawExportAssemblyConnectionFactory connections,
@@ -157,6 +168,13 @@ internal sealed class DurableRawExportAssemblyWorkSource(
     public async ValueTask<RawExportAssemblyExecutionRequest?> TryAcquireAsync(
         CancellationToken cancellationToken = default)
     {
+        var recoveryAlreadyProbed = worker.PreferRecoveryThisTurn();
+        if (recoveryAlreadyProbed)
+        {
+            var preferredRecovery = await TryAcquireRecoveryAsync(cancellationToken).ConfigureAwait(false);
+            if (preferredRecovery is not null) return preferredRecovery;
+        }
+
         await using var connection = await connections.OpenAsync(
             RawExportAssemblyDatabaseCapability.Resolver, cancellationToken).ConfigureAwait(false);
         await using var command = connection.CreateCommand();
@@ -166,21 +184,9 @@ internal sealed class DurableRawExportAssemblyWorkSource(
         if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
         {
             await reader.CloseAsync().ConfigureAwait(false);
-            var recovery = await assemblies.ClaimNextPostSealRecoveryAsync(
-                worker.Value, RecoveryLeaseSeconds, cancellationToken).ConfigureAwait(false);
-            if (recovery is null) return null;
-            if (recovery.Outcome != "Claimed" || recovery.JobId is null || recovery.AttemptId is null
-                || recovery.JobRevision is null || recovery.FencingToken is null
-                || recovery.ActorPrincipalId is null || recovery.ClaimGeneration is null)
-                throw new InvalidOperationException("RAW_EXPORT_POST_SEAL_RECOVERY_CLAIM_SHAPE_INVALID");
-            return new RawExportAssemblyExecutionRequest(
-                recovery.JobId.Value,
-                recovery.AttemptId.Value,
-                checked(recovery.JobRevision.Value - 1),
-                recovery.FencingToken.Value,
-                recovery.ActorPrincipalId.Value,
-                worker.Value,
-                recovery.ClaimGeneration.Value);
+            return recoveryAlreadyProbed
+                ? null
+                : await TryAcquireRecoveryAsync(cancellationToken).ConfigureAwait(false);
         }
 
         var jobId = reader.GetGuid(reader.GetOrdinal("JobId"));
@@ -215,6 +221,26 @@ internal sealed class DurableRawExportAssemblyWorkSource(
         return new RawExportAssemblyExecutionRequest(
             jobId, acquired.AttemptId.Value, acquired.Revision.Value,
             acquired.FencingToken.Value, actor.PrincipalId, worker.Value);
+    }
+
+    private async Task<RawExportAssemblyExecutionRequest?> TryAcquireRecoveryAsync(
+        CancellationToken cancellationToken)
+    {
+        var recovery = await assemblies.ClaimNextPostSealRecoveryAsync(
+            worker.Value, RecoveryLeaseSeconds, cancellationToken).ConfigureAwait(false);
+        if (recovery is null) return null;
+        if (recovery.Outcome != "Claimed" || recovery.JobId is null || recovery.AttemptId is null
+            || recovery.JobRevision is null || recovery.FencingToken is null
+            || recovery.ActorPrincipalId is null || recovery.ClaimGeneration is null)
+            throw new InvalidOperationException("RAW_EXPORT_POST_SEAL_RECOVERY_CLAIM_SHAPE_INVALID");
+        return new RawExportAssemblyExecutionRequest(
+            recovery.JobId.Value,
+            recovery.AttemptId.Value,
+            checked(recovery.JobRevision.Value - 1),
+            recovery.FencingToken.Value,
+            recovery.ActorPrincipalId.Value,
+            worker.Value,
+            recovery.ClaimGeneration.Value);
     }
 
     public async ValueTask RecordAsync(

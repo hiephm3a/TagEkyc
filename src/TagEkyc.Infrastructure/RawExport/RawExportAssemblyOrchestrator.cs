@@ -119,7 +119,18 @@ internal sealed class RawExportAssemblyOrchestrator(
             var pending = await repository.RecordPendingAsync(
                 preparationId, registered.RowRevision.Value, prepared.ProviderReceiptDigest, cancellationToken).ConfigureAwait(false);
             if (pending.Outcome is not ("Pending" or "ExistingMatch") || pending.RowRevision is null)
-                return Failure(Map(pending.Outcome), assemblyId, preparationId);
+            {
+                // Another exact execution may have crossed Pending, sealed and
+                // finalized while this execution was waiting in the provider.
+                // Credit that race only after matching the durable committed
+                // digest/authentication/fingerprint tuple.
+                var exactRecovery = await TryRecoverCommittedAsync(
+                    request,
+                    new(assemblyDigest, manifestDigest, authenticationValue, assemblyFingerprint),
+                    cancellationToken).ConfigureAwait(false);
+                return exactRecovery
+                    ?? Failure(Map(pending.Outcome), assemblyId, preparationId);
+            }
 
             RawExportAssemblySealMutation sealedResult;
             try
