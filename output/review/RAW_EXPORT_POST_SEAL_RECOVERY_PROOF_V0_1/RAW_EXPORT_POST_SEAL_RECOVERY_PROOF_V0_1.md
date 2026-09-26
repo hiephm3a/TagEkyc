@@ -43,7 +43,7 @@ Characterization commit     578590a290dff4a97eb2e9d1c406038d5930f3fb
 Correction commit           75c890347a013840c67646ce3e221e5b615b6270
 Review correction commit    b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b
 Final correction commit     d6e899c04d3f739062d3bb4d670f4a093c117357
-Evidence snapshot commit    4fbafd23c073bc4e6f1a0c81e151898eec18fb3a
+Evidence snapshot commit    1a845fc9eb43de5403346eedb78714b1d04cd868
 Push                        NO
 Deploy                      NO
 Seal/governance re-freeze   NO
@@ -373,9 +373,9 @@ as PASS.
 The report and manifest exclude their own hashes to avoid a circular
 dependency.
 
-The final manifest contains **77 entries**, all hashed from Git object content
-at evidence snapshot `4fbafd2`. The manifest's own Git-object-content SHA-256
-is `7173DEA12FA62687A7F38C50B017B93B984B3F4CD00E903B5A1B5A0ACE3F6792`.
+The final manifest contains **80 entries**, all hashed from Git object content
+at evidence snapshot `1a845fc`. The manifest's own Git-object-content SHA-256
+is `0DBB48633778BDC072A0DC8285FE97D95FE8FA7609791530E3A0CD452C70D70F`.
 That value, rather than a line-ending-converted working-tree hash, is the
 portable review identity.
 
@@ -386,7 +386,7 @@ POST-SEAL RECOVERY CORRECTION       TECHNICAL PASS / READY FOR REVIEW
 Correction commit                  75c890347a013840c67646ce3e221e5b615b6270
 Review correction commit           b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b
 Final correction commit            d6e899c04d3f739062d3bb4d670f4a093c117357
-Evidence snapshot commit           4fbafd23c073bc4e6f1a0c81e151898eec18fb3a
+Evidence snapshot commit           1a845fc9eb43de5403346eedb78714b1d04cd868
 Seal/governance                    INTENTIONALLY STALE; NOT RE-MINTED
 Process kill / OS restart          NOT PROVEN
 C125                               OUT OF SCOPE / UNCHANGED
