@@ -196,8 +196,9 @@ migration tripwires now point at this migration.
 ## Predecessor packet corrections
 
 The predecessor failed-run census is stated consistently as **13/13** before
-the first correction's runs are added. The consolidated successor census is
-now **74/74 across 31 retained failed runs**.
+the first correction's runs are added. The consolidated successor census,
+including the independent pre-correction investigation, is now **83/83 across
+34 retained failed runs**.
 
 `runs/sql-lock-final/post-seal-sql-lock-final.trx` retains the database query
 output for `raw_export_lock_job_for_attempt(uuid,uuid,uuid,bigint,bigint)`,
@@ -320,7 +321,7 @@ SDK surface.
 
 ## Evidence accounting and hashing
 
-`failed_run_census_v1.tsv` classifies **74/74** failed results across 31
+`failed_run_census_v1.tsv` classifies **83/83** failed results across 34
 retained runs. Mutation REDs and superseded harness failures are not relabeled
 as PASS.
 

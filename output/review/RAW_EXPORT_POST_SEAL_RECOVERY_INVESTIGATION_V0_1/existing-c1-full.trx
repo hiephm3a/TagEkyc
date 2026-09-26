@@ -1,0 +1,324 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="65268b3c-5fd6-413e-855a-03575817f7ee" name="3AVNN@LEARNPC 2026-09-25 21:41:45" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-25T21:41:45.4270381+07:00" queuing="2026-09-25T21:41:45.4270385+07:00" start="2026-09-25T21:41:27.5008527+07:00" finish="2026-09-25T21:44:10.5885352+07:00" />
+  <TestSettings name="default" id="0fb59cb7-1e43-49c2-86b3-7d92b0e42c75">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-25_21_41_45" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="1ace6f15-9ffc-4d46-9c41-9d4c7af730a1" testId="5fba6443-d442-0239-166b-473977c58daa" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" computerName="LEARNPC" duration="00:00:08.6985639" startTime="2026-09-25T21:42:38.7762342+07:00" endTime="2026-09-25T21:42:38.7762345+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ace6f15-9ffc-4d46-9c41-9d4c7af730a1" />
+    <UnitTestResult executionId="8b872eb0-13ab-4e0b-bb00-deb101dedb4a" testId="aa1f2c84-8f12-be0d-f4e8-75b256267bb8" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C118_exact_seal_replay_precedes_stale_revision" computerName="LEARNPC" duration="00:00:04.8364946" startTime="2026-09-25T21:42:25.2519771+07:00" endTime="2026-09-25T21:42:25.2519773+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8b872eb0-13ab-4e0b-bb00-deb101dedb4a" />
+    <UnitTestResult executionId="c7d5bb3e-e0a5-4a48-9380-457efa9f8be1" testId="40013f16-0a41-d1dc-bf25-6cf35a946d8d" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C107_typed_source_failure_partition_is_exact" computerName="LEARNPC" duration="00:00:00.0025011" startTime="2026-09-25T21:42:15.4375641+07:00" endTime="2026-09-25T21:42:15.4375641+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c7d5bb3e-e0a5-4a48-9380-457efa9f8be1" />
+    <UnitTestResult executionId="3e33f93b-aeec-473d-84b9-6f7698b1bb7b" testId="27f2594b-306c-ee21-d2ac-b425d3160373" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only" computerName="LEARNPC" duration="00:00:00.0088592" startTime="2026-09-25T21:42:15.4374398+07:00" endTime="2026-09-25T21:42:15.4374400+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3e33f93b-aeec-473d-84b9-6f7698b1bb7b">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+                                  ↓ (pos 25)&#xD;
+Expected: ···"RAW_EXPORT_ASSEMBLY_AUTHENTICATOR_UNAVAIL"···&#xD;
+Actual:   "PROD_RAW_EXPORT_ASSEMBLY_C2_UNAVAILABLE"&#xD;
+                                    ↑ (pos 25)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.AssertReadinessCodeAsync(IConfiguration configuration, Boolean isProduction, String expected, Action`1 configure) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1344&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1285&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c6d0d916-2998-4933-be8f-6bd8fb997a6a" testId="7b13cd34-b017-940c-fffa-7e2ddb897bef" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C123_abort_requires_durable_authorization" computerName="LEARNPC" duration="00:00:00.1080153" startTime="2026-09-25T21:42:15.5471719+07:00" endTime="2026-09-25T21:42:15.5471721+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c6d0d916-2998-4933-be8f-6bd8fb997a6a" />
+    <UnitTestResult executionId="43fdd224-be60-4d56-ab3d-29ce71ac82ee" testId="99d0154f-e992-7c27-fd15-4ae12535a224" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C117_post_lock_admission_clock_is_single_and_fresh" computerName="LEARNPC" duration="00:00:29.9851927" startTime="2026-09-25T21:42:15.3999495+07:00" endTime="2026-09-25T21:42:15.3999499+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="43fdd224-be60-4d56-ab3d-29ce71ac82ee" />
+    <UnitTestResult executionId="066919e7-7581-4320-96ff-fb22cab1a9eb" testId="0b2aab3c-b6d4-0a94-0977-d700fb770da8" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings" computerName="LEARNPC" duration="00:00:08.6518468" startTime="2026-09-25T21:43:59.4129112+07:00" endTime="2026-09-25T21:43:59.4129114+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="066919e7-7581-4320-96ff-fb22cab1a9eb" />
+    <UnitTestResult executionId="a41e21e5-3315-4074-814c-9d17a32a07ef" testId="467db7da-44a4-80b4-5718-0d1e597ba057" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present" computerName="LEARNPC" duration="00:00:04.0219424" startTime="2026-09-25T21:43:42.0429010+07:00" endTime="2026-09-25T21:43:42.0429013+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a41e21e5-3315-4074-814c-9d17a32a07ef">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : P0001: A3_CAPTURE_CURRENT_BODY_MISMATCH</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)&#xD;
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1255&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1266&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1273&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="1f09d34e-99fb-4953-a46b-7ab3cc0809ce" testId="043ea723-2ae5-7a8d-37ab-b58ac99186c3" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C109_pass_one_absolute_assembly_digest_vector" computerName="LEARNPC" duration="00:00:00.0009704" startTime="2026-09-25T21:43:42.0432076+07:00" endTime="2026-09-25T21:43:42.0432078+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1f09d34e-99fb-4953-a46b-7ab3cc0809ce" />
+    <UnitTestResult executionId="c31b0efd-8952-4771-a071-3f590c9ec18d" testId="7e28820f-8ce4-1940-2004-c83cd5a9105c" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C106_exact_object_is_reopened_without_public_locator_surface" computerName="LEARNPC" duration="00:00:04.8680599" startTime="2026-09-25T21:42:20.4153775+07:00" endTime="2026-09-25T21:42:20.4153776+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c31b0efd-8952-4771-a071-3f590c9ec18d" />
+    <UnitTestResult executionId="9df13a77-03a2-44f3-a2a1-c5f255b63a2d" testId="b814a71e-c259-3c60-7968-42cbcaaeb128" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C103_source_eligibility_is_closed_and_fail_closed" computerName="LEARNPC" duration="00:00:04.8186751" startTime="2026-09-25T21:42:30.0775238+07:00" endTime="2026-09-25T21:42:30.0775239+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9df13a77-03a2-44f3-a2a1-c5f255b63a2d" />
+    <UnitTestResult executionId="b3b8881c-3e92-4507-bd0b-941c68f68f67" testId="40cbe474-f262-fe11-47d7-7acd13235dc7" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved" computerName="LEARNPC" duration="00:00:04.7875207" startTime="2026-09-25T21:44:04.2610992+07:00" endTime="2026-09-25T21:44:04.2610998+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b3b8881c-3e92-4507-bd0b-941c68f68f67">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Contains() Failure: Filter not matched in collection&#xD;
+Collection: [RawExportAssemblyExecutionResult { Outcome = Sealed, AssemblyId = 52bf2006-1e27-5dc7-a872-44e829c74f6f, C2PreparationId = 6660cc00-86e3-5ff6-9616-00e32172398c, JobRevision = 2, PreparationRevision = 4 }, RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = 52bf2006-1e27-5dc7-a872-44e829c74f6f, C2PreparationId = 6660cc00-86e3-5ff6-9616-00e32172398c, JobRevision = , PreparationRevision =  }]</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 927&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 933&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 933&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="fc7ce21e-5e49-47e1-801b-ebecb201ce8f" testId="ce1f7299-262c-5964-51ce-797106f03b91" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C101_exact_selection_and_ordered_class_freeze" computerName="LEARNPC" duration="00:00:04.8645407" startTime="2026-09-25T21:43:38.0140705+07:00" endTime="2026-09-25T21:43:38.0140707+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fc7ce21e-5e49-47e1-801b-ebecb201ce8f" />
+    <UnitTestResult executionId="9cb606ad-fcdb-4a4f-9673-b1863ea8e697" testId="26ff2699-b9d7-25b0-3f16-0b3a39a39032" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact" computerName="LEARNPC" duration="00:00:00.0594631" startTime="2026-09-25T21:43:59.4724758+07:00" endTime="2026-09-25T21:43:59.4724759+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9cb606ad-fcdb-4a4f-9673-b1863ea8e697" />
+    <UnitTestResult executionId="102ca06b-b251-4ecc-ba92-79fe79a1bc13" testId="08288354-1e8b-a8d1-9ceb-0c8a0b39333c" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C108_r2_and_c1_share_framed_verification_service" computerName="LEARNPC" duration="00:00:00.0013969" startTime="2026-09-25T21:43:24.1330644+07:00" endTime="2026-09-25T21:43:24.1330647+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="102ca06b-b251-4ecc-ba92-79fe79a1bc13" />
+    <UnitTestResult executionId="a721da25-9ecd-4d53-aac2-c436786ae782" testId="3dea7acb-88e8-981b-c1e9-965522229029" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C114_preparing_is_durable_before_provider_call_and_recoverable" computerName="LEARNPC" duration="00:00:00.0049722" startTime="2026-09-25T21:42:25.2587194+07:00" endTime="2026-09-25T21:42:25.2587196+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a721da25-9ecd-4d53-aac2-c436786ae782" />
+    <UnitTestResult executionId="1eabfc40-f0db-4889-90fc-1e5ce15efc94" testId="ddc043d7-2798-35d6-96f2-5caabc6d13f0" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C115_pending_requires_exact_receipt_and_revision" computerName="LEARNPC" duration="00:00:00.1100217" startTime="2026-09-25T21:44:09.4362051+07:00" endTime="2026-09-25T21:44:09.4362052+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1eabfc40-f0db-4889-90fc-1e5ce15efc94" />
+    <UnitTestResult executionId="3f3d63e1-5106-4fa6-b0f8-557de0d4a3a4" testId="d098d702-9fa9-4e1c-dc3f-a7f2248f53b6" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C111_deterministic_identifiers_and_fingerprints_are_absolute" computerName="LEARNPC" duration="00:00:00.0015788" startTime="2026-09-25T21:42:25.2536555+07:00" endTime="2026-09-25T21:42:25.2536556+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3f3d63e1-5106-4fa6-b0f8-557de0d4a3a4" />
+    <UnitTestResult executionId="f65dc9aa-ddf0-4bac-a6de-cfbba9b6213d" testId="c11aaf1f-4023-7306-b98b-a6e827287115" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C104_frozen_binding_is_insert_once_and_exact_replay_only" computerName="LEARNPC" duration="00:00:10.3606868" startTime="2026-09-25T21:43:24.1316018+07:00" endTime="2026-09-25T21:43:24.1316021+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f65dc9aa-ddf0-4bac-a6de-cfbba9b6213d" />
+    <UnitTestResult executionId="05118ecc-cfdb-4453-a274-7240f7de92d8" testId="40439020-0b9a-5ba1-6bb8-d00b33795342" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read" computerName="LEARNPC" duration="00:00:09.0162316" startTime="2026-09-25T21:43:33.1494371+07:00" endTime="2026-09-25T21:43:33.1494374+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="05118ecc-cfdb-4453-a274-7240f7de92d8" />
+    <UnitTestResult executionId="bb9b99cf-a5cb-4b95-b023-0d241e1f14a1" testId="70eab0ec-aa9a-d8b1-0b75-897147b958a5" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C119_two_pass_streaming_has_no_complete_plaintext_buffer_or_temp_file" computerName="LEARNPC" duration="00:00:05.0653996" startTime="2026-09-25T21:44:09.3260888+07:00" endTime="2026-09-25T21:44:09.3260891+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bb9b99cf-a5cb-4b95-b023-0d241e1f14a1" />
+    <UnitTestResult executionId="a3c6f829-1704-47d4-9677-c9b994c2616b" testId="a9c0c154-040e-4950-852e-1374b96cc8d5" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_DurableWorkerIsARealProductCallerWithExplicitWorkSource" computerName="LEARNPC" duration="00:00:00.0016172" startTime="2026-09-25T21:43:02.9388066+07:00" endTime="2026-09-25T21:43:02.9388067+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a3c6f829-1704-47d4-9677-c9b994c2616b" />
+    <UnitTestResult executionId="ad68d75e-3f75-48eb-9405-d3f6ee94ebfa" testId="90d64e64-2841-35c2-9480-e2fa4323ad13" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C121_assembly_sealed_is_a_closed_job_state_and_event" computerName="LEARNPC" duration="00:00:10.8318755" startTime="2026-09-25T21:43:13.7707871+07:00" endTime="2026-09-25T21:43:13.7707872+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ad68d75e-3f75-48eb-9405-d3f6ee94ebfa" />
+    <UnitTestResult executionId="6c8221bb-2a32-4029-b8c5-bdb3b5a6d708" testId="efc3a1bc-e836-73c9-79a9-e1797fd7ea8d" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate" computerName="LEARNPC" duration="00:00:00.0075845" startTime="2026-09-25T21:43:42.0511367+07:00" endTime="2026-09-25T21:43:42.0511369+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6c8221bb-2a32-4029-b8c5-bdb3b5a6d708">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 10&#xD;
+Actual:   12</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 521&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 527&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 527&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="4923578c-02da-43c3-a119-86ccd1591036" testId="d8ea26f4-8314-b487-efcb-53d24b0f547e" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" computerName="LEARNPC" duration="00:00:24.1607421" startTime="2026-09-25T21:43:02.9371039+07:00" endTime="2026-09-25T21:43:02.9371042+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4923578c-02da-43c3-a119-86ccd1591036" />
+    <UnitTestResult executionId="5679760b-e348-451e-81e8-817622071383" testId="52ab1157-e8e5-ef13-639a-0e38781cc9e0" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare" computerName="LEARNPC" duration="00:00:08.7099328" startTime="2026-09-25T21:43:50.7609417+07:00" endTime="2026-09-25T21:43:50.7609422+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5679760b-e348-451e-81e8-817622071383" />
+    <UnitTestResult executionId="f5a9828c-82a2-4d21-a333-ab7f6e6d84f4" testId="4645fd3c-f690-118f-ac77-602d5e47f8d6" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C120_seal_commits_preparation_identity_items_head_and_event" computerName="LEARNPC" duration="00:00:06.2170227" startTime="2026-09-25T21:41:45.4094374+07:00" endTime="2026-09-25T21:41:45.4094497+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f5a9828c-82a2-4d21-a333-ab7f6e6d84f4" />
+    <UnitTestResult executionId="70765b6c-e723-4923-94a8-eb7469eb7b6c" testId="91aeb71c-5a92-82c3-c41a-eb394a0bd517" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C122_finalize_follows_committed_seal" computerName="LEARNPC" duration="00:00:00.0030397" startTime="2026-09-25T21:42:15.4390410+07:00" endTime="2026-09-25T21:42:15.4390410+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="70765b6c-e723-4923-94a8-eb7469eb7b6c" />
+    <UnitTestResult executionId="81e81e8b-aa18-4c08-9329-ecfa8b7568a9" testId="9eed02a8-84a1-096b-351c-725996ebf89e" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C110_manifest_and_authentication_absolute_vectors" computerName="LEARNPC" duration="00:00:00.0043720" startTime="2026-09-25T21:41:45.4160465+07:00" endTime="2026-09-25T21:41:45.4160466+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="81e81e8b-aa18-4c08-9329-ecfa8b7568a9" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C115_pending_requires_exact_receipt_and_revision" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ddc043d7-2798-35d6-96f2-5caabc6d13f0">
+      <Execution id="1eabfc40-f0db-4889-90fc-1e5ce15efc94" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C115_pending_requires_exact_receipt_and_revision" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C108_r2_and_c1_share_framed_verification_service" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="08288354-1e8b-a8d1-9ceb-0c8a0b39333c">
+      <Execution id="102ca06b-b251-4ecc-ba92-79fe79a1bc13" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C108_r2_and_c1_share_framed_verification_service" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0b2aab3c-b6d4-0a94-0977-d700fb770da8">
+      <Execution id="066919e7-7581-4320-96ff-fb22cab1a9eb" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C102_missing_duplicate_or_mismatched_source_has_zero_bindings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C101_exact_selection_and_ordered_class_freeze" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ce1f7299-262c-5964-51ce-797106f03b91">
+      <Execution id="fc7ce21e-5e49-47e1-801b-ebecb201ce8f" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C101_exact_selection_and_ordered_class_freeze" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="26ff2699-b9d7-25b0-3f16-0b3a39a39032">
+      <Execution id="9cb606ad-fcdb-4a4f-9673-b1863ea8e697" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C124_schema_function_owner_and_acl_shapes_are_exact" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_DurableWorkerIsARealProductCallerWithExplicitWorkSource" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="a9c0c154-040e-4950-852e-1374b96cc8d5">
+      <Execution id="a3c6f829-1704-47d4-9677-c9b994c2616b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_W2_DurableWorkerIsARealProductCallerWithExplicitWorkSource" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C111_deterministic_identifiers_and_fingerprints_are_absolute" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d098d702-9fa9-4e1c-dc3f-a7f2248f53b6">
+      <Execution id="3f3d63e1-5106-4fa6-b0f8-557de0d4a3a4" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C111_deterministic_identifiers_and_fingerprints_are_absolute" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C119_two_pass_streaming_has_no_complete_plaintext_buffer_or_temp_file" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="70eab0ec-aa9a-d8b1-0b75-897147b958a5">
+      <Execution id="bb9b99cf-a5cb-4b95-b023-0d241e1f14a1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C119_two_pass_streaming_has_no_complete_plaintext_buffer_or_temp_file" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="52ab1157-e8e5-ef13-639a-0e38781cc9e0">
+      <Execution id="5679760b-e348-451e-81e8-817622071383" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C113_second_fresh_barrier_immediately_precedes_prepare" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C122_finalize_follows_committed_seal" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="91aeb71c-5a92-82c3-c41a-eb394a0bd517">
+      <Execution id="70765b6c-e723-4923-94a8-eb7469eb7b6c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C122_finalize_follows_committed_seal" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C117_post_lock_admission_clock_is_single_and_fresh" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="99d0154f-e992-7c27-fd15-4ae12535a224">
+      <Execution id="43fdd224-be60-4d56-ab3d-29ce71ac82ee" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C117_post_lock_admission_clock_is_single_and_fresh" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="27f2594b-306c-ee21-d2ac-b425d3160373">
+      <Execution id="3e33f93b-aeec-473d-84b9-6f7698b1bb7b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C109_pass_one_absolute_assembly_digest_vector" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="043ea723-2ae5-7a8d-37ab-b58ac99186c3">
+      <Execution id="1f09d34e-99fb-4953-a46b-7ab3cc0809ce" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C109_pass_one_absolute_assembly_digest_vector" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C121_assembly_sealed_is_a_closed_job_state_and_event" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="90d64e64-2841-35c2-9480-e2fa4323ad13">
+      <Execution id="ad68d75e-3f75-48eb-9405-d3f6ee94ebfa" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C121_assembly_sealed_is_a_closed_job_state_and_event" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d8ea26f4-8314-b487-efcb-53d24b0f547e">
+      <Execution id="4923578c-02da-43c3-a119-86ccd1591036" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C118_exact_seal_replay_precedes_stale_revision" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="aa1f2c84-8f12-be0d-f4e8-75b256267bb8">
+      <Execution id="8b872eb0-13ab-4e0b-bb00-deb101dedb4a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C118_exact_seal_replay_precedes_stale_revision" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C107_typed_source_failure_partition_is_exact" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40013f16-0a41-d1dc-bf25-6cf35a946d8d">
+      <Execution id="c7d5bb3e-e0a5-4a48-9380-457efa9f8be1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C107_typed_source_failure_partition_is_exact" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C114_preparing_is_durable_before_provider_call_and_recoverable" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="3dea7acb-88e8-981b-c1e9-965522229029">
+      <Execution id="a721da25-9ecd-4d53-aac2-c436786ae782" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C114_preparing_is_durable_before_provider_call_and_recoverable" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C123_abort_requires_durable_authorization" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7b13cd34-b017-940c-fffa-7e2ddb897bef">
+      <Execution id="c6d0d916-2998-4933-be8f-6bd8fb997a6a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C123_abort_requires_durable_authorization" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C103_source_eligibility_is_closed_and_fail_closed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b814a71e-c259-3c60-7968-42cbcaaeb128">
+      <Execution id="9df13a77-03a2-44f3-a2a1-c5f255b63a2d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C103_source_eligibility_is_closed_and_fail_closed" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C106_exact_object_is_reopened_without_public_locator_surface" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7e28820f-8ce4-1940-2004-c83cd5a9105c">
+      <Execution id="c31b0efd-8952-4771-a071-3f590c9ec18d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C106_exact_object_is_reopened_without_public_locator_surface" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="efc3a1bc-e836-73c9-79a9-e1797fd7ea8d">
+      <Execution id="6c8221bb-2a32-4029-b8c5-bdb3b5a6d708" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C105_resolver_and_sealer_acl_manifests_are_separate" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="467db7da-44a4-80b4-5718-0d1e597ba057">
+      <Execution id="a41e21e5-3315-4074-814c-9d17a32a07ef" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C125_migration_model_is_clean_and_b4_down_contract_is_present" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C110_manifest_and_authentication_absolute_vectors" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9eed02a8-84a1-096b-351c-725996ebf89e">
+      <Execution id="81e81e8b-aa18-4c08-9329-ecfa8b7568a9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C110_manifest_and_authentication_absolute_vectors" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40cbe474-f262-fe11-47d7-7acd13235dc7">
+      <Execution id="b3b8881c-3e92-4507-bd0b-941c68f68f67" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C116_global_lock_subsequence_is_preserved" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5fba6443-d442-0239-166b-473977c58daa">
+      <Execution id="1ace6f15-9ffc-4d46-9c41-9d4c7af730a1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C104_frozen_binding_is_insert_once_and_exact_replay_only" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="c11aaf1f-4023-7306-b98b-a6e827287115">
+      <Execution id="f65dc9aa-ddf0-4bac-a6de-cfbba9b6213d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C104_frozen_binding_is_insert_once_and_exact_replay_only" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40439020-0b9a-5ba1-6bb8-d00b33795342">
+      <Execution id="05118ecc-cfdb-4453-a274-7240f7de92d8" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C112_first_fresh_barrier_precedes_source_read" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C120_seal_commits_preparation_identity_items_head_and_event" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="4645fd3c-f690-118f-ac77-602d5e47f8d6">
+      <Execution id="f5a9828c-82a2-4d21-a333-ab7f6e6d84f4" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C120_seal_commits_preparation_identity_items_head_and_event" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="5fba6443-d442-0239-166b-473977c58daa" executionId="1ace6f15-9ffc-4d46-9c41-9d4c7af730a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="aa1f2c84-8f12-be0d-f4e8-75b256267bb8" executionId="8b872eb0-13ab-4e0b-bb00-deb101dedb4a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40013f16-0a41-d1dc-bf25-6cf35a946d8d" executionId="c7d5bb3e-e0a5-4a48-9380-457efa9f8be1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="27f2594b-306c-ee21-d2ac-b425d3160373" executionId="3e33f93b-aeec-473d-84b9-6f7698b1bb7b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7b13cd34-b017-940c-fffa-7e2ddb897bef" executionId="c6d0d916-2998-4933-be8f-6bd8fb997a6a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="99d0154f-e992-7c27-fd15-4ae12535a224" executionId="43fdd224-be60-4d56-ab3d-29ce71ac82ee" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0b2aab3c-b6d4-0a94-0977-d700fb770da8" executionId="066919e7-7581-4320-96ff-fb22cab1a9eb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="467db7da-44a4-80b4-5718-0d1e597ba057" executionId="a41e21e5-3315-4074-814c-9d17a32a07ef" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="043ea723-2ae5-7a8d-37ab-b58ac99186c3" executionId="1f09d34e-99fb-4953-a46b-7ab3cc0809ce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7e28820f-8ce4-1940-2004-c83cd5a9105c" executionId="c31b0efd-8952-4771-a071-3f590c9ec18d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b814a71e-c259-3c60-7968-42cbcaaeb128" executionId="9df13a77-03a2-44f3-a2a1-c5f255b63a2d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40cbe474-f262-fe11-47d7-7acd13235dc7" executionId="b3b8881c-3e92-4507-bd0b-941c68f68f67" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ce1f7299-262c-5964-51ce-797106f03b91" executionId="fc7ce21e-5e49-47e1-801b-ebecb201ce8f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="26ff2699-b9d7-25b0-3f16-0b3a39a39032" executionId="9cb606ad-fcdb-4a4f-9673-b1863ea8e697" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="08288354-1e8b-a8d1-9ceb-0c8a0b39333c" executionId="102ca06b-b251-4ecc-ba92-79fe79a1bc13" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3dea7acb-88e8-981b-c1e9-965522229029" executionId="a721da25-9ecd-4d53-aac2-c436786ae782" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ddc043d7-2798-35d6-96f2-5caabc6d13f0" executionId="1eabfc40-f0db-4889-90fc-1e5ce15efc94" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d098d702-9fa9-4e1c-dc3f-a7f2248f53b6" executionId="3f3d63e1-5106-4fa6-b0f8-557de0d4a3a4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c11aaf1f-4023-7306-b98b-a6e827287115" executionId="f65dc9aa-ddf0-4bac-a6de-cfbba9b6213d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40439020-0b9a-5ba1-6bb8-d00b33795342" executionId="05118ecc-cfdb-4453-a274-7240f7de92d8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="70eab0ec-aa9a-d8b1-0b75-897147b958a5" executionId="bb9b99cf-a5cb-4b95-b023-0d241e1f14a1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a9c0c154-040e-4950-852e-1374b96cc8d5" executionId="a3c6f829-1704-47d4-9677-c9b994c2616b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="90d64e64-2841-35c2-9480-e2fa4323ad13" executionId="ad68d75e-3f75-48eb-9405-d3f6ee94ebfa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="efc3a1bc-e836-73c9-79a9-e1797fd7ea8d" executionId="6c8221bb-2a32-4029-b8c5-bdb3b5a6d708" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d8ea26f4-8314-b487-efcb-53d24b0f547e" executionId="4923578c-02da-43c3-a119-86ccd1591036" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="52ab1157-e8e5-ef13-639a-0e38781cc9e0" executionId="5679760b-e348-451e-81e8-817622071383" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4645fd3c-f690-118f-ac77-602d5e47f8d6" executionId="f5a9828c-82a2-4d21-a333-ab7f6e6d84f4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="91aeb71c-5a92-82c3-c41a-eb394a0bd517" executionId="70765b6c-e723-4923-94a8-eb7469eb7b6c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9eed02a8-84a1-096b-351c-725996ebf89e" executionId="81e81e8b-aa18-4c08-9329-ecfa8b7568a9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="29" executed="29" passed="25" failed="4" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.14]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.28]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.28]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:47.62]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:47.62]                                         ↓ (pos 25)&#xD;
+[xUnit.net 00:00:47.62]       Expected: ···"RAW_EXPORT_ASSEMBLY_AUTHENTICATOR_UNAVAIL"···&#xD;
+[xUnit.net 00:00:47.62]       Actual:   "PROD_RAW_EXPORT_ASSEMBLY_C2_UNAVAILABLE"&#xD;
+[xUnit.net 00:00:47.62]                                           ↑ (pos 25)&#xD;
+[xUnit.net 00:00:47.62]       Stack Trace:&#xD;
+[xUnit.net 00:00:47.62]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1344,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.AssertReadinessCodeAsync(IConfiguration configuration, Boolean isProduction, String expected, Action`1 configure)&#xD;
+[xUnit.net 00:00:47.62]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1285,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only()&#xD;
+[xUnit.net 00:00:47.62]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:02:14.22]       Npgsql.PostgresException : P0001: A3_CAPTURE_CURRENT_BODY_MISMATCH&#xD;
+[xUnit.net 00:02:14.22]       Stack Trace:&#xD;
+[xUnit.net 00:02:14.22]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:02:14.22]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:02:14.22]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]            at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:14.22]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1255,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present()&#xD;
+[xUnit.net 00:02:14.22]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1266,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present()&#xD;
+[xUnit.net 00:02:14.22]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1273,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present()&#xD;
+[xUnit.net 00:02:14.22]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:02:14.23]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:02:14.23]       Expected: 10&#xD;
+[xUnit.net 00:02:14.23]       Actual:   12&#xD;
+[xUnit.net 00:02:14.23]       Stack Trace:&#xD;
+[xUnit.net 00:02:14.23]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(521,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate()&#xD;
+[xUnit.net 00:02:14.23]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(527,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate()&#xD;
+[xUnit.net 00:02:14.23]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(527,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate()&#xD;
+[xUnit.net 00:02:14.23]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:02:36.44]       Assert.Contains() Failure: Filter not matched in collection&#xD;
+[xUnit.net 00:02:36.44]       Collection: [RawExportAssemblyExecutionResult { Outcome = Sealed, AssemblyId = 52bf2006-1e27-5dc7-a872-44e829c74f6f, C2PreparationId = 6660cc00-86e3-5ff6-9616-00e32172398c, JobRevision = 2, PreparationRevision = 4 }, RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = 52bf2006-1e27-5dc7-a872-44e829c74f6f, C2PreparationId = 6660cc00-86e3-5ff6-9616-00e32172398c, JobRevision = , PreparationRevision =  }]&#xD;
+[xUnit.net 00:02:36.44]       Stack Trace:&#xD;
+[xUnit.net 00:02:36.44]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(927,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved()&#xD;
+[xUnit.net 00:02:36.44]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(933,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved()&#xD;
+[xUnit.net 00:02:36.44]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(933,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved()&#xD;
+[xUnit.net 00:02:36.44]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:02:42.71]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T21:42:15.4361205+07:00">
+        <Text>[xUnit.net 00:00:47.62]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T21:43:42.0421577+07:00">
+        <Text>[xUnit.net 00:02:14.22]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T21:43:42.0511315+07:00">
+        <Text>[xUnit.net 00:02:14.23]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T21:44:04.2608218+07:00">
+        <Text>[xUnit.net 00:02:36.44]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
