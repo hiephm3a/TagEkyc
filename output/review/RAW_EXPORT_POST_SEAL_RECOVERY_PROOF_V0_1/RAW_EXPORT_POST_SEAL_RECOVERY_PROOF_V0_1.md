@@ -216,8 +216,8 @@ The predecessor failed-run census is stated consistently as **13/13** before
 the first correction's runs are added. The consolidated successor census,
 including the independent pre-correction investigation, is now **83/83 across
 34 retained failed runs before the final review correction. The final census
-is **86/86 across 36 retained failed runs** after adding the two discriminating
-R1/R2 mutation runs.
+is **92/92 across 39 retained failed runs** after adding the two discriminating
+R1/R2 mutation runs and retaining three non-creditable intermediate runs.
 
 `runs/sql-lock-final/post-seal-sql-lock-final.trx` retains the database query
 output for `raw_export_lock_job_for_attempt(uuid,uuid,uuid,bigint,bigint)`,
@@ -233,6 +233,12 @@ contains the complete current `PostSealRecovery_*` runtime set and the focused
 migration Up/Down/Reapply proofs in one retained run. The previous separate
 20/20 runtime and 1/1 migration gates remain predecessor evidence, not counters
 summed to manufacture the final result.
+
+Three additional correction-3 failures are retained but receive no product
+credit: a helper that read the GUC result instead of the row-lock sentinel, a
+fixture stream failure before test execution, and a rejected experiment that
+locked the preparation row and was therefore skipped by production
+`SKIP LOCKED`. None is relabeled as a product mutation.
 
 The current proof covers:
 
@@ -352,7 +358,7 @@ describe the corrected behavior rather than the historical failure.
 
 ## Evidence accounting and hashing
 
-`failed_run_census_v1.tsv` classifies **86/86** failed results across 36
+`failed_run_census_v1.tsv` classifies **92/92** failed results across 39
 retained runs. Mutation REDs and superseded harness failures are not relabeled
 as PASS.
 

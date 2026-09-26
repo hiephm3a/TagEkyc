@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="ba4bd761-5972-467e-9727-98aef6f33d14" name="3AVNN@LEARNPC 2026-09-26 15:25:00" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-26T15:25:00.1908568+07:00" queuing="2026-09-26T15:25:00.1908569+07:00" start="2026-09-26T15:24:40.3912164+07:00" finish="2026-09-26T15:25:00.1949931+07:00" />
+  <TestSettings name="default" id="bf406d7e-e8b5-4655-86f9-ac265046c743">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-26_15_25_00" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="bba57ff5-bcaa-40c1-9f51-d12029d3d658" testId="12158021-f1b0-cf52-0196-97a314b8356e" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_overwrite_claim_acquired_after_candidate_snapshot" computerName="LEARNPC" duration="00:00:00.0010000" startTime="2026-09-26T15:24:59.9788560+07:00" endTime="2026-09-26T15:24:59.9788685+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bba57ff5-bcaa-40c1-9f51-d12029d3d658">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.NpgsqlException : Exception while reading from stream&#xD;
+---- System.IO.EndOfStreamException : Attempted to read past the end of the stream.</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlReadBuffer.&lt;Ensure&gt;g__EnsureLong|55_0(NpgsqlReadBuffer buffer, Int32 count, Boolean async, Boolean readingNotifications)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)&#xD;
+   at Npgsql.Internal.NpgsqlConnector.RawOpen(SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)&#xD;
+   at Npgsql.Internal.NpgsqlConnector.&lt;Open&gt;g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)&#xD;
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+   at Npgsql.PoolingDataSource.&lt;Get&gt;g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlConnection.&lt;Open&gt;g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.BootstrapClusterPrerequisitesAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 121&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.BootstrapClusterPrerequisitesAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 171&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.ResetDatabaseAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 48&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 34&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 39&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Npgsql.Internal.NpgsqlReadBuffer.&lt;Ensure&gt;g__EnsureLong|55_0(NpgsqlReadBuffer buffer, Int32 count, Boolean async, Boolean readingNotifications)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="3ae185b4-b731-4020-b8f7-27c6698a531e" testId="34046a72-c4a0-d335-5851-1a85e201deff" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_clear_backoff_deferred_after_candidate_snapshot" computerName="LEARNPC" duration="00:00:00.0010000" startTime="2026-09-26T15:24:59.9818385+07:00" endTime="2026-09-26T15:24:59.9818387+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3ae185b4-b731-4020-b8f7-27c6698a531e">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.NpgsqlException : Exception while reading from stream&#xD;
+---- System.IO.EndOfStreamException : Attempted to read past the end of the stream.</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlReadBuffer.&lt;Ensure&gt;g__EnsureLong|55_0(NpgsqlReadBuffer buffer, Int32 count, Boolean async, Boolean readingNotifications)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)&#xD;
+   at Npgsql.Internal.NpgsqlConnector.RawOpen(SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)&#xD;
+   at Npgsql.Internal.NpgsqlConnector.&lt;Open&gt;g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)&#xD;
+   at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+   at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+   at Npgsql.PoolingDataSource.&lt;Get&gt;g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlConnection.&lt;Open&gt;g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.BootstrapClusterPrerequisitesAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 121&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.BootstrapClusterPrerequisitesAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 171&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.ResetDatabaseAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 48&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 34&#xD;
+   at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs:line 39&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Npgsql.Internal.NpgsqlReadBuffer.&lt;Ensure&gt;g__EnsureLong|55_0(NpgsqlReadBuffer buffer, Int32 count, Boolean async, Boolean readingNotifications)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_clear_backoff_deferred_after_candidate_snapshot" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="34046a72-c4a0-d335-5851-1a85e201deff">
+      <Execution id="3ae185b4-b731-4020-b8f7-27c6698a531e" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_claim_next_does_not_clear_backoff_deferred_after_candidate_snapshot" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_overwrite_claim_acquired_after_candidate_snapshot" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="12158021-f1b0-cf52-0196-97a314b8356e">
+      <Execution id="bba57ff5-bcaa-40c1-9f51-d12029d3d658" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_claim_next_does_not_overwrite_claim_acquired_after_candidate_snapshot" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="12158021-f1b0-cf52-0196-97a314b8356e" executionId="bba57ff5-bcaa-40c1-9f51-d12029d3d658" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="34046a72-c4a0-d335-5851-1a85e201deff" executionId="3ae185b4-b731-4020-b8f7-27c6698a531e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="2" executed="2" passed="0" failed="2" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.65]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.82]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.83]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:19.25]       Npgsql.NpgsqlException : Exception while reading from stream&#xD;
+[xUnit.net 00:00:19.25]       ---- System.IO.EndOfStreamException : Attempted to read past the end of the stream.&#xD;
+[xUnit.net 00:00:19.25]       Stack Trace:&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlReadBuffer.&lt;Ensure&gt;g__EnsureLong|55_0(NpgsqlReadBuffer buffer, Int32 count, Boolean async, Boolean readingNotifications)&#xD;
+[xUnit.net 00:00:19.25]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlConnector.RawOpen(SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlConnector.&lt;Open&gt;g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.PoolingDataSource.&lt;Get&gt;g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.NpgsqlConnection.&lt;Open&gt;g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(121,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.BootstrapClusterPrerequisitesAsync()&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(171,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.BootstrapClusterPrerequisitesAsync()&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(48,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.ResetDatabaseAsync()&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(34,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync()&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(39,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync()&#xD;
+[xUnit.net 00:00:19.25]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlReadBuffer.&lt;Ensure&gt;g__EnsureLong|55_0(NpgsqlReadBuffer buffer, Int32 count, Boolean async, Boolean readingNotifications)&#xD;
+[xUnit.net 00:00:19.25]       Npgsql.NpgsqlException : Exception while reading from stream&#xD;
+[xUnit.net 00:00:19.25]       ---- System.IO.EndOfStreamException : Attempted to read past the end of the stream.&#xD;
+[xUnit.net 00:00:19.25]       Stack Trace:&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlReadBuffer.&lt;Ensure&gt;g__EnsureLong|55_0(NpgsqlReadBuffer buffer, Int32 count, Boolean async, Boolean readingNotifications)&#xD;
+[xUnit.net 00:00:19.25]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource.GetResult(Int16 token)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlConnector.RawOpen(SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlConnector.&lt;Open&gt;g__OpenCore|213_1(NpgsqlConnector conn, SslMode sslMode, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken, Boolean isFirstAttempt)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlConnector.Open(NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.PoolingDataSource.OpenNewConnector(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.PoolingDataSource.&lt;Get&gt;g__RentAsync|34_0(NpgsqlConnection conn, NpgsqlTimeout timeout, Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.NpgsqlConnection.&lt;Open&gt;g__OpenAsync|42_0(Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(121,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.BootstrapClusterPrerequisitesAsync()&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(171,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.BootstrapClusterPrerequisitesAsync()&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(48,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.ResetDatabaseAsync()&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(34,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync()&#xD;
+[xUnit.net 00:00:19.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\PostgresPersistenceFixture.cs(39,0): at TagEkyc.IntegrationTests.PostgresPersistenceFixture.InitializeAsync()&#xD;
+[xUnit.net 00:00:19.25]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:19.25]            at Npgsql.Internal.NpgsqlReadBuffer.&lt;Ensure&gt;g__EnsureLong|55_0(NpgsqlReadBuffer buffer, Int32 count, Boolean async, Boolean readingNotifications)&#xD;
+[xUnit.net 00:00:19.40]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T15:24:59.9765180+07:00">
+        <Text>[xUnit.net 00:00:19.25]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_overwrite_claim_acquired_after_candidate_snapshot [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T15:24:59.9814032+07:00">
+        <Text>[xUnit.net 00:00:19.25]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_clear_backoff_deferred_after_candidate_snapshot [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
