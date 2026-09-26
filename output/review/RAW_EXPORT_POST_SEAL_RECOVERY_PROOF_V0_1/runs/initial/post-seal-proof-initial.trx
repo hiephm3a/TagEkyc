@@ -1,0 +1,329 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="f67eda20-81c8-40ef-b682-8c7a1d4d5602" name="3AVNN@LEARNPC 2026-09-25 23:30:03" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-25T23:30:03.6420203+07:00" queuing="2026-09-25T23:30:03.6420206+07:00" start="2026-09-25T23:29:45.9413527+07:00" finish="2026-09-25T23:31:08.5515566+07:00" />
+  <TestSettings name="default" id="e91c1281-31d4-4fe3-aab1-acfd754fae0e">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-25_23_30_03" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="99ea398c-38ba-416a-a172-931ae0575303" testId="1b34b26d-9dda-5b7d-fc43-c1a82bcda9cf" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it" computerName="LEARNPC" duration="00:00:06.0307259" startTime="2026-09-25T23:30:03.6247793+07:00" endTime="2026-09-25T23:30:03.6247919+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="99ea398c-38ba-416a-a172-931ae0575303" />
+    <UnitTestResult executionId="c08d139c-135f-4e18-90c7-7e92ed82807a" testId="0bf0734e-add8-f192-7e48-4a921b7e4e63" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation" computerName="LEARNPC" duration="00:00:09.5537467" startTime="2026-09-25T23:30:17.9646494+07:00" endTime="2026-09-25T23:30:17.9646497+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c08d139c-135f-4e18-90c7-7e92ed82807a" />
+    <UnitTestResult executionId="705b2442-aa9c-427d-847e-7429782d15d0" testId="70760c9c-2ddc-06bc-6ae9-f07be2d70933" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host" computerName="LEARNPC" duration="00:00:04.7775198" startTime="2026-09-25T23:30:08.4027265+07:00" endTime="2026-09-25T23:30:08.4027271+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="705b2442-aa9c-427d-847e-7429782d15d0" />
+    <UnitTestResult executionId="4b2108bb-f771-4f6c-8d2f-21bf145b5c7d" testId="17f8ab89-dd05-6e0a-cb23-34dbf913ba0a" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision" computerName="LEARNPC" duration="00:00:03.6398872" startTime="2026-09-25T23:31:07.3364935+07:00" endTime="2026-09-25T23:31:07.3364936+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4b2108bb-f771-4f6c-8d2f-21bf145b5c7d">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 9520040a-aae3-45ca-a101-7f9ed3635eff&#xD;
+Actual:   a214a8a6-52dd-421c-bf23-862b926b317e</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 227&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 282&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1451&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="39ed59fd-73e1-421f-a987-435d72cbb82e" testId="3111536d-cf73-fe3a-d4d7-49849708b5b6" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation" computerName="LEARNPC" duration="00:00:03.5774032" startTime="2026-09-25T23:30:56.3704678+07:00" endTime="2026-09-25T23:30:56.3704680+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="39ed59fd-73e1-421f-a987-435d72cbb82e">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: fdbd3559-ebee-4452-aeff-f04d314b40d3&#xD;
+Actual:   3299d318-a249-4240-836f-f1394da38eb7</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 227&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 282&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1377&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="199aa27c-42c6-4ccd-9398-b24101e0ca00" testId="7953d93e-68f9-3f8b-12cd-30c4c69d2f66" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: True, expectedOutcome: ProviderOutcomeUnknown)" computerName="LEARNPC" duration="00:00:03.5932972" startTime="2026-09-25T23:30:59.9638900+07:00" endTime="2026-09-25T23:30:59.9638902+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="199aa27c-42c6-4ccd-9398-b24101e0ca00">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: a28866ea-1fb6-4cf7-92ec-bce196a2ef82&#xD;
+Actual:   fdbd3559-ebee-4452-aeff-f04d314b40d3</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 227&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 282&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1428&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="02a530df-cfac-4eb1-a481-e3e73be5860f" testId="a58686c2-2b92-de32-f8d1-71c6ff3d341b" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard" computerName="LEARNPC" duration="00:00:34.8250517" startTime="2026-09-25T23:30:52.7920054+07:00" endTime="2026-09-25T23:30:52.7920056+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="02a530df-cfac-4eb1-a481-e3e73be5860f">
+      <Output>
+        <ErrorInfo>
+          <Message>System.TimeoutException : The operation has timed out.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.FinalizeRaceCoordinator.EnterAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2518&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.BoundedFixtureC2Provider.FinalizeAsync(Guid c2PreparationId, Byte[] fingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2634&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.FinalizeOrRecoverAsync(IC2AssemblyPreparationProvider c2, Guid preparationId, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 250&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 130&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1564&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1577&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1577&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="e066825f-fb70-40c5-bf98-638a5817e39b" testId="d9a1aa12-85c0-81c9-5cc7-89290a9587ad" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured" computerName="LEARNPC" duration="00:00:00.0038706" startTime="2026-09-25T23:30:08.4142327+07:00" endTime="2026-09-25T23:30:08.4142329+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e066825f-fb70-40c5-bf98-638a5817e39b">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : 42P01: relation "tagekyc.__EFMigrationsHistory" does not exist&#xD;
+&#xD;
+POSITION: 27</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1593&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1608&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1608&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="88e14f46-89ff-4452-8d7f-36d7b521b46d" testId="8a9c4c91-8aa5-e2b7-64b8-67038d4321a1" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: False, expectedOutcome: ProviderUnavailable)" computerName="LEARNPC" duration="00:00:03.7318899" startTime="2026-09-25T23:31:03.6962016+07:00" endTime="2026-09-25T23:31:03.6962018+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="88e14f46-89ff-4452-8d7f-36d7b521b46d">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: a214a8a6-52dd-421c-bf23-862b926b317e&#xD;
+Actual:   a28866ea-1fb6-4cf7-92ec-bce196a2ef82</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 227&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 282&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1428&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="17f8ab89-dd05-6e0a-cb23-34dbf913ba0a">
+      <Execution id="4b2108bb-f771-4f6c-8d2f-21bf145b5c7d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="70760c9c-2ddc-06bc-6ae9-f07be2d70933">
+      <Execution id="705b2442-aa9c-427d-847e-7429782d15d0" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="1b34b26d-9dda-5b7d-fc43-c1a82bcda9cf">
+      <Execution id="99ea398c-38ba-416a-a172-931ae0575303" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: False, expectedOutcome: ProviderUnavailable)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="8a9c4c91-8aa5-e2b7-64b8-67038d4321a1">
+      <Execution id="88e14f46-89ff-4452-8d7f-36d7b521b46d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: True, expectedOutcome: ProviderOutcomeUnknown)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7953d93e-68f9-3f8b-12cd-30c4c69d2f66">
+      <Execution id="199aa27c-42c6-4ccd-9398-b24101e0ca00" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0bf0734e-add8-f192-7e48-4a921b7e4e63">
+      <Execution id="c08d139c-135f-4e18-90c7-7e92ed82807a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="a58686c2-2b92-de32-f8d1-71c6ff3d341b">
+      <Execution id="02a530df-cfac-4eb1-a481-e3e73be5860f" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d9a1aa12-85c0-81c9-5cc7-89290a9587ad">
+      <Execution id="e066825f-fb70-40c5-bf98-638a5817e39b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_current_database_sql_and_security_metadata_are_captured" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="3111536d-cf73-fe3a-d4d7-49849708b5b6">
+      <Execution id="39ed59fd-73e1-421f-a987-435d72cbb82e" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="1b34b26d-9dda-5b7d-fc43-c1a82bcda9cf" executionId="99ea398c-38ba-416a-a172-931ae0575303" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0bf0734e-add8-f192-7e48-4a921b7e4e63" executionId="c08d139c-135f-4e18-90c7-7e92ed82807a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="70760c9c-2ddc-06bc-6ae9-f07be2d70933" executionId="705b2442-aa9c-427d-847e-7429782d15d0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="17f8ab89-dd05-6e0a-cb23-34dbf913ba0a" executionId="4b2108bb-f771-4f6c-8d2f-21bf145b5c7d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3111536d-cf73-fe3a-d4d7-49849708b5b6" executionId="39ed59fd-73e1-421f-a987-435d72cbb82e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7953d93e-68f9-3f8b-12cd-30c4c69d2f66" executionId="199aa27c-42c6-4ccd-9398-b24101e0ca00" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a58686c2-2b92-de32-f8d1-71c6ff3d341b" executionId="02a530df-cfac-4eb1-a481-e3e73be5860f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d9a1aa12-85c0-81c9-5cc7-89290a9587ad" executionId="e066825f-fb70-40c5-bf98-638a5817e39b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8a9c4c91-8aa5-e2b7-64b8-67038d4321a1" executionId="88e14f46-89ff-4452-8d7f-36d7b521b46d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="9" executed="9" passed="3" failed="6" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.25]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.38]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.39]   Starting:    TagEkyc.IntegrationTests&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Production&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0&#xD;
+fail: Microsoft.Extensions.Hosting.Internal.Host[9]&#xD;
+      BackgroundService failed&#xD;
+      TagEkyc.Domain.RawExportJobException: RAW_EXPORT_JOB_CONCURRENCY_CONFLICT&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ThrowMutation(String outcome) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 949&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.&lt;&gt;c__DisplayClass15_0.&lt;&lt;RecordAttemptFailureAsync&gt;b__0&gt;d.MoveNext() in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 138&#xD;
+      --- End of stack trace from previous location ---&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 812&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 819&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 820&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 847&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.RecordAsync(RawExportAssemblyExecutionRequest request, RawExportAssemblyExecutionResult result, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 201&#xD;
+         at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ObservedAssemblyWorkSource.RecordAsync(RawExportAssemblyExecutionRequest request, RawExportAssemblyExecutionResult result, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2422&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)&#xD;
+crit: Microsoft.Extensions.Hosting.Internal.Host[10]&#xD;
+      The HostOptions.BackgroundServiceExceptionBehavior is configured to StopHost. A BackgroundService has thrown an unhandled exception, and the IHost instance is stopping. To avoid this behavior, configure this to Ignore; however the BackgroundService will not be restarted.&#xD;
+      TagEkyc.Domain.RawExportJobException: RAW_EXPORT_JOB_CONCURRENCY_CONFLICT&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ThrowMutation(String outcome) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 949&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.&lt;&gt;c__DisplayClass15_0.&lt;&lt;RecordAttemptFailureAsync&gt;b__0&gt;d.MoveNext() in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 138&#xD;
+      --- End of stack trace from previous location ---&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 812&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 819&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 820&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 847&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.RecordAsync(RawExportAssemblyExecutionRequest request, RawExportAssemblyExecutionResult result, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 201&#xD;
+         at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ObservedAssemblyWorkSource.RecordAsync(RawExportAssemblyExecutionRequest request, RawExportAssemblyExecutionResult result, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2422&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Production&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Production&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0&#xD;
+fail: Microsoft.Extensions.Hosting.Internal.Host[9]&#xD;
+      BackgroundService failed&#xD;
+      TagEkyc.Domain.RawExportJobException: RAW_EXPORT_JOB_CONCURRENCY_CONFLICT&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ThrowMutation(String outcome) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 949&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.AcquireCoreAsync(AcquireOrReclaimRawExportJobLeaseCommand command, NpgsqlConnection connection, NpgsqlTransaction transaction, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 308&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 812&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 819&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 820&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 847&#xD;
+         at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.AcquireBarrierJobRepository.AcquireOrReclaimLeaseAsync(AcquireOrReclaimRawExportJobLeaseCommand command, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2478&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 167&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 177&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 177&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 177&#xD;
+         at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ObservedAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2399&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 28&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)&#xD;
+crit: Microsoft.Extensions.Hosting.Internal.Host[10]&#xD;
+      The HostOptions.BackgroundServiceExceptionBehavior is configured to StopHost. A BackgroundService has thrown an unhandled exception, and the IHost instance is stopping. To avoid this behavior, configure this to Ignore; however the BackgroundService will not be restarted.&#xD;
+      TagEkyc.Domain.RawExportJobException: RAW_EXPORT_JOB_CONCURRENCY_CONFLICT&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ThrowMutation(String outcome) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 949&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.AcquireCoreAsync(AcquireOrReclaimRawExportJobLeaseCommand command, NpgsqlConnection connection, NpgsqlTransaction transaction, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 308&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 812&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 819&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 820&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 847&#xD;
+         at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.AcquireBarrierJobRepository.AcquireOrReclaimLeaseAsync(AcquireOrReclaimRawExportJobLeaseCommand command, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2478&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 167&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 177&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 177&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 177&#xD;
+         at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ObservedAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2399&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 28&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+DATABASE_ID=tagekyc_persistence_tests;USER=tagekyc;ENGINE=PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit&#xD;
+[xUnit.net 00:00:22.17]       Npgsql.PostgresException : 42P01: relation "tagekyc.__EFMigrationsHistory" does not exist&#xD;
+[xUnit.net 00:00:22.17]       &#xD;
+[xUnit.net 00:00:22.17]       POSITION: 27&#xD;
+[xUnit.net 00:00:22.17]       Stack Trace:&#xD;
+[xUnit.net 00:00:22.17]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:00:22.17]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:00:22.17]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:22.17]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:22.17]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:22.17]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:22.17]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1593,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured()&#xD;
+[xUnit.net 00:00:22.17]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1608,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured()&#xD;
+[xUnit.net 00:00:22.17]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1608,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured()&#xD;
+[xUnit.net 00:00:22.17]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:01:06.55]       System.TimeoutException : The operation has timed out.&#xD;
+[xUnit.net 00:01:06.55]       Stack Trace:&#xD;
+[xUnit.net 00:01:06.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(2518,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.FinalizeRaceCoordinator.EnterAsync()&#xD;
+[xUnit.net 00:01:06.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(2634,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.BoundedFixtureC2Provider.FinalizeAsync(Guid c2PreparationId, Byte[] fingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:01:06.55]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(250,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.FinalizeOrRecoverAsync(IC2AssemblyPreparationProvider c2, Guid preparationId, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:01:06.55]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(130,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:01:06.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1564,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard()&#xD;
+[xUnit.net 00:01:06.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1577,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard()&#xD;
+[xUnit.net 00:01:06.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1577,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard()&#xD;
+[xUnit.net 00:01:06.55]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:01:10.13]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:01:10.13]       Expected: fdbd3559-ebee-4452-aeff-f04d314b40d3&#xD;
+[xUnit.net 00:01:10.13]       Actual:   3299d318-a249-4240-836f-f1394da38eb7&#xD;
+[xUnit.net 00:01:10.13]       Stack Trace:&#xD;
+[xUnit.net 00:01:10.13]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(227,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:01:10.13]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(282,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:01:10.13]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1377,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation()&#xD;
+[xUnit.net 00:01:10.13]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:01:13.72]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:01:13.72]       Expected: a28866ea-1fb6-4cf7-92ec-bce196a2ef82&#xD;
+[xUnit.net 00:01:13.72]       Actual:   fdbd3559-ebee-4452-aeff-f04d314b40d3&#xD;
+[xUnit.net 00:01:13.72]       Stack Trace:&#xD;
+[xUnit.net 00:01:13.72]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(227,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:01:13.72]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(282,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:01:13.72]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1428,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome)&#xD;
+[xUnit.net 00:01:13.72]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:01:17.45]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:01:17.45]       Expected: a214a8a6-52dd-421c-bf23-862b926b317e&#xD;
+[xUnit.net 00:01:17.45]       Actual:   a28866ea-1fb6-4cf7-92ec-bce196a2ef82&#xD;
+[xUnit.net 00:01:17.45]       Stack Trace:&#xD;
+[xUnit.net 00:01:17.45]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(227,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:01:17.45]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(282,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:01:17.45]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1428,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome)&#xD;
+[xUnit.net 00:01:17.45]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:01:21.09]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:01:21.09]       Expected: 9520040a-aae3-45ca-a101-7f9ed3635eff&#xD;
+[xUnit.net 00:01:21.09]       Actual:   a214a8a6-52dd-421c-bf23-862b926b317e&#xD;
+[xUnit.net 00:01:21.09]       Stack Trace:&#xD;
+[xUnit.net 00:01:21.09]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(227,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:01:21.09]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(282,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:01:21.09]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1451,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision()&#xD;
+[xUnit.net 00:01:21.09]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:01:22.25]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T23:30:08.4125448+07:00">
+        <Text>[xUnit.net 00:00:22.17]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T23:30:52.7918803+07:00">
+        <Text>[xUnit.net 00:01:06.55]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_fixture_finalize_race_not_seal_guard [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T23:30:56.3702000+07:00">
+        <Text>[xUnit.net 00:01:10.13]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T23:30:59.9638940+07:00">
+        <Text>[xUnit.net 00:01:13.72]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: True, expectedOutcome: ProviderOutcomeUnknown) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T23:31:03.6961371+07:00">
+        <Text>[xUnit.net 00:01:17.45]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: False, expectedOutcome: ProviderUnavailable) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T23:31:07.3364661+07:00">
+        <Text>[xUnit.net 00:01:21.09]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

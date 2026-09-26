@@ -1,0 +1,57 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="68023129-5b7c-486c-bb11-c9034fd25d55" name="3AVNN@LEARNPC 2026-09-25 23:56:46" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-25T23:56:46.6320109+07:00" queuing="2026-09-25T23:56:46.6320113+07:00" start="2026-09-25T23:56:29.1110531+07:00" finish="2026-09-25T23:56:47.6626793+07:00" />
+  <TestSettings name="default" id="436d2560-b454-4a8f-8618-0349b2bf0899">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-25_23_56_46" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="19881872-f794-416f-a6c4-4e04cb5b71e2" testId="40cbe474-f262-fe11-47d7-7acd13235dc7" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved" computerName="LEARNPC" duration="00:00:05.8991678" startTime="2026-09-25T23:56:46.5157466+07:00" endTime="2026-09-25T23:56:46.5157594+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="19881872-f794-416f-a6c4-4e04cb5b71e2">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Contains() Failure: Filter not matched in collection&#xD;
+Collection: [RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = 1fadb4b1-5de5-5caa-847b-cc1588ade394, C2PreparationId = 39ba41af-40a3-5dce-852e-11ff89722cf0, JobRevision = , PreparationRevision =  }, RawExportAssemblyExecutionResult { Outcome = Sealed, AssemblyId = 1fadb4b1-5de5-5caa-847b-cc1588ade394, C2PreparationId = 39ba41af-40a3-5dce-852e-11ff89722cf0, JobRevision = 2, PreparationRevision = 4 }]</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 931&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 937&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 937&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40cbe474-f262-fe11-47d7-7acd13235dc7">
+      <Execution id="19881872-f794-416f-a6c4-4e04cb5b71e2" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C116_global_lock_subsequence_is_preserved" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="40cbe474-f262-fe11-47d7-7acd13235dc7" executionId="19881872-f794-416f-a6c4-4e04cb5b71e2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.13]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.26]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.27]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:17.10]       Assert.Contains() Failure: Filter not matched in collection&#xD;
+[xUnit.net 00:00:17.10]       Collection: [RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = 1fadb4b1-5de5-5caa-847b-cc1588ade394, C2PreparationId = 39ba41af-40a3-5dce-852e-11ff89722cf0, JobRevision = , PreparationRevision =  }, RawExportAssemblyExecutionResult { Outcome = Sealed, AssemblyId = 1fadb4b1-5de5-5caa-847b-cc1588ade394, C2PreparationId = 39ba41af-40a3-5dce-852e-11ff89722cf0, JobRevision = 2, PreparationRevision = 4 }]&#xD;
+[xUnit.net 00:00:17.10]       Stack Trace:&#xD;
+[xUnit.net 00:00:17.10]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(931,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved()&#xD;
+[xUnit.net 00:00:17.10]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(937,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved()&#xD;
+[xUnit.net 00:00:17.10]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(937,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved()&#xD;
+[xUnit.net 00:00:17.10]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:18.19]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-25T23:56:46.5141597+07:00">
+        <Text>[xUnit.net 00:00:17.10]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

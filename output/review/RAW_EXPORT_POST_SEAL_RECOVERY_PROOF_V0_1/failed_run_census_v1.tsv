@@ -1,0 +1,16 @@
+run	failed_results	classification	detail
+baseline/post-seal-prechange-four-red.trx	4	EVIDENCE_RED	Pre-correction baseline: C105 TEST_DRIFT; C116 PRODUCT_DEFECT; C125 OUT_OF_SCOPE; C126 TEST_DRIFT.
+runs/initial/post-seal-proof-initial.trx	6	SUPERSEDED_RED	Four shared-residue JobId mismatches, one invalid second-finalizer wait, and one query against the wrong migration-history schema; no product credit.
+runs/v2/post-seal-proof-v2.trx	1	SUPERSEDED_RED	Provider-finalize-race hypothesis was false; successor command trace located abort handling after the losing seal call.
+runs/current-four-red/post-seal-current-four-red.trx	1	EVIDENCE_RED	Unchanged C116 contract returned Sealed plus PreparationConflict.
+runs/current-c116-final-red/current-c116-final-red.trx	1	EVIDENCE_RED	Final characterization rerun of the same C116 contract RED; not a distinct defect.
+runs/mutant-discovery/post-seal-mutant-discovery.trx	3	EVIDENCE_RED	Removing post-seal discovery makes packet, retained, and provider-finalized rediscovery assertions fail.
+runs/mutant-record-stale/post-seal-mutant-record-stale.trx	4	EVIDENCE_RED	Disabling recovery-aware RecordAsync restores stale-revision failures on retryable, terminal, and host-level paths.
+runs/mutant-acquire-contention/post-seal-mutant-acquire-contention.trx	1	EVIDENCE_RED	Rethrowing the known acquire-lost-race conflict stops the losing host.
+runs/mutant-c116-exact-recovery/post-seal-mutant-c116-exact-recovery.trx	2	EVIDENCE_RED	Supplying the wrong exact fingerprint restores PreparationConflict in both original and recovery C116 assertions.
+runs/mutant-exact-fingerprint-sql/post-seal-mutant-exact-fingerprint-sql.trx	1	EVIDENCE_RED	Removing the SQL fingerprint comparison changes ExactMismatch to Claimed.
+runs/mutant-displaced-owner-generation/post-seal-mutant-displaced-owner-generation.trx	1	EVIDENCE_RED	Removing owner/generation enforcement from defer lets a displaced claimant release the successor claim.
+runs/mutant-displaced-complete/post-seal-mutant-displaced-complete.trx	1	EVIDENCE_RED	Removing owner/generation enforcement from finalize lets a displaced claimant complete the successor claim.
+runs/adjacent-restored/post-seal-adjacent-restored.trx	1	SUPERSEDED_TEST_DRIFT	Legacy durable-work-source test still migrated only to the 20260923 selector and rejected the new Sealer capability; successor test targets the current migration and passes.
+runs/adjacent-e2e-restored/post-seal-adjacent-e2e-restored.trx	1	TRANSIENT_FIXTURE_FAILURE	One of two same-Job SDK cases observed a disposed unpooled Npgsql data source; both exact cases pass independently in retained successor runs.
+TOTAL	28	CLASSIFIED	28/28 failed test results classified across fourteen retained failed runs; repeated characterization failures are not distinct product defects.
