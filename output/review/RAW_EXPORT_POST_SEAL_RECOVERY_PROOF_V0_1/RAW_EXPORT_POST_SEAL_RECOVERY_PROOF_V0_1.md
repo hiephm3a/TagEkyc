@@ -1,57 +1,51 @@
-# RAW-EXPORT POST-SEAL RECOVERY — BOUNDED FIX REVIEW PACKET V0.1
+# RAW-EXPORT POST-SEAL RECOVERY — FINAL BOUNDED REVIEW PACKET V0.1
 
 ## Disposition
 
-The original four accepted defects are corrected at TagEkyc commit
-`75c890347a013840c67646ce3e221e5b615b6270`. The bounded review correction
-requested after the first independent review is committed at
-`b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b`. The final bounded correction
-for post-lock claim revalidation and explicit NULL duration rejection is
-committed at `d6e899c04d3f739062d3bb4d670f4a093c117357`.
+The four accepted post-seal recovery defects, the two accepted R1/R2 review
+corrections, and the remaining legacy-finalize capability finding are corrected
+on current bytes.
+
+The final narrow correction is committed at
+`d9c0e6cb090ef109920da007645d26df2243f1fa`. Its retained evidence and failed-run
+accounting snapshot is
+`64e5aadc15525eb0eb228f59edc4ce5402ea7e68`.
 
 | Area | Result |
 |---|---|
-| F1 fresh work-source rediscovers `AssemblySealed + SealCommitted` | **PASS** |
-| F2 post-seal result recording avoids stale pre-seal revision | **PASS** |
-| Candidate-to-acquire lost race is harmless polling | **PASS** |
-| C116 exact concurrent replay joins committed result | **PASS** |
-| Exact digest/authentication/fingerprint match | **PASS** |
-| Claim owner + generation fencing | **PASS** |
-| Claim eligibility revalidated after current claim row lock | **PASS** |
-| Mandatory NULL/shape rejection at recovery capability boundaries | **PASS** |
-| Lease time sampled after row-lock acquisition | **PASS** |
-| C116 winner-completes-before-loser-`RecordPending` join | **PASS** |
-| Bounded recovery scheduling under a non-empty normal queue | **PASS** |
-| Migration Up/Down/Reapply and security metadata | **PASS** |
-| C105 exact ACL surface | **PASS** |
-| C126 default graph + missing-authenticator branch | **PASS** |
+| F1 durable post-seal rediscovery | **PASS** |
+| F2 recovery-aware result recording | **PASS** |
+| R1 post-lock claim eligibility revalidation | **PASS** |
+| R2 mandatory NULL duration rejection | **PASS** |
+| Owner/generation/lease claim fencing | **PASS** |
+| Legacy unfenced finalize capability | **REVOKED FROM CURRENT SEALER / PASS** |
+| Current runtime gate | **24/24 PASS, zero skip** |
+| Original C105/C116/C124/C126 sentinel set | **6/6 PASS, zero skip** |
+| Adjacent durable source + migration discovery | **2/2 PASS, zero skip** |
+| Same-Job public/RAW-ingress SDK E2E | **2/2 PASS twice, zero skip** |
 | C125 | **OUT OF SCOPE / UNCHANGED** |
 | Process kill / OS restart | **NOT PROVEN** |
 | Layer 2 site measurement ownership | **PAUSED / UNCHANGED** |
 
-The final combined affected gate is **23/23 PASS, zero skip**, including the
-current post-seal runtime set and migration Down/Reapply on the same restored
-source bytes. Thirteen credited mutations
-fail at the named boundary. Two earlier attempted mutants stayed green and are
-retained as `NON_DISCRIMINATING_MUTANT`; neither is credited.
+No seal/governance re-freeze and no push are part of this packet. The current
+activation seal is intentionally stale until both independent reviewers accept
+the product/test correction.
 
 ## Repository posture
 
 ```text
-Baseline product HEAD       c43bc9bb0c4bd08c35bab65c1fe0696f88ce3610
-Characterization commit     578590a290dff4a97eb2e9d1c406038d5930f3fb
-Correction commit           75c890347a013840c67646ce3e221e5b615b6270
-Review correction commit    b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b
-Final correction commit     d6e899c04d3f739062d3bb4d670f4a093c117357
-Evidence snapshot commit    1a845fc9eb43de5403346eedb78714b1d04cd868
-Push                        NO
-Deploy                      NO
-Seal/governance re-freeze   NO
-Layer 2                     NOT STARTED
-SDK delta                   0
-API/raw-ingress delta       0
-Site-qualification delta    0
-User file preserved         docs/00_GDRIVE_FILE_INDEX.md
+Baseline reviewed HEAD       e1e4b6782c2ff0e24c4652222e772245acd2e7f4
+Legacy-finalize correction   d9c0e6cb090ef109920da007645d26df2243f1fa
+Evidence snapshot            64e5aadc15525eb0eb228f59edc4ce5402ea7e68
+Push                         NO
+Deploy                       NO
+Seal/governance re-freeze    NO
+Layer 2                      NOT STARTED
+SDK delta                    0
+API/raw-ingress delta        0
+Site-qualification delta     0
+Schema-object delta          0
+User file preserved          docs/00_GDRIVE_FILE_INDEX.md
 ```
 
 The current seal is expected to report
@@ -59,340 +53,226 @@ The current seal is expected to report
 changed and re-freeze is explicitly reserved until both reviewers accept this
 packet.
 
-## Search-before-build result
+## Search-before-change result
 
 ```text
 SEARCHED:
-  existing assembly work source, orchestrator recovery helpers, C1 recovery
-  context, C2 finalize inspection, job lease mutations, readiness ACL surface,
-  migration tripwires, same-Job delivery E2E
+  production migration catalog and grants
+  readiness capability allowlist
+  assembly repository callers
+  post-seal recovery and original C105/C116/C124/C126 tests
+  durable-source, migration-discovery and same-Job SDK adjacent proofs
 
-FOUND AND REUSED:
-  DurableRawExportAssemblyWorkSource
-  RawExportAssemblyOrchestrator.TryRecoverCommittedAsync
-  FinalizeOrRecoverAsync
-  C1 SealCommitted/Finalized preparation dispositions
-  existing C2 preparation inspection/finalization
-  existing DurableWorker hosted service and same-Job SDK E2E
+FOUND:
+  raw_export_record_assembly_finalized(uuid,bigint,bytea) remained executable
+  by tagekyc_raw_export_assembly_sealer, remained required by readiness, and
+  had a repository entrypoint, but did not validate recovery claim owner,
+  generation or lease
 
-MISSING AND ADDED:
-  durable post-seal claim ownership/backoff state
-  exact claim/defer/claimed-finalize SQL functions
-  recovery-aware work-source recording
-  narrow acquire-lost-race handling
+REUSED:
+  current post-seal claim table and claimed-finalize capability
+  current readiness capability inventory
+  current production migration and rollback framework
+  existing original and adjacent proof suites
 
 NOT REIMPLEMENTED:
-  assembly engine, work source, raw ingress, SDK, API, site gate, A3,
-  P29-P36, runtime qualification policy
+  assembly engine, work source, raw ingress, SDK, API, A3, P29-P36,
+  site qualification, recovery schema, or recovery claim protocol
 ```
 
-## Product correction
+Repo-wide production-call search found no current caller of the old repository
+`RecordFinalizedAsync` method. Removing that dead method alone would not have
+closed the finding because the SQL capability was still granted to Sealer.
 
-### F1 — durable rediscovery
+## Legacy-finalize correction
 
-When `raw_export_next_assembly_candidate()` returns no normal pre-seal work,
-the production work source now attempts a dedicated post-seal claim. Discovery
-is rooted in the C1 preparation disposition `SealCommitted`; it does not depend
-on a pre-existing recovery row. Both shipping package modes are eligible:
+The current migration now revokes Sealer EXECUTE on the historical function:
 
-- `EncryptedExportPacket`
-- `EncryptedRawVaultRetained`
+```sql
+REVOKE EXECUTE ON FUNCTION
+  tagekyc.raw_export_record_assembly_finalized(uuid, bigint, bytea)
+FROM tagekyc_raw_export_assembly_sealer;
+```
 
-`ExternalExportOnlyNoRetain` remains excluded from background discovery.
-Completed `Finalized` rows are not reclaimed.
+The function is retained for migration-history compatibility. `Down()` restores
+the predecessor grant, while reapplying `Up()` removes it again. No function,
+table, endpoint, contract field or schema format was added or removed.
 
-The acquired request preserves the original job, attempt, fence and pre-seal
-revision and carries a separate recovery claim owner/generation.
+The production repository's unused legacy entrypoint is removed. Readiness no
+longer treats the legacy grant as required; it now explicitly requires that
+Sealer **does not** hold that EXECUTE capability. The current claimed-finalize
+path remains the only Sealer-accessible production capability for moving a
+post-seal obligation to `Finalized`, and it continues to require owner,
+generation and lease fencing.
 
-### F2 — recovery-aware recording
+## Direct bypass proof and mutation
 
-Results produced after a committed seal no longer call pre-seal attempt-failure
-or terminalization mutations with revision `R`. Success is already recorded by
-the claimed finalize function. Retryable/unresolved results defer the dedicated
-claim with bounded exponential backoff. Logs retain the stage names:
+`PostSealRecovery_legacy_finalize_capability_cannot_bypass_current_claim`:
+
+1. creates the `SealCommitted` obligation through the production path;
+2. establishes the current recovery claim;
+3. calls the historical finalize function using the actual Sealer login with
+   the valid preparation revision and fingerprint;
+4. requires PostgreSQL insufficient privilege;
+5. verifies the preparation and live claim residue are unchanged.
+
+The single mutation changes only the new `REVOKE` back to `GRANT`. The direct
+proof becomes **0/1 RED** because the historical function executes and the
+required insufficient-privilege assertion is not raised. After restoration,
+the proof is present in both the **24/24** runtime gate and the **6/6** sentinel
+gate.
+
+This is a SQL capability-boundary proof. It does not claim an anonymous HTTP
+exploit, duplicate delivery, or process-restart recovery.
+
+## Current restored evidence
+
+### Runtime correction gate
+
+`runs/correction4-runtime-restored-final/post-seal-correction4-runtime-restored-final.trx`
+is **24/24 PASS, zero skip**. It contains the complete current
+`PostSealRecovery_*` set plus migration Up/Down/Reapply on the final restored
+source bytes. It includes the direct legacy capability proof.
+
+### Original sentinels requested by the independent review
+
+`runs/correction4-sentinels-restored/post-seal-correction4-sentinels-restored.trx`
+is **6/6 PASS, zero skip** and contains:
 
 ```text
-FaultStage=TryAcquireAsync
-FaultStage=RecordAsync
+C105_resolver_and_sealer_acl_manifests_are_separate
+C116_global_lock_subsequence_is_preserved
+C124_schema_function_owner_and_acl_shapes_are_exact
+C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only
+Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards
+PostSealRecovery_legacy_finalize_capability_cannot_bypass_current_claim
 ```
 
-### Acquire contention
+This corrects the predecessor packet's overstatement: C105/C116/C124/C126 were
+not members of its 23/23 run. They now have a named current-byte run identity.
 
-Only `RAW_EXPORT_JOB_CONCURRENCY_CONFLICT` thrown by the normal candidate
-acquire is converted to no-work. Other exception codes and failures still
-escape. The hosted service therefore uses its existing poll delay for a known
-lost race without changing global `BackgroundServiceExceptionBehavior`.
+### Adjacent proof groups requested by the independent review
 
-### C116 exact replay
-
-After an uncertain or losing seal call, the orchestrator attempts exact
-committed recovery before abort authorization. The join requires the original
-job/attempt/fence and committed `AssemblySealed` transition, plus any supplied:
-
-- assembly digest;
-- manifest digest;
-- authentication value;
-- assembly fingerprint.
-
-Mismatch returns `PreparationConflict`; it is not widened into same-Job
-success. The original C116 contract now observes `Sealed` plus
-`ExistingMatch | LeaseLost` rather than `PreparationConflict` from abort
-handling.
-
-### Claim coordination
-
-The new durable claim has:
-
-- owner identity and monotonically increasing generation;
-- bounded 1..3600 second lease (production uses 300 seconds);
-- bounded exponential retry backoff;
-- `SKIP LOCKED` selection so one active/stuck claim does not block later work;
-- a trigger/GUC mutation guard;
-- deployer ownership, `SECURITY DEFINER`, `search_path=pg_catalog` and exact
-  Sealer-only EXECUTE grants;
-- no direct table write grants.
-
-`claim_next` locks each candidate preparation and then reads/locks the current
-claim row before deciding eligibility. A lease or retry backoff committed after
-candidate selection is therefore preserved rather than overwritten by an
-unconditional upsert. Two controlled lock-wait tests install those states after
-the contender has selected the candidate; both contenders return no claim.
-
-Lease and retry durations reject SQL `NULL` explicitly before any mutation.
-The proof covers both existing-claim and absent-claim states for the claim
-capabilities, and verifies that a NULL retry base cannot clear an owner or
-install the PostgreSQL `LEAST` fallback delay.
-
-A displaced owner cannot defer the successor claim and cannot mark it
-finalized. Same-owner stale generations are rejected independently from owner
-fencing. Expired jobs may finish the already-sealed obligation without
-changing `JobExpiresAtUtc`; end-to-end delivery authorization after expiry is
-not claimed by this slice.
-
-### Bounded review correction
-
-All recovery capability functions now reject missing/zero identifiers,
-missing/non-positive revisions or generations, malformed fingerprints and
-malformed optional digests before reaching mutation logic. SQL comparisons
-that protect exact identity, owner and generation use NULL-safe semantics.
-
-Exact-claim, defer and claimed-finalize decisions sample
-`clock_timestamp()` only after the preparation/claim rows needed for the
-decision have been locked. A waiter therefore cannot use a lease timestamp
-captured before it was blocked.
-
-If a concurrent exact execution seals and finalizes after provider preparation
-but before this execution records Pending, the orchestrator performs the same
-digest/authentication/fingerprint-qualified committed join before returning a
-conflict. The retained C116 proof controls both sides of that ordering; it does
-not rely on thread-start timing.
-
-Normal work remains preferred, but a singleton worker identity now schedules a
-recovery-first probe every fourth poll. The mixed-queue proof leaves normal
-jobs eligible and observes recovery on the bounded fourth turn, preventing a
-perpetually non-empty normal queue from starving post-seal obligations.
-
-## Migration proof
-
-Migration `20260926120000_RawExportAssemblyPostSealRecovery` adds one SQL-only
-coordination table and four functions:
+`runs/correction4-adjacent-restored-final/post-seal-correction4-adjacent-restored-final.trx`
+is **2/2 PASS**:
 
 ```text
-raw_export_claim_next_post_seal_recovery(uuid, integer)
-raw_export_claim_exact_post_seal_recovery(uuid, uuid, bigint, bigint,
-  uuid, integer, bytea, bytea, bytea, bytea)
-raw_export_defer_post_seal_recovery(uuid, uuid, bigint, text, integer)
-raw_export_record_claimed_assembly_finalized(uuid, bigint, bytea, uuid, bigint)
+Durable_source_owns_candidate_concurrency_recovery_result_and_acl_contracts
+A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory
 ```
 
-The focused migration proof applies, rolls back and reapplies the migration,
-compares exact catalog definitions and preserves owner, `SECURITY DEFINER`,
-`search_path`, ACL and model cleanliness. Direct mutation is rejected. Current
-migration tripwires now point at this migration.
+`runs/correction4-adjacent-e2e-context-owned/post-seal-correction4-adjacent-e2e-context-owned.trx`
+is **2/2 PASS**, and the independent repeat run
+`runs/correction4-adjacent-e2e-context-owned-repeat/post-seal-correction4-adjacent-e2e-context-owned-repeat.trx`
+is also **2/2 PASS**:
 
-## Predecessor packet corrections
+```text
+Public_sdk_uses_one_job_through_durable_assembly_listing_delivery_and_decode
+Raw_ingress_publications_feed_the_same_job_durable_delivery_and_sdk_decode
+```
 
-The predecessor failed-run census is stated consistently as **13/13** before
-the first correction's runs are added. The consolidated successor census,
-including the independent pre-correction investigation, is now **83/83 across
-34 retained failed runs before the final review correction. The final census
-is **92/92 across 39 retained failed runs** after adding the two discriminating
-R1/R2 mutation runs and retaining three non-creditable intermediate runs.
+These four named adjacent proofs cover the durable production work source,
+current migration discovery/model, public same-Job SDK delivery, and raw-ingress
+to the same Job and SDK decode.
 
-`runs/sql-lock-final/post-seal-sql-lock-final.trx` retains the database query
-output for `raw_export_lock_job_for_attempt(uuid,uuid,uuid,bigint,bigint)`,
-including its full function definition and metadata. The acquire-contention
-claim therefore no longer relies on the earlier transcript that omitted this
-direct lock/acquire link.
+### Repeated test-fixture failure was investigated, not called transient
 
-## Focused restored proof
+Two predecessor E2E runs each failed one of two cases because the
+TestServer-owned unpooled Npgsql data source was disposed between cases. A
+unique connection-pool identity alone did not fix it. The final test harness
+owns one explicit `TagEkycDbContext` for both variants and registers the actual
+application/control-plane repositories and services around it. Product APIs,
+authorization, durable work source, assembly, delivery and SDK decode remain
+real. Both cases then pass twice.
 
-`runs/correction3-restored-final/post-seal-correction3-restored-final.trx`
-is the current **23/23 PASS** affected gate on the final restored bytes. It
-contains the complete current `PostSealRecovery_*` runtime set and the focused
-migration Up/Down/Reapply proofs in one retained run. The previous separate
-20/20 runtime and 1/1 migration gates remain predecessor evidence, not counters
-summed to manufacture the final result.
+The two failed runs remain retained and classified; neither receives product
+credit. They are not classified as another transient retry.
 
-Three additional correction-3 failures are retained but receive no product
-credit: a helper that read the GUC result instead of the row-lock sentinel, a
-fixture stream failure before test execution, and a rejected experiment that
-locked the preparation row and was therefore skipped by production
-`SKIP LOCKED`. None is relabeled as a product mutation.
+## Migration and readiness proof
 
-The current proof covers:
+The migration proof now checks the legacy Sealer EXECUTE capability explicitly:
 
-- fresh rediscovery for both shipping modes;
-- provider-finalized/C1-SealCommitted rediscovery;
-- retryable and terminal post-seal recording;
-- real Generic Host record-stage behavior;
-- two-host acquire contention;
-- the losing contender continuing to a later obligation under `StopHost`;
-- original C116 plus the explicit post-seal C116 scenario;
-- original runner versus fresh recovery-worker exclusion;
-- exact fingerprint mismatch;
-- displaced owner defer and completion fencing;
-- fairness past an active claim;
-- expired-job completion without changing the job expiry timestamp;
-- same-owner stale-generation rejection;
-- direct NULL/shape capability rejection with no residue mutation;
-- NULL lease rejection with and without an existing claim;
-- post-selection lease/backoff preservation under controlled row-lock waits;
-- lock-wait expiry at exact claim, defer and finalize boundaries;
-- pre-`RecordPending` C116 committed-result recovery;
-- bounded recovery selection while normal work remains eligible;
-- current SQL/security metadata;
-- C105, C124 and C126;
-- migration Up/Down/Reapply.
+```text
+after Up       false
+after Down     true
+after reapply  false
+```
 
-Adjacent restored evidence:
+It still compares complete current function definitions and preserves owner,
+`SECURITY DEFINER`, `search_path`, ACL and model cleanliness. C105 verifies the
+separate resolver/sealer ACL manifests. C124 verifies the exact production
+function/ACL surface and proves that re-granting the old capability makes
+readiness fail. C126 verifies the default graph and non-production fixture
+boundary.
 
-| Proof | Result |
-|---|---|
-| Durable production work source | 1/1 PASS |
-| Same-Job public SDK delivery | 1/1 PASS |
-| Raw-ingress → same Job → SDK decode | 1/1 PASS |
-| Current migration discovery/model | 1/1 PASS |
+## Mutation accounting
 
-The first combined SDK E2E run had one disposed unpooled Npgsql fixture failure;
-the direct and raw-ingress cases both pass as separate retained successor runs.
-It is classified, not deleted.
+The predecessor packet's thirteen credited mutation boundaries remain retained.
+The final correction adds one fourteenth discriminating boundary:
 
-## Mutation discrimination
-
-| Mutation | RED |
+| Mutation | Result |
 |---|---:|
-| Remove fresh post-seal discovery | 0/3 |
-| Disable recovery-aware `RecordAsync` | 0/4 |
-| Rethrow known acquire-lost-race conflict | 0/1 |
-| Use wrong exact fingerprint after losing seal | 0/2 |
-| Remove SQL fingerprint equality | 0/1 |
-| Remove owner/generation guard from defer | 0/1 |
-| Remove owner/generation guard from finalize | 0/1 |
-| Remove pre-`RecordPending` committed-result recovery | 0/1 |
-| Disable bounded recovery-first scheduling | 0/1 |
-| Restore SQL NULL comparison bypass | 0/1 |
-| Sample lease time before row locks | 0/1 |
-| Disable post-lock claim eligibility revalidation | 0/2 |
-| Remove explicit NULL duration rejection | 0/1 |
+| Re-grant legacy unfenced finalize to Sealer | **0/1 RED** |
 
-Two trial mutants were rejected rather than credited:
+All product mutations were restored before the final runtime, sentinel and
+adjacent gates. Non-discriminating mutants and superseded harness attempts
+remain retained and receive no product credit.
 
-- changing only the orchestrator's `ExactMismatch` mapping did not affect the
-  repository-level mismatch test; the successor SQL-boundary mutant did;
-- removing only generation comparison stayed green because independent owner
-  comparison still fenced the stale claimant; separate owner+generation
-  mutants then failed defer and finalize independently.
-
-Every mutated product file was restored before the final 23/23 gate. Current
-Git-object SHA-256 values at `d6e899c` for the final changed files are:
-
-```text
-RawExportAssemblyRuntimeInfrastructure.cs
-  EF58055A79040D24515474BAF04C85A45C9924CAB4904003B55DE10388B5E5DD
-RawExportAssemblyOrchestrator.cs
-  BB5003D913A3BDBE4BEC0098C209AAE531AE6491F55B70C78314743C5E6928CF
-20260926120000_RawExportAssemblyPostSealRecovery.cs
-  F539FC17A2724A7F29AAA04FE316F95D34892FB109E8751AF88EB251AF4ACE91
-Tip88C1C1ResolverAssemblyTests.cs
-  107023C170160C4C34605196592AAA3A1A81ABA6E24E7245CA25904B2A622CC3
-```
-
-## Exact correction write-set
+## Exact final correction write-set
 
 Production/migration:
 
 ```text
-src/TagEkyc.Contracts/RawExport/RawExportAssemblyContracts.cs
 src/TagEkyc.Infrastructure/Persistence/Migrations/20260926120000_RawExportAssemblyPostSealRecovery.cs
-src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyOrchestrator.cs
 src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyRepository.cs
-src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyRuntimeInfrastructure.cs
 src/TagEkyc.Infrastructure/RawExport/RawExportAssemblyServiceCollectionExtensions.cs
 ```
 
 Tests:
 
 ```text
-tests/TagEkyc.IntegrationTests/RawExportAssemblyDurableWorkSourceTests.cs
 tests/TagEkyc.IntegrationTests/RawExportAssemblyPostSealRecoveryMigrationTests.cs
 tests/TagEkyc.IntegrationTests/RawExportDeliverySameJobEndToEndTests.cs
-tests/TagEkyc.IntegrationTests/Tip88B4RawExportJobFoundationTests.cs
 tests/TagEkyc.IntegrationTests/Tip88C1C1ResolverAssemblyTests.cs
-tests/TagEkyc.IntegrationTests/Tip88C1C6BA3ConsentRetentionTests.cs
-tests/TagEkyc.IntegrationTests/Tip88C1C6BA3MigrationTests.cs
 ```
 
-No API, SDK, Agent, raw-ingress, site-qualification, A3 partition/ledger,
-P29-P36 or project/solution file changed.
+No SDK, API, raw-ingress, Agent, site-qualification, A3 partition/ledger,
+P29-P36 or project/solution source changed. C125 is untouched.
 
-The bounded review correction `b6f1e66` changes only the existing migration,
-orchestrator, durable work-source implementation and the existing resolver
-assembly test file. It adds no API, endpoint, schema object, engine, client or
-SDK surface.
+## Evidence accounting and portable hashing
 
-The final correction `d6e899c` changes only that existing migration and the
-existing resolver assembly test file. It adds no schema object or public
-surface. It also renames the remaining defect-era tests so their names now
-describe the corrected behavior rather than the historical failure.
+`failed_run_census_v1.tsv` classifies **99/99 failed results across 44 retained
+failed runs**. The final correction adds seven classified failures: one
+discriminating product mutation, three superseded combined-gate failures, one
+superseded migration-test syntax defect and two superseded E2E fixture/lifetime
+failures.
 
-## Evidence accounting and hashing
+`evidence_manifest_v1.tsv` contains **90 entries**. Every recorded SHA-256 and
+byte count is over Git object content at evidence snapshot
+`64e5aadc15525eb0eb228f59edc4ce5402ea7e68`, identified per row as
+`GIT_OBJECT_CONTENT@64e5aad`. The reference verification procedure is:
 
-`failed_run_census_v1.tsv` classifies **92/92** failed results across 39
-retained runs. Mutation REDs and superseded harness failures are not relabeled
-as PASS.
+```text
+git cat-file blob 64e5aadc15525eb0eb228f59edc4ce5402ea7e68:<path>
+→ byte count and SHA-256 over those exact bytes
+```
 
-`evidence_manifest_v1.tsv` names the hash basis per row:
-
-- product/test SHA-256 values are over Git object content at final correction
-  commit `d6e899c` for changed entries and their recorded snapshot for unchanged
-  predecessor entries;
-- retained evidence SHA-256 values are over Git object content at the evidence
-  snapshot named by the manifest.
-
-The report and manifest exclude their own hashes to avoid a circular
-dependency.
-
-The final manifest contains **80 entries**, all hashed from Git object content
-at evidence snapshot `1a845fc`. The manifest's own Git-object-content SHA-256
-is `0DBB48633778BDC072A0DC8285FE97D95FE8FA7609791530E3A0CD452C70D70F`.
-That value, rather than a line-ending-converted working-tree hash, is the
-portable review identity.
+Working-tree hashes are not authoritative because checkout line-ending
+conversion can change them. The packet and manifest exclude their own hashes to
+avoid a circular dependency.
 
 ## Final boundary
 
 ```text
 POST-SEAL RECOVERY CORRECTION       TECHNICAL PASS / READY FOR REVIEW
-Correction commit                  75c890347a013840c67646ce3e221e5b615b6270
-Review correction commit           b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b
-Final correction commit            d6e899c04d3f739062d3bb4d670f4a093c117357
-Evidence snapshot commit           1a845fc9eb43de5403346eedb78714b1d04cd868
-Seal/governance                    INTENTIONALLY STALE; NOT RE-MINTED
-Process kill / OS restart          NOT PROVEN
-C125                               OUT OF SCOPE / UNCHANGED
-Layer 2                            PAUSED
-Push / deploy                      NO / NO
+Legacy-finalize correction          d9c0e6cb090ef109920da007645d26df2243f1fa
+Evidence snapshot                   64e5aadc15525eb0eb228f59edc4ce5402ea7e68
+Seal/governance                     INTENTIONALLY STALE; NOT RE-MINTED
+Process kill / OS restart           NOT PROVEN
+C125                                OUT OF SCOPE / UNCHANGED
+Layer 2                             PAUSED
+Push / deploy                       NO / NO
 ```
 
-After two independent reviewer PASS decisions, the next action is a separate
-minimal evidence successor/re-freeze. It must not alter product semantics.
+After both independent reviewers accept this packet, the next action is one
+minimal evidence-only re-freeze. It must not alter product semantics.
