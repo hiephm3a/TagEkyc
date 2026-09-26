@@ -43,6 +43,7 @@ Characterization commit     578590a290dff4a97eb2e9d1c406038d5930f3fb
 Correction commit           75c890347a013840c67646ce3e221e5b615b6270
 Review correction commit    b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b
 Final correction commit     d6e899c04d3f739062d3bb4d670f4a093c117357
+Evidence snapshot commit    4fbafd23c073bc4e6f1a0c81e151898eec18fb3a
 Push                        NO
 Deploy                      NO
 Seal/governance re-freeze   NO
@@ -366,6 +367,10 @@ as PASS.
 The report and manifest exclude their own hashes to avoid a circular
 dependency.
 
+The final manifest contains **77 entries**, all hashed from Git object content
+at evidence snapshot `4fbafd2`. Its SHA-256 is
+`B058ADFA76BFEBD229A852C6095F3EF8EB43B2EE3BD6A4015AC385DAB437E1CC`.
+
 ## Final boundary
 
 ```text
@@ -373,6 +378,7 @@ POST-SEAL RECOVERY CORRECTION       TECHNICAL PASS / READY FOR REVIEW
 Correction commit                  75c890347a013840c67646ce3e221e5b615b6270
 Review correction commit           b6f1e66a444cf34d89f5f85cfc3c77e91cc5d63b
 Final correction commit            d6e899c04d3f739062d3bb4d670f4a093c117357
+Evidence snapshot commit           4fbafd23c073bc4e6f1a0c81e151898eec18fb3a
 Seal/governance                    INTENTIONALLY STALE; NOT RE-MINTED
 Process kill / OS restart          NOT PROVEN
 C125                               OUT OF SCOPE / UNCHANGED
