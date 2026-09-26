@@ -956,11 +956,34 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var first = prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
         var second = independent.Orchestrator.ExecuteAsync(prepared.Request, default);
         var results = await Task.WhenAll(first, second).WaitAsync(TimeSpan.FromMinutes(1));
-        Assert.Contains(results, result => result.Outcome == RawExportAssemblyExecutionOutcome.Sealed);
+        // The execution that commits the seal need not be the execution that
+        // acquires the post-seal finalize claim. A successful handoff may
+        // therefore return ExistingMatch + LeaseLost rather than exposing a
+        // Sealed label to either caller. The durable residue below, not caller
+        // winner identity, is the C116 contract.
         Assert.Contains(results, result => result.Outcome is
-            RawExportAssemblyExecutionOutcome.ExistingMatch or
-            RawExportAssemblyExecutionOutcome.LeaseLost);
+            RawExportAssemblyExecutionOutcome.Sealed or
+            RawExportAssemblyExecutionOutcome.ExistingMatch);
+        Assert.All(results, result => Assert.Contains(
+            result.Outcome,
+            new[]
+            {
+                RawExportAssemblyExecutionOutcome.Sealed,
+                RawExportAssemblyExecutionOutcome.ExistingMatch,
+                RawExportAssemblyExecutionOutcome.LeaseLost,
+            }));
+        Assert.DoesNotContain(results, result => result.Outcome == RawExportAssemblyExecutionOutcome.PreparationConflict);
         Assert.Equal(1, prepared.C2.PrepareCount);
+        Assert.Equal(1, prepared.C2.FinalizeCount);
+        Assert.Equal(0, prepared.C2.AbortCount);
+
+        var residue = await ReadPostSealResidueAsync(prepared.JobId);
+        Assert.Equal("AssemblySealed", residue.JobState);
+        Assert.Equal(prepared.Request.ExpectedJobRevision + 1, residue.JobRevision);
+        Assert.Equal("Finalized", residue.PreparationDisposition);
+        await using var db = postgres.CreateDbContext();
+        Assert.Equal(1, await db.RawExportAssemblyPreparationDispositions.CountAsync(
+            row => row.JobId == prepared.JobId));
 
         var definition = await FunctionDefinition("raw_export_seal_authenticated_assembly");
         AssertOrdered(definition, "raw_export_job_operational_heads", "raw_export_job_attempts", "raw_export_job_identities", "raw_export_source_publications", "raw_export_source_encryption_attempts", "raw_export_source_head", "raw_export_source_reservations", "raw_export_source_ingress_claims", "raw_export_attempt_key_reservations", "raw_export_provisional_objects", "raw_export_job_source_bindings", "raw_export_assembly_preparation_dispositions");
@@ -1748,6 +1771,104 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var residue = await ReadPostSealResidueAsync(prepared.JobId);
         Assert.Equal("AssemblySealed", residue.JobState);
         Assert.Equal("Finalized", residue.PreparationDisposition);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_C116_claim_handoff_can_return_existing_match_plus_lease_lost_only_after_durable_finalize()
+    {
+        await postgres.ResetDatabaseAsync();
+        var successorEnteredFinalize = new TaskCompletionSource(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        var releaseSuccessorFinalize = new TaskCompletionSource(
+            TaskCreationOptions.RunContinuationsAsynchronously);
+        BoundedFixtureC2Provider? provider = null;
+        provider = new BoundedFixtureC2Provider(
+            unavailableFirstFinalize: true,
+            beforeFinalize: async () =>
+            {
+                if (provider!.FinalizeCount != 2) return;
+                successorEnteredFinalize.TrySetResult();
+                await releaseSuccessorFinalize.Task;
+            });
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var workSource = Assert.IsType<DurableRawExportAssemblyWorkSource>(prepared.DurableWorkSource);
+
+        // The original execution commits the seal but cannot finalize at C2.
+        var original = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ProviderUnavailable, original.Outcome);
+        var preparationId = Assert.IsType<Guid>(original.C2PreparationId);
+        var originalGeneration = Assert.IsType<long>(original.RecoveryClaimGeneration);
+        var sealCommitted = await ReadPostSealResidueAsync(prepared.JobId);
+        Assert.Equal("AssemblySealed", sealCommitted.JobState);
+        Assert.Equal("SealCommitted", sealCommitted.PreparationDisposition);
+
+        await workSource.RecordAsync(prepared.Request, original);
+        await WaitForEligiblePostSealRecoveryAsync(prepared.JobId);
+        await using var successorDb = postgres.CreateDbContext();
+        var successorSource = NewDurableWorkSource(successorDb);
+        var successorRequest = Assert.IsType<RawExportAssemblyExecutionRequest>(
+            await successorSource.TryAcquireAsync());
+        var successorGeneration = Assert.IsType<long>(successorRequest.RecoveryClaimGeneration);
+        Assert.Equal(prepared.JobId, successorRequest.JobId);
+        Assert.Equal(prepared.Request.AttemptId, successorRequest.AttemptId);
+        Assert.Equal(prepared.Request.ExpectedFence, successorRequest.ExpectedFence);
+        Assert.NotEqual(prepared.Request.RecoveryClaimOwnerId, successorRequest.RecoveryClaimOwnerId);
+        Assert.True(successorGeneration > originalGeneration);
+
+        // The successor owns the claim and is held inside provider finalize.
+        // Replaying the seal-committing execution must observe that ownership
+        // as LeaseLost, while the successor completes the same obligation.
+        var successor = prepared.Orchestrator.ExecuteAsync(successorRequest, default);
+        try
+        {
+            await successorEnteredFinalize.Task.WaitAsync(TimeSpan.FromSeconds(30));
+            Assert.False(successor.IsCompleted);
+            var displacedOriginal = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default)
+                .WaitAsync(TimeSpan.FromSeconds(30));
+            Assert.Equal(RawExportAssemblyExecutionOutcome.LeaseLost, displacedOriginal.Outcome);
+            Assert.Equal(preparationId, displacedOriginal.C2PreparationId);
+        }
+        finally
+        {
+            releaseSuccessorFinalize.TrySetResult();
+        }
+        var completedSuccessor = await successor.WaitAsync(TimeSpan.FromSeconds(30));
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ExistingMatch, completedSuccessor.Outcome);
+        Assert.Equal(preparationId, completedSuccessor.C2PreparationId);
+        Assert.Equal(successorGeneration, completedSuccessor.RecoveryClaimGeneration);
+
+        Assert.Equal(1, provider.PrepareCount);
+        Assert.Equal(2, provider.FinalizeCount);
+        Assert.Equal(0, provider.AbortCount);
+        Assert.True(provider.Finalized);
+        var residue = await ReadPostSealResidueAsync(prepared.JobId);
+        Assert.Equal("AssemblySealed", residue.JobState);
+        Assert.Equal(prepared.Request.ExpectedJobRevision + 1, residue.JobRevision);
+        Assert.Null(residue.LeaseOwnerId);
+        Assert.Null(residue.LeaseExpiresAtUtc);
+        Assert.Equal("Finalized", residue.PreparationDisposition);
+        Assert.Equal(sealCommitted.PreparationRevision + 1, residue.PreparationRevision);
+        Assert.Equal(preparationId, residue.C2PreparationId);
+
+        var claim = await ReadPostSealClaimStateAsync(preparationId);
+        Assert.Equal("Finalized", claim.PreparationDisposition);
+        Assert.Equal(residue.PreparationRevision, claim.PreparationRevision);
+        Assert.Null(claim.ClaimOwnerId);
+        Assert.Equal(successorGeneration, claim.ClaimGeneration);
+        Assert.Null(claim.ClaimExpiresAtUtc);
+        Assert.Null(claim.RetryNotBeforeUtc);
+        Assert.NotNull(claim.CompletedAtUtc);
+        await using var finalDb = postgres.CreateDbContext();
+        Assert.Equal(1, await finalDb.RawExportAssemblyPreparationDispositions.CountAsync(
+            row => row.JobId == prepared.JobId));
+        var identity = await finalDb.RawExportAssemblyIdentities.AsNoTracking()
+            .SingleAsync(row => row.JobId == prepared.JobId);
+        Assert.Equal(prepared.Request.AttemptId, identity.AttemptId);
+        Assert.Equal(prepared.Request.ExpectedFence, identity.FencingToken);
+        Assert.Equal(claim.AssemblyFingerprint, identity.AssemblyFingerprint);
+        Assert.Equal(1, await finalDb.RawExportAssemblyItems.CountAsync(
+            row => row.AssemblyId == completedSuccessor.AssemblyId));
     }
 
     [Fact]
