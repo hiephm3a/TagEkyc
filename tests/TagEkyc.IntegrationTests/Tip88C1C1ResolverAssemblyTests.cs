@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Reflection;
 using System.Security.Cryptography;
 using System.Text;
@@ -6,6 +8,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using TagEkyc.Api;
 using TagEkyc.Application.Ports;
@@ -1333,6 +1337,439 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Equal(1, source.RecordCalls);
     }
 
+    [Fact]
+    public async Task PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation()
+    {
+        var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ProviderUnavailable, result.Outcome);
+        Assert.Null(result.JobRevision);
+        var checkpoint = await ReadPostSealResidueAsync(prepared.JobId);
+        Assert.Equal("AssemblySealed", checkpoint.JobState);
+        Assert.Equal(prepared.Request.ExpectedJobRevision + 1, checkpoint.JobRevision);
+        Assert.Null(checkpoint.LeaseOwnerId);
+        Assert.Null(checkpoint.LeaseExpiresAtUtc);
+        Assert.Equal("SealCommitted", checkpoint.PreparationDisposition);
+        Assert.Equal("Prepared", provider.DiagnosticState);
+
+        await using var freshDb = postgres.CreateDbContext();
+        var fresh = NewDurableWorkSource(freshDb);
+        Assert.Null(await fresh.TryAcquireAsync());
+
+        await using var control = await PrepareRediscoverableCandidateAsync();
+        await using var controlDb = postgres.CreateDbContext();
+        var controlSource = NewDurableWorkSource(controlDb);
+        var discovered = Assert.IsType<RawExportAssemblyExecutionRequest>(
+            await controlSource.TryAcquireAsync());
+        Assert.Equal(control.JobId, discovered.JobId);
+        await controlSource.RecordAsync(
+            discovered,
+            FailureResult(RawExportAssemblyExecutionOutcome.SourceUnavailable));
+        await RetireRetryableJobAfterProofAsync(control.JobId);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation()
+    {
+        var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ProviderUnavailable, result.Outcome);
+
+        var repository = new RawExportAssemblyRepository(
+            new RoleConnectionFactory(postgres.ConnectionString));
+        var exact = Assert.IsType<RawExportCommittedAssemblyRecoveryContext>(
+            await repository.ReadCommittedRecoveryContextAsync(prepared.Request, default));
+        Assert.Null(await repository.ReadCommittedRecoveryContextAsync(
+            prepared.Request with { AttemptId = Guid.NewGuid() }, default));
+        Assert.Null(await repository.ReadCommittedRecoveryContextAsync(
+            prepared.Request with { ExpectedFence = prepared.Request.ExpectedFence + 1 }, default));
+
+        var wrongFingerprint = exact.AssemblyFingerprint.ToArray();
+        wrongFingerprint[0] ^= 0x01;
+        var rejected = await RawExportAssemblyOrchestrator.FinalizeOrRecoverAsync(
+            provider, exact.C2PreparationId, wrongFingerprint, default);
+        Assert.Equal(C2AssemblyFinalizeOutcome.Conflict, rejected.Outcome);
+        Assert.Equal("Prepared", provider.DiagnosticState);
+
+        var finalized = await RawExportAssemblyOrchestrator.FinalizeOrRecoverAsync(
+            provider, exact.C2PreparationId, exact.AssemblyFingerprint, default);
+        Assert.Equal(C2AssemblyFinalizeOutcome.Finalized, finalized.Outcome);
+        Assert.Equal("Finalized", provider.DiagnosticState);
+        var checkpoint = await ReadPostSealResidueAsync(prepared.JobId);
+        Assert.Equal("AssemblySealed", checkpoint.JobState);
+        Assert.Equal("SealCommitted", checkpoint.PreparationDisposition);
+
+        await using var freshDb = postgres.CreateDbContext();
+        Assert.Null(await NewDurableWorkSource(freshDb).TryAcquireAsync());
+
+        var recorded = await repository.RecordFinalizedAsync(
+            exact.C2PreparationId, exact.RowRevision, exact.AssemblyFingerprint, default);
+        Assert.Equal("Finalized", recorded.Outcome);
+        await using var completedDb = postgres.CreateDbContext();
+        Assert.Null(await NewDurableWorkSource(completedDb).TryAcquireAsync());
+        var replay = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ExistingMatch, replay.Outcome);
+    }
+
+    [Theory]
+    [InlineData(false, RawExportAssemblyExecutionOutcome.ProviderUnavailable)]
+    [InlineData(true, RawExportAssemblyExecutionOutcome.ProviderOutcomeUnknown)]
+    public async Task PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(
+        bool unresolvedOutcomeUnknown,
+        RawExportAssemblyExecutionOutcome expectedOutcome)
+    {
+        var provider = new BoundedFixtureC2Provider(
+            unavailableFirstFinalize: !unresolvedOutcomeUnknown,
+            unresolvedFirstFinalize: unresolvedOutcomeUnknown);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var workSource = Assert.IsType<DurableRawExportAssemblyWorkSource>(prepared.DurableWorkSource);
+
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        Assert.Equal(expectedOutcome, result.Outcome);
+        Assert.Null(result.JobRevision);
+
+        var failure = await Assert.ThrowsAsync<RawExportJobException>(async () =>
+            await workSource.RecordAsync(prepared.Request, result));
+        Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", failure.Code);
+        var residue = await ReadPostSealResidueAsync(prepared.JobId);
+        Assert.Equal("AssemblySealed", residue.JobState);
+        Assert.Equal(prepared.Request.ExpectedJobRevision + 1, residue.JobRevision);
+        Assert.Null(residue.LeaseOwnerId);
+        Assert.Null(residue.LeaseExpiresAtUtc);
+        Assert.Equal("SealCommitted", residue.PreparationDisposition);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision()
+    {
+        var provider = new BoundedFixtureC2Provider(conflictFirstFinalize: true);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var workSource = Assert.IsType<DurableRawExportAssemblyWorkSource>(prepared.DurableWorkSource);
+
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.PreparationConflict, result.Outcome);
+        Assert.Null(result.JobRevision);
+
+        var failure = await Assert.ThrowsAsync<RawExportJobException>(async () =>
+            await workSource.RecordAsync(prepared.Request, result));
+        Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", failure.Code);
+        var residue = await ReadPostSealResidueAsync(prepared.JobId);
+        Assert.Equal("AssemblySealed", residue.JobState);
+        Assert.Equal("SealCommitted", residue.PreparationDisposition);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it()
+    {
+        var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var prepared = await PrepareRediscoverableCandidateAsync(provider);
+        await using var owned = CreateIndependentOrchestrator(prepared.Minio, provider);
+        var observation = new HostedWorkerObservation("f2-host");
+        using var host = CreateDurableWorkerHost(owned.Orchestrator, observation);
+
+        var run = host.RunAsync();
+        await observation.Started.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        var recordFailure = await observation.RecordException.Task.WaitAsync(TimeSpan.FromMinutes(2));
+        var typed = Assert.IsType<RawExportJobException>(recordFailure);
+        Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", typed.Code);
+        var execution = await observation.Executed.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ProviderUnavailable, execution.Result.Outcome);
+        Assert.Null(execution.Result.JobRevision);
+        await observation.Stopping.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        await run.WaitAsync(TimeSpan.FromSeconds(30));
+        await observation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        Assert.Equal(BackgroundServiceExceptionBehavior.StopHost, observation.ExceptionBehavior);
+        Assert.Equal("RecordAsync", observation.FaultStage);
+        Assert.False(observation.TestRequestedStop);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host()
+    {
+        await using var prepared = await PrepareRediscoverableCandidateAsync();
+        var barrier = new TwoPartyAcquireBarrier();
+        var firstObservation = new HostedWorkerObservation("contender-a");
+        var secondObservation = new HostedWorkerObservation("contender-b");
+        await using var firstOrchestrator = CreateIndependentOrchestrator(prepared.Minio, prepared.C2);
+        await using var secondOrchestrator = CreateIndependentOrchestrator(prepared.Minio, prepared.C2);
+        using var firstHost = CreateDurableWorkerHost(
+            firstOrchestrator.Orchestrator, firstObservation, barrier);
+        using var secondHost = CreateDurableWorkerHost(
+            secondOrchestrator.Orchestrator, secondObservation, barrier);
+
+        var firstRun = firstHost.RunAsync();
+        var secondRun = secondHost.RunAsync();
+        await Task.WhenAll(
+            firstObservation.Started.Task,
+            secondObservation.Started.Task).WaitAsync(TimeSpan.FromSeconds(30));
+        await barrier.BothArrived.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        barrier.Release();
+
+        var failedObservationTask = await Task.WhenAny(
+            firstObservation.AcquireException.Task,
+            secondObservation.AcquireException.Task).WaitAsync(TimeSpan.FromSeconds(30));
+        var failedObservation = failedObservationTask == firstObservation.AcquireException.Task
+            ? firstObservation
+            : secondObservation;
+        var winnerObservation = ReferenceEquals(failedObservation, firstObservation)
+            ? secondObservation
+            : firstObservation;
+        var failedHostRun = ReferenceEquals(failedObservation, firstObservation) ? firstRun : secondRun;
+        var winnerHost = ReferenceEquals(winnerObservation, firstObservation) ? firstHost : secondHost;
+        var winnerRun = ReferenceEquals(winnerObservation, firstObservation) ? firstRun : secondRun;
+
+        var acquireFailure = Assert.IsType<RawExportJobException>(
+            await failedObservation.AcquireException.Task.WaitAsync(TimeSpan.FromSeconds(30)));
+        Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", acquireFailure.Code);
+        await failedObservation.Stopping.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        await failedHostRun.WaitAsync(TimeSpan.FromSeconds(30));
+        await failedObservation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
+
+        var recorded = await winnerObservation.Recorded.Task.WaitAsync(TimeSpan.FromMinutes(2));
+        Assert.Equal(prepared.JobId, recorded.Request.JobId);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.Sealed, recorded.Result.Outcome);
+        Assert.False(winnerObservation.Stopping.Task.IsCompleted);
+        Assert.Equal(BackgroundServiceExceptionBehavior.StopHost, failedObservation.ExceptionBehavior);
+        Assert.Equal("TryAcquireAsync", failedObservation.FaultStage);
+        Assert.False(failedObservation.TestRequestedStop);
+
+        var commands = barrier.Commands.ToArray();
+        Assert.Equal(2, commands.Length);
+        Assert.All(commands, command => Assert.Equal(prepared.JobId, command.JobId));
+        Assert.Single(commands.Select(command => command.ExpectedRevision).Distinct());
+        Assert.Single(commands.Select(command => command.ExpectedFencingToken).Distinct());
+        Assert.Single(new[] { firstObservation, secondObservation }
+            .Where(observation => observation.ExecutionRequests.Count != 0));
+
+        winnerObservation.TestRequestedStop = true;
+        await winnerHost.StopAsync();
+        await winnerRun.WaitAsync(TimeSpan.FromSeconds(30));
+        await winnerObservation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal()
+    {
+        var activities = new ConcurrentQueue<string>();
+        using var listener = new ActivityListener
+        {
+            ShouldListenTo = source => source.Name.Contains("Npgsql", StringComparison.OrdinalIgnoreCase),
+            Sample = static (ref ActivityCreationOptions<ActivityContext> _) => ActivitySamplingResult.AllDataAndRecorded,
+            SampleUsingParentId = static (ref ActivityCreationOptions<string> _) => ActivitySamplingResult.AllDataAndRecorded,
+            ActivityStopped = activity =>
+            {
+                if (activity.GetTagItem("db.statement") is string statement)
+                    activities.Enqueue(statement);
+            },
+        };
+        ActivitySource.AddActivityListener(listener);
+        var provider = new BoundedFixtureC2Provider();
+        await using var prepared = await PrepareAssemblyExecutionAsync(provider, null, null);
+        await using var independent = CreateIndependentOrchestrator(prepared.Minio, provider);
+
+        var results = await Task.WhenAll(
+            prepared.Orchestrator.ExecuteAsync(prepared.Request, default),
+            independent.Orchestrator.ExecuteAsync(prepared.Request, default))
+            .WaitAsync(TimeSpan.FromMinutes(1));
+
+        Assert.Contains(results, result => result.Outcome == RawExportAssemblyExecutionOutcome.PreparationConflict);
+        Assert.Contains(results, result => result.Outcome is RawExportAssemblyExecutionOutcome.Sealed
+            or RawExportAssemblyExecutionOutcome.ExistingMatch);
+        Assert.Contains("Prepare:Prepared", provider.Events);
+        Assert.Contains("Prepare:ExistingMatch", provider.Events);
+        Assert.Equal(1, provider.FinalizeCount);
+        Assert.Equal(0, provider.AbortCount);
+        Assert.Equal(2, CountSqlCalls(activities, "raw_export_register_assembly_preparing"));
+        Assert.Equal(2, CountSqlCalls(activities, "raw_export_record_assembly_pending"));
+        Assert.Equal(2, CountSqlCalls(activities, "raw_export_seal_authenticated_assembly"));
+        Assert.Equal(1, CountSqlCalls(activities, "raw_export_record_assembly_finalized"));
+        Assert.Equal(1, CountSqlCalls(activities, "raw_export_authorize_assembly_abort"));
+        Assert.Equal(0, CountSqlCalls(activities, "raw_export_record_assembly_aborted"));
+        Console.WriteLine($"C116_STAGE=AbortSealFailureAsync/AuthorizeAbortAsync after losing SealAsync; provider finalize calls={provider.FinalizeCount}; provider abort calls={provider.AbortCount}");
+        Console.WriteLine($"C116_PROVIDER_EVENTS={string.Join('|', provider.Events)}");
+        var residue = await ReadPostSealResidueAsync(prepared.JobId);
+        Assert.Equal("AssemblySealed", residue.JobState);
+        Assert.Equal("Finalized", residue.PreparationDisposition);
+        var seal = await FunctionDefinition("raw_export_seal_authenticated_assembly");
+        AssertOrdered(seal, "raw_export_job_operational_heads", "raw_export_assembly_preparation_dispositions");
+    }
+
+    private static int CountSqlCalls(IEnumerable<string> statements, string functionName) =>
+        statements.Count(statement => statement.Contains(functionName, StringComparison.Ordinal));
+
+    [Fact]
+    public async Task PostSealRecovery_current_database_sql_and_security_metadata_are_captured()
+    {
+        await using var connection = await OpenAsync();
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT current_database(),current_user,version()";
+        await using (var identity = await command.ExecuteReaderAsync())
+        {
+            Assert.True(await identity.ReadAsync());
+            Console.WriteLine($"DATABASE_ID={identity.GetString(0)};USER={identity.GetString(1)};ENGINE={identity.GetString(2)}");
+        }
+
+        command.CommandText = "SELECT \"MigrationId\" FROM public.\"__EFMigrationsHistory\" ORDER BY \"MigrationId\"";
+        await using (var migrations = await command.ExecuteReaderAsync())
+        {
+            while (await migrations.ReadAsync())
+                Console.WriteLine($"MIGRATION={migrations.GetString(0)}");
+        }
+
+        command.CommandText = """
+            SELECT routine_name,specific_name,grantee,privilege_type
+            FROM information_schema.routine_privileges
+            WHERE specific_schema='tagekyc'
+              AND grantee IN ('tagekyc_raw_export_assembly_resolver','tagekyc_raw_export_assembly_sealer')
+              AND privilege_type='EXECUTE'
+            ORDER BY grantee,routine_name,specific_name
+            """;
+        await using (var grants = await command.ExecuteReaderAsync())
+        {
+            while (await grants.ReadAsync())
+                Console.WriteLine($"FUNCTION_GRANT={grants.GetString(0)};SPECIFIC={grants.GetString(1)};GRANTEE={grants.GetString(2)};PRIVILEGE={grants.GetString(3)}");
+        }
+
+        string[] functions =
+        [
+            "raw_export_next_assembly_candidate",
+            "raw_export_seal_authenticated_assembly",
+            "raw_export_read_committed_assembly_recovery_context",
+            "raw_export_acquire_or_reclaim_job_lease",
+            "raw_export_lock_job_for_attempt",
+            "raw_export_record_job_attempt_failure",
+            "raw_export_terminalize_job",
+        ];
+        foreach (var function in functions)
+        {
+            command.CommandText = """
+                SELECT p.oid::regprocedure::text,pg_catalog.pg_get_userbyid(p.proowner),p.prosecdef,
+                       COALESCE(p.proconfig,ARRAY[]::text[])::text,COALESCE(p.proacl,ARRAY[]::aclitem[])::text,
+                       pg_catalog.pg_get_functiondef(p.oid)
+                FROM pg_catalog.pg_proc p
+                JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
+                WHERE n.nspname='tagekyc' AND p.proname=@name
+                ORDER BY p.oid::regprocedure::text
+                """;
+            command.Parameters.Clear();
+            command.Parameters.AddWithValue("name", function);
+            await using var reader = await command.ExecuteReaderAsync();
+            Assert.True(await reader.ReadAsync(), function);
+            Console.WriteLine($"FUNCTION={reader.GetString(0)}");
+            Console.WriteLine($"OWNER={reader.GetString(1)};SECURITY_DEFINER={reader.GetBoolean(2)};SEARCH_PATH={reader.GetString(3)};ACL={reader.GetString(4)}");
+            Console.WriteLine(reader.GetString(5));
+            Assert.Equal("tagekyc_raw_export_deployer", reader.GetString(1));
+            Assert.True(reader.GetBoolean(2));
+            Assert.Contains("search_path=pg_catalog", reader.GetString(3), StringComparison.Ordinal);
+        }
+    }
+
+    private DurableRawExportAssemblyWorkSource NewDurableWorkSource(
+        TagEkycDbContext db,
+        IRawExportJobRepository? jobs = null,
+        RawExportAssemblyWorkerIdentity? worker = null) =>
+        new(
+            new RoleConnectionFactory(postgres.ConnectionString),
+            jobs ?? Tip88B4RawExportJobFoundationTests.CreateJobRepository(db),
+            worker ?? new RawExportAssemblyWorkerIdentity(Guid.NewGuid()));
+
+    private static RawExportAssemblyExecutionResult FailureResult(
+        RawExportAssemblyExecutionOutcome outcome) =>
+        new(outcome, null, null, null, null);
+
+    private async Task<PreparedAssemblyFixture> PrepareRediscoverableCandidateAsync(
+        BoundedFixtureC2Provider? provider = null)
+    {
+        var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var acquired = Assert.IsType<DurableRawExportAssemblyWorkSource>(prepared.DurableWorkSource);
+        await acquired.RecordAsync(
+            prepared.Request,
+            FailureResult(RawExportAssemblyExecutionOutcome.SourceUnavailable));
+        await using var db = postgres.CreateDbContext();
+        var read = await Tip88B4RawExportJobFoundationTests.CreateJobRepository(db)
+            .ReadAsync(new(Tip88B34AuthorizationEngineTests.Actor, prepared.JobId));
+        var job = Assert.IsType<RawExportJobView>(read.Job);
+        Assert.Equal(RawExportJobState.Assembling, job.Head.CurrentState);
+        Assert.Equal(RawExportJobEventType.AttemptFailedRetryable, job.LatestTransition.LatestEventType);
+        Assert.Null(job.Head.LeaseOwnerId);
+        Assert.Null(job.Head.LeaseExpiresAt);
+        return prepared;
+    }
+
+    private async Task<PostSealResidue> ReadPostSealResidueAsync(Guid jobId)
+    {
+        await using var db = postgres.CreateDbContext();
+        var head = await db.RawExportJobOperationalHeads.AsNoTracking()
+            .SingleAsync(row => row.JobId == jobId);
+        var preparation = await db.RawExportAssemblyPreparationDispositions.AsNoTracking()
+            .SingleAsync(row => row.JobId == jobId);
+        return new(
+            head.CurrentState,
+            head.Revision,
+            head.LeaseOwnerId,
+            head.LeaseExpiresAt,
+            preparation.Disposition,
+            preparation.RowRevision,
+            preparation.C2PreparationId);
+    }
+
+    private IHost CreateDurableWorkerHost(
+        IRawExportAssemblyOrchestrator orchestrator,
+        HostedWorkerObservation observation,
+        TwoPartyAcquireBarrier? acquireBarrier = null)
+    {
+        var host = Host.CreateDefaultBuilder()
+            .ConfigureServices(services =>
+            {
+                services.Configure<HostOptions>(options =>
+                    options.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.StopHost);
+                services.AddSingleton(new RawExportAssemblyOptions(
+                    RawExportAssemblyTopology.DurableWorker, 10));
+                services.AddSingleton(orchestrator);
+                services.AddSingleton(observation);
+                services.AddScoped(_ => postgres.CreateDbContext());
+                services.AddScoped<IRawExportJobRepository>(provider =>
+                {
+                    IRawExportJobRepository repository =
+                        Tip88B4RawExportJobFoundationTests.CreateJobRepository(
+                            provider.GetRequiredService<TagEkycDbContext>());
+                    return acquireBarrier is null
+                        ? repository
+                        : new AcquireBarrierJobRepository(repository, acquireBarrier, observation);
+                });
+                services.AddScoped<IRawExportAssemblyWorkSource>(provider =>
+                {
+                    var inner = NewDurableWorkSource(
+                        provider.GetRequiredService<TagEkycDbContext>(),
+                        provider.GetRequiredService<IRawExportJobRepository>(),
+                        new RawExportAssemblyWorkerIdentity(observation.WorkerId));
+                    return new ObservedAssemblyWorkSource(inner, observation);
+                });
+                services.AddHostedService<RawExportAssemblyHostedService>();
+            })
+            .Build();
+        observation.Attach(host);
+        return host;
+    }
+
+    private sealed record PostSealResidue(
+        string JobState,
+        long JobRevision,
+        Guid? LeaseOwnerId,
+        DateTimeOffset? LeaseExpiresAtUtc,
+        string PreparationDisposition,
+        long PreparationRevision,
+        Guid C2PreparationId);
+
     private async Task AssertReadinessCodeAsync(
         IConfiguration configuration,
         bool isProduction,
@@ -1957,12 +2394,164 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         }
     }
 
+    private sealed class HostedWorkerObservation(string name)
+    {
+        internal Guid WorkerId { get; } = Guid.NewGuid();
+        internal string Name { get; } = name;
+        internal BackgroundServiceExceptionBehavior ExceptionBehavior { get; private set; }
+        internal bool TestRequestedStop { get; set; }
+        internal string? FaultStage { get; set; }
+        internal ConcurrentQueue<RawExportAssemblyExecutionRequest> ExecutionRequests { get; } = new();
+        internal TaskCompletionSource Started { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource Stopping { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource Stopped { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<Exception> AcquireException { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<Exception> RecordException { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<(RawExportAssemblyExecutionRequest Request,
+            RawExportAssemblyExecutionResult Result)> Executed { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource<(RawExportAssemblyExecutionRequest Request,
+            RawExportAssemblyExecutionResult Result)> Recorded { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        internal void Attach(IHost host)
+        {
+            ExceptionBehavior = host.Services.GetRequiredService<IOptions<HostOptions>>()
+                .Value.BackgroundServiceExceptionBehavior;
+            var lifetime = host.Services.GetRequiredService<IHostApplicationLifetime>();
+            lifetime.ApplicationStarted.Register(() => Started.TrySetResult());
+            lifetime.ApplicationStopping.Register(() => Stopping.TrySetResult());
+            lifetime.ApplicationStopped.Register(() => Stopped.TrySetResult());
+        }
+    }
+
+    private sealed class ObservedAssemblyWorkSource(
+        DurableRawExportAssemblyWorkSource inner,
+        HostedWorkerObservation observation) : IRawExportAssemblyWorkSource
+    {
+        public async ValueTask<RawExportAssemblyExecutionRequest?> TryAcquireAsync(
+            CancellationToken cancellationToken = default)
+        {
+            try
+            {
+                var request = await inner.TryAcquireAsync(cancellationToken);
+                if (request is not null)
+                {
+                    observation.ExecutionRequests.Enqueue(request);
+                }
+                return request;
+            }
+            catch (Exception exception)
+            {
+                observation.FaultStage = "TryAcquireAsync";
+                observation.AcquireException.TrySetResult(exception);
+                throw;
+            }
+        }
+
+        public async ValueTask RecordAsync(
+            RawExportAssemblyExecutionRequest request,
+            RawExportAssemblyExecutionResult result,
+            CancellationToken cancellationToken = default)
+        {
+            observation.Executed.TrySetResult((request, result));
+            try
+            {
+                await inner.RecordAsync(request, result, cancellationToken);
+                observation.Recorded.TrySetResult((request, result));
+            }
+            catch (Exception exception)
+            {
+                observation.FaultStage = "RecordAsync";
+                observation.RecordException.TrySetResult(exception);
+                throw;
+            }
+        }
+    }
+
+    private sealed class TwoPartyAcquireBarrier
+    {
+        private int arrivals;
+        private readonly TaskCompletionSource release =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal TaskCompletionSource BothArrived { get; } =
+            new(TaskCreationOptions.RunContinuationsAsynchronously);
+        internal ConcurrentQueue<AcquireOrReclaimRawExportJobLeaseCommand> Commands { get; } = new();
+
+        internal async Task ArriveAsync(
+            AcquireOrReclaimRawExportJobLeaseCommand command,
+            CancellationToken cancellationToken)
+        {
+            Commands.Enqueue(command);
+            if (Interlocked.Increment(ref arrivals) == 2)
+                BothArrived.TrySetResult();
+            await release.Task.WaitAsync(cancellationToken);
+        }
+
+        internal void Release() => release.TrySetResult();
+    }
+
+    private sealed class AcquireBarrierJobRepository(
+        IRawExportJobRepository inner,
+        TwoPartyAcquireBarrier barrier,
+        HostedWorkerObservation observation) : IRawExportJobRepository
+    {
+        public Task<RawExportJobBindResult> BindAsync(
+            BindRawExportJobCommand command,
+            CancellationToken cancellationToken = default) =>
+            inner.BindAsync(command, cancellationToken);
+
+        public Task<RawExportJobReadResult> ReadAsync(
+            ReadRawExportJobCommand command,
+            CancellationToken cancellationToken = default) =>
+            inner.ReadAsync(command, cancellationToken);
+
+        public async Task<RawExportJobLeaseResult> AcquireOrReclaimLeaseAsync(
+            AcquireOrReclaimRawExportJobLeaseCommand command,
+            CancellationToken cancellationToken = default)
+        {
+            await barrier.ArriveAsync(command, cancellationToken);
+            try
+            {
+                return await inner.AcquireOrReclaimLeaseAsync(command, cancellationToken);
+            }
+            catch (Exception exception)
+            {
+                observation.FaultStage = "TryAcquireAsync";
+                observation.AcquireException.TrySetResult(exception);
+                throw;
+            }
+        }
+
+        public Task<RawExportJobRenewResult> RenewLeaseAsync(
+            RenewRawExportJobLeaseCommand command,
+            CancellationToken cancellationToken = default) =>
+            inner.RenewLeaseAsync(command, cancellationToken);
+
+        public Task<RawExportJobAttemptFailureResult> RecordAttemptFailureAsync(
+            RecordRawExportJobAttemptFailureCommand command,
+            CancellationToken cancellationToken = default) =>
+            inner.RecordAttemptFailureAsync(command, cancellationToken);
+
+        public Task<RawExportJobTerminalizeResult> TerminalizeAsync(
+            TerminalizeRawExportJobCommand command,
+            CancellationToken cancellationToken = default) =>
+            inner.TerminalizeAsync(command, cancellationToken);
+    }
+
     private sealed class BoundedFixtureC2Provider(
         bool loseFirstPrepareResponse = false,
         bool loseFirstFinalizeResponse = false,
         bool unavailableFirstFinalize = false,
         Func<Task>? afterPrepare = null,
-        bool conflictAfterPrepare = false) : IC2AssemblyPreparationProvider
+        bool conflictAfterPrepare = false,
+        bool unresolvedFirstFinalize = false,
+        bool conflictFirstFinalize = false) : IC2AssemblyPreparationProvider
     {
         private byte[]? assemblyFingerprint;
         private byte[]? receipt;
@@ -1970,17 +2559,20 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         private byte[]? abortAuthorizationDigest;
         private Guid preparationId;
         private State state;
+        private int finalizeCount;
         private readonly SemaphoreSlim prepareGate = new(1, 1);
+        internal ConcurrentQueue<string> Events { get; } = new();
 
         internal int PrepareCount { get; private set; }
         internal int InspectCount { get; private set; }
-        internal int FinalizeCount { get; private set; }
+        internal int FinalizeCount => Volatile.Read(ref finalizeCount);
         internal int AbortCount { get; private set; }
         internal bool AssemblyWasRetained { get; private set; }
         internal bool AssemblyWasErasedAfterFinalize { get; private set; }
         internal int MaximumWriteSize { get; private set; }
         internal long CompleteAssemblyLength { get; private set; }
         internal bool Finalized => state == State.Finalized;
+        internal string DiagnosticState => state.ToString();
 
         public async Task<C2AssemblyPrepareResult> PrepareAsync(
             C2AssemblyPreparationRequest request,
@@ -1991,16 +2583,26 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             try
             {
                 if (request.CompleteAssemblyLength is < 1 or > 32 * 1024 * 1024)
+                {
+                    Events.Enqueue("Prepare:Conflict:Length");
                     return new(C2AssemblyPrepareOutcome.Conflict, null);
+                }
                 if (state != State.None)
-                    return preparationId == request.C2PreparationId && Fixed(assemblyFingerprint, request.AssemblyFingerprint)
+                {
+                    var existing = preparationId == request.C2PreparationId && Fixed(assemblyFingerprint, request.AssemblyFingerprint);
+                    Events.Enqueue(existing ? "Prepare:ExistingMatch" : $"Prepare:Conflict:State:{state}");
+                    return existing
                         ? new(C2AssemblyPrepareOutcome.ExistingMatch, receipt?.ToArray())
                         : new(C2AssemblyPrepareOutcome.Conflict, null);
+                }
                 PrepareCount++;
                 await using var sink = new ExactBoundedBufferStream(request.CompleteAssemblyLength);
                 await boundedAssemblyWriter(sink, cancellationToken);
                 if (sink.Length != request.CompleteAssemblyLength)
+                {
+                    Events.Enqueue("Prepare:Conflict:LengthMismatch");
                     return new(C2AssemblyPrepareOutcome.Conflict, null);
+                }
                 MaximumWriteSize = sink.MaximumWriteSize;
                 CompleteAssemblyLength = request.CompleteAssemblyLength;
                 assemblyFingerprint = request.AssemblyFingerprint.ToArray();
@@ -2009,11 +2611,18 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                 receipt = SHA256.HashData(retainedAssembly);
                 AssemblyWasRetained = retainedAssembly.Length == request.CompleteAssemblyLength;
                 state = State.Prepared;
+                Events.Enqueue("Prepare:Prepared");
                 if (afterPrepare is not null) await afterPrepare();
                 if (conflictAfterPrepare)
+                {
+                    Events.Enqueue("Prepare:Conflict:InjectedAfterPrepare");
                     return new(C2AssemblyPrepareOutcome.Conflict, null);
+                }
                 if (loseFirstPrepareResponse && PrepareCount == 1)
+                {
+                    Events.Enqueue("Prepare:OutcomeUnknown:Injected");
                     return new(C2AssemblyPrepareOutcome.OutcomeUnknown, null);
+                }
                 return new(C2AssemblyPrepareOutcome.Prepared, receipt.ToArray());
             }
             finally
@@ -2026,7 +2635,11 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         {
             InspectCount++;
             if (state != State.None && c2PreparationId != preparationId)
+            {
+                Events.Enqueue("Inspect:Conflict:PreparationId");
                 return Task.FromResult(new C2AssemblyInspection(C2AssemblyInspectionOutcome.Conflict, null, null));
+            }
+            Events.Enqueue($"Inspect:{state}");
             return Task.FromResult(state switch
             {
                 State.None => new C2AssemblyInspection(C2AssemblyInspectionOutcome.Missing, null, null),
@@ -2039,15 +2652,41 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
 
         public Task<C2AssemblyFinalizeResult> FinalizeAsync(Guid c2PreparationId, byte[] fingerprint, CancellationToken cancellationToken)
         {
-            FinalizeCount++;
+            var call = Interlocked.Increment(ref finalizeCount);
             if (c2PreparationId != preparationId)
+            {
+                Events.Enqueue($"Finalize:{call}:Conflict:PreparationId");
                 return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.Conflict));
-            if (unavailableFirstFinalize && FinalizeCount == 1)
+            }
+            if (unavailableFirstFinalize && call == 1)
+            {
+                Events.Enqueue($"Finalize:{call}:Unavailable:Injected");
                 return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.Unavailable));
-            if (state == State.Finalized && Fixed(assemblyFingerprint, fingerprint))
-                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.ExistingMatch));
-            if (state != State.Prepared || !Fixed(assemblyFingerprint, fingerprint))
+            }
+            if (unresolvedFirstFinalize && call == 1)
+            {
+                Events.Enqueue($"Finalize:{call}:OutcomeUnknown:Injected");
+                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.OutcomeUnknown));
+            }
+            if (conflictFirstFinalize && call == 1)
+            {
+                Events.Enqueue($"Finalize:{call}:Conflict:Injected");
                 return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.Conflict));
+            }
+            if (state == State.Finalized && Fixed(assemblyFingerprint, fingerprint))
+            {
+                Events.Enqueue($"Finalize:{call}:ExistingMatch");
+                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.ExistingMatch));
+            }
+            var initiallyPrepared = state == State.Prepared;
+            if (state != State.Prepared || !Fixed(assemblyFingerprint, fingerprint))
+            {
+                if (initiallyPrepared)
+                    Events.Enqueue($"Finalize:{call}:ConflictAfterInitialPrepared:{state}");
+                else
+                    Events.Enqueue($"Finalize:{call}:Conflict:State:{state}");
+                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.Conflict));
+            }
             if (retainedAssembly is not null)
             {
                 CryptographicOperations.ZeroMemory(retainedAssembly);
@@ -2055,6 +2694,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                 AssemblyWasErasedAfterFinalize = true;
             }
             state = State.Finalized;
+            Events.Enqueue($"Finalize:{call}:{(loseFirstFinalizeResponse ? "OutcomeUnknown" : "Finalized")}");
             return Task.FromResult(new C2AssemblyFinalizeResult(
                 loseFirstFinalizeResponse
                     ? C2AssemblyFinalizeOutcome.OutcomeUnknown
@@ -2065,11 +2705,20 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         {
             AbortCount++;
             if (c2PreparationId != preparationId || authorizationDigest.Length != 32)
+            {
+                Events.Enqueue("Abort:Conflict:Input");
                 return Task.FromResult(new C2AssemblyAbortResult(C2AssemblyAbortOutcome.Conflict));
+            }
             if (state == State.Aborted && Fixed(abortAuthorizationDigest, authorizationDigest))
+            {
+                Events.Enqueue("Abort:ExistingMatch");
                 return Task.FromResult(new C2AssemblyAbortResult(C2AssemblyAbortOutcome.ExistingMatch));
+            }
             if (state != State.Prepared)
+            {
+                Events.Enqueue($"Abort:Conflict:State:{state}");
                 return Task.FromResult(new C2AssemblyAbortResult(C2AssemblyAbortOutcome.Conflict));
+            }
             if (retainedAssembly is not null)
             {
                 CryptographicOperations.ZeroMemory(retainedAssembly);
@@ -2077,6 +2726,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             }
             abortAuthorizationDigest = authorizationDigest.ToArray();
             state = State.Aborted;
+            Events.Enqueue("Abort:Aborted");
             return Task.FromResult(new C2AssemblyAbortResult(C2AssemblyAbortOutcome.Aborted));
         }
 
