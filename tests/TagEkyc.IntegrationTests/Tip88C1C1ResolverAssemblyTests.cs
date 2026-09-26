@@ -531,7 +531,6 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
               ('raw_export_record_assembly_pending','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_seal_authenticated_assembly','uuid, uuid, bigint, bigint, bigint, uuid, bytea, bytea, bytea, text, integer, bytea, bigint, integer, jsonb','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_authorize_assembly_abort','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
-              ('raw_export_record_assembly_finalized','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_record_assembly_aborted','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_read_assembly_recovery_context','uuid','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_read_committed_assembly_recovery_context','uuid, uuid, bigint, bigint','tagekyc_raw_export_assembly_sealer'),
@@ -558,6 +557,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         await AssertFunctionGrantAsync(connection, "raw_export_seal_authenticated_assembly", "tagekyc_raw_export_assembly_resolver", false);
         await AssertFunctionGrantAsync(connection, "raw_export_read_committed_assembly_recovery_context", "tagekyc_raw_export_assembly_sealer", true);
         await AssertFunctionGrantAsync(connection, "raw_export_read_committed_assembly_recovery_context", "tagekyc_raw_export_assembly_resolver", false);
+        await AssertFunctionGrantAsync(connection, "raw_export_record_assembly_finalized", "tagekyc_raw_export_assembly_sealer", false);
     }
 
     [Fact]
@@ -1201,7 +1201,6 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
               ('raw_export_record_assembly_pending','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_seal_authenticated_assembly','uuid, uuid, bigint, bigint, bigint, uuid, bytea, bytea, bytea, text, integer, bytea, bigint, integer, jsonb','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_authorize_assembly_abort','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
-              ('raw_export_record_assembly_finalized','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_record_assembly_aborted','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_read_assembly_recovery_context','uuid','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_read_committed_assembly_recovery_context','uuid, uuid, bigint, bigint','tagekyc_raw_export_assembly_sealer'),
@@ -1227,7 +1226,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                   AND (a.grantee NOT IN (p.proowner,(SELECT oid FROM pg_catalog.pg_roles WHERE rolname=e.grantee))
                     OR a.grantor<>p.proowner OR a.is_grantable))
             """;
-        Assert.Equal(14L, Convert.ToInt64(await command.ExecuteScalarAsync()));
+        Assert.Equal(13L, Convert.ToInt64(await command.ExecuteScalarAsync()));
 
         var recoveryDefinition = await FunctionDefinition("raw_export_read_committed_assembly_recovery_context");
         await AssertReadinessMutationAsync(
@@ -1239,6 +1238,9 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         await AssertReadinessMutationAsync(
             "GRANT EXECUTE ON FUNCTION tagekyc.raw_export_read_assembly_recovery_context(uuid) TO tagekyc_runtime",
             "REVOKE EXECUTE ON FUNCTION tagekyc.raw_export_read_assembly_recovery_context(uuid) FROM tagekyc_runtime");
+        await AssertReadinessMutationAsync(
+            "GRANT EXECUTE ON FUNCTION tagekyc.raw_export_record_assembly_finalized(uuid,bigint,bytea) TO tagekyc_raw_export_assembly_sealer",
+            "REVOKE EXECUTE ON FUNCTION tagekyc.raw_export_record_assembly_finalized(uuid,bigint,bytea) FROM tagekyc_raw_export_assembly_sealer");
         await AssertReadinessMutationAsync(
             """
             CREATE ROLE tagekyc_c1_acl_alternate_grantor NOLOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
@@ -1878,6 +1880,34 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var recovered = await prepared.Orchestrator.ExecuteAsync(successorRequest, default);
         Assert.Equal(RawExportAssemblyExecutionOutcome.ExistingMatch, recovered.Outcome);
         Assert.Equal("Finalized", (await ReadPostSealResidueAsync(prepared.JobId)).PreparationDisposition);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_legacy_finalize_capability_cannot_bypass_current_claim()
+    {
+        await postgres.ResetDatabaseAsync();
+        var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var initial = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var preparationId = Assert.IsType<Guid>(initial.C2PreparationId);
+        Assert.IsType<long>(initial.RecoveryClaimGeneration);
+        var before = await ReadPostSealClaimStateAsync(preparationId);
+        Assert.Equal("SealCommitted", before.PreparationDisposition);
+        Assert.Equal(prepared.Request.RecoveryClaimOwnerId, before.ClaimOwnerId);
+
+        await using var connection = await new RoleConnectionFactory(postgres.ConnectionString)
+            .OpenAsync(RawExportAssemblyDatabaseCapability.Sealer, default);
+        await using var command = new NpgsqlCommand(
+            "SELECT * FROM tagekyc.raw_export_record_assembly_finalized(@preparation,@revision,@fingerprint)",
+            connection);
+        command.Parameters.AddWithValue("preparation", preparationId);
+        command.Parameters.AddWithValue("revision", before.PreparationRevision);
+        command.Parameters.AddWithValue("fingerprint", before.AssemblyFingerprint);
+        var denied = await Assert.ThrowsAsync<PostgresException>(() => command.ExecuteReaderAsync());
+        Assert.Equal(PostgresErrorCodes.InsufficientPrivilege, denied.SqlState);
+
+        AssertPostSealClaimStateEqual(before, await ReadPostSealClaimStateAsync(preparationId));
     }
 
     [Fact]

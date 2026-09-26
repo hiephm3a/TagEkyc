@@ -163,15 +163,20 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
 
         var cursorKey = Convert.ToBase64String(RandomNumberGenerator.GetBytes(32))
             .TrimEnd('=').Replace('+', '-').Replace('/', '_');
-        await using var joinedControlDb = publishThroughRawIngress
-            ? postgres.CreateDbContext()
-            : null;
+        // Each TestServer owns and disposes its EF/Npgsql service graph. Give
+        // every app instance a distinct pool identity so a later E2E case can
+        // never reuse a data source disposed with the preceding TestServer.
+        var appConnectionString = new NpgsqlConnectionStringBuilder(postgres.ConnectionString)
+        {
+            ApplicationName = $"raw-export-same-job-{Guid.NewGuid():N}",
+        }.ConnectionString;
+        await using var joinedControlDb = postgres.CreateDbContext();
         var builder = WebApplication.CreateBuilder();
         builder.WebHost.UseTestServer();
         builder.Configuration.AddInMemoryCollection(new Dictionary<string, string?>
         {
             [$"{RecipientPackageReferenceOptions.SectionPath}:Topology"] = "PostgresDurable",
-            [$"{RecipientPackageReferenceOptions.SectionPath}:DatabaseConnectionString"] = postgres.ConnectionString,
+            [$"{RecipientPackageReferenceOptions.SectionPath}:DatabaseConnectionString"] = appConnectionString,
             [$"{RecipientPackageReferenceOptions.SectionPath}:ActiveCursorKeyId"] = "sdk-e2e-cursor",
             [$"{RecipientPackageReferenceOptions.SectionPath}:ActiveCursorKeyVersion"] = "1",
             [$"{RecipientPackageReferenceOptions.SectionPath}:AcceptedCursorKeys:0:KeyId"] = "sdk-e2e-cursor",
@@ -180,29 +185,15 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
         });
         builder.Services.Configure<Microsoft.AspNetCore.Routing.RouteOptions>(options =>
             options.ConstraintMap["D"] = typeof(DFormatGuidRouteConstraint));
-        if (joinedControlDb is null)
-        {
-            builder.Services.AddTagEkycPostgresPersistence(postgres.ConnectionString);
-            builder.Services.AddScoped<IApiKeyAuthenticator>(services => new ManagedAuthenticator(
-                new RecipientCredentialAuthenticationPolicy(
-                    new PostgresHashedApiKeyStore(
-                        services.GetRequiredService<TagEkycDbContext>(), new ApiKeyStorePepper(Pepper)),
-                    new NoGlobalPolicyProvider())));
-            builder.Services.AddScoped<IRawExportControlPlaneApplicationService,
-                RawExportControlPlaneApplicationService>();
-        }
-        else
-        {
-            builder.Services.AddSingleton<IApiKeyAuthenticator>(new ManagedAuthenticator(
-                new RecipientCredentialAuthenticationPolicy(
-                    new PostgresHashedApiKeyStore(joinedControlDb, new ApiKeyStorePepper(Pepper)),
-                    new NoGlobalPolicyProvider())));
-            builder.Services.AddSingleton<IRawExportControlPlaneApplicationService>(
-                new RawExportControlPlaneApplicationService(
-                    Tip88B34AuthorizationEngineTests.CreateRepository(joinedControlDb),
-                    Tip88B4RawExportJobFoundationTests.CreateJobRepository(joinedControlDb),
-                    new EfRawExportJobPackageProjectionReader(joinedControlDb)));
-        }
+        builder.Services.AddSingleton<IApiKeyAuthenticator>(new ManagedAuthenticator(
+            new RecipientCredentialAuthenticationPolicy(
+                new PostgresHashedApiKeyStore(joinedControlDb, new ApiKeyStorePepper(Pepper)),
+                new NoGlobalPolicyProvider())));
+        builder.Services.AddSingleton<IRawExportControlPlaneApplicationService>(
+            new RawExportControlPlaneApplicationService(
+                Tip88B34AuthorizationEngineTests.CreateRepository(joinedControlDb),
+                Tip88B4RawExportJobFoundationTests.CreateJobRepository(joinedControlDb),
+                new EfRawExportJobPackageProjectionReader(joinedControlDb)));
         builder.Services.AddSingleton<IRecipientPackageDeliveryApplicationService>(
             new RecipientPackageDeliveryApplicationService(deliveryCoordinator));
         builder.Services.AddTagEkycRecipientPackageReference(builder.Configuration);

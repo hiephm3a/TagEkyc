@@ -311,11 +311,6 @@ internal sealed class RawExportAssemblyRepository(IRawExportAssemblyConnectionFa
         return new(S(reader, "Outcome"), NL(reader, "JobRevision"), NL(reader, "PreparationRevision"), NT(reader, "SealedAtUtc"));
     }
 
-    internal Task<RawExportAssemblyMutation> RecordFinalizedAsync(
-        Guid preparationId, long rowRevision, byte[] fingerprint, CancellationToken cancellationToken) =>
-        MutationAsync("raw_export_record_assembly_finalized", cancellationToken,
-            ("preparation", preparationId), ("revision", rowRevision), ("fingerprint", fingerprint));
-
     internal Task<RawExportAssemblyMutation> AuthorizeAbortAsync(
         Guid preparationId, long rowRevision, byte[] authorizationDigest, CancellationToken cancellationToken) =>
         MutationAsync("raw_export_authorize_assembly_abort", cancellationToken,

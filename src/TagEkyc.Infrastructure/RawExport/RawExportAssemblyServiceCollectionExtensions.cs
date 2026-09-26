@@ -115,7 +115,6 @@ public sealed class RawExportAssemblyReadinessValidator(
               ('raw_export_record_assembly_pending','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_seal_authenticated_assembly','uuid, uuid, bigint, bigint, bigint, uuid, bytea, bytea, bytea, text, integer, bytea, bigint, integer, jsonb','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_authorize_assembly_abort','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
-              ('raw_export_record_assembly_finalized','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_record_assembly_aborted','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_read_assembly_recovery_context','uuid','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_read_committed_assembly_recovery_context','uuid, uuid, bigint, bigint','tagekyc_raw_export_assembly_sealer'),
@@ -148,7 +147,7 @@ public sealed class RawExportAssemblyReadinessValidator(
               JOIN pg_catalog.pg_namespace n ON n.nspname='tagekyc'
               JOIN pg_catalog.pg_class c ON c.relnamespace=n.oid AND c.relname=e.name AND c.relkind='r'),
             function_check AS (
-              SELECT pg_catalog.count(*)=16 AND pg_catalog.bool_and(
+              SELECT pg_catalog.count(*)=15 AND pg_catalog.bool_and(
                 pg_catalog.pg_get_userbyid(p.proowner)='tagekyc_raw_export_deployer'
                 AND p.prosecdef AND p.proconfig=ARRAY['search_path=pg_catalog']::text[]
                 AND EXISTS (
@@ -169,16 +168,21 @@ public sealed class RawExportAssemblyReadinessValidator(
               JOIN pg_catalog.pg_proc p ON p.pronamespace=n.oid AND p.proname=e.name
                 AND pg_catalog.oidvectortypes(p.proargtypes)=e.args),
             function_surface_check AS (
-              SELECT pg_catalog.count(*)=16 AS ok
+              SELECT pg_catalog.count(*)=15 AS ok
               FROM pg_catalog.pg_proc p
               JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
               WHERE n.nspname='tagekyc'
-                AND p.proname IN (SELECT name FROM expected_functions))
-            SELECT r.ok AND m.ok AND t.ok AND f.ok AND fs.ok
+                AND p.proname IN (SELECT name FROM expected_functions)),
+            legacy_finalize_check AS (
+              SELECT NOT pg_catalog.has_function_privilege(
+                'tagekyc_raw_export_assembly_sealer',
+                'tagekyc.raw_export_record_assembly_finalized(uuid,bigint,bytea)',
+                'EXECUTE') AS ok)
+            SELECT r.ok AND m.ok AND t.ok AND f.ok AND fs.ok AND lf.ok
               AND pg_catalog.has_schema_privilege('tagekyc_raw_export_assembly_resolver','tagekyc','USAGE')
               AND pg_catalog.has_schema_privilege('tagekyc_raw_export_assembly_sealer','tagekyc','USAGE')
             FROM role_check r CROSS JOIN membership_check m CROSS JOIN table_check t CROSS JOIN function_check f
-              CROSS JOIN function_surface_check fs
+              CROSS JOIN function_surface_check fs CROSS JOIN legacy_finalize_check lf
             """;
         var valid = await command.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false);
         if (valid is not true)

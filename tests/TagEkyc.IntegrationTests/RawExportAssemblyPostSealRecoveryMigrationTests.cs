@@ -27,11 +27,12 @@ public sealed class RawExportAssemblyPostSealRecoveryMigrationTests
         Assert.Contains("tagekyc_raw_export_deployer|true|search_path=pg_catalog", installed, StringComparison.Ordinal);
         Assert.Contains("NON_OWNER_TABLE_GRANTS=0", installed, StringComparison.Ordinal);
         Assert.Contains("INVALID_FUNCTION_GRANTS=0", installed, StringComparison.Ordinal);
+        Assert.Contains("LEGACY_FINALIZE_SEALER_EXECUTE=false", installed, StringComparison.Ordinal);
         await AssertDirectMutationRejectedAsync(db);
 
         await migrator.MigrateAsync(Predecessor);
         Assert.Equal(Predecessor, (await db.Database.GetAppliedMigrationsAsync()).Last());
-        Assert.Equal("TABLE=false;FUNCTIONS=0;TRIGGER=false;PREPARATION_INDEX=false",
+        Assert.Equal("TABLE=false;FUNCTIONS=0;TRIGGER=false;PREPARATION_INDEX=false;LEGACY_FINALIZE_SEALER_EXECUTE=true",
             await ReadAbsentStateAsync(db));
 
         await migrator.MigrateAsync(Current);
@@ -101,7 +102,13 @@ public sealed class RawExportAssemblyPostSealRecoveryMigrationTests
                 AND (a.privilege_type<>'EXECUTE'
                   OR a.grantee NOT IN (p.proowner,
                     (SELECT oid FROM pg_catalog.pg_roles WHERE rolname='tagekyc_raw_export_assembly_sealer'))
-                  OR a.grantor<>p.proowner OR a.is_grantable))
+                  OR a.grantor<>p.proowner OR a.is_grantable)
+              UNION ALL
+              SELECT 'LEGACY_FINALIZE_SEALER_EXECUTE='||pg_catalog.has_function_privilege(
+                'tagekyc_raw_export_assembly_sealer',
+                'tagekyc.raw_export_record_assembly_finalized(uuid,bigint,bytea)',
+                'EXECUTE')::text
+            )
             SELECT pg_catalog.string_agg(value,E'\n' ORDER BY value)
             FROM (SELECT value FROM function_rows UNION ALL SELECT value FROM table_rows
                   UNION ALL SELECT value FROM security_rows) all_rows
@@ -124,7 +131,11 @@ public sealed class RawExportAssemblyPostSealRecoveryMigrationTests
                        'raw_export_defer_post_seal_recovery',
                        'raw_export_record_claimed_assembly_finalized'))::text||
                    ';TRIGGER='||(EXISTS(SELECT 1 FROM pg_catalog.pg_trigger WHERE tgname='tr_raw_export_post_seal_recovery_mutation'))::text||
-                   ';PREPARATION_INDEX='||(pg_catalog.to_regclass('tagekyc.ix_raw_export_preparation_post_seal_discovery') IS NOT NULL)::text
+                   ';PREPARATION_INDEX='||(pg_catalog.to_regclass('tagekyc.ix_raw_export_preparation_post_seal_discovery') IS NOT NULL)::text||
+                   ';LEGACY_FINALIZE_SEALER_EXECUTE='||pg_catalog.has_function_privilege(
+                     'tagekyc_raw_export_assembly_sealer',
+                     'tagekyc.raw_export_record_assembly_finalized(uuid,bigint,bytea)',
+                     'EXECUTE')::text
             """;
         return (string)(await command.ExecuteScalarAsync())!;
     }

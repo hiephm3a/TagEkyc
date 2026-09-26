@@ -403,6 +403,12 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
               tagekyc.raw_export_defer_post_seal_recovery(uuid,uuid,bigint,text,integer),
               tagekyc.raw_export_record_claimed_assembly_finalized(uuid,bigint,bytea,uuid,bigint)
             FROM PUBLIC,tagekyc_runtime,tagekyc_raw_export_assembly_resolver,tagekyc_raw_export_assembly_sealer;
+            -- The predecessor finalize capability does not carry recovery-claim
+            -- ownership or generation. Once recovery claims exist it must no
+            -- longer be executable by the runtime sealer role.
+            REVOKE EXECUTE ON FUNCTION
+              tagekyc.raw_export_record_assembly_finalized(uuid,bigint,bytea)
+            FROM tagekyc_raw_export_assembly_sealer;
             GRANT EXECUTE ON FUNCTION
               tagekyc.raw_export_claim_next_post_seal_recovery(uuid,integer),
               tagekyc.raw_export_claim_exact_post_seal_recovery(uuid,uuid,bigint,bigint,uuid,integer,bytea,bytea,bytea,bytea),
@@ -416,6 +422,9 @@ public sealed class RawExportAssemblyPostSealRecovery : Migration
     {
         migrationBuilder.Sql(
             """
+            GRANT EXECUTE ON FUNCTION
+              tagekyc.raw_export_record_assembly_finalized(uuid,bigint,bytea)
+            TO tagekyc_raw_export_assembly_sealer;
             DROP FUNCTION IF EXISTS tagekyc.raw_export_record_claimed_assembly_finalized(uuid,bigint,bytea,uuid,bigint);
             DROP FUNCTION IF EXISTS tagekyc.raw_export_defer_post_seal_recovery(uuid,uuid,bigint,text,integer);
             DROP FUNCTION IF EXISTS tagekyc.raw_export_claim_exact_post_seal_recovery(uuid,uuid,bigint,bigint,uuid,integer,bytea,bytea,bytea,bytea);
