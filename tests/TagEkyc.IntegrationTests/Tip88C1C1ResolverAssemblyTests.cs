@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using Npgsql;
@@ -159,7 +160,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Func<Guid, Guid, Task<IC2AssemblyPreparationProvider>>? c2Factory = null,
         bool publishSource = true,
         DurableObjectMinioFixture? sharedMinio = null,
-        bool acquireThroughDurableWorkSource = false)
+        bool acquireThroughDurableWorkSource = false,
+        RawExportMode durableMode = RawExportMode.EncryptedExportPacket)
     {
         var plaintext = plaintextOverride ?? Encoding.UTF8.GetBytes("c1-end-to-end-synthetic-selfie");
         var minio = sharedMinio ?? await DurableObjectMinioFixture.StartAsync();
@@ -167,7 +169,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var permit = acquireThroughDurableWorkSource
             ? await Tip88B4RawExportJobFoundationTests.CreateAuthorizedPacketPermitAsync(
                 setup,
-                [RawExportRawClass.LiveSelfieImage])
+                [RawExportRawClass.LiveSelfieImage],
+                durableMode)
             : await Tip88B4RawExportJobFoundationTests.CreateAuthorizedPermitAsync(
                 setup,
                 [RawExportRawClass.LiveSelfieImage]);
@@ -222,7 +225,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                 new RoleConnectionFactory(postgres.ConnectionString),
                 Tip88B4RawExportJobFoundationTests.CreateJobRepository(
                     durableWorkSourceDb, leaseOverride),
-                new RawExportAssemblyWorkerIdentity(Guid.NewGuid()));
+                new RawExportAssemblyWorkerIdentity(Guid.NewGuid()),
+                new RawExportAssemblyRepository(new RoleConnectionFactory(postgres.ConnectionString)));
             request = Assert.IsType<RawExportAssemblyExecutionRequest>(
                 await durableWorkSource.TryAcquireAsync());
             Assert.Equal(bound.JobId, request.JobId);
@@ -432,7 +436,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var durable = new DurableRawExportAssemblyWorkSource(
             new RoleConnectionFactory(postgres.ConnectionString),
             jobs,
-            new RawExportAssemblyWorkerIdentity(Guid.NewGuid()));
+            new RawExportAssemblyWorkerIdentity(Guid.NewGuid()),
+            new RawExportAssemblyRepository(new RoleConnectionFactory(postgres.ConnectionString)));
         var request = Assert.IsType<RawExportAssemblyExecutionRequest>(
             await durable.TryAcquireAsync());
         Assert.Equal(bound.JobId, request.JobId);
@@ -516,13 +521,36 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         await using var connection = await OpenAsync();
         await using var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT pg_catalog.count(*)
-            FROM information_schema.routine_privileges
-            WHERE specific_schema='tagekyc'
-              AND grantee IN ('tagekyc_raw_export_assembly_resolver','tagekyc_raw_export_assembly_sealer')
-              AND privilege_type='EXECUTE'
+            WITH expected(name,args,grantee) AS (VALUES
+              ('raw_export_freeze_job_source_bindings','uuid, uuid, bigint, bigint, uuid','tagekyc_raw_export_assembly_resolver'),
+              ('raw_export_read_job_source_verification_context','uuid, integer, uuid, bigint, bigint, uuid','tagekyc_raw_export_assembly_resolver'),
+              ('raw_export_record_assembly_source_integrity_failure','uuid, integer, uuid, bigint, bigint, uuid, text','tagekyc_raw_export_assembly_resolver'),
+              ('raw_export_next_assembly_candidate','','tagekyc_raw_export_assembly_resolver'),
+              ('raw_export_register_assembly_preparing','uuid, uuid, uuid, bigint, bigint, bytea, bytea','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_record_assembly_pending','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_seal_authenticated_assembly','uuid, uuid, bigint, bigint, bigint, uuid, bytea, bytea, bytea, text, integer, bytea, bigint, integer, jsonb','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_authorize_assembly_abort','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_record_assembly_finalized','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_record_assembly_aborted','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_read_assembly_recovery_context','uuid','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_read_committed_assembly_recovery_context','uuid, uuid, bigint, bigint','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_claim_next_post_seal_recovery','uuid, integer','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_claim_exact_post_seal_recovery','uuid, uuid, bigint, bigint, uuid, integer, bytea, bytea, bytea, bytea','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_defer_post_seal_recovery','uuid, uuid, bigint, text, integer','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_record_claimed_assembly_finalized','uuid, bigint, bytea, uuid, bigint','tagekyc_raw_export_assembly_sealer')),
+            actual AS (
+              SELECT p.proname AS name,pg_catalog.oidvectortypes(p.proargtypes) AS args,r.rolname AS grantee
+              FROM pg_catalog.pg_proc p
+              JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace AND n.nspname='tagekyc'
+              CROSS JOIN LATERAL pg_catalog.aclexplode(
+                COALESCE(p.proacl,pg_catalog.acldefault('f',p.proowner))) a
+              JOIN pg_catalog.pg_roles r ON r.oid=a.grantee
+              WHERE r.rolname IN ('tagekyc_raw_export_assembly_resolver','tagekyc_raw_export_assembly_sealer')
+                AND a.privilege_type='EXECUTE')
+            SELECT NOT EXISTS (SELECT * FROM expected EXCEPT SELECT * FROM actual)
+               AND NOT EXISTS (SELECT * FROM actual EXCEPT SELECT * FROM expected)
             """;
-        Assert.Equal(10L, Convert.ToInt64(await command.ExecuteScalarAsync()));
+        Assert.Equal(true, await command.ExecuteScalarAsync());
         await AssertFunctionGrantAsync(connection, "raw_export_read_job_source_verification_context", "tagekyc_raw_export_assembly_resolver", true);
         await AssertFunctionGrantAsync(connection, "raw_export_read_job_source_verification_context", "tagekyc_raw_export_assembly_sealer", false);
         await AssertFunctionGrantAsync(connection, "raw_export_seal_authenticated_assembly", "tagekyc_raw_export_assembly_sealer", true);
@@ -1160,10 +1188,10 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             SELECT pg_catalog.count(*) FROM pg_catalog.pg_class c
             JOIN pg_catalog.pg_namespace n ON n.oid=c.relnamespace
             WHERE n.nspname='tagekyc' AND c.relname IN
-              ('raw_export_job_source_bindings','raw_export_assembly_preparation_dispositions','raw_export_assembly_identities','raw_export_assembly_items')
+              ('raw_export_job_source_bindings','raw_export_assembly_preparation_dispositions','raw_export_assembly_identities','raw_export_assembly_items','raw_export_assembly_post_seal_recovery_claims')
               AND pg_catalog.pg_get_userbyid(c.relowner)='tagekyc_raw_export_deployer'
             """;
-        Assert.Equal(4L, Convert.ToInt64(await command.ExecuteScalarAsync()));
+        Assert.Equal(5L, Convert.ToInt64(await command.ExecuteScalarAsync()));
         command.CommandText = """
             WITH expected(name,args,grantee) AS (VALUES
               ('raw_export_freeze_job_source_bindings','uuid, uuid, bigint, bigint, uuid','tagekyc_raw_export_assembly_resolver'),
@@ -1175,7 +1203,11 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
               ('raw_export_record_assembly_finalized','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_record_assembly_aborted','uuid, bigint, bytea','tagekyc_raw_export_assembly_sealer'),
               ('raw_export_read_assembly_recovery_context','uuid','tagekyc_raw_export_assembly_sealer'),
-              ('raw_export_read_committed_assembly_recovery_context','uuid, uuid, bigint, bigint','tagekyc_raw_export_assembly_sealer'))
+              ('raw_export_read_committed_assembly_recovery_context','uuid, uuid, bigint, bigint','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_claim_next_post_seal_recovery','uuid, integer','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_claim_exact_post_seal_recovery','uuid, uuid, bigint, bigint, uuid, integer, bytea, bytea, bytea, bytea','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_defer_post_seal_recovery','uuid, uuid, bigint, text, integer','tagekyc_raw_export_assembly_sealer'),
+              ('raw_export_record_claimed_assembly_finalized','uuid, bigint, bytea, uuid, bigint','tagekyc_raw_export_assembly_sealer'))
             SELECT pg_catalog.count(*)
             FROM expected e
             JOIN pg_catalog.pg_namespace n ON n.nspname='tagekyc'
@@ -1194,7 +1226,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                   AND (a.grantee NOT IN (p.proowner,(SELECT oid FROM pg_catalog.pg_roles WHERE rolname=e.grantee))
                     OR a.grantor<>p.proowner OR a.is_grantable))
             """;
-        Assert.Equal(10L, Convert.ToInt64(await command.ExecuteScalarAsync()));
+        Assert.Equal(14L, Convert.ToInt64(await command.ExecuteScalarAsync()));
 
         var recoveryDefinition = await FunctionDefinition("raw_export_read_committed_assembly_recovery_context");
         await AssertReadinessMutationAsync(
@@ -1237,12 +1269,14 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
               ('raw_export_register_assembly_preparing'),('raw_export_record_assembly_pending'),
               ('raw_export_seal_authenticated_assembly'),('raw_export_authorize_assembly_abort'),
               ('raw_export_record_assembly_finalized'),('raw_export_record_assembly_aborted'),
-              ('raw_export_read_assembly_recovery_context'),('raw_export_read_committed_assembly_recovery_context'))
+              ('raw_export_read_assembly_recovery_context'),('raw_export_read_committed_assembly_recovery_context'),
+              ('raw_export_claim_next_post_seal_recovery'),('raw_export_claim_exact_post_seal_recovery'),
+              ('raw_export_defer_post_seal_recovery'),('raw_export_record_claimed_assembly_finalized'))
             SELECT pg_catalog.count(*) FROM pg_catalog.pg_proc p
             JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
             WHERE n.nspname='tagekyc' AND p.proname IN (SELECT name FROM expected)
             """;
-        Assert.Equal(10L, Convert.ToInt64(await command.ExecuteScalarAsync()));
+        Assert.Equal(14L, Convert.ToInt64(await command.ExecuteScalarAsync()));
     }
 
     [Fact]
@@ -1286,19 +1320,19 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
 
         var fixture = FixtureAssemblyConfiguration();
         await AssertReadinessCodeAsync(fixture, true, RawExportAssemblyOptions.ConfigInvalid);
-        await AssertReadinessCodeAsync(fixture, false, RawExportAssemblyOptions.AuthenticatorUnavailable);
-        await AssertReadinessCodeAsync(fixture, false, RawExportAssemblyOptions.C2Unavailable,
-            services => services.AddSingleton<IRawExportAssemblyAuthenticationProvider>(new FixtureAssemblyAuthenticator()));
+        await AssertReadinessCodeAsync(fixture, false, RawExportAssemblyOptions.AuthenticatorUnavailable,
+            services => services.RemoveAll<IRawExportAssemblyAuthenticationProvider>());
+        await AssertReadinessCodeAsync(fixture, false, RawExportAssemblyOptions.C2Unavailable);
         await AssertReadinessCodeAsync(fixture, false, RawExportAssemblyOptions.RoleTopologyInvalid,
             services =>
             {
-                services.AddSingleton<IRawExportAssemblyAuthenticationProvider>(new FixtureAssemblyAuthenticator());
                 services.AddSingleton<IC2AssemblyPreparationProvider>(new BoundedFixtureC2Provider());
+                services.RemoveAll<IRawExportAssemblyConnectionFactory>();
             });
         await ValidateReadinessAsync(fixture, false, services =>
         {
-            services.AddSingleton<IRawExportAssemblyAuthenticationProvider>(new FixtureAssemblyAuthenticator());
             services.AddSingleton<IC2AssemblyPreparationProvider>(new BoundedFixtureC2Provider());
+            services.RemoveAll<IRawExportAssemblyConnectionFactory>();
             services.AddSingleton<IRawExportAssemblyConnectionFactory>(new RoleConnectionFactory(postgres.ConnectionString));
         });
 
@@ -1337,17 +1371,22 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Equal(1, source.RecordCalls);
     }
 
-    [Fact]
-    public async Task PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation()
+    [Theory]
+    [InlineData(RawExportMode.EncryptedExportPacket)]
+    [InlineData(RawExportMode.EncryptedRawVaultRetained)]
+    public async Task PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation(
+        RawExportMode mode)
     {
+        await postgres.ResetDatabaseAsync();
         var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
         await using var prepared = await PrepareAssemblyExecutionAsync(
-            provider, null, null, acquireThroughDurableWorkSource: true);
+            provider, null, null, acquireThroughDurableWorkSource: true, durableMode: mode);
 
         var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
 
         Assert.Equal(RawExportAssemblyExecutionOutcome.ProviderUnavailable, result.Outcome);
         Assert.Null(result.JobRevision);
+        Assert.NotNull(result.RecoveryClaimGeneration);
         var checkpoint = await ReadPostSealResidueAsync(prepared.JobId);
         Assert.Equal("AssemblySealed", checkpoint.JobState);
         Assert.Equal(prepared.Request.ExpectedJobRevision + 1, checkpoint.JobRevision);
@@ -1356,9 +1395,19 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Equal("SealCommitted", checkpoint.PreparationDisposition);
         Assert.Equal("Prepared", provider.DiagnosticState);
 
+        var acquiring = Assert.IsType<DurableRawExportAssemblyWorkSource>(prepared.DurableWorkSource);
+        await acquiring.RecordAsync(prepared.Request, result);
+        await Task.Delay(TimeSpan.FromMilliseconds(1100));
+
         await using var freshDb = postgres.CreateDbContext();
         var fresh = NewDurableWorkSource(freshDb);
-        Assert.Null(await fresh.TryAcquireAsync());
+        var recoveredRequest = Assert.IsType<RawExportAssemblyExecutionRequest>(
+            await fresh.TryAcquireAsync());
+        Assert.Equal(prepared.JobId, recoveredRequest.JobId);
+        Assert.NotNull(recoveredRequest.RecoveryClaimGeneration);
+        var recovered = await prepared.Orchestrator.ExecuteAsync(recoveredRequest, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ExistingMatch, recovered.Outcome);
+        Assert.Equal("Finalized", (await ReadPostSealResidueAsync(prepared.JobId)).PreparationDisposition);
 
         await using var control = await PrepareRediscoverableCandidateAsync();
         await using var controlDb = postgres.CreateDbContext();
@@ -1375,11 +1424,14 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     [Fact]
     public async Task PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation()
     {
+        await postgres.ResetDatabaseAsync();
         var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
         await using var prepared = await PrepareAssemblyExecutionAsync(
             provider, null, null, acquireThroughDurableWorkSource: true);
         var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
         Assert.Equal(RawExportAssemblyExecutionOutcome.ProviderUnavailable, result.Outcome);
+        var acquiring = Assert.IsType<DurableRawExportAssemblyWorkSource>(prepared.DurableWorkSource);
+        await acquiring.RecordAsync(prepared.Request, result);
 
         var repository = new RawExportAssemblyRepository(
             new RoleConnectionFactory(postgres.ConnectionString));
@@ -1405,12 +1457,12 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Equal("AssemblySealed", checkpoint.JobState);
         Assert.Equal("SealCommitted", checkpoint.PreparationDisposition);
 
+        await Task.Delay(TimeSpan.FromMilliseconds(1100));
         await using var freshDb = postgres.CreateDbContext();
-        Assert.Null(await NewDurableWorkSource(freshDb).TryAcquireAsync());
-
-        var recorded = await repository.RecordFinalizedAsync(
-            exact.C2PreparationId, exact.RowRevision, exact.AssemblyFingerprint, default);
-        Assert.Equal("Finalized", recorded.Outcome);
+        var fresh = NewDurableWorkSource(freshDb);
+        var recoveredRequest = Assert.IsType<RawExportAssemblyExecutionRequest>(await fresh.TryAcquireAsync());
+        var recorded = await prepared.Orchestrator.ExecuteAsync(recoveredRequest, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ExistingMatch, recorded.Outcome);
         await using var completedDb = postgres.CreateDbContext();
         Assert.Null(await NewDurableWorkSource(completedDb).TryAcquireAsync());
         var replay = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
@@ -1424,6 +1476,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         bool unresolvedOutcomeUnknown,
         RawExportAssemblyExecutionOutcome expectedOutcome)
     {
+        await postgres.ResetDatabaseAsync();
         var provider = new BoundedFixtureC2Provider(
             unavailableFirstFinalize: !unresolvedOutcomeUnknown,
             unresolvedFirstFinalize: unresolvedOutcomeUnknown);
@@ -1434,10 +1487,9 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
         Assert.Equal(expectedOutcome, result.Outcome);
         Assert.Null(result.JobRevision);
+        Assert.NotNull(result.RecoveryClaimGeneration);
 
-        var failure = await Assert.ThrowsAsync<RawExportJobException>(async () =>
-            await workSource.RecordAsync(prepared.Request, result));
-        Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", failure.Code);
+        await workSource.RecordAsync(prepared.Request, result);
         var residue = await ReadPostSealResidueAsync(prepared.JobId);
         Assert.Equal("AssemblySealed", residue.JobState);
         Assert.Equal(prepared.Request.ExpectedJobRevision + 1, residue.JobRevision);
@@ -1449,6 +1501,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     [Fact]
     public async Task PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision()
     {
+        await postgres.ResetDatabaseAsync();
         var provider = new BoundedFixtureC2Provider(conflictFirstFinalize: true);
         await using var prepared = await PrepareAssemblyExecutionAsync(
             provider, null, null, acquireThroughDurableWorkSource: true);
@@ -1457,10 +1510,9 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
         Assert.Equal(RawExportAssemblyExecutionOutcome.PreparationConflict, result.Outcome);
         Assert.Null(result.JobRevision);
+        Assert.NotNull(result.RecoveryClaimGeneration);
 
-        var failure = await Assert.ThrowsAsync<RawExportJobException>(async () =>
-            await workSource.RecordAsync(prepared.Request, result));
-        Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", failure.Code);
+        await workSource.RecordAsync(prepared.Request, result);
         var residue = await ReadPostSealResidueAsync(prepared.JobId);
         Assert.Equal("AssemblySealed", residue.JobState);
         Assert.Equal("SealCommitted", residue.PreparationDisposition);
@@ -1469,6 +1521,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
     [Fact]
     public async Task PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it()
     {
+        await postgres.ResetDatabaseAsync();
         var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
         await using var prepared = await PrepareRediscoverableCandidateAsync(provider);
         await using var owned = CreateIndependentOrchestrator(prepared.Minio, provider);
@@ -1477,23 +1530,23 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
 
         var run = host.RunAsync();
         await observation.Started.Task.WaitAsync(TimeSpan.FromSeconds(30));
-        var recordFailure = await observation.RecordException.Task.WaitAsync(TimeSpan.FromMinutes(2));
-        var typed = Assert.IsType<RawExportJobException>(recordFailure);
-        Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", typed.Code);
-        var execution = await observation.Executed.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        var execution = await observation.Recorded.Task.WaitAsync(TimeSpan.FromMinutes(2));
         Assert.Equal(RawExportAssemblyExecutionOutcome.ProviderUnavailable, execution.Result.Outcome);
-        Assert.Null(execution.Result.JobRevision);
-        await observation.Stopping.Task.WaitAsync(TimeSpan.FromSeconds(30));
-        await run.WaitAsync(TimeSpan.FromSeconds(30));
-        await observation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        Assert.NotNull(execution.Result.RecoveryClaimGeneration);
+        Assert.False(observation.Stopping.Task.IsCompleted);
         Assert.Equal(BackgroundServiceExceptionBehavior.StopHost, observation.ExceptionBehavior);
         Assert.Equal("RecordAsync", observation.FaultStage);
         Assert.False(observation.TestRequestedStop);
+        observation.TestRequestedStop = true;
+        await host.StopAsync();
+        await run.WaitAsync(TimeSpan.FromSeconds(30));
+        await observation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
     }
 
     [Fact]
     public async Task PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host()
     {
+        await postgres.ResetDatabaseAsync();
         await using var prepared = await PrepareRediscoverableCandidateAsync();
         var barrier = new TwoPartyAcquireBarrier();
         var firstObservation = new HostedWorkerObservation("contender-a");
@@ -1529,9 +1582,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var acquireFailure = Assert.IsType<RawExportJobException>(
             await failedObservation.AcquireException.Task.WaitAsync(TimeSpan.FromSeconds(30)));
         Assert.Equal("RAW_EXPORT_JOB_CONCURRENCY_CONFLICT", acquireFailure.Code);
-        await failedObservation.Stopping.Task.WaitAsync(TimeSpan.FromSeconds(30));
-        await failedHostRun.WaitAsync(TimeSpan.FromSeconds(30));
-        await failedObservation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        await Task.Delay(100);
+        Assert.False(failedObservation.Stopping.Task.IsCompleted);
 
         var recorded = await winnerObservation.Recorded.Task.WaitAsync(TimeSpan.FromMinutes(2));
         Assert.Equal(prepared.JobId, recorded.Request.JobId);
@@ -1549,15 +1601,21 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Single(new[] { firstObservation, secondObservation }
             .Where(observation => observation.ExecutionRequests.Count != 0));
 
+        failedObservation.TestRequestedStop = true;
         winnerObservation.TestRequestedStop = true;
+        var failedHost = ReferenceEquals(failedObservation, firstObservation) ? firstHost : secondHost;
+        await failedHost.StopAsync();
         await winnerHost.StopAsync();
+        await failedHostRun.WaitAsync(TimeSpan.FromSeconds(30));
         await winnerRun.WaitAsync(TimeSpan.FromSeconds(30));
+        await failedObservation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
         await winnerObservation.Stopped.Task.WaitAsync(TimeSpan.FromSeconds(30));
     }
 
     [Fact]
     public async Task PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal()
     {
+        await postgres.ResetDatabaseAsync();
         var activities = new ConcurrentQueue<string>();
         using var listener = new ActivityListener
         {
@@ -1580,9 +1638,11 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             independent.Orchestrator.ExecuteAsync(prepared.Request, default))
             .WaitAsync(TimeSpan.FromMinutes(1));
 
-        Assert.Contains(results, result => result.Outcome == RawExportAssemblyExecutionOutcome.PreparationConflict);
         Assert.Contains(results, result => result.Outcome is RawExportAssemblyExecutionOutcome.Sealed
             or RawExportAssemblyExecutionOutcome.ExistingMatch);
+        Assert.Contains(results, result => result.Outcome is RawExportAssemblyExecutionOutcome.ExistingMatch
+            or RawExportAssemblyExecutionOutcome.LeaseLost);
+        Assert.DoesNotContain(results, result => result.Outcome == RawExportAssemblyExecutionOutcome.PreparationConflict);
         Assert.Contains("Prepare:Prepared", provider.Events);
         Assert.Contains("Prepare:ExistingMatch", provider.Events);
         Assert.Equal(1, provider.FinalizeCount);
@@ -1590,16 +1650,212 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Equal(2, CountSqlCalls(activities, "raw_export_register_assembly_preparing"));
         Assert.Equal(2, CountSqlCalls(activities, "raw_export_record_assembly_pending"));
         Assert.Equal(2, CountSqlCalls(activities, "raw_export_seal_authenticated_assembly"));
-        Assert.Equal(1, CountSqlCalls(activities, "raw_export_record_assembly_finalized"));
-        Assert.Equal(1, CountSqlCalls(activities, "raw_export_authorize_assembly_abort"));
+        Assert.Equal(1, CountSqlCalls(activities, "raw_export_record_claimed_assembly_finalized"));
+        Assert.Equal(0, CountSqlCalls(activities, "raw_export_authorize_assembly_abort"));
         Assert.Equal(0, CountSqlCalls(activities, "raw_export_record_assembly_aborted"));
-        Console.WriteLine($"C116_STAGE=AbortSealFailureAsync/AuthorizeAbortAsync after losing SealAsync; provider finalize calls={provider.FinalizeCount}; provider abort calls={provider.AbortCount}");
+        Console.WriteLine($"C116_STAGE=exact post-seal claim after losing SealAsync; provider finalize calls={provider.FinalizeCount}; provider abort calls={provider.AbortCount}");
         Console.WriteLine($"C116_PROVIDER_EVENTS={string.Join('|', provider.Events)}");
         var residue = await ReadPostSealResidueAsync(prepared.JobId);
         Assert.Equal("AssemblySealed", residue.JobState);
         Assert.Equal("Finalized", residue.PreparationDisposition);
         var seal = await FunctionDefinition("raw_export_seal_authenticated_assembly");
         AssertOrdered(seal, "raw_export_job_operational_heads", "raw_export_assembly_preparation_dispositions");
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker()
+    {
+        await postgres.ResetDatabaseAsync();
+        var entered = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var blocked = 0;
+        var provider = new BoundedFixtureC2Provider(beforeFinalize: async () =>
+        {
+            if (Interlocked.Exchange(ref blocked, 1) != 0) return;
+            entered.TrySetResult();
+            await release.Task;
+        });
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+
+        var original = prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        await entered.Task.WaitAsync(TimeSpan.FromSeconds(30));
+        await using var contenderDb = postgres.CreateDbContext();
+        var contender = NewDurableWorkSource(contenderDb);
+        Assert.Null(await contender.TryAcquireAsync());
+        Assert.False(original.IsCompleted);
+
+        release.TrySetResult();
+        var result = await original.WaitAsync(TimeSpan.FromSeconds(30));
+        Assert.Equal(RawExportAssemblyExecutionOutcome.Sealed, result.Outcome);
+        Assert.Equal("Finalized", (await ReadPostSealResidueAsync(prepared.JobId)).PreparationDisposition);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim()
+    {
+        await postgres.ResetDatabaseAsync();
+        var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var generation = Assert.IsType<long>(result.RecoveryClaimGeneration);
+        var repository = new RawExportAssemblyRepository(new RoleConnectionFactory(postgres.ConnectionString));
+        var deferred = await repository.DeferPostSealRecoveryAsync(
+            Assert.IsType<Guid>(result.C2PreparationId),
+            prepared.Request.RecoveryClaimOwnerId,
+            generation,
+            result.Outcome.ToString(),
+            1,
+            default);
+        Assert.Equal("Deferred", deferred.Outcome);
+        await Task.Delay(TimeSpan.FromMilliseconds(1100));
+
+        await using var db = postgres.CreateDbContext();
+        var identity = await db.RawExportAssemblyIdentities.AsNoTracking()
+            .SingleAsync(row => row.JobId == prepared.JobId);
+        var wrongFingerprint = identity.AssemblyFingerprint.ToArray();
+        wrongFingerprint[0] ^= 0x01;
+        var rejected = await repository.ClaimExactPostSealRecoveryAsync(
+            prepared.Request,
+            Guid.NewGuid(),
+            300,
+            identity.AssemblyDigest,
+            identity.ManifestDigest,
+            identity.AssemblyAuthenticationValue,
+            wrongFingerprint,
+            default);
+        Assert.Equal("ExactMismatch", rejected.Outcome);
+        Assert.Null(rejected.ClaimGeneration);
+
+        await using var recoveryDb = postgres.CreateDbContext();
+        var recovery = NewDurableWorkSource(recoveryDb);
+        var request = Assert.IsType<RawExportAssemblyExecutionRequest>(await recovery.TryAcquireAsync());
+        Assert.Equal(prepared.JobId, request.JobId);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_displaced_owner_cannot_defer_or_complete_new_generation()
+    {
+        await postgres.ResetDatabaseAsync();
+        var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var firstResult = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        var firstGeneration = Assert.IsType<long>(firstResult.RecoveryClaimGeneration);
+        var preparationId = Assert.IsType<Guid>(firstResult.C2PreparationId);
+        var repository = new RawExportAssemblyRepository(
+            new RoleConnectionFactory(postgres.ConnectionString));
+
+        var firstDeferred = await repository.DeferPostSealRecoveryAsync(
+            preparationId,
+            prepared.Request.RecoveryClaimOwnerId,
+            firstGeneration,
+            firstResult.Outcome.ToString(),
+            1,
+            default);
+        Assert.Equal("Deferred", firstDeferred.Outcome);
+        await Task.Delay(TimeSpan.FromMilliseconds(1100));
+
+        var successorOwner = Guid.NewGuid();
+        var successor = Assert.IsType<RawExportPostSealRecoveryClaim>(
+            await repository.ClaimNextPostSealRecoveryAsync(successorOwner, 300, default));
+        var successorGeneration = Assert.IsType<long>(successor.ClaimGeneration);
+        Assert.True(successorGeneration > firstGeneration);
+
+        var staleDefer = await repository.DeferPostSealRecoveryAsync(
+            preparationId,
+            prepared.Request.RecoveryClaimOwnerId,
+            firstGeneration,
+            "STALE_OWNER",
+            1,
+            default);
+        Assert.Equal("ClaimLost", staleDefer.Outcome);
+
+        var staleComplete = await repository.RecordClaimedFinalizedAsync(
+            preparationId,
+            Assert.IsType<long>(successor.PreparationRevision),
+            Assert.IsType<byte[]>(successor.AssemblyFingerprint),
+            prepared.Request.RecoveryClaimOwnerId,
+            firstGeneration,
+            default);
+        Assert.Equal("ClaimLost", staleComplete.Outcome);
+
+        var successorRequest = new RawExportAssemblyExecutionRequest(
+            Assert.IsType<Guid>(successor.JobId),
+            Assert.IsType<Guid>(successor.AttemptId),
+            Assert.IsType<long>(successor.JobRevision) - 1,
+            Assert.IsType<long>(successor.FencingToken),
+            Assert.IsType<Guid>(successor.ActorPrincipalId),
+            successorOwner,
+            successorGeneration);
+        var recovered = await prepared.Orchestrator.ExecuteAsync(successorRequest, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ExistingMatch, recovered.Outcome);
+        Assert.Equal("Finalized", (await ReadPostSealResidueAsync(prepared.JobId)).PreparationDisposition);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation()
+    {
+        await postgres.ResetDatabaseAsync();
+        var firstProvider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var first = await PrepareAssemblyExecutionAsync(
+            firstProvider, null, null, acquireThroughDurableWorkSource: true);
+        var firstResult = await first.Orchestrator.ExecuteAsync(first.Request, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ProviderUnavailable, firstResult.Outcome);
+        Assert.NotNull(firstResult.RecoveryClaimGeneration); // Deliberately left actively claimed.
+
+        var secondProvider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var second = await PrepareAssemblyExecutionAsync(
+            secondProvider, null, null, acquireThroughDurableWorkSource: true);
+        var secondResult = await second.Orchestrator.ExecuteAsync(second.Request, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ProviderUnavailable, secondResult.Outcome);
+        await Assert.IsType<DurableRawExportAssemblyWorkSource>(second.DurableWorkSource)
+            .RecordAsync(second.Request, secondResult);
+        await Task.Delay(TimeSpan.FromMilliseconds(1100));
+
+        await using var recoveryDb = postgres.CreateDbContext();
+        var source = NewDurableWorkSource(recoveryDb);
+        var acquired = Assert.IsType<RawExportAssemblyExecutionRequest>(await source.TryAcquireAsync());
+        Assert.Equal(second.JobId, acquired.JobId);
+        Assert.NotEqual(first.JobId, acquired.JobId);
+        var recovered = await second.Orchestrator.ExecuteAsync(acquired, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ExistingMatch, recovered.Outcome);
+        Assert.Equal("SealCommitted", (await ReadPostSealResidueAsync(first.JobId)).PreparationDisposition);
+    }
+
+    [Fact]
+    public async Task PostSealRecovery_expired_job_can_complete_without_extending_delivery_rights()
+    {
+        await postgres.ResetDatabaseAsync();
+        var provider = new BoundedFixtureC2Provider(unavailableFirstFinalize: true);
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            provider, null, null, acquireThroughDurableWorkSource: true);
+        var result = await prepared.Orchestrator.ExecuteAsync(prepared.Request, default);
+        await Assert.IsType<DurableRawExportAssemblyWorkSource>(prepared.DurableWorkSource)
+            .RecordAsync(prepared.Request, result);
+        var expiredAt = DateTimeOffset.FromUnixTimeSeconds(
+            DateTimeOffset.UtcNow.AddSeconds(2).ToUnixTimeSeconds());
+        await SetTriggerAndUpdateJobExpiryAsync(prepared.JobId, expiredAt);
+        await Task.Delay(TimeSpan.FromMilliseconds(2500));
+
+        var owner = Guid.NewGuid();
+        var repository = new RawExportAssemblyRepository(new RoleConnectionFactory(postgres.ConnectionString));
+        var claim = Assert.IsType<RawExportPostSealRecoveryClaim>(
+            await repository.ClaimNextPostSealRecoveryAsync(owner, 300, default));
+        Assert.Equal(prepared.JobId, claim.JobId);
+        Assert.Equal(expiredAt, claim.JobExpiresAtUtc);
+        var request = new RawExportAssemblyExecutionRequest(
+            claim.JobId!.Value, claim.AttemptId!.Value, claim.JobRevision!.Value - 1,
+            claim.FencingToken!.Value, claim.ActorPrincipalId!.Value, owner, claim.ClaimGeneration);
+        var recovered = await prepared.Orchestrator.ExecuteAsync(request, default);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.ExistingMatch, recovered.Outcome);
+
+        await using var verify = postgres.CreateDbContext();
+        Assert.Equal(expiredAt, await verify.RawExportJobIdentities
+            .Where(row => row.JobId == prepared.JobId)
+            .Select(row => row.JobExpiresAt)
+            .SingleAsync());
     }
 
     private static int CountSqlCalls(IEnumerable<string> statements, string functionName) =>
@@ -1679,7 +1935,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         new(
             new RoleConnectionFactory(postgres.ConnectionString),
             jobs ?? Tip88B4RawExportJobFoundationTests.CreateJobRepository(db),
-            worker ?? new RawExportAssemblyWorkerIdentity(Guid.NewGuid()));
+            worker ?? new RawExportAssemblyWorkerIdentity(Guid.NewGuid()),
+            new RawExportAssemblyRepository(new RoleConnectionFactory(postgres.ConnectionString)));
 
     private static RawExportAssemblyExecutionResult FailureResult(
         RawExportAssemblyExecutionOutcome outcome) =>
@@ -1839,6 +2096,26 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         await using var command = connection.CreateCommand();
         command.CommandText = sql;
         await command.ExecuteNonQueryAsync();
+    }
+
+    private async Task SetTriggerAndUpdateJobExpiryAsync(Guid jobId, DateTimeOffset expiresAt)
+    {
+        await using var connection = await OpenAsync();
+        await SetTriggerAsync(connection, "tagekyc.raw_export_job_identities",
+            "tr_b4_job_identity_append_only", enabled: false);
+        try
+        {
+            await using var command = connection.CreateCommand();
+            command.CommandText = "UPDATE tagekyc.raw_export_job_identities SET \"PermitExpiresAt\"=@expires,\"JobExpiresAt\"=@expires WHERE \"JobId\"=@job";
+            command.Parameters.AddWithValue("expires", expiresAt);
+            command.Parameters.AddWithValue("job", jobId);
+            Assert.Equal(1, await command.ExecuteNonQueryAsync());
+        }
+        finally
+        {
+            await SetTriggerAsync(connection, "tagekyc.raw_export_job_identities",
+                "tr_b4_job_identity_append_only", enabled: true);
+        }
     }
 
     private async Task AssertFunctionContains(string function, params string[] expected)
@@ -2460,6 +2737,10 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             CancellationToken cancellationToken = default)
         {
             observation.Executed.TrySetResult((request, result));
+            if (result.RecoveryClaimGeneration is not null
+                && result.Outcome is not (RawExportAssemblyExecutionOutcome.Sealed
+                    or RawExportAssemblyExecutionOutcome.ExistingMatch))
+                observation.FaultStage = "RecordAsync";
             try
             {
                 await inner.RecordAsync(request, result, cancellationToken);
@@ -2551,7 +2832,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Func<Task>? afterPrepare = null,
         bool conflictAfterPrepare = false,
         bool unresolvedFirstFinalize = false,
-        bool conflictFirstFinalize = false) : IC2AssemblyPreparationProvider
+        bool conflictFirstFinalize = false,
+        Func<Task>? beforeFinalize = null) : IC2AssemblyPreparationProvider
     {
         private byte[]? assemblyFingerprint;
         private byte[]? receipt;
@@ -2650,33 +2932,35 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             });
         }
 
-        public Task<C2AssemblyFinalizeResult> FinalizeAsync(Guid c2PreparationId, byte[] fingerprint, CancellationToken cancellationToken)
+        public async Task<C2AssemblyFinalizeResult> FinalizeAsync(Guid c2PreparationId, byte[] fingerprint, CancellationToken cancellationToken)
         {
             var call = Interlocked.Increment(ref finalizeCount);
+            if (beforeFinalize is not null)
+                await beforeFinalize();
             if (c2PreparationId != preparationId)
             {
                 Events.Enqueue($"Finalize:{call}:Conflict:PreparationId");
-                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.Conflict));
+                return new(C2AssemblyFinalizeOutcome.Conflict);
             }
             if (unavailableFirstFinalize && call == 1)
             {
                 Events.Enqueue($"Finalize:{call}:Unavailable:Injected");
-                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.Unavailable));
+                return new(C2AssemblyFinalizeOutcome.Unavailable);
             }
             if (unresolvedFirstFinalize && call == 1)
             {
                 Events.Enqueue($"Finalize:{call}:OutcomeUnknown:Injected");
-                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.OutcomeUnknown));
+                return new(C2AssemblyFinalizeOutcome.OutcomeUnknown);
             }
             if (conflictFirstFinalize && call == 1)
             {
                 Events.Enqueue($"Finalize:{call}:Conflict:Injected");
-                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.Conflict));
+                return new(C2AssemblyFinalizeOutcome.Conflict);
             }
             if (state == State.Finalized && Fixed(assemblyFingerprint, fingerprint))
             {
                 Events.Enqueue($"Finalize:{call}:ExistingMatch");
-                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.ExistingMatch));
+                return new(C2AssemblyFinalizeOutcome.ExistingMatch);
             }
             var initiallyPrepared = state == State.Prepared;
             if (state != State.Prepared || !Fixed(assemblyFingerprint, fingerprint))
@@ -2685,7 +2969,7 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
                     Events.Enqueue($"Finalize:{call}:ConflictAfterInitialPrepared:{state}");
                 else
                     Events.Enqueue($"Finalize:{call}:Conflict:State:{state}");
-                return Task.FromResult(new C2AssemblyFinalizeResult(C2AssemblyFinalizeOutcome.Conflict));
+                return new(C2AssemblyFinalizeOutcome.Conflict);
             }
             if (retainedAssembly is not null)
             {
@@ -2695,10 +2979,10 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             }
             state = State.Finalized;
             Events.Enqueue($"Finalize:{call}:{(loseFirstFinalizeResponse ? "OutcomeUnknown" : "Finalized")}");
-            return Task.FromResult(new C2AssemblyFinalizeResult(
+            return new(
                 loseFirstFinalizeResponse
                     ? C2AssemblyFinalizeOutcome.OutcomeUnknown
-                    : C2AssemblyFinalizeOutcome.Finalized));
+                    : C2AssemblyFinalizeOutcome.Finalized);
         }
 
         public Task<C2AssemblyAbortResult> AbortAsync(Guid c2PreparationId, byte[] authorizationDigest, CancellationToken cancellationToken)

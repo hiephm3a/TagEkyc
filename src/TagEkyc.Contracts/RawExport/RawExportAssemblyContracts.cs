@@ -161,11 +161,14 @@ public sealed record RawExportAssemblyExecutionRequest(
     Guid AttemptId,
     long ExpectedJobRevision,
     long ExpectedFence,
-    Guid ActorPrincipalId);
+    Guid ActorPrincipalId,
+    Guid RecoveryClaimOwnerId = default,
+    long? RecoveryClaimGeneration = null);
 
 public sealed record RawExportAssemblyExecutionResult(
     RawExportAssemblyExecutionOutcome Outcome,
     Guid? AssemblyId,
     Guid? C2PreparationId,
     long? JobRevision,
-    long? PreparationRevision);
+    long? PreparationRevision,
+    long? RecoveryClaimGeneration = null);

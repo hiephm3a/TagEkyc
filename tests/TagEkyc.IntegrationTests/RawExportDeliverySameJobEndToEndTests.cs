@@ -235,7 +235,8 @@ public sealed class RawExportDeliverySameJobEndToEndTests(PostgresPersistenceFix
         var workSource = new DurableRawExportAssemblyWorkSource(
             new AssemblyConnectionFactory(postgres.ConnectionString),
             Tip88B4RawExportJobFoundationTests.CreateJobRepository(workDb),
-            new RawExportAssemblyWorkerIdentity(Guid.NewGuid()));
+            new RawExportAssemblyWorkerIdentity(Guid.NewGuid()),
+            new RawExportAssemblyRepository(new AssemblyConnectionFactory(postgres.ConnectionString)));
         var request = await WaitForWorkAsync(workSource);
         Assert.Equal(jobId, request.JobId);
 

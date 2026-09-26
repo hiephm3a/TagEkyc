@@ -792,7 +792,7 @@ public sealed class Tip88C1C6BA3ConsentRetentionTests(PostgresPersistenceFixture
         await using var db = isolated.CreateDbContext();
         Assert.Contains(Tip88C1C6BA3MigrationTests.MigrationId, db.Database.GetMigrations());
         await db.Database.MigrateAsync();
-        Assert.Equal("20260925090000_RawExportAssemblyRetainedModeWorkSource",
+        Assert.Equal("20260926120000_RawExportAssemblyPostSealRecovery",
             (await db.Database.GetAppliedMigrationsAsync()).Last());
     }
 

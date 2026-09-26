@@ -1,4 +1,5 @@
 using System.Security.Cryptography;
+using Npgsql;
 using TagEkyc.Application.Ports;
 using TagEkyc.Contracts.RawExport;
 
@@ -16,6 +17,8 @@ internal sealed class RawExportAssemblyOrchestrator(
     RawExportAssemblyAuthenticationService authentication,
     IC2AssemblyPreparationProvider c2) : IRawExportAssemblyOrchestrator
 {
+    private const int RecoveryLeaseSeconds = 300;
+
     public async Task<RawExportAssemblyExecutionResult> ExecuteAsync(
         RawExportAssemblyExecutionRequest request,
         CancellationToken cancellationToken)
@@ -24,7 +27,12 @@ internal sealed class RawExportAssemblyOrchestrator(
             || request.ActorPrincipalId == Guid.Empty || request.ExpectedJobRevision < 1 || request.ExpectedFence < 1)
             return Failure(RawExportAssemblyExecutionOutcome.NotFoundOrNotAllowed);
 
-        var committedRecovery = await TryRecoverCommittedAsync(request, cancellationToken).ConfigureAwait(false);
+        request = request.RecoveryClaimOwnerId == Guid.Empty
+            ? request with { RecoveryClaimOwnerId = Guid.NewGuid() }
+            : request;
+
+        var committedRecovery = await TryRecoverCommittedAsync(
+            request, expectation: null, cancellationToken).ConfigureAwait(false);
         if (committedRecovery is not null) return committedRecovery;
 
         var freeze = await repository.FreezeAsync(request, cancellationToken).ConfigureAwait(false);
@@ -113,11 +121,29 @@ internal sealed class RawExportAssemblyOrchestrator(
             if (pending.Outcome is not ("Pending" or "ExistingMatch") || pending.RowRevision is null)
                 return Failure(Map(pending.Outcome), assemblyId, preparationId);
 
-            var sealedResult = await repository.SealAsync(
-                preparationId, request, pending.RowRevision.Value, derivation,
-                authentication.KeyId, authentication.KeyVersion, header.Items, cancellationToken).ConfigureAwait(false);
+            RawExportAssemblySealMutation sealedResult;
+            try
+            {
+                sealedResult = await repository.SealAsync(
+                    preparationId, request, pending.RowRevision.Value, derivation,
+                    authentication.KeyId, authentication.KeyVersion, header.Items, cancellationToken).ConfigureAwait(false);
+            }
+            catch (NpgsqlException)
+            {
+                var uncertainRecovery = await TryRecoverCommittedAsync(
+                    request,
+                    new(assemblyDigest, manifestDigest, authenticationValue, assemblyFingerprint),
+                    cancellationToken).ConfigureAwait(false);
+                if (uncertainRecovery is not null) return uncertainRecovery;
+                throw;
+            }
             if (sealedResult.Outcome is not ("Sealed" or "ExistingMatch") || sealedResult.PreparationRevision is null)
             {
+                var exactRecovery = await TryRecoverCommittedAsync(
+                    request,
+                    new(assemblyDigest, manifestDigest, authenticationValue, assemblyFingerprint),
+                    cancellationToken).ConfigureAwait(false);
+                if (exactRecovery is not null) return exactRecovery;
                 var mapped = Map(sealedResult.Outcome);
                 if (sealedResult.Outcome is "AuthorityInvalid" or "LeaseLost" or "Expired" or
                     "AssemblyClassSetMismatch" or "SourceBindingInvalid" or "AssemblyConflict")
@@ -127,22 +153,15 @@ internal sealed class RawExportAssemblyOrchestrator(
                 return Failure(mapped, assemblyId, preparationId);
             }
 
-            var finalized = await FinalizeOrRecoverAsync(
-                c2, preparationId, assemblyFingerprint, cancellationToken).ConfigureAwait(false);
-            if (finalized.Outcome is C2AssemblyFinalizeOutcome.Unavailable)
-                return Failure(RawExportAssemblyExecutionOutcome.ProviderUnavailable, assemblyId, preparationId);
-            if (finalized.Outcome is C2AssemblyFinalizeOutcome.OutcomeUnknown)
-                return Failure(RawExportAssemblyExecutionOutcome.ProviderOutcomeUnknown, assemblyId, preparationId);
-            if (finalized.Outcome is C2AssemblyFinalizeOutcome.Conflict)
-                return Failure(RawExportAssemblyExecutionOutcome.PreparationConflict, assemblyId, preparationId);
-
-            var recorded = await repository.RecordFinalizedAsync(
-                preparationId, sealedResult.PreparationRevision.Value, assemblyFingerprint, cancellationToken).ConfigureAwait(false);
-            if (recorded.Outcome is not ("Finalized" or "ExistingMatch"))
-                return Failure(Map(recorded.Outcome), assemblyId, preparationId);
-            return new(
-                sealedResult.Outcome == "ExistingMatch" ? RawExportAssemblyExecutionOutcome.ExistingMatch : RawExportAssemblyExecutionOutcome.Sealed,
-                assemblyId, preparationId, sealedResult.JobRevision, recorded.RowRevision);
+            var sealedRecovery = await TryRecoverCommittedAsync(
+                request,
+                new(assemblyDigest, manifestDigest, authenticationValue, assemblyFingerprint),
+                cancellationToken).ConfigureAwait(false)
+                ?? Failure(RawExportAssemblyExecutionOutcome.StateConflict, assemblyId, preparationId);
+            return sealedResult.Outcome == "Sealed"
+                && sealedRecovery.Outcome == RawExportAssemblyExecutionOutcome.ExistingMatch
+                ? sealedRecovery with { Outcome = RawExportAssemblyExecutionOutcome.Sealed }
+                : sealedRecovery;
         }
         catch (RawExportAssemblySourceReadException exception)
         {
@@ -173,46 +192,81 @@ internal sealed class RawExportAssemblyOrchestrator(
 
     private async Task<RawExportAssemblyExecutionResult?> TryRecoverCommittedAsync(
         RawExportAssemblyExecutionRequest request,
+        CommittedMatchExpectation? expectation,
         CancellationToken cancellationToken)
     {
-        var committed = await repository.ReadCommittedRecoveryContextAsync(request, cancellationToken).ConfigureAwait(false);
-        if (committed is null) return null;
-        if (committed.Disposition == "Finalized")
+        var committed = await repository.ClaimExactPostSealRecoveryAsync(
+            request,
+            request.RecoveryClaimOwnerId,
+            RecoveryLeaseSeconds,
+            expectation?.AssemblyDigest,
+            expectation?.ManifestDigest,
+            expectation?.AuthenticationValue,
+            expectation?.AssemblyFingerprint,
+            cancellationToken).ConfigureAwait(false);
+        if (committed.Outcome == "NotFound") return null;
+        if (committed.Outcome == "ExactMismatch")
+            return Failure(RawExportAssemblyExecutionOutcome.PreparationConflict,
+                committed.AssemblyId, committed.C2PreparationId);
+        if (committed.Outcome is "ClaimHeld" or "Deferred")
+            return Failure(RawExportAssemblyExecutionOutcome.LeaseLost,
+                committed.AssemblyId, committed.C2PreparationId);
+        if (committed.Outcome == "Completed")
             return new(
                 RawExportAssemblyExecutionOutcome.ExistingMatch,
                 committed.AssemblyId,
                 committed.C2PreparationId,
                 committed.JobRevision,
-                committed.RowRevision);
-        if (committed.Disposition != "SealCommitted")
-            return Failure(RawExportAssemblyExecutionOutcome.PreparationConflict, committed.AssemblyId, committed.C2PreparationId);
+                committed.PreparationRevision);
+        if (committed.Outcome is not ("Claimed" or "Owned")
+            || committed.C2PreparationId is null || committed.AssemblyId is null
+            || committed.AssemblyFingerprint is not { Length: 32 }
+            || committed.PreparationRevision is null || committed.ClaimGeneration is null)
+            return Failure(RawExportAssemblyExecutionOutcome.StateConflict,
+                committed.AssemblyId, committed.C2PreparationId);
 
         var finalized = await FinalizeOrRecoverAsync(
             c2,
-            committed.C2PreparationId,
+            committed.C2PreparationId.Value,
             committed.AssemblyFingerprint,
             cancellationToken).ConfigureAwait(false);
         if (finalized.Outcome is C2AssemblyFinalizeOutcome.Unavailable)
-            return Failure(RawExportAssemblyExecutionOutcome.ProviderUnavailable, committed.AssemblyId, committed.C2PreparationId);
+            return Failure(RawExportAssemblyExecutionOutcome.ProviderUnavailable,
+                committed.AssemblyId, committed.C2PreparationId, committed.ClaimGeneration);
         if (finalized.Outcome is C2AssemblyFinalizeOutcome.OutcomeUnknown)
-            return Failure(RawExportAssemblyExecutionOutcome.ProviderOutcomeUnknown, committed.AssemblyId, committed.C2PreparationId);
+            return Failure(RawExportAssemblyExecutionOutcome.ProviderOutcomeUnknown,
+                committed.AssemblyId, committed.C2PreparationId, committed.ClaimGeneration);
         if (finalized.Outcome is C2AssemblyFinalizeOutcome.Conflict)
-            return Failure(RawExportAssemblyExecutionOutcome.PreparationConflict, committed.AssemblyId, committed.C2PreparationId);
+            return Failure(RawExportAssemblyExecutionOutcome.PreparationConflict,
+                committed.AssemblyId, committed.C2PreparationId, committed.ClaimGeneration);
 
-        var recorded = await repository.RecordFinalizedAsync(
-            committed.C2PreparationId,
-            committed.RowRevision,
+        var recorded = await repository.RecordClaimedFinalizedAsync(
+            committed.C2PreparationId.Value,
+            committed.PreparationRevision.Value,
             committed.AssemblyFingerprint,
+            request.RecoveryClaimOwnerId,
+            committed.ClaimGeneration.Value,
             cancellationToken).ConfigureAwait(false);
+        if (recorded.Outcome == "ClaimLost")
+            return Failure(RawExportAssemblyExecutionOutcome.LeaseLost,
+                committed.AssemblyId, committed.C2PreparationId);
         if (recorded.Outcome is not ("Finalized" or "ExistingMatch") || recorded.RowRevision is null)
-            return Failure(Map(recorded.Outcome), committed.AssemblyId, committed.C2PreparationId);
+            return Failure(Map(recorded.Outcome), committed.AssemblyId, committed.C2PreparationId,
+                committed.ClaimGeneration);
         return new(
             RawExportAssemblyExecutionOutcome.ExistingMatch,
             committed.AssemblyId,
             committed.C2PreparationId,
             committed.JobRevision,
-            recorded.RowRevision);
+            recorded.RowRevision,
+            committed.ClaimGeneration);
     }
+
+    private sealed record CommittedMatchExpectation(
+        byte[] AssemblyDigest,
+        byte[] ManifestDigest,
+        byte[] AuthenticationValue,
+        byte[] AssemblyFingerprint);
 
     internal static async Task<C2AssemblyPrepareResult> PrepareOrRecoverAsync(
         IC2AssemblyPreparationProvider c2,
@@ -408,6 +462,7 @@ internal sealed class RawExportAssemblyOrchestrator(
     private static RawExportAssemblyExecutionResult Failure(
         RawExportAssemblyExecutionOutcome outcome,
         Guid? assemblyId = null,
-        Guid? preparationId = null) =>
-        new(outcome, assemblyId, preparationId, null, null);
+        Guid? preparationId = null,
+        long? recoveryClaimGeneration = null) =>
+        new(outcome, assemblyId, preparationId, null, null, recoveryClaimGeneration);
 }

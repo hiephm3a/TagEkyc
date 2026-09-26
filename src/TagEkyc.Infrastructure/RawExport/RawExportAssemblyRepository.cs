@@ -43,6 +43,30 @@ internal sealed record RawExportCommittedAssemblyRecoveryContext(
     long RowRevision,
     long JobRevision);
 
+internal sealed record RawExportPostSealRecoveryClaim(
+    string Outcome,
+    Guid? C2PreparationId,
+    Guid? AssemblyId,
+    Guid? JobId,
+    Guid? AttemptId,
+    long? FencingToken,
+    Guid? ActorPrincipalId,
+    long? JobRevision,
+    long? PreparationRevision,
+    long? ClaimGeneration,
+    byte[]? AssemblyFingerprint,
+    byte[]? PreparationFingerprint,
+    byte[]? AssemblyDigest,
+    byte[]? ManifestDigest,
+    byte[]? AssemblyAuthenticationValue,
+    string? ExportMode,
+    DateTimeOffset? JobExpiresAtUtc);
+
+internal sealed record RawExportPostSealRecoveryDeferMutation(
+    string Outcome,
+    long? ClaimGeneration,
+    DateTimeOffset? RetryNotBeforeUtc);
+
 internal enum RawExportAssemblyDatabaseCapability
 {
     Resolver,
@@ -339,6 +363,90 @@ internal sealed class RawExportAssemblyRepository(IRawExportAssemblyConnectionFa
             L(reader, "RowRevision"), L(reader, "JobRevision"));
     }
 
+    internal async Task<RawExportPostSealRecoveryClaim?> ClaimNextPostSealRecoveryAsync(
+        Guid claimOwnerId,
+        int leaseSeconds,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = await connections.OpenAsync(
+            RawExportAssemblyDatabaseCapability.Sealer, cancellationToken).ConfigureAwait(false);
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT * FROM tagekyc.raw_export_claim_next_post_seal_recovery(@owner,@lease_seconds)";
+        Add(command, "owner", claimOwnerId);
+        Add(command, "lease_seconds", leaseSeconds);
+        await using var reader = await command.ExecuteReaderAsync(
+            CommandBehavior.SingleRow, cancellationToken).ConfigureAwait(false);
+        return await reader.ReadAsync(cancellationToken).ConfigureAwait(false)
+            ? ReadPostSealClaim(reader)
+            : null;
+    }
+
+    internal async Task<RawExportPostSealRecoveryClaim> ClaimExactPostSealRecoveryAsync(
+        RawExportAssemblyExecutionRequest request,
+        Guid claimOwnerId,
+        int leaseSeconds,
+        byte[]? assemblyDigest,
+        byte[]? manifestDigest,
+        byte[]? authenticationValue,
+        byte[]? assemblyFingerprint,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = await connections.OpenAsync(
+            RawExportAssemblyDatabaseCapability.Sealer, cancellationToken).ConfigureAwait(false);
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT * FROM tagekyc.raw_export_claim_exact_post_seal_recovery(@job,@attempt,@revision,@fence,@owner,@lease_seconds,@assembly_digest,@manifest_digest,@authentication_value,@assembly_fingerprint)";
+        Add(command, "job", request.JobId);
+        Add(command, "attempt", request.AttemptId);
+        Add(command, "revision", request.ExpectedJobRevision);
+        Add(command, "fence", request.ExpectedFence);
+        Add(command, "owner", claimOwnerId);
+        Add(command, "lease_seconds", leaseSeconds);
+        AddNullableBytea(command, "assembly_digest", assemblyDigest);
+        AddNullableBytea(command, "manifest_digest", manifestDigest);
+        AddNullableBytea(command, "authentication_value", authenticationValue);
+        AddNullableBytea(command, "assembly_fingerprint", assemblyFingerprint);
+        await using var reader = await command.ExecuteReaderAsync(
+            CommandBehavior.SingleRow, cancellationToken).ConfigureAwait(false);
+        if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            throw new InvalidOperationException("RAW_EXPORT_POST_SEAL_RECOVERY_EMPTY_CLAIM_RESULT");
+        return ReadPostSealClaim(reader);
+    }
+
+    internal async Task<RawExportPostSealRecoveryDeferMutation> DeferPostSealRecoveryAsync(
+        Guid preparationId,
+        Guid claimOwnerId,
+        long claimGeneration,
+        string outcome,
+        int retryBaseSeconds,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = await connections.OpenAsync(
+            RawExportAssemblyDatabaseCapability.Sealer, cancellationToken).ConfigureAwait(false);
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT * FROM tagekyc.raw_export_defer_post_seal_recovery(@preparation,@owner,@generation,@outcome,@retry_base_seconds)";
+        Add(command, "preparation", preparationId);
+        Add(command, "owner", claimOwnerId);
+        Add(command, "generation", claimGeneration);
+        Add(command, "outcome", outcome);
+        Add(command, "retry_base_seconds", retryBaseSeconds);
+        await using var reader = await command.ExecuteReaderAsync(
+            CommandBehavior.SingleRow, cancellationToken).ConfigureAwait(false);
+        if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
+            throw new InvalidOperationException("RAW_EXPORT_POST_SEAL_RECOVERY_EMPTY_DEFER_RESULT");
+        return new(S(reader, "Outcome"), NL(reader, "ClaimGeneration"), NT(reader, "RetryNotBeforeUtc"));
+    }
+
+    internal Task<RawExportAssemblyMutation> RecordClaimedFinalizedAsync(
+        Guid preparationId,
+        long rowRevision,
+        byte[] fingerprint,
+        Guid claimOwnerId,
+        long claimGeneration,
+        CancellationToken cancellationToken) =>
+        MutationAsync("raw_export_record_claimed_assembly_finalized", cancellationToken,
+            ("preparation", preparationId), ("revision", rowRevision), ("fingerprint", fingerprint),
+            ("owner", claimOwnerId), ("generation", claimGeneration));
+
     private async Task<RawExportAssemblyMutation> MutationAsync(
         string function,
         CancellationToken cancellationToken,
@@ -355,6 +463,8 @@ internal sealed class RawExportAssemblyRepository(IRawExportAssemblyConnectionFa
     }
 
     private static void Add(NpgsqlCommand command, string name, object value) => command.Parameters.AddWithValue(name, value);
+    private static void AddNullableBytea(NpgsqlCommand command, string name, byte[]? value) =>
+        command.Parameters.AddWithValue(name, NpgsqlDbType.Bytea, value is null ? DBNull.Value : value);
     private static Guid G(NpgsqlDataReader reader, string name) => reader.GetGuid(reader.GetOrdinal(name));
     private static long L(NpgsqlDataReader reader, string name) => reader.GetInt64(reader.GetOrdinal(name));
     private static int I(NpgsqlDataReader reader, string name) => reader.GetInt32(reader.GetOrdinal(name));
@@ -364,6 +474,15 @@ internal sealed class RawExportAssemblyRepository(IRawExportAssemblyConnectionFa
     private static byte[]? NB(NpgsqlDataReader reader, string name) { var i = reader.GetOrdinal(name); return reader.IsDBNull(i) ? null : (byte[])reader[i]; }
     private static long? NL(NpgsqlDataReader reader, string name) { var i = reader.GetOrdinal(name); return reader.IsDBNull(i) ? null : reader.GetInt64(i); }
     private static DateTimeOffset? NT(NpgsqlDataReader reader, string name) { var i = reader.GetOrdinal(name); return reader.IsDBNull(i) ? null : reader.GetFieldValue<DateTimeOffset>(i); }
+    private static Guid? NG(NpgsqlDataReader reader, string name) { var i = reader.GetOrdinal(name); return reader.IsDBNull(i) ? null : reader.GetGuid(i); }
+    private static string? NS(NpgsqlDataReader reader, string name) { var i = reader.GetOrdinal(name); return reader.IsDBNull(i) ? null : reader.GetString(i); }
+    private static RawExportPostSealRecoveryClaim ReadPostSealClaim(NpgsqlDataReader reader) => new(
+        S(reader, "Outcome"), NG(reader, "C2PreparationId"), NG(reader, "AssemblyId"),
+        NG(reader, "JobId"), NG(reader, "AttemptId"), NL(reader, "FencingToken"),
+        NG(reader, "ActorPrincipalId"), NL(reader, "JobRevision"), NL(reader, "PreparationRevision"),
+        NL(reader, "ClaimGeneration"), NB(reader, "AssemblyFingerprint"), NB(reader, "PreparationFingerprint"),
+        NB(reader, "AssemblyDigest"), NB(reader, "ManifestDigest"), NB(reader, "AssemblyAuthenticationValue"),
+        NS(reader, "ExportMode"), NT(reader, "JobExpiresAtUtc"));
     private static bool Fixed(ReadOnlySpan<byte> left, ReadOnlySpan<byte> right) =>
         left.Length == right.Length && System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(left, right);
 

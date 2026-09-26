@@ -3572,8 +3572,14 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
 
     internal static async Task<AuthorizedPermitFixture> CreateAuthorizedPacketPermitAsync(
         TagEkycDbContext db,
-        IReadOnlyList<RawExportRawClass> classes)
+        IReadOnlyList<RawExportRawClass> classes,
+        RawExportMode mode = RawExportMode.EncryptedExportPacket)
     {
+        Assert.Contains(mode, new[]
+        {
+            RawExportMode.EncryptedExportPacket,
+            RawExportMode.EncryptedRawVaultRetained,
+        });
         var policyId = Guid.NewGuid();
         var sessionId = await Tip88B34AuthorizationEngineTests.SeedCompletedSessionAsync(
             db,
@@ -3597,7 +3603,7 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
                      "ProcessingInfrastructureJurisdiction","RequirementRuleSetId",
                      "RequirementRuleSetVersion","PermitTtlSeconds","CreatedAt")
                 VALUES
-                    ({policyId},1,'EncryptedExportPacket','purpose','packet-ttl',
+                    ({policyId},1,{mode.ToString()},'purpose','packet-ttl',
                      'PACKET_TTL','Required','Processor','controller','VN','VN','VN',
                      'RAW_EXPORT_REQUIREMENTS',1,300,transaction_timestamp());
                 """);
@@ -3617,6 +3623,14 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
                     ({policyId},1,'ConsentArtifact',transaction_timestamp()),
                     ({policyId},1,'RetentionSchedule',transaction_timestamp());
                 """);
+            if (mode == RawExportMode.EncryptedRawVaultRetained)
+            {
+                await db.Database.ExecuteSqlInterpolatedAsync($"""
+                    INSERT INTO tagekyc.raw_export_policy_requirements
+                        ("PolicyId","PolicyVersion","RequirementType","CreatedAt")
+                    VALUES ({policyId},1,'Dpia',transaction_timestamp());
+                    """);
+            }
             await transaction.CommitAsync();
         }
 
@@ -3635,11 +3649,19 @@ public sealed class Tip88B4RawExportJobFoundationTests(PostgresPersistenceFixtur
             ExpectedRevision: 0,
             ClientApplicationId: null,
             "decision:b4-packet-grant"));
-        foreach (var requirement in new[]
-                 {
-                     RawExportRequirementType.LegalApproval,
-                     RawExportRequirementType.RetentionSchedule,
-                 })
+        var fulfillmentRequirements = mode == RawExportMode.EncryptedRawVaultRetained
+            ? new[]
+            {
+                RawExportRequirementType.LegalApproval,
+                RawExportRequirementType.RetentionSchedule,
+                RawExportRequirementType.Dpia,
+            }
+            : new[]
+            {
+                RawExportRequirementType.LegalApproval,
+                RawExportRequirementType.RetentionSchedule,
+            };
+        foreach (var requirement in fulfillmentRequirements)
         {
             await control.GrantControlAuthorityAsync(new(
                 AdminPrincipal,

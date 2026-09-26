@@ -15,7 +15,7 @@ public sealed class RawExportAssemblyDurableWorkSourceTests(PostgresPersistenceF
     : IAsyncLifetime
 {
     private const string PreviousMigration = "20260913120000_Tip88C1C6BA3RetainedIngressComposition";
-    private const string CurrentMigration = "20260923090000_RawExportAssemblyDurableWorkSource";
+    private const string CurrentMigration = "20260926120000_RawExportAssemblyPostSealRecovery";
 
     public Task InitializeAsync() => postgres.ResetDatabaseAsync();
     public Task DisposeAsync() => Task.CompletedTask;
@@ -111,7 +111,8 @@ public sealed class RawExportAssemblyDurableWorkSourceTests(PostgresPersistenceF
     private DurableRawExportAssemblyWorkSource Source(TagEkycDbContext db, Guid workerId) => new(
         new TestConnectionFactory(postgres.ConnectionString),
         Tip88B4RawExportJobFoundationTests.CreateJobRepository(db),
-        new RawExportAssemblyWorkerIdentity(workerId));
+        new RawExportAssemblyWorkerIdentity(workerId),
+        new RawExportAssemblyRepository(new TestConnectionFactory(postgres.ConnectionString)));
 
     private static RawExportAssemblyExecutionResult Result(RawExportAssemblyExecutionOutcome outcome) =>
         new(outcome, null, null, null, null);
@@ -203,7 +204,11 @@ public sealed class RawExportAssemblyDurableWorkSourceTests(PostgresPersistenceF
             RawExportAssemblyDatabaseCapability capability,
             CancellationToken cancellationToken)
         {
-            Assert.Equal(RawExportAssemblyDatabaseCapability.Resolver, capability);
+            Assert.Contains(capability, new[]
+            {
+                RawExportAssemblyDatabaseCapability.Resolver,
+                RawExportAssemblyDatabaseCapability.Sealer
+            });
             var connection = new NpgsqlConnection(connectionString);
             await connection.OpenAsync(cancellationToken);
             return connection;
