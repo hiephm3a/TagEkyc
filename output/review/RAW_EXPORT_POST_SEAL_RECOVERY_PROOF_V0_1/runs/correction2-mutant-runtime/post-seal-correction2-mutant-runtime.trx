@@ -1,0 +1,92 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="6783bc15-37d6-4d79-801b-03504cbeb56e" name="3AVNN@LEARNPC 2026-09-26 11:49:54" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-26T11:49:54.4784399+07:00" queuing="2026-09-26T11:49:54.4784407+07:00" start="2026-09-26T11:49:31.7286162+07:00" finish="2026-09-26T11:50:25.5015899+07:00" />
+  <TestSettings name="default" id="17e4698c-c475-4f63-8bf8-96abe78336fd">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-26_11_49_54" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="4f57b411-7b30-4750-ba67-fce7c1b081fc" testId="57e2e83b-7d4a-b93f-6b12-8c79d3bbe069" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending" computerName="LEARNPC" duration="00:00:10.5184105" startTime="2026-09-26T11:49:54.4572171+07:00" endTime="2026-09-26T11:49:54.4572288+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4f57b411-7b30-4750-ba67-fce7c1b081fc">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Contains() Failure: Filter not matched in collection&#xD;
+Collection: [RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = 90a938c0-2d67-50ed-8c35-d4a02e181ff1, C2PreparationId = 36724747-adf0-55b5-bc0c-630a19bd040f, JobRevision = , PreparationRevision = , RecoveryClaimGeneration =  }, RawExportAssemblyExecutionResult { Outcome = Sealed, AssemblyId = 90a938c0-2d67-50ed-8c35-d4a02e181ff1, C2PreparationId = 36724747-adf0-55b5-bc0c-630a19bd040f, JobRevision = 2, PreparationRevision = 4, RecoveryClaimGeneration = 1 }]</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1706&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1714&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1714&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="efca0b02-02de-441e-9abb-e11c856ef1f5" testId="36730286-c1bb-f808-3763-5d428582f860" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work" computerName="LEARNPC" duration="00:00:29.9423856" startTime="2026-09-26T11:50:24.4006778+07:00" endTime="2026-09-26T11:50:24.4006781+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="efca0b02-02de-441e-9abb-e11c856ef1f5">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: d3af465e-d7d8-4af4-96cb-1f860fc3fe25&#xD;
+Actual:   fc1b7ad5-3582-4b06-a755-059cb9063b0c</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2078&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2080&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2080&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2080&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2080&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2080&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="57e2e83b-7d4a-b93f-6b12-8c79d3bbe069">
+      <Execution id="4f57b411-7b30-4750-ba67-fce7c1b081fc" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="36730286-c1bb-f808-3763-5d428582f860">
+      <Execution id="efca0b02-02de-441e-9abb-e11c856ef1f5" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="57e2e83b-7d4a-b93f-6b12-8c79d3bbe069" executionId="4f57b411-7b30-4750-ba67-fce7c1b081fc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="36730286-c1bb-f808-3763-5d428582f860" executionId="efca0b02-02de-441e-9abb-e11c856ef1f5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="2" executed="2" passed="0" failed="2" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.23]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.37]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.38]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:22.37]       Assert.Contains() Failure: Filter not matched in collection&#xD;
+[xUnit.net 00:00:22.37]       Collection: [RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = 90a938c0-2d67-50ed-8c35-d4a02e181ff1, C2PreparationId = 36724747-adf0-55b5-bc0c-630a19bd040f, JobRevision = , PreparationRevision = , RecoveryClaimGeneration =  }, RawExportAssemblyExecutionResult { Outcome = Sealed, AssemblyId = 90a938c0-2d67-50ed-8c35-d4a02e181ff1, C2PreparationId = 36724747-adf0-55b5-bc0c-630a19bd040f, JobRevision = 2, PreparationRevision = 4, RecoveryClaimGeneration = 1 }]&#xD;
+[xUnit.net 00:00:22.37]       Stack Trace:&#xD;
+[xUnit.net 00:00:22.37]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1706,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending()&#xD;
+[xUnit.net 00:00:22.37]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1714,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending()&#xD;
+[xUnit.net 00:00:22.37]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1714,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending()&#xD;
+[xUnit.net 00:00:22.37]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:52.32]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:52.32]       Expected: d3af465e-d7d8-4af4-96cb-1f860fc3fe25&#xD;
+[xUnit.net 00:00:52.32]       Actual:   fc1b7ad5-3582-4b06-a755-059cb9063b0c&#xD;
+[xUnit.net 00:00:52.32]       Stack Trace:&#xD;
+[xUnit.net 00:00:52.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(2078,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work()&#xD;
+[xUnit.net 00:00:52.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(2080,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work()&#xD;
+[xUnit.net 00:00:52.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(2080,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work()&#xD;
+[xUnit.net 00:00:52.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(2080,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work()&#xD;
+[xUnit.net 00:00:52.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(2080,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work()&#xD;
+[xUnit.net 00:00:52.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(2080,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work()&#xD;
+[xUnit.net 00:00:52.32]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:53.36]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T11:49:54.4554252+07:00">
+        <Text>[xUnit.net 00:00:22.37]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T11:50:24.3999789+07:00">
+        <Text>[xUnit.net 00:00:52.32]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

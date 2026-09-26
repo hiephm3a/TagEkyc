@@ -1,0 +1,1108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="6aa75764-174e-4225-bf4d-8e6c557e172e" name="3AVNN@LEARNPC 2026-09-26 08:06:54" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-26T08:06:54.0754142+07:00" queuing="2026-09-26T08:06:54.0754146+07:00" start="2026-09-26T08:06:40.6684106+07:00" finish="2026-09-26T08:10:32.9685518+07:00" />
+  <TestSettings name="default" id="b84da14f-aa18-408f-a3de-65c97091d207">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-26_08_06_54" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="fcaf794a-b069-4fbe-b341-eeafb40b7f60" testId="d9a1aa12-85c0-81c9-5cc7-89290a9587ad" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured" computerName="LEARNPC" duration="00:00:00.0144373" startTime="2026-09-26T08:09:25.3750435+07:00" endTime="2026-09-26T08:09:25.3750437+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fcaf794a-b069-4fbe-b341-eeafb40b7f60" />
+    <UnitTestResult executionId="5d216620-53b2-4e5c-91f0-b91044d84962" testId="70760c9c-2ddc-06bc-6ae9-f07be2d70933" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host" computerName="LEARNPC" duration="00:00:04.7274717" startTime="2026-09-26T08:09:25.3602661+07:00" endTime="2026-09-26T08:09:25.3602667+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5d216620-53b2-4e5c-91f0-b91044d84962">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.False() Failure&#xD;
+Expected: False&#xD;
+Actual:   True</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1573&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1599&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1599&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1599&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d69e3f91-c6bc-4b67-aae3-fab0c8abfd88" testId="17f8ab89-dd05-6e0a-cb23-34dbf913ba0a" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision" computerName="LEARNPC" duration="00:00:04.9320250" startTime="2026-09-26T08:10:24.2977664+07:00" endTime="2026-09-26T08:10:24.2977666+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d69e3f91-c6bc-4b67-aae3-fab0c8abfd88">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+&#xD;
+DETAIL: It could refer to either a PL/pgSQL variable or a table column.</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 408&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 198&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 156&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1499&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1507&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="aaf33847-88cd-4c36-aa0f-ea810718c2e5" testId="b86efd4a-c38d-0dc8-246d-5db54d7a5252" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim" computerName="LEARNPC" duration="00:00:03.8155283" startTime="2026-09-26T08:10:31.7732972+07:00" endTime="2026-09-26T08:10:31.7732975+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aaf33847-88cd-4c36-aa0f-ea810718c2e5">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: a33eaed8-64bf-4df9-acd4-e0eba6626a55&#xD;
+Actual:   9756f6f6-3691-4684-b553-5657a3634903</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 230&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 285&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1683&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="75e656bb-76d4-4ba3-87ca-07c4efece929" testId="3111536d-cf73-fe3a-d4d7-49849708b5b6" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation" computerName="LEARNPC" duration="00:00:04.8263735" startTime="2026-09-26T08:10:09.6886008+07:00" endTime="2026-09-26T08:10:09.6886011+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="75e656bb-76d4-4ba3-87ca-07c4efece929">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+&#xD;
+DETAIL: It could refer to either a PL/pgSQL variable or a table column.</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 408&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 198&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 156&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1422&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1460&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="3ed01d5f-0380-4336-b3c3-a12500d39358" testId="2178cc48-9e35-ef7a-78a4-91197f199dfb" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal" computerName="LEARNPC" duration="00:00:06.5568034" startTime="2026-09-26T08:06:59.2487795+07:00" endTime="2026-09-26T08:06:59.2487797+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3ed01d5f-0380-4336-b3c3-a12500d39358">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Contains() Failure: Filter not matched in collection&#xD;
+Collection: [RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = fbd2a6eb-35a4-5cd7-9dfb-980ff22209bd, C2PreparationId = 487c3f4b-5bb4-5f75-bd10-aa626d69e36c, JobRevision = , PreparationRevision = , RecoveryClaimGeneration =  }, RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = fbd2a6eb-35a4-5cd7-9dfb-980ff22209bd, C2PreparationId = 487c3f4b-5bb4-5f75-bd10-aa626d69e36c, JobRevision = , PreparationRevision = , RecoveryClaimGeneration =  }]</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1627&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1648&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1648&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="1e03d006-2764-4013-877e-bd267384b0f2" testId="27f2594b-306c-ee21-d2ac-b425d3160373" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only" computerName="LEARNPC" duration="00:00:00.1006500" startTime="2026-09-26T08:06:52.6929863+07:00" endTime="2026-09-26T08:06:52.6930002+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1e03d006-2764-4013-877e-bd267384b0f2">
+      <Output>
+        <ErrorInfo>
+          <Message>TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessException : PROD_RAW_EXPORT_ASSEMBLY_ROLE_TOPOLOGY_INVALID</Message>
+          <StackTrace>   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessValidator.ValidateAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyServiceCollectionExtensions.cs:line 185&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessValidator.ValidateAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyServiceCollectionExtensions.cs:line 185&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1974&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1974&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1974&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1329&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="30f94390-a522-403c-aef9-3d0fe58eb676" testId="7953d93e-68f9-3f8b-12cd-30c4c69d2f66" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: True, expectedOutcome: ProviderOutcomeUnknown)" computerName="LEARNPC" duration="00:00:04.8512709" startTime="2026-09-26T08:10:14.5515198+07:00" endTime="2026-09-26T08:10:14.5515200+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="30f94390-a522-403c-aef9-3d0fe58eb676">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+&#xD;
+DETAIL: It could refer to either a PL/pgSQL variable or a table column.</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 408&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 198&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 156&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1477&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1488&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2157c7e0-b7ce-47f0-af1d-1daa4842b0e2" testId="2ae2d3f8-3974-bb2b-1117-da9a264a84ba" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation" computerName="LEARNPC" duration="00:00:03.6588073" startTime="2026-09-26T08:10:27.9567823+07:00" endTime="2026-09-26T08:10:27.9567825+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2157c7e0-b7ce-47f0-af1d-1daa4842b0e2">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: 9756f6f6-3691-4684-b553-5657a3634903&#xD;
+Actual:   cb79fd14-72e2-43b7-a6a8-835f64110fcc</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 230&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 285&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1725&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="66113297-d892-45d4-8476-cb3c0cdbbf00" testId="1b34b26d-9dda-5b7d-fc43-c1a82bcda9cf" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it" computerName="LEARNPC" duration="00:02:10.7313864" startTime="2026-09-26T08:09:20.6322656+07:00" endTime="2026-09-26T08:09:20.6322658+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="66113297-d892-45d4-8476-cb3c0cdbbf00">
+      <Output>
+        <ErrorInfo>
+          <Message>System.TimeoutException : The operation has timed out.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1521&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1531&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1531&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="c0e2d705-3513-44fe-9117-6392e224eeca" testId="8a9c4c91-8aa5-e2b7-64b8-67038d4321a1" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: False, expectedOutcome: ProviderUnavailable)" computerName="LEARNPC" duration="00:00:04.7911460" startTime="2026-09-26T08:10:19.3434436+07:00" endTime="2026-09-26T08:10:19.3434439+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c0e2d705-3513-44fe-9117-6392e224eeca">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+&#xD;
+DETAIL: It could refer to either a PL/pgSQL variable or a table column.</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 408&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 198&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 156&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1477&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1488&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="7de094e6-4929-4590-99fd-89cfd5aed21d" testId="0bf0734e-add8-f192-7e48-4a921b7e4e63" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation" computerName="LEARNPC" duration="00:00:04.7195458" startTime="2026-09-26T08:09:30.0956411+07:00" endTime="2026-09-26T08:09:30.0956413+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7de094e6-4929-4590-99fd-89cfd5aed21d">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+&#xD;
+DETAIL: It could refer to either a PL/pgSQL variable or a table column.</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 408&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 198&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 156&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1377&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1413&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="66d3735b-98e0-40e9-a94a-53f110444921" testId="26ff2699-b9d7-25b0-3f16-0b3a39a39032" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact" computerName="LEARNPC" duration="00:00:00.0199681" startTime="2026-09-26T08:10:19.3642437+07:00" endTime="2026-09-26T08:10:19.3642440+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="66d3735b-98e0-40e9-a94a-53f110444921">
+      <Output>
+        <ErrorInfo>
+          <Message>TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessException : PROD_RAW_EXPORT_ASSEMBLY_ROLE_TOPOLOGY_INVALID</Message>
+          <StackTrace>   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessValidator.ValidateAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyServiceCollectionExtensions.cs:line 185&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessValidator.ValidateAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyServiceCollectionExtensions.cs:line 185&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1974&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1974&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1974&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.AssertReadinessMutationAsync(String applySql, String restoreSql) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2004&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1230&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1277&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1277&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="8ae6d94d-1771-497c-b269-daee0e96fe5a" testId="efc3a1bc-e836-73c9-79a9-e1797fd7ea8d" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate" computerName="LEARNPC" duration="00:00:00.0101848" startTime="2026-09-26T08:10:09.6984397+07:00" endTime="2026-09-26T08:10:09.6984399+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8ae6d94d-1771-497c-b269-daee0e96fe5a" />
+    <UnitTestResult executionId="a236b188-15fc-4c5d-a07f-f6642833bc41" testId="cfb06ce2-6685-4da2-0529-f61a68ac4c82" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker" computerName="LEARNPC" duration="00:00:34.7650865" startTime="2026-09-26T08:10:04.8609042+07:00" endTime="2026-09-26T08:10:04.8609043+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a236b188-15fc-4c5d-a07f-f6642833bc41">
+      <Output>
+        <ErrorInfo>
+          <Message>System.TimeoutException : The operation has timed out.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1667&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1676&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="acf223b1-1a8a-4a89-99a7-ad4ac6038c50" testId="177021f6-901f-2a7a-e036-efd9341f95a8" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_expired_job_can_complete_without_extending_delivery_rights" computerName="LEARNPC" duration="00:00:10.6412498" startTime="2026-09-26T08:07:09.8990753+07:00" endTime="2026-09-26T08:07:09.8990757+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="acf223b1-1a8a-4a89-99a7-ad4ac6038c50">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+&#xD;
+DETAIL: It could refer to either a PL/pgSQL variable or a table column.</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 408&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 198&#xD;
+   at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 156&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_expired_job_can_complete_without_extending_delivery_rights() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1756&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_expired_job_can_complete_without_extending_delivery_rights() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1777&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="17f8ab89-dd05-6e0a-cb23-34dbf913ba0a">
+      <Execution id="d69e3f91-c6bc-4b67-aae3-fab0c8abfd88" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="70760c9c-2ddc-06bc-6ae9-f07be2d70933">
+      <Execution id="5d216620-53b2-4e5c-91f0-b91044d84962" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="26ff2699-b9d7-25b0-3f16-0b3a39a39032">
+      <Execution id="66d3735b-98e0-40e9-a94a-53f110444921" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C124_schema_function_owner_and_acl_shapes_are_exact" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="1b34b26d-9dda-5b7d-fc43-c1a82bcda9cf">
+      <Execution id="66113297-d892-45d4-8476-cb3c0cdbbf00" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_expired_job_can_complete_without_extending_delivery_rights" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="177021f6-901f-2a7a-e036-efd9341f95a8">
+      <Execution id="acf223b1-1a8a-4a89-99a7-ad4ac6038c50" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_expired_job_can_complete_without_extending_delivery_rights" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: False, expectedOutcome: ProviderUnavailable)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="8a9c4c91-8aa5-e2b7-64b8-67038d4321a1">
+      <Execution id="c0e2d705-3513-44fe-9117-6392e224eeca" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2178cc48-9e35-ef7a-78a4-91197f199dfb">
+      <Execution id="3ed01d5f-0380-4336-b3c3-a12500d39358" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="27f2594b-306c-ee21-d2ac-b425d3160373">
+      <Execution id="1e03d006-2764-4013-877e-bd267384b0f2" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: True, expectedOutcome: ProviderOutcomeUnknown)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7953d93e-68f9-3f8b-12cd-30c4c69d2f66">
+      <Execution id="30f94390-a522-403c-aef9-3d0fe58eb676" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0bf0734e-add8-f192-7e48-4a921b7e4e63">
+      <Execution id="7de094e6-4929-4590-99fd-89cfd5aed21d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="cfb06ce2-6685-4da2-0529-f61a68ac4c82">
+      <Execution id="a236b188-15fc-4c5d-a07f-f6642833bc41" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b86efd4a-c38d-0dc8-246d-5db54d7a5252">
+      <Execution id="aaf33847-88cd-4c36-aa0f-ea810718c2e5" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="efc3a1bc-e836-73c9-79a9-e1797fd7ea8d">
+      <Execution id="8ae6d94d-1771-497c-b269-daee0e96fe5a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C105_resolver_and_sealer_acl_manifests_are_separate" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d9a1aa12-85c0-81c9-5cc7-89290a9587ad">
+      <Execution id="fcaf794a-b069-4fbe-b341-eeafb40b7f60" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_current_database_sql_and_security_metadata_are_captured" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="3111536d-cf73-fe3a-d4d7-49849708b5b6">
+      <Execution id="75e656bb-76d4-4ba3-87ca-07c4efece929" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2ae2d3f8-3974-bb2b-1117-da9a264a84ba">
+      <Execution id="2157c7e0-b7ce-47f0-af1d-1daa4842b0e2" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="d9a1aa12-85c0-81c9-5cc7-89290a9587ad" executionId="fcaf794a-b069-4fbe-b341-eeafb40b7f60" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="70760c9c-2ddc-06bc-6ae9-f07be2d70933" executionId="5d216620-53b2-4e5c-91f0-b91044d84962" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="17f8ab89-dd05-6e0a-cb23-34dbf913ba0a" executionId="d69e3f91-c6bc-4b67-aae3-fab0c8abfd88" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b86efd4a-c38d-0dc8-246d-5db54d7a5252" executionId="aaf33847-88cd-4c36-aa0f-ea810718c2e5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3111536d-cf73-fe3a-d4d7-49849708b5b6" executionId="75e656bb-76d4-4ba3-87ca-07c4efece929" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2178cc48-9e35-ef7a-78a4-91197f199dfb" executionId="3ed01d5f-0380-4336-b3c3-a12500d39358" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="27f2594b-306c-ee21-d2ac-b425d3160373" executionId="1e03d006-2764-4013-877e-bd267384b0f2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7953d93e-68f9-3f8b-12cd-30c4c69d2f66" executionId="30f94390-a522-403c-aef9-3d0fe58eb676" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2ae2d3f8-3974-bb2b-1117-da9a264a84ba" executionId="2157c7e0-b7ce-47f0-af1d-1daa4842b0e2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1b34b26d-9dda-5b7d-fc43-c1a82bcda9cf" executionId="66113297-d892-45d4-8476-cb3c0cdbbf00" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8a9c4c91-8aa5-e2b7-64b8-67038d4321a1" executionId="c0e2d705-3513-44fe-9117-6392e224eeca" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0bf0734e-add8-f192-7e48-4a921b7e4e63" executionId="7de094e6-4929-4590-99fd-89cfd5aed21d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="26ff2699-b9d7-25b0-3f16-0b3a39a39032" executionId="66d3735b-98e0-40e9-a94a-53f110444921" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="efc3a1bc-e836-73c9-79a9-e1797fd7ea8d" executionId="8ae6d94d-1771-497c-b269-daee0e96fe5a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cfb06ce2-6685-4da2-0529-f61a68ac4c82" executionId="a236b188-15fc-4c5d-a07f-f6642833bc41" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="177021f6-901f-2a7a-e036-efd9341f95a8" executionId="acf223b1-1a8a-4a89-99a7-ad4ac6038c50" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="16" executed="16" passed="2" failed="14" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.58]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.72]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.73]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:11.71]       TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessException : PROD_RAW_EXPORT_ASSEMBLY_ROLE_TOPOLOGY_INVALID&#xD;
+[xUnit.net 00:00:11.71]       Stack Trace:&#xD;
+[xUnit.net 00:00:11.71]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyServiceCollectionExtensions.cs(185,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessValidator.ValidateAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:11.71]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyServiceCollectionExtensions.cs(185,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessValidator.ValidateAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:11.71]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1974,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure)&#xD;
+[xUnit.net 00:00:11.71]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1974,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure)&#xD;
+[xUnit.net 00:00:11.71]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1974,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure)&#xD;
+[xUnit.net 00:00:11.71]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1329,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only()&#xD;
+[xUnit.net 00:00:11.71]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:18.27]       Assert.Contains() Failure: Filter not matched in collection&#xD;
+[xUnit.net 00:00:18.27]       Collection: [RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = fbd2a6eb-35a4-5cd7-9dfb-980ff22209bd, C2PreparationId = 487c3f4b-5bb4-5f75-bd10-aa626d69e36c, JobRevision = , PreparationRevision = , RecoveryClaimGeneration =  }, RawExportAssemblyExecutionResult { Outcome = PreparationConflict, AssemblyId = fbd2a6eb-35a4-5cd7-9dfb-980ff22209bd, C2PreparationId = 487c3f4b-5bb4-5f75-bd10-aa626d69e36c, JobRevision = , PreparationRevision = , RecoveryClaimGeneration =  }]&#xD;
+[xUnit.net 00:00:18.27]       Stack Trace:&#xD;
+[xUnit.net 00:00:18.27]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1627,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal()&#xD;
+[xUnit.net 00:00:18.27]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1648,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal()&#xD;
+[xUnit.net 00:00:18.27]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1648,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal()&#xD;
+[xUnit.net 00:00:18.27]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:28.92]       Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+[xUnit.net 00:00:28.92]       &#xD;
+[xUnit.net 00:00:28.92]       DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+[xUnit.net 00:00:28.92]       Stack Trace:&#xD;
+[xUnit.net 00:00:28.92]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:00:28.92]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:00:28.92]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:28.92]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:28.92]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:28.92]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:28.92]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(408,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:28.92]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:28.92]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:28.92]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(198,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:28.92]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(156,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:28.92]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1756,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_expired_job_can_complete_without_extending_delivery_rights()&#xD;
+[xUnit.net 00:00:28.92]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1777,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_expired_job_can_complete_without_extending_delivery_rights()&#xD;
+[xUnit.net 00:00:28.92]         --- End of stack trace from previous location ---&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Production&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0&#xD;
+fail: Microsoft.Extensions.Hosting.Internal.Host[9]&#xD;
+      BackgroundService failed&#xD;
+      Npgsql.PostgresException (0x80004005): 42702: column reference "C2PreparationId" is ambiguous&#xD;
+      DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 408&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 198&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 156&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 35&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)&#xD;
+        Exception data:&#xD;
+          Severity: ERROR&#xD;
+          SqlState: 42702&#xD;
+          MessageText: column reference "C2PreparationId" is ambiguous&#xD;
+          Detail: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+          InternalPosition: 91&#xD;
+          InternalQuery: SELECT *             FROM tagekyc.raw_export_assembly_post_seal_recovery_claims&#xD;
+    WHERE "C2PreparationId"=candidate."C2PreparationId" FOR UPDATE&#xD;
+          Where: PL/pgSQL function tagekyc.raw_export_claim_exact_post_seal_recovery(uuid,uuid,bigint,bigint,uuid,integer,bytea,bytea,bytea,bytea) line 43 at SQL statement&#xD;
+          File: pl_comp.c&#xD;
+          Line: 1133&#xD;
+          Routine: plpgsql_post_column_ref&#xD;
+crit: Microsoft.Extensions.Hosting.Internal.Host[10]&#xD;
+      The HostOptions.BackgroundServiceExceptionBehavior is configured to StopHost. A BackgroundService has thrown an unhandled exception, and the IHost instance is stopping. To avoid this behavior, configure this to Ignore; however the BackgroundService will not be restarted.&#xD;
+      Npgsql.PostgresException (0x80004005): 42702: column reference "C2PreparationId" is ambiguous&#xD;
+      DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 408&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 412&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 198&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs:line 156&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 35&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)&#xD;
+        Exception data:&#xD;
+          Severity: ERROR&#xD;
+          SqlState: 42702&#xD;
+          MessageText: column reference "C2PreparationId" is ambiguous&#xD;
+          Detail: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+          InternalPosition: 91&#xD;
+          InternalQuery: SELECT *             FROM tagekyc.raw_export_assembly_post_seal_recovery_claims&#xD;
+    WHERE "C2PreparationId"=candidate."C2PreparationId" FOR UPDATE&#xD;
+          Where: PL/pgSQL function tagekyc.raw_export_claim_exact_post_seal_recovery(uuid,uuid,bigint,bigint,uuid,integer,bytea,bytea,bytea,bytea) line 43 at SQL statement&#xD;
+          File: pl_comp.c&#xD;
+          Line: 1133&#xD;
+          Routine: plpgsql_post_column_ref&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+[xUnit.net 00:02:39.65]       System.TimeoutException : The operation has timed out.&#xD;
+[xUnit.net 00:02:39.65]       Stack Trace:&#xD;
+[xUnit.net 00:02:39.65]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1521,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it()&#xD;
+[xUnit.net 00:02:39.65]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1531,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it()&#xD;
+[xUnit.net 00:02:39.65]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1531,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it()&#xD;
+[xUnit.net 00:02:39.65]         --- End of stack trace from previous location ---&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Production&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Production&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0&#xD;
+fail: Microsoft.Extensions.Hosting.Internal.Host[9]&#xD;
+      BackgroundService failed&#xD;
+      Npgsql.PostgresException (0x80004005): 42702: column reference "C2PreparationId" is ambiguous&#xD;
+      DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimNextPostSealRecoveryAsync(Guid claimOwnerId, Int32 leaseSeconds, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 377&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimNextPostSealRecoveryAsync(Guid claimOwnerId, Int32 leaseSeconds, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 379&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimNextPostSealRecoveryAsync(Guid claimOwnerId, Int32 leaseSeconds, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 379&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 169&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 215&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 215&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 215&#xD;
+         at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ObservedAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2641&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 28&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)&#xD;
+        Exception data:&#xD;
+          Severity: ERROR&#xD;
+          SqlState: 42702&#xD;
+          MessageText: column reference "C2PreparationId" is ambiguous&#xD;
+          Detail: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+          InternalPosition: 450&#xD;
+          InternalQuery: INSERT INTO tagekyc.raw_export_assembly_post_seal_recovery_claims(&#xD;
+    "C2PreparationId","JobId","ClaimOwnerId","ClaimGeneration","ClaimExpiresAtUtc",&#xD;
+    "FailureCount","RetryNotBeforeUtc","LastOutcome","CreatedAtUtc","UpdatedAtUtc","CompletedAtUtc","SchemaVersion")&#xD;
+  VALUES(candidate."C2PreparationId",candidate."JobId",p_claim_owner_id,1,&#xD;
+         now_+pg_catalog.make_interval(secs=&gt;p_lease_seconds),0,NULL,NULL,now_,now_,NULL,1)&#xD;
+  ON CONFLICT ("C2PreparationId") DO UPDATE SET&#xD;
+    "ClaimOwnerId"=p_claim_owner_id,&#xD;
+    "ClaimGeneration"=tagekyc.raw_export_assembly_post_seal_recovery_claims."ClaimGeneration"+1,&#xD;
+    "ClaimExpiresAtUtc"=now_+pg_catalog.make_interval(secs=&gt;p_lease_seconds),&#xD;
+    "RetryNotBeforeUtc"=NULL,"UpdatedAtUtc"=now_&#xD;
+  RETURNING *&#xD;
+          Where: PL/pgSQL function tagekyc.raw_export_claim_next_post_seal_recovery(uuid,integer) line 47 at SQL statement&#xD;
+          File: pl_comp.c&#xD;
+          Line: 1133&#xD;
+          Routine: plpgsql_post_column_ref&#xD;
+crit: Microsoft.Extensions.Hosting.Internal.Host[10]&#xD;
+      The HostOptions.BackgroundServiceExceptionBehavior is configured to StopHost. A BackgroundService has thrown an unhandled exception, and the IHost instance is stopping. To avoid this behavior, configure this to Ignore; however the BackgroundService will not be restarted.&#xD;
+      Npgsql.PostgresException (0x80004005): 42702: column reference "C2PreparationId" is ambiguous&#xD;
+      DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+         at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+         at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimNextPostSealRecoveryAsync(Guid claimOwnerId, Int32 leaseSeconds, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 377&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimNextPostSealRecoveryAsync(Guid claimOwnerId, Int32 leaseSeconds, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 379&#xD;
+         at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimNextPostSealRecoveryAsync(Guid claimOwnerId, Int32 leaseSeconds, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs:line 379&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 169&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 215&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 215&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 215&#xD;
+         at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ObservedAssemblyWorkSource.TryAcquireAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2641&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 28&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)&#xD;
+        Exception data:&#xD;
+          Severity: ERROR&#xD;
+          SqlState: 42702&#xD;
+          MessageText: column reference "C2PreparationId" is ambiguous&#xD;
+          Detail: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+          InternalPosition: 450&#xD;
+          InternalQuery: INSERT INTO tagekyc.raw_export_assembly_post_seal_recovery_claims(&#xD;
+    "C2PreparationId","JobId","ClaimOwnerId","ClaimGeneration","ClaimExpiresAtUtc",&#xD;
+    "FailureCount","RetryNotBeforeUtc","LastOutcome","CreatedAtUtc","UpdatedAtUtc","CompletedAtUtc","SchemaVersion")&#xD;
+  VALUES(candidate."C2PreparationId",candidate."JobId",p_claim_owner_id,1,&#xD;
+         now_+pg_catalog.make_interval(secs=&gt;p_lease_seconds),0,NULL,NULL,now_,now_,NULL,1)&#xD;
+  ON CONFLICT ("C2PreparationId") DO UPDATE SET&#xD;
+    "ClaimOwnerId"=p_claim_owner_id,&#xD;
+    "ClaimGeneration"=tagekyc.raw_export_assembly_post_seal_recovery_claims."ClaimGeneration"+1,&#xD;
+    "ClaimExpiresAtUtc"=now_+pg_catalog.make_interval(secs=&gt;p_lease_seconds),&#xD;
+    "RetryNotBeforeUtc"=NULL,"UpdatedAtUtc"=now_&#xD;
+  RETURNING *&#xD;
+          Where: PL/pgSQL function tagekyc.raw_export_claim_next_post_seal_recovery(uuid,integer) line 47 at SQL statement&#xD;
+          File: pl_comp.c&#xD;
+          Line: 1133&#xD;
+          Routine: plpgsql_post_column_ref&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+fail: Microsoft.Extensions.Hosting.Internal.Host[9]&#xD;
+      BackgroundService failed&#xD;
+      System.OperationCanceledException: The operation was canceled.&#xD;
+         at System.Threading.CancellationToken.ThrowOperationCanceledException()&#xD;
+         at Npgsql.Internal.NpgsqlConnector.&lt;StartUserAction&gt;g__DoStartUserAction|279_0(ConnectorState newState, NpgsqlCommand command, CancellationToken cancellationToken, Boolean attemptPgCancellation)&#xD;
+         at Npgsql.NpgsqlConnection.BeginTransaction(Boolean async, IsolationLevel level, CancellationToken cancellationToken)&#xD;
+         at Npgsql.NpgsqlConnection.BeginDbTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)&#xD;
+         at Microsoft.EntityFrameworkCore.Storage.RelationalConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken)&#xD;
+         at Npgsql.EntityFrameworkCore.PostgreSQL.Storage.Internal.NpgsqlExecutionStrategy.ExecuteAsync[TState,TResult](TState state, Func`4 operation, Func`4 verifySucceeded, CancellationToken cancellationToken)&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 803&#xD;
+         at TagEkyc.Infrastructure.Persistence.EfRawExportJobRepository.ExecuteAsync[T](Guid actorPrincipalId, Func`4 body, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\EfRawExportJobRepository.cs:line 847&#xD;
+         at TagEkyc.Infrastructure.RawExport.DurableRawExportAssemblyWorkSource.RecordAsync(RawExportAssemblyExecutionRequest request, RawExportAssemblyExecutionResult result, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRuntimeInfrastructure.cs:line 259&#xD;
+         at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ObservedAssemblyWorkSource.RecordAsync(RawExportAssemblyExecutionRequest request, RawExportAssemblyExecutionResult result, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 2668&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at TagEkyc.Api.RawExportAssemblyHostedService.ExecuteAsync(CancellationToken stoppingToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\RawExportAssemblyHostedService.cs:line 36&#xD;
+         at Microsoft.Extensions.Hosting.Internal.Host.TryExecuteBackgroundServiceAsync(BackgroundService backgroundService)&#xD;
+[xUnit.net 00:02:44.38]       Assert.False() Failure&#xD;
+[xUnit.net 00:02:44.38]       Expected: False&#xD;
+[xUnit.net 00:02:44.38]       Actual:   True&#xD;
+[xUnit.net 00:02:44.38]       Stack Trace:&#xD;
+[xUnit.net 00:02:44.38]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1573,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host()&#xD;
+[xUnit.net 00:02:44.38]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1599,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host()&#xD;
+[xUnit.net 00:02:44.38]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1599,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host()&#xD;
+[xUnit.net 00:02:44.38]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1599,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host()&#xD;
+[xUnit.net 00:02:44.38]         --- End of stack trace from previous location ---&#xD;
+DATABASE_ID=tagekyc_persistence_tests;USER=tagekyc;ENGINE=PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit&#xD;
+MIGRATION=20260621075836_InitialPostgresPersistence&#xD;
+MIGRATION=20260622033429_Tip65EvidenceHashMetadata&#xD;
+MIGRATION=20260622141420_Tip66EvidencePackageSigning&#xD;
+MIGRATION=20260623120000_Tip67BNeutralProofPublicKeyMaterial&#xD;
+MIGRATION=20260706144217_Tip80SAppendIdempotency&#xD;
+MIGRATION=20260709003221_Tip84BApiKeyStore&#xD;
+MIGRATION=20260711132410_Tip88ARawExportPolicyCatalog&#xD;
+MIGRATION=20260712133151_Tip88B1RawExportControlPlane&#xD;
+MIGRATION=20260720022629_Tip88B2SubjectExportConsent&#xD;
+MIGRATION=20260721070118_Tip88AE2PolicyPermitTtlField&#xD;
+MIGRATION=20260722084729_Tip88B31RawExportAuthorizationSchema&#xD;
+MIGRATION=20260722163505_Tip88B32RawExportAuthorizationIdempotencyFunctions&#xD;
+MIGRATION=20260723052003_Tip88B33RawExportAuthorizationPersistFunction&#xD;
+MIGRATION=20260724015546_Tip88B1E3ResolverReadBoundary&#xD;
+MIGRATION=20260726145547_Tip88B4RawExportJobFoundation&#xD;
+MIGRATION=20260730090000_Tip88C1ACaptureAcceptanceSurface&#xD;
+MIGRATION=20260730214000_Tip88C1B1IngressClaimIdempotencySkeleton&#xD;
+MIGRATION=20260731045718_Tip88C1B2AuthoritySnapshotLifecycle&#xD;
+MIGRATION=20260731082733_Tip88C1B2CoreNewCandidate&#xD;
+MIGRATION=20260731130919_Tip88C1B2BetaExistingCandidates&#xD;
+MIGRATION=20260802105416_Tip88C1B2DurableKeyProd&#xD;
+MIGRATION=20260803151824_Tip88C1B2DurableKeyFixtureProof&#xD;
+MIGRATION=20260804120000_Tip88C1B2DurableObjectCustody&#xD;
+MIGRATION=20260807120000_Tip88C1B2R2DurableCustodyEncryption&#xD;
+MIGRATION=20260810120000_Tip88C1B2R3VerifiedCiphertextStaging&#xD;
+MIGRATION=20260812120000_Tip88C1B2R4R6SourceFinalization&#xD;
+MIGRATION=20260815120000_Tip88C1C1ResolverAssembly&#xD;
+MIGRATION=20260818120000_Tip88C1C2RecipientPackage&#xD;
+MIGRATION=20260819120000_Tip88C1C3AuthenticatedPackageDelivery&#xD;
+MIGRATION=20260819180000_Tip88C1C4PackageReferenceDistribution&#xD;
+MIGRATION=20260823120000_Tip88C1C5ManagedRecipientEnrollment&#xD;
+MIGRATION=20260904154848_Tip88C1C6AProductionAuthorityDeliveryBarrier&#xD;
+MIGRATION=20260906055502_Tip88C1C6BIngressSqlComposition&#xD;
+MIGRATION=20260908120000_Tip88C1C6BA1Foundation&#xD;
+MIGRATION=20260913120000_Tip88C1C6BA3RetainedIngressComposition&#xD;
+MIGRATION=20260923090000_RawExportAssemblyDurableWorkSource&#xD;
+MIGRATION=20260924120000_RawExportDeliveryRecipientCredential&#xD;
+MIGRATION=20260924130000_RawExportLegacyConsentClassFence&#xD;
+MIGRATION=20260925090000_RawExportAssemblyRetainedModeWorkSource&#xD;
+MIGRATION=20260926120000_RawExportAssemblyPostSealRecovery&#xD;
+FUNCTION_GRANT=raw_export_freeze_job_source_bindings;SPECIFIC=raw_export_freeze_job_source_bindings_18671;GRANTEE=tagekyc_raw_export_assembly_resolver;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_next_assembly_candidate;SPECIFIC=raw_export_next_assembly_candidate_19997;GRANTEE=tagekyc_raw_export_assembly_resolver;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_read_job_source_verification_context;SPECIFIC=raw_export_read_job_source_verification_context_18673;GRANTEE=tagekyc_raw_export_assembly_resolver;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_record_assembly_source_integrity_failure;SPECIFIC=raw_export_record_assembly_source_integrity_failure_18675;GRANTEE=tagekyc_raw_export_assembly_resolver;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_authorize_assembly_abort;SPECIFIC=raw_export_authorize_assembly_abort_18680;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_claim_exact_post_seal_recovery;SPECIFIC=raw_export_claim_exact_post_seal_recovery_20051;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_claim_next_post_seal_recovery;SPECIFIC=raw_export_claim_next_post_seal_recovery_20049;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_defer_post_seal_recovery;SPECIFIC=raw_export_defer_post_seal_recovery_20053;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_read_assembly_recovery_context;SPECIFIC=raw_export_read_assembly_recovery_context_18683;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_read_committed_assembly_recovery_context;SPECIFIC=raw_export_read_committed_assembly_recovery_context_18684;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_record_assembly_aborted;SPECIFIC=raw_export_record_assembly_aborted_18682;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_record_assembly_finalized;SPECIFIC=raw_export_record_assembly_finalized_18681;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_record_assembly_pending;SPECIFIC=raw_export_record_assembly_pending_18677;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_record_claimed_assembly_finalized;SPECIFIC=raw_export_record_claimed_assembly_finalized_20054;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_register_assembly_preparing;SPECIFIC=raw_export_register_assembly_preparing_18676;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_seal_authenticated_assembly;SPECIFIC=raw_export_seal_authenticated_assembly_18678;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION=raw_export_next_assembly_candidate()&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_raw_export_assembly_resolver=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_next_assembly_candidate()&#xD;
+ RETURNS TABLE("JobId" uuid, "PrincipalId" uuid, "ClientApplicationId" uuid, "CreatedByApiKeyId" uuid, "Revision" bigint, "FencingToken" bigint)&#xD;
+ LANGUAGE sql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+  SELECT i."JobId",i."PrincipalId",i."ClientApplicationId",i."CreatedByApiKeyId",&#xD;
+         h."Revision",h."FencingToken"&#xD;
+  FROM tagekyc.raw_export_job_identities i&#xD;
+  JOIN tagekyc.raw_export_job_operational_heads h ON h."JobId"=i."JobId"&#xD;
+  WHERE i."ExportMode" IN ('EncryptedExportPacket','EncryptedRawVaultRetained')&#xD;
+    AND i."JobExpiresAt"&gt;clock_timestamp()&#xD;
+    AND (&#xD;
+      h."CurrentState"='Claimed'&#xD;
+      OR (h."CurrentState"='Assembling'&#xD;
+          AND (h."LeaseOwnerId" IS NULL OR h."LeaseExpiresAt"&lt;=clock_timestamp())))&#xD;
+  ORDER BY i."CreatedAt",i."JobId"&#xD;
+  LIMIT 1&#xD;
+$function$&#xD;
+FUNCTION=raw_export_seal_authenticated_assembly(uuid,uuid,bigint,bigint,bigint,uuid,bytea,bytea,bytea,text,integer,bytea,bigint,integer,jsonb)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_raw_export_assembly_sealer=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_seal_authenticated_assembly(p_c2_preparation_id uuid, p_job_id uuid, p_expected_preparation_revision bigint, p_expected_job_revision bigint, p_expected_fence bigint, p_attempt_id uuid, p_assembly_digest bytea, p_manifest_digest bytea, p_authentication_value bytea, p_authentication_key_id text, p_authentication_key_version integer, p_assembly_fingerprint bytea, p_complete_assembly_length bigint, p_item_count integer, p_items jsonb)&#xD;
+ RETURNS TABLE("Outcome" text, "JobRevision" bigint, "PreparationRevision" bigint, "SealedAtUtc" timestamp with time zone)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE&#xD;
+  prep tagekyc.raw_export_assembly_preparation_dispositions%ROWTYPE; h tagekyc.raw_export_job_operational_heads%ROWTYPE;&#xD;
+  j tagekyc.raw_export_job_identities%ROWTYPE; b record; authority record; consent record; authority_kind text; prefix_session uuid; prefix_reference text; prefix_key bigint; now_ timestamptz;&#xD;
+  first_binding tagekyc.raw_export_job_source_bindings%ROWTYPE; actual_count integer;&#xD;
+  previous_head_context text; previous_transition_context text;&#xD;
+BEGIN&#xD;
+  SELECT p.* INTO prep FROM tagekyc.raw_export_assembly_preparation_dispositions p&#xD;
+  JOIN tagekyc.raw_export_assembly_identities i ON i."C2PreparationId"=p."C2PreparationId"&#xD;
+  WHERE p."C2PreparationId"=p_c2_preparation_id AND p."Disposition" IN ('SealCommitted','Finalized')&#xD;
+    AND p."JobId"=p_job_id AND p."AttemptId"=p_attempt_id AND p."FencingToken"=p_expected_fence&#xD;
+    AND p."AssemblyFingerprint"=p_assembly_fingerprint AND i."JobId"=p_job_id&#xD;
+    AND i."AttemptId"=p_attempt_id AND i."FencingToken"=p_expected_fence AND i."AssemblyDigest"=p_assembly_digest&#xD;
+    AND i."ManifestDigest"=p_manifest_digest AND i."AssemblyAuthenticationValue"=p_authentication_value&#xD;
+    AND i."AssemblyAuthenticationKeyId"=p_authentication_key_id AND i."AssemblyAuthenticationKeyVersion"=p_authentication_key_version&#xD;
+    AND i."CompleteAssemblyLength"=p_complete_assembly_length AND i."ItemCount"=p_item_count&#xD;
+    AND (SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(&#xD;
+          'Ordinal',a."Ordinal",'RawClass',a."RawClass",'SourceArtifactId',a."SourceArtifactId",&#xD;
+          'CaptureArtifactId',a."CaptureArtifactId",'CaptureRevision',a."CaptureRevision",'MediaType',a."MediaType",&#xD;
+          'PlaintextLength',a."PlaintextLength",'ContentCommitmentSchemaVersion',a."ContentCommitmentSchemaVersion",&#xD;
+          'ContentCommitmentKeyId',a."ContentCommitmentKeyId",'ContentCommitmentKeyVersion',a."ContentCommitmentKeyVersion",&#xD;
+          'ContentCommitment',pg_catalog.encode(a."ContentCommitment",'base64')) ORDER BY a."Ordinal")&#xD;
+         FROM tagekyc.raw_export_assembly_items a WHERE a."AssemblyId"=i."AssemblyId")=p_items&#xD;
+    AND EXISTS (SELECT 1 FROM tagekyc.raw_export_job_transitions t&#xD;
+                WHERE t."JobId"=p_job_id AND t."ResultingRevision"=p_expected_job_revision+1&#xD;
+                  AND t."EventType"='AssemblySealed' AND t."FromState"='Assembling' AND t."ToState"='AssemblySealed'&#xD;
+                  AND t."AttemptId"=p_attempt_id AND t."FencingToken"=p_expected_fence);&#xD;
+  IF FOUND THEN RETURN QUERY SELECT 'ExistingMatch'::text,p_expected_job_revision+1,prep."RowRevision",prep."SealCommittedAtUtc"; RETURN; END IF;&#xD;
+  IF EXISTS (&#xD;
+    SELECT 1 FROM tagekyc.raw_export_assembly_preparation_dispositions p&#xD;
+    LEFT JOIN tagekyc.raw_export_assembly_identities i ON i."C2PreparationId"=p."C2PreparationId"&#xD;
+    WHERE p."C2PreparationId"=p_c2_preparation_id&#xD;
+      AND (p."Disposition" IN ('SealCommitted','Finalized') OR i."AssemblyId" IS NOT NULL))&#xD;
+  THEN RETURN QUERY SELECT 'AssemblyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  FOR prefix_session IN SELECT DISTINCT "VerificationSessionId" FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id ORDER BY "VerificationSessionId" LOOP PERFORM 1 FROM tagekyc.verification_sessions WHERE "Id"=prefix_session FOR UPDATE; IF NOT FOUND THEN RETURN QUERY SELECT 'NotFoundOrNotAllowed'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF; END LOOP;&#xD;
+  FOR prefix_reference,prefix_key IN SELECT DISTINCT reference."ExternalConsentArtifactRef",pg_catalog.hashtextextended('tip88c1:a3:consent-reference:'||snapshot."ClientApplicationId"::text||':'||reference."ExternalConsentArtifactRef",0) FROM tagekyc.raw_export_job_source_bindings source JOIN tagekyc.raw_export_authority_snapshots snapshot ON snapshot."AuthoritySnapshotId"=source."AuthoritySnapshotId" JOIN tagekyc.raw_source_consent_bindings binding ON binding."ConsentBindingId"=snapshot."ConsentBindingId" JOIN tagekyc.raw_source_consent_references reference ON reference."ConsentReferenceId"=binding."ConsentReferenceId" WHERE source."JobId"=p_job_id AND snapshot."AuthorityKind"='SourceRetention' ORDER BY 2 LOOP PERFORM pg_catalog.pg_advisory_xact_lock_shared(prefix_key); END LOOP;&#xD;
+  SELECT * INTO h FROM tagekyc.raw_export_job_operational_heads WHERE "JobId"=p_job_id FOR UPDATE;&#xD;
+  IF h."JobId" IS NULL THEN RETURN QUERY SELECT 'NotFoundOrNotAllowed'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_job_attempts WHERE "AttemptId"=p_attempt_id AND "JobId"=p_job_id FOR UPDATE;&#xD;
+  SELECT * INTO j FROM tagekyc.raw_export_job_identities WHERE "JobId"=p_job_id FOR SHARE;&#xD;
+  IF j."JobId" IS NULL THEN RETURN QUERY SELECT 'NotFoundOrNotAllowed'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF NOT FOUND OR h."CurrentState"&lt;&gt;'Assembling' OR h."CurrentAttemptId" IS DISTINCT FROM p_attempt_id OR h."Revision"&lt;&gt;p_expected_job_revision OR h."FencingToken"&lt;&gt;p_expected_fence THEN RETURN QUERY SELECT 'LeaseLost'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_publications p JOIN tagekyc.raw_export_job_source_bindings x ON x."SourcePublicationId"=p."SourcePublicationId" WHERE x."JobId"=p_job_id ORDER BY p."SourceArtifactId" FOR UPDATE OF p;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_encryption_attempts a JOIN tagekyc.raw_export_job_source_bindings x ON x."EncryptionAttemptId"=a."AttemptId" WHERE x."JobId"=p_job_id ORDER BY a."AttemptId" FOR UPDATE OF a;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_head s JOIN tagekyc.raw_export_job_source_bindings x ON x."SourceArtifactId"=s."SourceArtifactId" WHERE x."JobId"=p_job_id ORDER BY s."SourceArtifactId" FOR UPDATE OF s;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_reservations r JOIN tagekyc.raw_export_job_source_bindings x ON x."SourceArtifactId"=r."SourceArtifactId" WHERE x."JobId"=p_job_id ORDER BY r."SourceArtifactId" FOR UPDATE OF r;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_ingress_claims c JOIN tagekyc.raw_export_job_source_bindings x ON x."VerificationSessionId"=c."VerificationSessionId" AND x."CaptureAcceptanceId"=c."CaptureAcceptanceId" AND x."CaptureArtifactId"=c."CaptureArtifactId" AND x."CaptureRevision"=c."CaptureRevision" AND x."RawClass"=c."RawClass" WHERE x."JobId"=p_job_id ORDER BY c."IngressClaimId" FOR UPDATE OF c;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_attempt_key_reservations k JOIN tagekyc.raw_export_job_source_bindings x ON x."AttemptKeyReservationId"=k."AttemptKeyReservationId" WHERE x."JobId"=p_job_id ORDER BY k."AttemptKeyReservationId" FOR UPDATE OF k;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_provisional_objects o JOIN tagekyc.raw_export_job_source_bindings x ON x."ObjectCustodyId"=o."ObjectCustodyId" WHERE x."JobId"=p_job_id ORDER BY o."ObjectCustodyId" FOR UPDATE OF o;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id ORDER BY "Ordinal" FOR UPDATE;&#xD;
+  SELECT * INTO prep FROM tagekyc.raw_export_assembly_preparation_dispositions WHERE "C2PreparationId"=p_c2_preparation_id FOR UPDATE;&#xD;
+  IF NOT FOUND OR prep."Disposition"&lt;&gt;'Pending' OR prep."RowRevision"&lt;&gt;p_expected_preparation_revision OR prep."JobId"&lt;&gt;p_job_id OR prep."AttemptId"&lt;&gt;p_attempt_id OR prep."FencingToken"&lt;&gt;p_expected_fence OR prep."AssemblyFingerprint"&lt;&gt;p_assembly_fingerprint THEN RETURN QUERY SELECT 'PreparationConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  actual_count:=(SELECT pg_catalog.count(*)::integer FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id);&#xD;
+  IF p_item_count&lt;1 OR pg_catalog.jsonb_typeof(p_items)&lt;&gt;'array' OR pg_catalog.jsonb_array_length(p_items)&lt;&gt;p_item_count OR pg_catalog.octet_length(p_assembly_digest)&lt;&gt;32 OR pg_catalog.octet_length(p_manifest_digest)&lt;&gt;32 OR pg_catalog.octet_length(p_authentication_value)&lt;&gt;32 OR pg_catalog.octet_length(p_assembly_fingerprint)&lt;&gt;32 OR p_authentication_key_version&lt;1 OR p_complete_assembly_length&lt;1 THEN RETURN QUERY SELECT 'AssemblyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF actual_count&lt;&gt;p_item_count&#xD;
+     OR (SELECT pg_catalog.count(*)::integer FROM tagekyc.raw_export_job_classes WHERE "JobId"=p_job_id)&lt;&gt;p_item_count&#xD;
+     OR EXISTS (&#xD;
+       SELECT 1 FROM tagekyc.raw_export_job_classes c&#xD;
+       WHERE c."JobId"=p_job_id AND NOT EXISTS (&#xD;
+         SELECT 1 FROM pg_catalog.jsonb_array_elements(p_items) item&#xD;
+         WHERE item-&gt;&gt;'Ordinal'=c."Ordinal"::text AND item-&gt;&gt;'RawClass'=c."RawClass"))&#xD;
+     OR EXISTS (&#xD;
+       SELECT 1 FROM pg_catalog.jsonb_array_elements(p_items) item&#xD;
+       WHERE NOT EXISTS (&#xD;
+         SELECT 1 FROM tagekyc.raw_export_job_classes c&#xD;
+         WHERE c."JobId"=p_job_id AND item-&gt;&gt;'Ordinal'=c."Ordinal"::text AND item-&gt;&gt;'RawClass'=c."RawClass"))&#xD;
+  THEN RETURN QUERY SELECT 'AssemblyClassSetMismatch'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF (SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(&#xD;
+        'Ordinal',x."Ordinal",'RawClass',x."RawClass",'SourceArtifactId',x."SourceArtifactId",&#xD;
+        'CaptureArtifactId',x."CaptureArtifactId",'CaptureRevision',x."CaptureRevision",'MediaType',x."MediaType",&#xD;
+        'PlaintextLength',x."PlaintextLength",'ContentCommitmentSchemaVersion',x."ContentCommitmentSchemaVersion",&#xD;
+        'ContentCommitmentKeyId',x."ContentCommitmentKeyId",'ContentCommitmentKeyVersion',x."ContentCommitmentKeyVersion",&#xD;
+        'ContentCommitment',pg_catalog.encode(x."ContentCommitment",'base64')) ORDER BY x."Ordinal")&#xD;
+      FROM tagekyc.raw_export_job_source_bindings x WHERE x."JobId"=p_job_id) IS DISTINCT FROM p_items&#xD;
+  THEN RETURN QUERY SELECT 'SourceBindingInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  -- Acquire every authority and consent lock before the single admission clock.&#xD;
+  FOR b IN SELECT x.*,c."ClientApplicationId" FROM tagekyc.raw_export_job_source_bindings x JOIN tagekyc.raw_export_source_ingress_claims c ON c."VerificationSessionId"=x."VerificationSessionId" AND c."CaptureAcceptanceId"=x."CaptureAcceptanceId" AND c."CaptureArtifactId"=x."CaptureArtifactId" AND c."CaptureRevision"=x."CaptureRevision" AND c."RawClass"=x."RawClass" WHERE x."JobId"=p_job_id ORDER BY x."Ordinal"&#xD;
+  LOOP&#xD;
+    PERFORM pg_catalog.pg_advisory_xact_lock_shared(pg_catalog.hashtext('tip88c1:b2-authority:'||b."ClientApplicationId"::text||':'||b."VerificationSessionId"::text||':'||b."CaptureAcceptanceId"::text||':'||b."RawClass"));&#xD;
+    PERFORM 1 FROM tagekyc.raw_export_resolve_subject_consent_for_authorization(b."VerificationSessionId",b."ConsentPolicyId",b."ConsentPolicyVersion") WHERE "RawClass"=b."RawClass" AND "RecipientClientApplicationId"=j."RecipientClientApplicationId";&#xD;
+  END LOOP;&#xD;
+  now_:=pg_catalog.clock_timestamp();&#xD;
+  FOR b IN SELECT x.*,c."ClientApplicationId" FROM tagekyc.raw_export_job_source_bindings x JOIN tagekyc.raw_export_source_ingress_claims c ON c."VerificationSessionId"=x."VerificationSessionId" AND c."CaptureAcceptanceId"=x."CaptureAcceptanceId" AND c."CaptureArtifactId"=x."CaptureArtifactId" AND c."CaptureRevision"=x."CaptureRevision" AND c."RawClass"=x."RawClass" WHERE x."JobId"=p_job_id ORDER BY x."Ordinal"&#xD;
+  LOOP&#xD;
+    SELECT * INTO consent FROM tagekyc.raw_export_resolve_subject_consent_for_authorization(b."VerificationSessionId",b."ConsentPolicyId",b."ConsentPolicyVersion") WHERE "RawClass"=b."RawClass" AND "RecipientClientApplicationId"=j."RecipientClientApplicationId";&#xD;
+    SELECT * INTO authority FROM tagekyc.raw_export_resolve_current_authority_for_source(b."ClientApplicationId",b."VerificationSessionId",b."CaptureAcceptanceId",b."RawClass",now_);&#xD;
+                    SELECT "AuthorityKind" INTO authority_kind FROM tagekyc.raw_export_authority_snapshots WHERE "AuthoritySnapshotId"=b."AuthoritySnapshotId";&#xD;
+    IF authority_kind NOT IN ('LegacyExport','SourceRetention')&#xD;
+                       OR (authority_kind='SourceRetention' AND (authority."ApprovedPurpose"&lt;&gt;'SourceRetention' OR NOT tagekyc.raw_export_retained_snapshot_is_current(b."AuthoritySnapshotId",now_)))&#xD;
+                       OR consent."State" IS DISTINCT FROM 'Effective'&#xD;
+       OR consent."ValidFromUtc"&gt;now_ OR consent."ValidUntilUtc"&lt;=now_&#xD;
+       OR consent."PolicyId"&lt;&gt;b."ConsentPolicyId" OR consent."PolicyVersion"&lt;&gt;b."ConsentPolicyVersion"&#xD;
+       OR authority."AuthoritySnapshotId" IS NULL OR authority."AuthoritySnapshotId"&lt;&gt;b."AuthoritySnapshotId"&#xD;
+       OR authority."Revision"&lt;&gt;b."AuthorityRevision" OR authority."ReuseDisposition"&lt;&gt;'FreshAuthorityRequired'&#xD;
+       OR authority."ExtensionDisposition"&lt;&gt;'Forbidden' OR authority."ConsentPolicyId"&lt;&gt;b."ConsentPolicyId"&#xD;
+       OR authority."ConsentPolicyVersion"&lt;&gt;b."ConsentPolicyVersion"&#xD;
+       OR b."AbsoluteSourceExpiresAtUtc"&lt;=now_ OR b."EffectivePlaintextRetentionExpiresAtUtc"&lt;=now_&#xD;
+    THEN RETURN QUERY SELECT 'AuthorityInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  END LOOP;&#xD;
+  IF h."LeaseExpiresAt" IS NULL OR h."LeaseExpiresAt"&lt;=now_ OR j."PermitExpiresAt"&lt;=now_ OR j."JobExpiresAt"&lt;=now_ THEN RETURN QUERY SELECT 'Expired'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  SELECT * INTO first_binding FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id ORDER BY "Ordinal" LIMIT 1;&#xD;
+  UPDATE tagekyc.raw_export_assembly_preparation_dispositions AS d SET "Disposition"='SealCommitted',"RowRevision"=d."RowRevision"+1,"SealCommittedAtUtc"=now_ WHERE d."C2PreparationId"=p_c2_preparation_id;&#xD;
+  INSERT INTO tagekyc.raw_export_assembly_identities(&#xD;
+    "AssemblyId","JobId","AttemptId","FencingToken","PermitId","VerificationSessionId","ClientApplicationId","RecipientClientApplicationId","PolicyId","PolicyVersion","PurposeCode","ExportMode","ManifestVersion","SubjectRefTokenSchemaVersion","SubjectRefTokenKeyId","SubjectRefTokenKeyVersion","SubjectRefToken","AssemblyAuthenticationKeyId","AssemblyAuthenticationKeyVersion","AssemblyDigest","ManifestDigest","AssemblyAuthenticationValue","AssemblyFingerprint","CompleteAssemblyLength","ItemCount","C2PreparationId","CreatedAtUtc","JobExpiresAtUtc","SealedAtUtc","SchemaVersion")&#xD;
+  VALUES(prep."AssemblyId",p_job_id,p_attempt_id,p_expected_fence,j."PermitId",j."VerificationSessionId",j."ClientApplicationId",j."RecipientClientApplicationId",j."PolicyId",j."PolicyVersion",j."PurposeCode",j."ExportMode",1,first_binding."SubjectRefTokenSchemaVersion",first_binding."SubjectRefTokenKeyId",first_binding."SubjectRefTokenKeyVersion",first_binding."SubjectRefToken",p_authentication_key_id,p_authentication_key_version,p_assembly_digest,p_manifest_digest,p_authentication_value,p_assembly_fingerprint,p_complete_assembly_length,p_item_count,p_c2_preparation_id,now_,j."JobExpiresAt",now_,1);&#xD;
+  INSERT INTO tagekyc.raw_export_assembly_items("AssemblyId","Ordinal","RawClass","JobSourceBindingId","SourceArtifactId","CaptureArtifactId","CaptureRevision","MediaType","PlaintextLength","ContentCommitmentSchemaVersion","ContentCommitmentKeyId","ContentCommitmentKeyVersion","ContentCommitment")&#xD;
+  SELECT prep."AssemblyId",x."Ordinal",x."RawClass",x."JobSourceBindingId",x."SourceArtifactId",x."CaptureArtifactId",x."CaptureRevision",x."MediaType",x."PlaintextLength",x."ContentCommitmentSchemaVersion",x."ContentCommitmentKeyId",x."ContentCommitmentKeyVersion",x."ContentCommitment" FROM tagekyc.raw_export_job_source_bindings x WHERE x."JobId"=p_job_id ORDER BY x."Ordinal";&#xD;
+  previous_head_context:=pg_catalog.current_setting('tagekyc.raw_export_job_mutation_context',true);&#xD;
+  previous_transition_context:=previous_head_context;&#xD;
+  PERFORM pg_catalog.set_config('tagekyc.raw_export_job_mutation_context','job_head_assembly_sealed',true);&#xD;
+  UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='AssemblySealed',"Revision"="Revision"+1,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=p_job_id;&#xD;
+  PERFORM pg_catalog.set_config('tagekyc.raw_export_job_mutation_context','job_transition',true);&#xD;
+  INSERT INTO tagekyc.raw_export_job_transitions VALUES(pg_catalog.gen_random_uuid(),p_job_id,p_expected_job_revision+1,'AssemblySealed','Assembling','AssemblySealed',p_attempt_id,p_expected_fence,NULL,NULL,NULL,now_);&#xD;
+  PERFORM pg_catalog.set_config('tagekyc.raw_export_job_mutation_context',COALESCE(previous_head_context,''),true);&#xD;
+  RETURN QUERY SELECT 'Sealed'::text,p_expected_job_revision+1,p_expected_preparation_revision+1,now_;&#xD;
+EXCEPTION WHEN OTHERS THEN&#xD;
+  PERFORM pg_catalog.set_config('tagekyc.raw_export_job_mutation_context',COALESCE(previous_head_context,''),true);&#xD;
+  RAISE;&#xD;
+END $function$&#xD;
+FUNCTION=raw_export_read_committed_assembly_recovery_context(uuid,uuid,bigint,bigint)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_raw_export_assembly_sealer=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_read_committed_assembly_recovery_context(p_job_id uuid, p_attempt_id uuid, p_expected_job_revision bigint, p_expected_fence bigint)&#xD;
+ RETURNS TABLE("C2PreparationId" uuid, "AssemblyId" uuid, "JobId" uuid, "AttemptId" uuid, "FencingToken" bigint, "AssemblyFingerprint" bytea, "PreparationFingerprint" bytea, "Disposition" text, "ProviderReceiptDigest" bytea, "AbortAuthorizationDigest" bytea, "RowRevision" bigint, "JobRevision" bigint)&#xD;
+ LANGUAGE sql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+  SELECT p."C2PreparationId",p."AssemblyId",p."JobId",p."AttemptId",p."FencingToken",&#xD;
+         p."AssemblyFingerprint",p."PreparationFingerprint",p."Disposition",&#xD;
+         p."ProviderReceiptDigest",p."AbortAuthorizationDigest",p."RowRevision",h."Revision"&#xD;
+  FROM tagekyc.raw_export_assembly_preparation_dispositions p&#xD;
+  JOIN tagekyc.raw_export_assembly_identities i&#xD;
+    ON i."C2PreparationId"=p."C2PreparationId"&#xD;
+   AND i."AssemblyId"=p."AssemblyId"&#xD;
+   AND i."JobId"=p."JobId"&#xD;
+   AND i."AttemptId"=p."AttemptId"&#xD;
+   AND i."FencingToken"=p."FencingToken"&#xD;
+   AND i."AssemblyFingerprint"=p."AssemblyFingerprint"&#xD;
+  JOIN tagekyc.raw_export_job_operational_heads h&#xD;
+    ON h."JobId"=p."JobId"&#xD;
+  WHERE p."JobId"=p_job_id&#xD;
+    AND p."AttemptId"=p_attempt_id&#xD;
+    AND p."FencingToken"=p_expected_fence&#xD;
+    AND p."Disposition" IN ('SealCommitted','Finalized')&#xD;
+    AND h."CurrentState"='AssemblySealed'&#xD;
+    AND h."CurrentAttemptId"=p_attempt_id&#xD;
+    AND h."FencingToken"=p_expected_fence&#xD;
+    AND h."Revision"=p_expected_job_revision+1&#xD;
+    AND i."ItemCount"=(SELECT pg_catalog.count(*) FROM tagekyc.raw_export_assembly_items a WHERE a."AssemblyId"=i."AssemblyId")&#xD;
+    AND EXISTS (&#xD;
+      SELECT 1 FROM tagekyc.raw_export_job_transitions t&#xD;
+      WHERE t."JobId"=p_job_id&#xD;
+        AND t."ResultingRevision"=p_expected_job_revision+1&#xD;
+        AND t."EventType"='AssemblySealed'&#xD;
+        AND t."FromState"='Assembling'&#xD;
+        AND t."ToState"='AssemblySealed'&#xD;
+        AND t."AttemptId"=p_attempt_id&#xD;
+        AND t."FencingToken"=p_expected_fence);&#xD;
+$function$&#xD;
+FUNCTION=raw_export_acquire_or_reclaim_job_lease(uuid,uuid,uuid,bigint,bigint,uuid,uuid,integer)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_runtime=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_acquire_or_reclaim_job_lease(job_id uuid, principal_id uuid, client_application_id uuid, expected_revision bigint, expected_fencing_token bigint, attempt_id uuid, lease_owner_id uuid, lease_seconds integer)&#xD;
+ RETURNS TABLE(outcome text, resulting_revision bigint, resulting_fencing_token bigint, resulting_lease_expires_at timestamp with time zone)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE a uuid; h tagekyc.raw_export_job_operational_heads%ROWTYPE; i tagekyc.raw_export_job_identities%ROWTYPE; now_ timestamptz; expiry timestamptz; nextrev bigint; nextfence bigint; ordinal integer; event text; out_ text;&#xD;
+BEGIN&#xD;
+  a:=tagekyc.raw_export_current_actor(); IF a IS DISTINCT FROM principal_id THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_ACTOR_MISMATCH'; END IF;&#xD;
+  IF lease_seconds IS NULL OR lease_seconds NOT BETWEEN 10 AND 300 THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_LEASE_CONFIG_INVALID'; END IF;&#xD;
+  SELECT x.* INTO h FROM tagekyc.raw_export_job_operational_heads x JOIN tagekyc.raw_export_job_identities j ON j."JobId"=x."JobId" WHERE x."JobId"=job_id AND j."PrincipalId"=principal_id AND j."ClientApplicationId"=client_application_id FOR UPDATE OF x;&#xD;
+  IF NOT FOUND OR expected_revision IS NULL OR h."Revision"&lt;&gt;expected_revision THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  SELECT * INTO i FROM tagekyc.raw_export_job_identities WHERE "JobId"=job_id;&#xD;
+  IF expected_fencing_token IS NULL OR h."FencingToken"&lt;&gt;expected_fencing_token THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  now_:=clock_timestamp();&#xD;
+  IF h."CurrentState" IN ('TerminalFailed','Cancelled','Expired') THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF now_&gt;=i."JobExpiresAt" THEN&#xD;
+    nextrev:=h."Revision"+1; PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_terminal',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='Expired',"Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,'JobExpired',h."CurrentState",'Expired',h."CurrentAttemptId",h."FencingToken",NULL,NULL,'PERMIT_OR_JOB_EXPIRED',now_);&#xD;
+    RETURN QUERY SELECT 'Expired'::text,nextrev,h."FencingToken",NULL::timestamptz; RETURN;&#xD;
+  END IF;&#xD;
+  IF h."LeaseOwnerId" IS NOT NULL AND h."LeaseExpiresAt"&gt;now_ THEN RETURN QUERY SELECT 'LeaseHeld'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF h."CurrentState"='Assembling' AND i."ExportMode"&lt;&gt;'EncryptedExportPacket' THEN&#xD;
+    nextrev:=h."Revision"+1; PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_terminal',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='TerminalFailed',"Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,'JobTerminalFailed',h."CurrentState",'TerminalFailed',h."CurrentAttemptId",h."FencingToken",NULL,NULL,'MODE_RETRY_NOT_AUTHORIZED',now_);&#xD;
+    RETURN QUERY SELECT 'TerminalizedModeRetryForbidden'::text,nextrev,h."FencingToken",NULL::timestamptz; RETURN;&#xD;
+  END IF;&#xD;
+  SELECT COALESCE(max("AttemptOrdinal"),-1)+1 INTO ordinal FROM tagekyc.raw_export_job_attempts WHERE "JobId"=job_id;&#xD;
+  nextfence:=h."FencingToken"+1; nextrev:=h."Revision"+1; expiry:=LEAST(now_+make_interval(secs=&gt;lease_seconds),i."JobExpiresAt");&#xD;
+  IF h."CurrentState"='Claimed' THEN event:='LeaseAcquired';out_:='Acquired'; ELSIF h."LeaseExpiresAt" IS NOT NULL THEN event:='LeaseReclaimed';out_:='Reclaimed'; ELSE event:='LeaseAcquiredAfterRetryableFailure';out_:='AcquiredAfterRetryableFailure'; END IF;&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_attempt',true); INSERT INTO tagekyc.raw_export_job_attempts VALUES(attempt_id,job_id,ordinal,'Assembling',lease_owner_id,nextfence,now_,expiry);&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_acquire',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='Assembling',"Revision"=nextrev,"CurrentAttemptId"=attempt_id,"LeaseOwnerId"=lease_owner_id,"LeaseExpiresAt"=expiry,"FencingToken"=nextfence,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,event,h."CurrentState",'Assembling',attempt_id,nextfence,lease_owner_id,expiry,NULL,now_);&#xD;
+  RETURN QUERY SELECT out_,nextrev,nextfence,expiry;&#xD;
+END $function$&#xD;
+FUNCTION=raw_export_lock_job_for_attempt(uuid,uuid,uuid,bigint,bigint)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_runtime=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_lock_job_for_attempt(job_id uuid, principal_id uuid, client_application_id uuid, expected_revision bigint, expected_fencing_token bigint)&#xD;
+ RETURNS TABLE(outcome text, current_state text, current_revision bigint, current_fencing_token bigint)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE a uuid; h tagekyc.raw_export_job_operational_heads%ROWTYPE; deadline timestamptz; now_ timestamptz;&#xD;
+BEGIN&#xD;
+  IF current_setting('transaction_isolation') &lt;&gt; 'read committed' THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID'; END IF;&#xD;
+  a:=tagekyc.raw_export_current_actor(); IF a IS DISTINCT FROM principal_id THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_ACTOR_MISMATCH'; END IF;&#xD;
+  SELECT x.* INTO h FROM tagekyc.raw_export_job_operational_heads x JOIN tagekyc.raw_export_job_identities i ON i."JobId"=x."JobId" WHERE x."JobId"=job_id AND i."PrincipalId"=principal_id AND i."ClientApplicationId"=client_application_id FOR UPDATE OF x;&#xD;
+  IF NOT FOUND THEN RETURN QUERY SELECT 'NotFound'::text,NULL::text,NULL::bigint,NULL::bigint; RETURN; END IF;&#xD;
+  IF expected_revision IS NULL OR h."Revision"&lt;&gt;expected_revision THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::text,NULL::bigint,NULL::bigint; RETURN; END IF;&#xD;
+  IF expected_fencing_token IS NULL OR h."FencingToken"&lt;&gt;expected_fencing_token THEN RETURN QUERY SELECT 'FenceStale'::text,NULL::text,NULL::bigint,NULL::bigint; RETURN; END IF;&#xD;
+  IF h."CurrentState" IN ('TerminalFailed','Cancelled','Expired') THEN RETURN QUERY SELECT 'AlreadyTerminal'::text,h."CurrentState",h."Revision",h."FencingToken"; RETURN; END IF;&#xD;
+  SELECT i."JobExpiresAt" INTO deadline FROM tagekyc.raw_export_job_identities i WHERE i."JobId"=job_id;&#xD;
+  now_:=clock_timestamp();&#xD;
+  IF h."LeaseOwnerId" IS NOT NULL AND h."LeaseExpiresAt"&gt;now_ AND deadline&gt;now_ THEN RETURN QUERY SELECT 'LeaseHeld'::text,h."CurrentState",h."Revision",h."FencingToken"; RETURN; END IF;&#xD;
+  RETURN QUERY SELECT 'Locked'::text,h."CurrentState",h."Revision",h."FencingToken";&#xD;
+END $function$&#xD;
+FUNCTION=raw_export_record_job_attempt_failure(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_runtime=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_record_job_attempt_failure(job_id uuid, principal_id uuid, client_application_id uuid, expected_revision bigint, expected_fencing_token bigint, attempt_id uuid, lease_owner_id uuid, failure_code text)&#xD;
+ RETURNS TABLE(outcome text, resulting_revision bigint, resulting_fencing_token bigint, resulting_lease_expires_at timestamp with time zone)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE a uuid; h tagekyc.raw_export_job_operational_heads%ROWTYPE; mode text; now_ timestamptz; nextrev bigint;&#xD;
+BEGIN&#xD;
+  a:=tagekyc.raw_export_current_actor(); IF a IS DISTINCT FROM principal_id THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_ACTOR_MISMATCH'; END IF;&#xD;
+  SELECT x.* INTO h FROM tagekyc.raw_export_job_operational_heads x JOIN tagekyc.raw_export_job_identities i ON i."JobId"=x."JobId" WHERE x."JobId"=job_id AND i."PrincipalId"=principal_id AND i."ClientApplicationId"=client_application_id FOR UPDATE OF x;&#xD;
+  IF NOT FOUND OR expected_revision IS NULL OR h."Revision"&lt;&gt;expected_revision THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  SELECT "ExportMode" INTO mode FROM tagekyc.raw_export_job_identities WHERE "JobId"=job_id;&#xD;
+  IF expected_fencing_token IS NULL OR h."FencingToken"&lt;&gt;expected_fencing_token THEN RETURN QUERY SELECT 'FenceStale'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  now_:=clock_timestamp(); IF h."CurrentAttemptId" IS DISTINCT FROM attempt_id OR h."LeaseOwnerId" IS DISTINCT FROM lease_owner_id OR h."LeaseExpiresAt" IS NULL OR h."LeaseExpiresAt"&lt;=now_ THEN RETURN QUERY SELECT 'LeaseNotHeld'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF failure_code IS NULL OR failure_code&lt;&gt;'ATTEMPT_EXECUTION_FAILED_RETRYABLE' THEN RETURN QUERY SELECT 'TransitionInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  nextrev:=h."Revision"+1;&#xD;
+  IF mode&lt;&gt;'EncryptedExportPacket' THEN&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_terminal',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='TerminalFailed',"Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,'JobTerminalFailed','Assembling','TerminalFailed',attempt_id,h."FencingToken",NULL,NULL,'MODE_RETRY_NOT_AUTHORIZED',now_);&#xD;
+    RETURN QUERY SELECT 'TerminalizedModeRetryForbidden'::text,nextrev,h."FencingToken",NULL::timestamptz;&#xD;
+  ELSE&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_release',true); UPDATE tagekyc.raw_export_job_operational_heads SET "Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,'AttemptFailedRetryable','Assembling','Assembling',attempt_id,h."FencingToken",NULL,NULL,failure_code,now_);&#xD;
+    RETURN QUERY SELECT 'Recorded'::text,nextrev,h."FencingToken",NULL::timestamptz;&#xD;
+  END IF;&#xD;
+END $function$&#xD;
+FUNCTION=raw_export_terminalize_job(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text,text)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_runtime=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_terminalize_job(job_id uuid, principal_id uuid, client_application_id uuid, expected_revision bigint, expected_fencing_token bigint, attempt_id uuid, lease_owner_id uuid, terminal_state text, reason_code text)&#xD;
+ RETURNS TABLE(outcome text, resulting_revision bigint, resulting_fencing_token bigint, resulting_lease_expires_at timestamp with time zone)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE a uuid; h tagekyc.raw_export_job_operational_heads%ROWTYPE; deadline timestamptz; now_ timestamptz; nextrev bigint; state_ text; reason_ text; event_ text;&#xD;
+BEGIN&#xD;
+  a:=tagekyc.raw_export_current_actor(); IF a IS DISTINCT FROM principal_id THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_ACTOR_MISMATCH'; END IF;&#xD;
+  SELECT x.* INTO h FROM tagekyc.raw_export_job_operational_heads x JOIN tagekyc.raw_export_job_identities i ON i."JobId"=x."JobId" WHERE x."JobId"=job_id AND i."PrincipalId"=principal_id AND i."ClientApplicationId"=client_application_id FOR UPDATE OF x;&#xD;
+  IF NOT FOUND OR expected_revision IS NULL OR h."Revision"&lt;&gt;expected_revision THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  SELECT "JobExpiresAt" INTO deadline FROM tagekyc.raw_export_job_identities WHERE "JobId"=job_id;&#xD;
+  IF expected_fencing_token IS NULL OR h."FencingToken"&lt;&gt;expected_fencing_token THEN RETURN QUERY SELECT 'FenceStale'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF h."CurrentState" IN ('TerminalFailed','Cancelled','Expired') THEN RETURN QUERY SELECT 'AlreadyTerminal'::text,h."Revision",h."FencingToken",NULL::timestamptz; RETURN; END IF;&#xD;
+  IF h."CurrentAttemptId" IS DISTINCT FROM attempt_id OR h."LeaseOwnerId" IS DISTINCT FROM lease_owner_id THEN RETURN QUERY SELECT 'LeaseNotHeld'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF terminal_state IS NULL OR reason_code IS NULL OR terminal_state NOT IN ('TerminalFailed','Cancelled','Expired') THEN RETURN QUERY SELECT 'TransitionInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  now_:=clock_timestamp(); state_:=terminal_state; reason_:=reason_code;&#xD;
+  IF terminal_state='Expired' AND now_&lt;deadline THEN RETURN QUERY SELECT 'TransitionInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF now_&gt;=deadline THEN state_:='Expired';reason_:='PERMIT_OR_JOB_EXPIRED'; END IF;&#xD;
+  IF (state_='Cancelled' AND reason_&lt;&gt;'REQUEST_CANCELLED') OR (state_='Expired' AND reason_&lt;&gt;'PERMIT_OR_JOB_EXPIRED') OR (state_='TerminalFailed' AND reason_ NOT IN ('AUTHORITY_REVALIDATION_FAILED','ATTEMPT_EXECUTION_FAILED_NON_RETRYABLE','JOB_GRAPH_INVARIANT_FAILURE','MODE_RETRY_NOT_AUTHORIZED')) THEN RETURN QUERY SELECT 'TransitionInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  nextrev:=h."Revision"+1; event_:=CASE state_ WHEN 'Expired' THEN 'JobExpired' WHEN 'Cancelled' THEN 'JobCancelled' ELSE 'JobTerminalFailed' END;&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_terminal',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"=state_,"Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,event_,h."CurrentState",state_,h."CurrentAttemptId",h."FencingToken",NULL,NULL,reason_,now_);&#xD;
+  RETURN QUERY SELECT CASE WHEN state_='Expired' THEN 'Expired' ELSE 'Terminalized' END,nextrev,h."FencingToken",NULL::timestamptz;&#xD;
+END $function$&#xD;
+[xUnit.net 00:02:49.12]       Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+[xUnit.net 00:02:49.12]       &#xD;
+[xUnit.net 00:02:49.12]       DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+[xUnit.net 00:02:49.12]       Stack Trace:&#xD;
+[xUnit.net 00:02:49.12]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:02:49.12]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:02:49.12]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:49.12]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:49.12]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:49.12]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:49.12]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(408,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:49.12]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:49.12]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:49.12]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(198,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:49.12]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(156,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:02:49.12]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1377,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation()&#xD;
+[xUnit.net 00:02:49.12]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1413,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation()&#xD;
+[xUnit.net 00:02:49.12]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:23.88]       System.TimeoutException : The operation has timed out.&#xD;
+[xUnit.net 00:03:23.88]       Stack Trace:&#xD;
+[xUnit.net 00:03:23.88]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1667,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker()&#xD;
+[xUnit.net 00:03:23.88]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1676,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker()&#xD;
+[xUnit.net 00:03:23.88]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:28.71]       Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+[xUnit.net 00:03:28.71]       &#xD;
+[xUnit.net 00:03:28.71]       DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+[xUnit.net 00:03:28.71]       Stack Trace:&#xD;
+[xUnit.net 00:03:28.71]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:03:28.71]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:03:28.71]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:28.71]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:28.71]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:28.71]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:28.71]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(408,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:28.71]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:28.71]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:28.71]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(198,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:28.71]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(156,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:28.71]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1422,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation()&#xD;
+[xUnit.net 00:03:28.71]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1460,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation()&#xD;
+[xUnit.net 00:03:28.71]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:33.57]       Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+[xUnit.net 00:03:33.57]       &#xD;
+[xUnit.net 00:03:33.57]       DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+[xUnit.net 00:03:33.57]       Stack Trace:&#xD;
+[xUnit.net 00:03:33.57]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:03:33.57]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:03:33.57]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:33.57]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:33.57]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:33.57]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:33.57]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(408,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:33.57]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:33.57]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:33.57]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(198,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:33.57]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(156,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:33.57]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1477,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome)&#xD;
+[xUnit.net 00:03:33.57]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1488,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome)&#xD;
+[xUnit.net 00:03:33.57]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:38.37]       Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+[xUnit.net 00:03:38.37]       &#xD;
+[xUnit.net 00:03:38.37]       DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+[xUnit.net 00:03:38.37]       Stack Trace:&#xD;
+[xUnit.net 00:03:38.37]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:03:38.37]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:03:38.37]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.37]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.37]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.37]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.37]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(408,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.37]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.37]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.37]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(198,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.37]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(156,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.37]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1477,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome)&#xD;
+[xUnit.net 00:03:38.37]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1488,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(Boolean unresolvedOutcomeUnknown, RawExportAssemblyExecutionOutcome expectedOutcome)&#xD;
+[xUnit.net 00:03:38.37]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:38.39]       TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessException : PROD_RAW_EXPORT_ASSEMBLY_ROLE_TOPOLOGY_INVALID&#xD;
+[xUnit.net 00:03:38.39]       Stack Trace:&#xD;
+[xUnit.net 00:03:38.39]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyServiceCollectionExtensions.cs(185,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessValidator.ValidateAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.39]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyServiceCollectionExtensions.cs(185,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyReadinessValidator.ValidateAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:38.39]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1974,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure)&#xD;
+[xUnit.net 00:03:38.39]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1974,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure)&#xD;
+[xUnit.net 00:03:38.39]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1974,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.ValidateReadinessAsync(IConfiguration configuration, Boolean isProduction, Action`1 configure)&#xD;
+[xUnit.net 00:03:38.39]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(2004,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.AssertReadinessMutationAsync(String applySql, String restoreSql)&#xD;
+[xUnit.net 00:03:38.39]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1230,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact()&#xD;
+[xUnit.net 00:03:38.39]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1277,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact()&#xD;
+[xUnit.net 00:03:38.39]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1277,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact()&#xD;
+[xUnit.net 00:03:38.39]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:43.32]       Npgsql.PostgresException : 42702: column reference "C2PreparationId" is ambiguous&#xD;
+[xUnit.net 00:03:43.32]       &#xD;
+[xUnit.net 00:03:43.32]       DETAIL: It could refer to either a PL/pgSQL variable or a table column.&#xD;
+[xUnit.net 00:03:43.32]       Stack Trace:&#xD;
+[xUnit.net 00:03:43.32]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:03:43.32]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:03:43.32]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:43.32]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:43.32]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:43.32]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:43.32]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(408,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:43.32]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:43.32]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyRepository.cs(412,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository.ClaimExactPostSealRecoveryAsync(RawExportAssemblyExecutionRequest request, Guid claimOwnerId, Int32 leaseSeconds, Byte[] assemblyDigest, Byte[] manifestDigest, Byte[] authenticationValue, Byte[] assemblyFingerprint, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:43.32]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(198,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.TryRecoverCommittedAsync(RawExportAssemblyExecutionRequest request, CommittedMatchExpectation expectation, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:43.32]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportAssemblyOrchestrator.cs(156,0): at TagEkyc.Infrastructure.RawExport.RawExportAssemblyOrchestrator.ExecuteAsync(RawExportAssemblyExecutionRequest request, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:03:43.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1499,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision()&#xD;
+[xUnit.net 00:03:43.32]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1507,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision()&#xD;
+[xUnit.net 00:03:43.32]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:46.98]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:03:46.98]       Expected: 9756f6f6-3691-4684-b553-5657a3634903&#xD;
+[xUnit.net 00:03:46.98]       Actual:   cb79fd14-72e2-43b7-a6a8-835f64110fcc&#xD;
+[xUnit.net 00:03:46.98]       Stack Trace:&#xD;
+[xUnit.net 00:03:46.98]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(230,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:03:46.98]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(285,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:03:46.98]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1725,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation()&#xD;
+[xUnit.net 00:03:46.98]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:50.80]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:03:50.80]       Expected: a33eaed8-64bf-4df9-acd4-e0eba6626a55&#xD;
+[xUnit.net 00:03:50.80]       Actual:   9756f6f6-3691-4684-b553-5657a3634903&#xD;
+[xUnit.net 00:03:50.80]       Stack Trace:&#xD;
+[xUnit.net 00:03:50.80]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(230,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:03:50.80]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(285,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource)&#xD;
+[xUnit.net 00:03:50.80]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1683,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim()&#xD;
+[xUnit.net 00:03:50.80]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:03:51.93]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:06:52.6901706+07:00">
+        <Text>[xUnit.net 00:00:11.71]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:06:59.2486992+07:00">
+        <Text>[xUnit.net 00:00:18.27]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:07:09.8988366+07:00">
+        <Text>[xUnit.net 00:00:28.92]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_expired_job_can_complete_without_extending_delivery_rights [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:09:20.6320824+07:00">
+        <Text>[xUnit.net 00:02:39.65]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_faults_real_generic_host_and_stops_it [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:09:25.3602267+07:00">
+        <Text>[xUnit.net 00:02:44.38]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_stale_contender_stops_only_its_generic_host [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:09:30.0952659+07:00">
+        <Text>[xUnit.net 00:02:49.12]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:10:04.8609641+07:00">
+        <Text>[xUnit.net 00:03:23.88]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:10:09.6883098+07:00">
+        <Text>[xUnit.net 00:03:28.71]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_finalized_provider_obligation [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:10:14.5512388+07:00">
+        <Text>[xUnit.net 00:03:33.57]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: True, expectedOutcome: ProviderOutcomeUnknown) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:10:19.3432645+07:00">
+        <Text>[xUnit.net 00:03:38.37]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_uses_stale_revision_for_retryable_finalize_failure(unresolvedOutcomeUnknown: False, expectedOutcome: ProviderUnavailable) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:10:19.3641649+07:00">
+        <Text>[xUnit.net 00:03:38.39]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:10:24.2973199+07:00">
+        <Text>[xUnit.net 00:03:43.32]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_uses_terminal_mutation_with_stale_revision [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:10:27.9567305+07:00">
+        <Text>[xUnit.net 00:03:46.98]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:10:31.7731324+07:00">
+        <Text>[xUnit.net 00:03:50.79]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

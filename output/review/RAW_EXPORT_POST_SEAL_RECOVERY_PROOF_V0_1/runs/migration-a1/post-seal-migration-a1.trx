@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="17c6af11-71ab-4c09-9afb-117cc39713a0" name="3AVNN@LEARNPC 2026-09-26 08:36:34" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-26T08:36:34.2144159+07:00" queuing="2026-09-26T08:36:34.2144168+07:00" start="2026-09-26T08:36:26.2794381+07:00" finish="2026-09-26T08:36:34.2181867+07:00" />
+  <TestSettings name="default" id="d39bea4c-156f-4704-8b33-3da91ca33f63">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-26_08_36_34" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="26da4983-a616-4728-b72b-aeb0462bdfdf" testId="db8fd640-f506-27dc-b830-448f33347421" testName="TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards" computerName="LEARNPC" duration="00:00:07.1550739" startTime="2026-09-26T08:36:34.1316117+07:00" endTime="2026-09-26T08:36:34.1316303+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="26da4983-a616-4728-b72b-aeb0462bdfdf">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+           ↓ (pos 0)&#xD;
+Expected: "RAW_EXPORT_POST_SEAL_RECOVERY_MUTATION_UN"···&#xD;
+Actual:   "insert or update on table "raw_export_ass"···&#xD;
+           ↑ (pos 0)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.AssertDirectMutationRejectedAsync(TagEkycDbContext db) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs:line 147&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.AssertDirectMutationRejectedAsync(TagEkycDbContext db) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs:line 148&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.AssertDirectMutationRejectedAsync(TagEkycDbContext db) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs:line 148&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs:line 30&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs:line 41&#xD;
+   at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs:line 41&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\release\net8.0\tagekyc.integrationtests.dll" id="db8fd640-f506-27dc-b830-448f33347421">
+      <Execution id="26da4983-a616-4728-b72b-aeb0462bdfdf" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Release\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests" name="Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="db8fd640-f506-27dc-b830-448f33347421" executionId="26da4983-a616-4728-b72b-aeb0462bdfdf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.22]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.35]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.35]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:07.55]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:07.55]                  ↓ (pos 0)&#xD;
+[xUnit.net 00:00:07.55]       Expected: "RAW_EXPORT_POST_SEAL_RECOVERY_MUTATION_UN"···&#xD;
+[xUnit.net 00:00:07.55]       Actual:   "insert or update on table "raw_export_ass"···&#xD;
+[xUnit.net 00:00:07.55]                  ↑ (pos 0)&#xD;
+[xUnit.net 00:00:07.55]       Stack Trace:&#xD;
+[xUnit.net 00:00:07.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs(147,0): at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.AssertDirectMutationRejectedAsync(TagEkycDbContext db)&#xD;
+[xUnit.net 00:00:07.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs(148,0): at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.AssertDirectMutationRejectedAsync(TagEkycDbContext db)&#xD;
+[xUnit.net 00:00:07.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs(148,0): at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.AssertDirectMutationRejectedAsync(TagEkycDbContext db)&#xD;
+[xUnit.net 00:00:07.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs(30,0): at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards()&#xD;
+[xUnit.net 00:00:07.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs(41,0): at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards()&#xD;
+[xUnit.net 00:00:07.55]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\RawExportAssemblyPostSealRecoveryMigrationTests.cs(41,0): at TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards()&#xD;
+[xUnit.net 00:00:07.55]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:07.56]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:36:34.1288239+07:00">
+        <Text>[xUnit.net 00:00:07.55]     TagEkyc.IntegrationTests.RawExportAssemblyPostSealRecoveryMigrationTests.Post_seal_recovery_apply_down_reapply_preserves_catalog_security_and_guards [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

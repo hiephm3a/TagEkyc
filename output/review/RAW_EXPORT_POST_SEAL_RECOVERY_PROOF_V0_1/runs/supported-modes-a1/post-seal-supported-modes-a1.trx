@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="e5e0b335-3316-4693-9799-0f6f40220df8" name="3AVNN@LEARNPC 2026-09-26 08:38:40" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-26T08:38:40.0120067+07:00" queuing="2026-09-26T08:38:40.0120071+07:00" start="2026-09-26T08:38:20.1552473+07:00" finish="2026-09-26T08:38:56.2933717+07:00" />
+  <TestSettings name="default" id="349b8a73-1c7b-42e9-b560-22b5356ba23f">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-26_08_38_40" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="b56b1f2b-7d3e-45e2-be40-b33b37b72cc1" testId="05518d6c-0993-8863-a677-dc3c8a55171a" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation(mode: EncryptedExportPacket)" computerName="LEARNPC" duration="00:00:15.1835101" startTime="2026-09-26T08:38:55.1710824+07:00" endTime="2026-09-26T08:38:55.1710827+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b56b1f2b-7d3e-45e2-be40-b33b37b72cc1" />
+    <UnitTestResult executionId="78dc8796-be11-49c6-9efe-23c2aefbe3f5" testId="f185e7fa-b975-3f89-6ba8-929ca567c96d" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation(mode: EncryptedRawVaultRetained)" computerName="LEARNPC" duration="00:00:07.9609343" startTime="2026-09-26T08:38:39.9908265+07:00" endTime="2026-09-26T08:38:39.9908389+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="78dc8796-be11-49c6-9efe-23c2aefbe3f5">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : P0001: RAW_EXPORT_CATALOG_INCOMPLETE_REQUIREMENTS</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.ExecuteSqlRawAsync(DatabaseFacade databaseFacade, String sql, IEnumerable`1 parameters, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.IntegrationTests.Tip88B4RawExportJobFoundationTests.CreateAuthorizedPacketPermitAsync(TagEkycDbContext db, IReadOnlyList`1 classes, RawExportMode mode) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B4RawExportJobFoundationTests.cs:line 3629&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource, RawExportMode durableMode) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 169&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource, RawExportMode durableMode) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 287&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation(RawExportMode mode) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1382&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation(mode: EncryptedExportPacket)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\release\net8.0\tagekyc.integrationtests.dll" id="05518d6c-0993-8863-a677-dc3c8a55171a">
+      <Execution id="b56b1f2b-7d3e-45e2-be40-b33b37b72cc1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Release\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation(mode: EncryptedRawVaultRetained)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\release\net8.0\tagekyc.integrationtests.dll" id="f185e7fa-b975-3f89-6ba8-929ca567c96d">
+      <Execution id="78dc8796-be11-49c6-9efe-23c2aefbe3f5" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Release\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="05518d6c-0993-8863-a677-dc3c8a55171a" executionId="b56b1f2b-7d3e-45e2-be40-b33b37b72cc1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f185e7fa-b975-3f89-6ba8-929ca567c96d" executionId="78dc8796-be11-49c6-9efe-23c2aefbe3f5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="2" executed="2" passed="1" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.16]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.34]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.35]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:19.48]       Npgsql.PostgresException : P0001: RAW_EXPORT_CATALOG_INCOMPLETE_REQUIREMENTS&#xD;
+[xUnit.net 00:00:19.48]       Stack Trace:&#xD;
+[xUnit.net 00:00:19.48]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:00:19.48]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:00:19.48]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.48]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.48]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.48]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.48]            at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.48]            at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.48]            at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.48]            at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.48]            at Microsoft.EntityFrameworkCore.RelationalDatabaseFacadeExtensions.ExecuteSqlRawAsync(DatabaseFacade databaseFacade, String sql, IEnumerable`1 parameters, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:19.48]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B4RawExportJobFoundationTests.cs(3629,0): at TagEkyc.IntegrationTests.Tip88B4RawExportJobFoundationTests.CreateAuthorizedPacketPermitAsync(TagEkycDbContext db, IReadOnlyList`1 classes, RawExportMode mode)&#xD;
+[xUnit.net 00:00:19.48]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(169,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource, RawExportMode durableMode)&#xD;
+[xUnit.net 00:00:19.48]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(287,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PrepareAssemblyExecutionAsync(BoundedFixtureC2Provider c2Override, Byte[] plaintextOverride, Func`2 beforeAuthenticate, RawExportJobLeaseState leaseOverride, Func`3 c2Factory, Boolean publishSource, DurableObjectMinioFixture sharedMinio, Boolean acquireThroughDurableWorkSource, RawExportMode durableMode)&#xD;
+[xUnit.net 00:00:19.48]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1382,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation(RawExportMode mode)&#xD;
+[xUnit.net 00:00:19.48]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:35.72]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T08:38:39.9884824+07:00">
+        <Text>[xUnit.net 00:00:19.48]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_cannot_discover_seal_committed_obligation(mode: EncryptedRawVaultRetained) [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
