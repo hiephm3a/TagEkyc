@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="23c49185-480e-4d6c-9411-cbd6ad47338e" name="3AVNN@LEARNPC 2026-09-26 17:29:00" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-26T17:29:00.4293752+07:00" queuing="2026-09-26T17:29:00.4293754+07:00" start="2026-09-26T17:28:37.0919082+07:00" finish="2026-09-26T17:29:06.5680830+07:00" />
+  <TestSettings name="default" id="e12c5da6-f7ef-4709-8ada-e288bc0192cb">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-26_17_29_00" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="a3f65919-e153-405d-bbf8-39706ddfebb4" testId="40cbe474-f262-fe11-47d7-7acd13235dc7" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved" computerName="LEARNPC" duration="00:00:05.0124391" startTime="2026-09-26T17:29:05.4377315+07:00" endTime="2026-09-26T17:29:05.4377317+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a3f65919-e153-405d-bbf8-39706ddfebb4">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Contains() Failure: Filter not matched in collection&#xD;
+Collection: [RawExportAssemblyExecutionResult { Outcome = Sealed, AssemblyId = 7a787870-df38-5bcb-94ba-8cef4acbf7fd, C2PreparationId = ca7f78ee-0b46-58de-b8d4-172da4dcccfb, JobRevision = 2, PreparationRevision = 4, RecoveryClaimGeneration = 1 }, RawExportAssemblyExecutionResult { Outcome = LeaseLost, AssemblyId = 7a787870-df38-5bcb-94ba-8cef4acbf7fd, C2PreparationId = ca7f78ee-0b46-58de-b8d4-172da4dcccfb, JobRevision = , PreparationRevision = , RecoveryClaimGeneration =  }]</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 964&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 982&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 982&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="e462ec7f-fe7e-466c-bc8a-b633e43d2ed1" testId="88815e9d-bbce-de63-422a-1772ff4b22fe" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_claim_handoff_can_return_existing_match_plus_lease_lost_only_after_durable_finalize" computerName="LEARNPC" duration="00:00:11.4052838" startTime="2026-09-26T17:29:00.4119875+07:00" endTime="2026-09-26T17:29:00.4120020+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e462ec7f-fe7e-466c-bc8a-b633e43d2ed1" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40cbe474-f262-fe11-47d7-7acd13235dc7">
+      <Execution id="a3f65919-e153-405d-bbf8-39706ddfebb4" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C116_global_lock_subsequence_is_preserved" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_claim_handoff_can_return_existing_match_plus_lease_lost_only_after_durable_finalize" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="88815e9d-bbce-de63-422a-1772ff4b22fe">
+      <Execution id="e462ec7f-fe7e-466c-bc8a-b633e43d2ed1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_C116_claim_handoff_can_return_existing_match_plus_lease_lost_only_after_durable_finalize" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="40cbe474-f262-fe11-47d7-7acd13235dc7" executionId="a3f65919-e153-405d-bbf8-39706ddfebb4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="88815e9d-bbce-de63-422a-1772ff4b22fe" executionId="e462ec7f-fe7e-466c-bc8a-b633e43d2ed1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="2" executed="2" passed="1" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.26]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.40]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.41]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:28.04]       Assert.Contains() Failure: Filter not matched in collection&#xD;
+[xUnit.net 00:00:28.04]       Collection: [RawExportAssemblyExecutionResult { Outcome = Sealed, AssemblyId = 7a787870-df38-5bcb-94ba-8cef4acbf7fd, C2PreparationId = ca7f78ee-0b46-58de-b8d4-172da4dcccfb, JobRevision = 2, PreparationRevision = 4, RecoveryClaimGeneration = 1 }, RawExportAssemblyExecutionResult { Outcome = LeaseLost, AssemblyId = 7a787870-df38-5bcb-94ba-8cef4acbf7fd, C2PreparationId = ca7f78ee-0b46-58de-b8d4-172da4dcccfb, JobRevision = , PreparationRevision = , RecoveryClaimGeneration =  }]&#xD;
+[xUnit.net 00:00:28.04]       Stack Trace:&#xD;
+[xUnit.net 00:00:28.04]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(964,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved()&#xD;
+[xUnit.net 00:00:28.04]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(982,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved()&#xD;
+[xUnit.net 00:00:28.04]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(982,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved()&#xD;
+[xUnit.net 00:00:28.04]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:29.11]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-26T17:29:05.4360421+07:00">
+        <Text>[xUnit.net 00:00:28.04]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
