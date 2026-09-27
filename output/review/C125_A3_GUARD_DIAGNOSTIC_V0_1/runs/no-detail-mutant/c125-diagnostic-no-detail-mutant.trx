@@ -1,0 +1,111 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="cdcdea99-f6da-4b79-8f92-c2e471ac6ab3" name="3AVNN@LEARNPC 2026-09-27 10:17:33" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-27T10:17:33.6767087+07:00" queuing="2026-09-27T10:17:33.6767090+07:00" start="2026-09-27T10:16:47.6257675+07:00" finish="2026-09-27T10:17:34.5935536+07:00" />
+  <TestSettings name="default" id="98881fac-594d-471f-b1d0-827969028776">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-27_10_17_33" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="d88e1765-5723-4d5d-8653-9b9acda46f82" testId="e4da2a12-2d9c-ba43-7613-951d4cc090be" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(signature: &quot;tagekyc.raw_export_begin_retained_source_ingress_w&quot;···)" computerName="LEARNPC" duration="00:00:00.8721782" startTime="2026-09-27T10:17:33.0458177+07:00" endTime="2026-09-27T10:17:33.0458301+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d88e1765-5723-4d5d-8653-9b9acda46f82">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+Expected: "tagekyc.raw_export_begin_retained_source_"···&#xD;
+Actual:   null</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 249&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 253&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="ff473ae4-68b0-4d2b-80f5-bb73cf5e63f3" testId="dd60847e-2044-8800-9a45-b450bade7593" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(signature: &quot;tagekyc.capture_runtime_read_bound_raw_ingress(uui&quot;···)" computerName="LEARNPC" duration="00:00:00.3643723" startTime="2026-09-27T10:17:33.4083259+07:00" endTime="2026-09-27T10:17:33.4083262+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ff473ae4-68b0-4d2b-80f5-bb73cf5e63f3">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+Expected: "tagekyc.capture_runtime_read_bound_raw_in"···&#xD;
+Actual:   null</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 249&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 253&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="1ef082e1-e859-44b1-83a7-f56fe7f2280d" testId="55b316d2-a5f3-6278-5aad-4f77674e4e44" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(signature: &quot;tagekyc.complete_raw_export_source_ingress_claim(u&quot;···)" computerName="LEARNPC" duration="00:00:00.3530456" startTime="2026-09-27T10:17:33.7610852+07:00" endTime="2026-09-27T10:17:33.7610854+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1ef082e1-e859-44b1-83a7-f56fe7f2280d">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+Expected: "tagekyc.complete_raw_export_source_ingres"···&#xD;
+Actual:   null</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 249&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 253&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(signature: &quot;tagekyc.raw_export_begin_retained_source_ingress_w&quot;···)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="e4da2a12-2d9c-ba43-7613-951d4cc090be">
+      <Execution id="d88e1765-5723-4d5d-8653-9b9acda46f82" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests" name="A3_CaptureCurrentGuard_MismatchReportsExactSignature" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(signature: &quot;tagekyc.capture_runtime_read_bound_raw_ingress(uui&quot;···)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="dd60847e-2044-8800-9a45-b450bade7593">
+      <Execution id="ff473ae4-68b0-4d2b-80f5-bb73cf5e63f3" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests" name="A3_CaptureCurrentGuard_MismatchReportsExactSignature" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(signature: &quot;tagekyc.complete_raw_export_source_ingress_claim(u&quot;···)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="55b316d2-a5f3-6278-5aad-4f77674e4e44">
+      <Execution id="1ef082e1-e859-44b1-83a7-f56fe7f2280d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests" name="A3_CaptureCurrentGuard_MismatchReportsExactSignature" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="e4da2a12-2d9c-ba43-7613-951d4cc090be" executionId="d88e1765-5723-4d5d-8653-9b9acda46f82" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dd60847e-2044-8800-9a45-b450bade7593" executionId="ff473ae4-68b0-4d2b-80f5-bb73cf5e63f3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="55b316d2-a5f3-6278-5aad-4f77674e4e44" executionId="1ef082e1-e859-44b1-83a7-f56fe7f2280d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="3" executed="3" passed="0" failed="3" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.51]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.66]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.67]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:45.04]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:45.04]       Expected: "tagekyc.raw_export_begin_retained_source_"···&#xD;
+[xUnit.net 00:00:45.04]       Actual:   null&#xD;
+[xUnit.net 00:00:45.04]       Stack Trace:&#xD;
+[xUnit.net 00:00:45.04]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(249,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature)&#xD;
+[xUnit.net 00:00:45.04]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(253,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature)&#xD;
+[xUnit.net 00:00:45.04]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:45.40]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:45.40]       Expected: "tagekyc.capture_runtime_read_bound_raw_in"···&#xD;
+[xUnit.net 00:00:45.40]       Actual:   null&#xD;
+[xUnit.net 00:00:45.40]       Stack Trace:&#xD;
+[xUnit.net 00:00:45.40]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(249,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature)&#xD;
+[xUnit.net 00:00:45.40]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(253,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature)&#xD;
+[xUnit.net 00:00:45.40]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:45.76]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:45.76]       Expected: "tagekyc.complete_raw_export_source_ingres"···&#xD;
+[xUnit.net 00:00:45.76]       Actual:   null&#xD;
+[xUnit.net 00:00:45.76]       Stack Trace:&#xD;
+[xUnit.net 00:00:45.76]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(249,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature)&#xD;
+[xUnit.net 00:00:45.76]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(253,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(String signature)&#xD;
+[xUnit.net 00:00:45.76]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:46.53]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-27T10:17:33.0438337+07:00">
+        <Text>[xUnit.net 00:00:45.04]     TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(signature: "tagekyc.raw_export_begin_retained_source_ingress_w"···) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-27T10:17:33.4075630+07:00">
+        <Text>[xUnit.net 00:00:45.40]     TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(signature: "tagekyc.capture_runtime_read_bound_raw_ingress(uui"···) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-27T10:17:33.7607885+07:00">
+        <Text>[xUnit.net 00:00:45.76]     TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_MismatchReportsExactSignature(signature: "tagekyc.complete_raw_export_source_ingress_claim(u"···) [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

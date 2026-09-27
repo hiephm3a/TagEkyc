@@ -19,6 +19,9 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
     private const string CurrentMigrationId = "20260926120000_RawExportAssemblyPostSealRecovery";
     private const string PredecessorId = "20260908120000_Tip88C1C6BA1Foundation";
     private const string R20 = "tagekyc.capture_runtime_issue_or_replace_capability(uuid,uuid,text,uuid,bigint,uuid,uuid,text,bytea,integer,bytea,timestamptz,uuid,uuid,jsonb)";
+    private const string CompletionSignature = "tagekyc.complete_raw_export_source_ingress_claim(uuid,text,text,text,uuid,bigint,bigint,text,timestamptz,text,bytea,integer,text,integer,bytea,integer,text,integer,bytea,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,text,integer,text,integer,text,bytea,integer,bytea,text,text,integer,text,integer,integer,integer,integer)";
+    private const string RetainedBeginSignature = "tagekyc.raw_export_begin_retained_source_ingress_with_authority(uuid,uuid,text,text,text,uuid,uuid,uuid,integer,text,text,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,integer,uuid,integer,integer,uuid,bigint)";
+    private const string BoundReaderSignature = "tagekyc.capture_runtime_read_bound_raw_ingress(uuid,uuid,uuid,bigint,uuid,bigint,uuid,uuid,integer,text,bigint,timestamptz)";
 
     [Fact]
     public async Task A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory()
@@ -222,6 +225,32 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
                 $"Guard mismatch: {row.Signature} expected={row.ExpectedHash} actual={row.ActualHash}");
             Console.WriteLine($"A3_GUARD_MATCH\t{row.Signature}\t{row.ExpectedHash}\t{row.ActualHash}");
         }
+    }
+
+    [Theory]
+    [InlineData(CompletionSignature)]
+    [InlineData(RetainedBeginSignature)]
+    [InlineData(BoundReaderSignature)]
+    public async Task A3_CaptureCurrentGuard_MismatchReportsExactSignature(string signature)
+    {
+        await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("a3_guard_diagnostic");
+        await Execute(isolated, MigrationId);
+        Assert.All(await GuardCatalog(isolated), row => Assert.Equal(row.ExpectedHash, row.ActualHash));
+
+        await AppendBodyDrift(isolated, signature, " ");
+        var beforeBodies = await Bodies(isolated);
+        var beforeHistory = await History(isolated);
+        var beforeCatalog = await GuardCatalog(isolated);
+        var mismatch = Assert.Single(beforeCatalog, row => row.ExpectedHash != row.ActualHash);
+        Assert.Equal(signature, mismatch.Signature);
+
+        var failure = await Assert.ThrowsAsync<PostgresException>(() => Execute(isolated, PredecessorId));
+        Assert.Equal("A3_CAPTURE_CURRENT_BODY_MISMATCH", failure.MessageText);
+        Assert.Equal(signature, failure.Detail);
+        Assert.Equal(beforeBodies, await Bodies(isolated));
+        Assert.Equal(beforeHistory, await History(isolated));
+        Assert.Equal(beforeCatalog, await GuardCatalog(isolated));
+        Console.WriteLine($"A3_GUARD_DIAGNOSTIC\t{failure.MessageText}\t{failure.Detail}");
     }
 
     [Fact]

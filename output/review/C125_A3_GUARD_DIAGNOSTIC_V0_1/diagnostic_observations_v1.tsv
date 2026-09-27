@@ -1,0 +1,4 @@
+case	message_text	detail_signature	result
+completion	A3_CAPTURE_CURRENT_BODY_MISMATCH	tagekyc.complete_raw_export_source_ingress_claim(uuid,text,text,text,uuid,bigint,bigint,text,timestamptz,text,bytea,integer,text,integer,bytea,integer,text,integer,bytea,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,text,integer,text,integer,text,bytea,integer,bytea,text,text,integer,text,integer,integer,integer,integer)	PASS
+retained_begin	A3_CAPTURE_CURRENT_BODY_MISMATCH	tagekyc.raw_export_begin_retained_source_ingress_with_authority(uuid,uuid,text,text,text,uuid,uuid,uuid,integer,text,text,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,integer,uuid,integer,integer,uuid,bigint)	PASS
+bound_reader	A3_CAPTURE_CURRENT_BODY_MISMATCH	tagekyc.capture_runtime_read_bound_raw_ingress(uuid,uuid,uuid,bigint,uuid,bigint,uuid,uuid,integer,text,bigint,timestamptz)	PASS

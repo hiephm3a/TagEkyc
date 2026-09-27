@@ -1,0 +1,2 @@
+run	trx_sha256	executed	passed	failed	not_executed	classification	reason
+no-detail-mutant/c125-diagnostic-no-detail-mutant.trx	3D0A8D248002635D654A1AAB64F50EAEE442E0FE95CD61F648A20187A683A945	3	0	3	0	EVIDENCE_RED	Removing only DETAIL=expected.signature preserves guard rejection but makes PostgresException.Detail null in all three named cases.

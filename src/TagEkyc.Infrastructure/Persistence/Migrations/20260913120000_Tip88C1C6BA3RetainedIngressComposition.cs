@@ -7538,7 +7538,9 @@ BEGIN
  ) AS bodies(signature,sha256) LOOP
   SELECT p.prosrc INTO actual FROM pg_catalog.pg_proc p WHERE p.oid=pg_catalog.to_regprocedure(expected.signature);
   IF NOT FOUND OR encode(tagekyc_extensions.digest(convert_to(replace(actual,chr(13)||chr(10),chr(10)),'UTF8'),'sha256'),'hex')<>expected.sha256 THEN
-   RAISE EXCEPTION 'A3_CAPTURE_CURRENT_BODY_MISMATCH';
+   RAISE EXCEPTION USING
+    MESSAGE = 'A3_CAPTURE_CURRENT_BODY_MISMATCH',
+    DETAIL = expected.signature;
   END IF;
  END LOOP;
 END $guard$;
