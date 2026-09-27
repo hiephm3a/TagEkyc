@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="1cc158aa-1233-42d2-a4c5-6cd049ab8cf9" name="3AVNN@LEARNPC 2026-09-27 08:12:37" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-27T08:12:37.9809027+07:00" queuing="2026-09-27T08:12:37.9809031+07:00" start="2026-09-27T08:12:24.1778291+07:00" finish="2026-09-27T08:12:38.1137434+07:00" />
+  <TestSettings name="default" id="d3c85438-1ea8-43b5-a8b0-5e1f935b9481">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-27_08_12_37" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="a90c9f38-3969-4864-a5fb-122975fc2ab4" testId="d114bcac-96f4-3871-1eac-d231516607ec" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_ExactBoundaryAllEntriesMatch" computerName="LEARNPC" duration="00:00:00.6025566" startTime="2026-09-27T08:12:37.0561869+07:00" endTime="2026-09-27T08:12:37.0562002+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a90c9f38-3969-4864-a5fb-122975fc2ab4">
+      <Output>
+        <ErrorInfo>
+          <Message>Guard mismatch: tagekyc.complete_raw_export_source_ingress_claim(uuid,text,text,text,uuid,bigint,bigint,text,timestamptz,text,bytea,integer,text,integer,bytea,integer,text,integer,bytea,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,text,integer,text,integer,text,bytea,integer,bytea,text,text,integer,text,integer,integer,integer,integer) expected=4eefedc274d1d2c6152dd4100ed75f4ab4cdccdc997b04290da82bcc83a87b65 actual=a4682fe2dd19a942e9bdde7a91b7a7a4347634881ea78c11425633691db59772</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_ExactBoundaryAllEntriesMatch() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 221&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_ExactBoundaryAllEntriesMatch() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 219&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d58df7b2-a161-436b-982c-990f17d8fb2e" testId="d96c41cb-cdf5-bc91-9379-c792f52c6131" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureLineageMigration_EmptyRoundTripRestoresPredecessor" computerName="LEARNPC" duration="00:00:00.2103495" startTime="2026-09-27T08:12:37.2711855+07:00" endTime="2026-09-27T08:12:37.2711857+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d58df7b2-a161-436b-982c-990f17d8fb2e">
+      <Output>
+        <ErrorInfo>
+          <Message>Npgsql.PostgresException : P0001: A3_CAPTURE_CURRENT_BODY_MISMATCH</Message>
+          <StackTrace>   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+   at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)&#xD;
+   at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.Execute(DisposableCurrentDatabase isolated, String target, TaskCompletionSource`1 pid) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 380&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.Execute(DisposableCurrentDatabase isolated, String target, TaskCompletionSource`1 pid) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 381&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureLineageMigration_EmptyRoundTripRestoresPredecessor() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 140&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureLineageMigration_EmptyRoundTripRestoresPredecessor() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs:line 171&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_ExactBoundaryAllEntriesMatch" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d114bcac-96f4-3871-1eac-d231516607ec">
+      <Execution id="a90c9f38-3969-4864-a5fb-122975fc2ab4" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests" name="A3_CaptureCurrentGuard_ExactBoundaryAllEntriesMatch" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureLineageMigration_EmptyRoundTripRestoresPredecessor" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d96c41cb-cdf5-bc91-9379-c792f52c6131">
+      <Execution id="d58df7b2-a161-436b-982c-990f17d8fb2e" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests" name="A3_CaptureLineageMigration_EmptyRoundTripRestoresPredecessor" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="d114bcac-96f4-3871-1eac-d231516607ec" executionId="a90c9f38-3969-4864-a5fb-122975fc2ab4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d96c41cb-cdf5-bc91-9379-c792f52c6131" executionId="d58df7b2-a161-436b-982c-990f17d8fb2e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="2" executed="2" passed="0" failed="2" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.66]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.93]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.94]   Starting:    TagEkyc.IntegrationTests&#xD;
+A3_GUARD_MATCH	tagekyc.enforce_raw_export_source_core_write()	16e03c5fa37026d83460bc83aa001706cb1dc9a8141dd763f52fcd8fc898d54b	16e03c5fa37026d83460bc83aa001706cb1dc9a8141dd763f52fcd8fc898d54b&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_read_source_encryption_context(uuid,bigint,bigint)	b98e3708bdd0c4beae2eb81e4c926377afc7a0f7050cdc6a1c20fb15b5c6ea4c	b98e3708bdd0c4beae2eb81e4c926377afc7a0f7050cdc6a1c20fb15b5c6ea4c&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_read_retained_source_continuation(uuid)	45da395d2e8db6e57262bcafdfab88ca28ab7096227cdbc0ae69abdd0228e3ce	45da395d2e8db6e57262bcafdfab88ca28ab7096227cdbc0ae69abdd0228e3ce&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_list_retained_source_continuations(uuid,integer)	0b6f63b6ff51f53020ef1d19d715da490a159c21ff71ccc128fa9acdbbcf36bf	0b6f63b6ff51f53020ef1d19d715da490a159c21ff71ccc128fa9acdbbcf36bf&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_record_retained_r2_terminal_intent(uuid,uuid,bigint,bigint,text,text)	a4fbb5a01ab6fb1b748b21d52999bf636a4b3b677020f178000cd4e001d6806a	a4fbb5a01ab6fb1b748b21d52999bf636a4b3b677020f178000cd4e001d6806a&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_finalize_retained_r2_terminal(uuid,uuid,bigint,bigint)	e19ad98bd9ac8b04058c69404c42ce04357b6551b77ac3d094e5a1db42c76d0a	e19ad98bd9ac8b04058c69404c42ce04357b6551b77ac3d094e5a1db42c76d0a&#xD;
+A3_GUARD_MATCH	tagekyc.enforce_raw_export_source_head_write()	15c41029e8fe82f21dd50531192ae5cdbbef1f59aa8d44a856880022b6c59212	15c41029e8fe82f21dd50531192ae5cdbbef1f59aa8d44a856880022b6c59212&#xD;
+A3_GUARD_MATCH	tagekyc.complete_raw_export_source_ingress_claim_with_r2_handoff(uuid,text,text,text,uuid,bigint,bigint,text,timestamptz,text,bytea,integer,text,integer,bytea,integer,text,integer,bytea,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,text,integer,text,integer,text,bytea,integer,bytea,text,text,integer,text,integer,integer,integer,integer)	8ac3abba7ebd36276c5b24ad322fa59f76b797ba69e62fb40a2d7892e75abc26	8ac3abba7ebd36276c5b24ad322fa59f76b797ba69e62fb40a2d7892e75abc26&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_reenter_retained_source(uuid,uuid,bigint,bigint,bigint,uuid,integer,integer,integer)	a66c40d29f7e3bd33cf65c5bb58fd52d11a5dc8591f23fe9cddd7622e2e098b7	a66c40d29f7e3bd33cf65c5bb58fd52d11a5dc8591f23fe9cddd7622e2e098b7&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_prepare_attempt_key_reservation(uuid,uuid,uuid)	c9207a7fbd9192bea2ad534fa1f26d43c246e03f4704de1e6055c198f956f66b	c9207a7fbd9192bea2ad534fa1f26d43c246e03f4704de1e6055c198f956f66b&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_begin_provisional_object_custody(uuid,bigint,bigint,integer)	47cadb9dcd3d74044ba50e8c0ebe2c3f5835fd79154a4b9a6474f8e29dd02465	47cadb9dcd3d74044ba50e8c0ebe2c3f5835fd79154a4b9a6474f8e29dd02465&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_terminate_source_encryption_attempt(uuid,bigint,bigint,text)	b2866ebbc926436a84fea9fdc77d890a13c763725d6c83af8f993a625c7efe03	b2866ebbc926436a84fea9fdc77d890a13c763725d6c83af8f993a625c7efe03&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_record_r2_terminal_outcome(uuid,uuid,bigint,bigint,text,text)	5ee03515210fee71b6f186f00e51764702362899f8afc90d6a05648ec2ad7f6c	5ee03515210fee71b6f186f00e51764702362899f8afc90d6a05648ec2ad7f6c&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_terminate_retained_r2_before_provider_start(uuid,uuid,bigint,bigint)	60e304b6bebbb05699d4db8cdab6b8f2e5a50ddb574daccb9fd83525feea7dea	60e304b6bebbb05699d4db8cdab6b8f2e5a50ddb574daccb9fd83525feea7dea&#xD;
+A3_GUARD_MATCH	tagekyc.capture_runtime_issue_or_replace_capability(uuid,uuid,text,uuid,bigint,uuid,uuid,text,bytea,integer,bytea,timestamptz,uuid,uuid,jsonb)	399d854e4fd57af4cd261a8916720368cf327437a3c302fa3f084e170621ff1c	399d854e4fd57af4cd261a8916720368cf327437a3c302fa3f084e170621ff1c&#xD;
+A3_GUARD_MATCH	tagekyc.capture_runtime_bind_capability(uuid,uuid,uuid,bigint,uuid,boolean,uuid,bytea,timestamptz)	847daac9543ecb677efd92f3b01f4a5804529cca4105c9ea80972a8c5af699cd	847daac9543ecb677efd92f3b01f4a5804529cca4105c9ea80972a8c5af699cd&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_append_subject_consent_withdrawn(uuid,uuid,integer,integer,integer,text,text)	314c3aee644285e9117a97d006eac6dd345a74a4d2705e9e75b8c5d3f0d4ca0b	314c3aee644285e9117a97d006eac6dd345a74a4d2705e9e75b8c5d3f0d4ca0b&#xD;
+A3_GUARD_MATCH	tagekyc.enforce_raw_export_authority_snapshot_insert()	0797d3ee40b3f28137565262a0f6e755a3ed4f7401ee340535af6a60cda48133	0797d3ee40b3f28137565262a0f6e755a3ed4f7401ee340535af6a60cda48133&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_retained_snapshot_is_current(uuid,timestamptz)	328a24ec9e8b9e8505b56b90741acfb6821009bfd31f097cdff015fd202fc7a5	328a24ec9e8b9e8505b56b90741acfb6821009bfd31f097cdff015fd202fc7a5&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_append_retained_authority_snapshot(uuid,uuid,text,uuid,bigint)	a5bc6a7ac200a4ce40fbedeaa1d3663c9de0c0574da1305efad5680822544046	a5bc6a7ac200a4ce40fbedeaa1d3663c9de0c0574da1305efad5680822544046&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_append_authority_snapshot(uuid,uuid,uuid,text,uuid,integer,text,text,text,integer,uuid,integer,text,text,timestamptz,text,text,text,timestamptz,timestamptz)	da8e2dbac6555f2d7a00284728ebfb91785d8b22224b878561cc131e6c195767	da8e2dbac6555f2d7a00284728ebfb91785d8b22224b878561cc131e6c195767&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_withdraw_authority_snapshot(uuid,uuid,uuid,text,bigint,uuid)	6e4065aa9a614f8e0b1c41266b8467d013426670824f17068828bdd8b1cf17b6	6e4065aa9a614f8e0b1c41266b8467d013426670824f17068828bdd8b1cf17b6&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_revoke_authority_snapshot(uuid,uuid,uuid,text,bigint,uuid)	351aa273b10f0ecf7062507f9c6aa5f82f1369a90d5d65496521bc5ce678d03a	351aa273b10f0ecf7062507f9c6aa5f82f1369a90d5d65496521bc5ce678d03a&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_resolve_current_authority_for_source(uuid,uuid,uuid,text,timestamptz)	2c57c5eef8b121ea200edbb34fc3081d106cb052fd7c7b84e8ee1c3c49729cc9	2c57c5eef8b121ea200edbb34fc3081d106cb052fd7c7b84e8ee1c3c49729cc9&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_stage_verified_source_ciphertext(uuid,uuid,bigint,bigint,bigint,bigint)	a3eb26e32906ad5383f0a9d6eb21af99b7b5b0a46e77c1a4812273ea272fc34a	a3eb26e32906ad5383f0a9d6eb21af99b7b5b0a46e77c1a4812273ea272fc34a&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_commit_staged_source(uuid,bigint,bigint,bigint,bigint)	5649c358a968f24c0960f2aff291a458c9f9b73ee3e6b2a371d8ee5bc7923af1	5649c358a968f24c0960f2aff291a458c9f9b73ee3e6b2a371d8ee5bc7923af1&#xD;
+A3_GUARD_MATCH	tagekyc.raw_export_publish_available_source(uuid,bigint,bigint)	dbe80ef39afe8614b02ea6b7c2fa17c67b9d9ee66621aa43a9406e9d3ac46116	dbe80ef39afe8614b02ea6b7c2fa17c67b9d9ee66621aa43a9406e9d3ac46116&#xD;
+[xUnit.net 00:00:12.53]       Guard mismatch: tagekyc.complete_raw_export_source_ingress_claim(uuid,text,text,text,uuid,bigint,bigint,text,timestamptz,text,bytea,integer,text,integer,bytea,integer,text,integer,bytea,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,text,integer,text,integer,text,bytea,integer,bytea,text,text,integer,text,integer,integer,integer,integer) expected=4eefedc274d1d2c6152dd4100ed75f4ab4cdccdc997b04290da82bcc83a87b65 actual=a4682fe2dd19a942e9bdde7a91b7a7a4347634881ea78c11425633691db59772&#xD;
+[xUnit.net 00:00:12.53]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.53]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(221,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_ExactBoundaryAllEntriesMatch()&#xD;
+[xUnit.net 00:00:12.53]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(219,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_ExactBoundaryAllEntriesMatch()&#xD;
+[xUnit.net 00:00:12.53]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:12.75]       Npgsql.PostgresException : P0001: A3_CAPTURE_CURRENT_BODY_MISMATCH&#xD;
+[xUnit.net 00:00:12.75]       Stack Trace:&#xD;
+[xUnit.net 00:00:12.75]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:00:12.75]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:00:12.75]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Npgsql.NpgsqlCommand.ExecuteNonQuery(Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Microsoft.EntityFrameworkCore.Storage.RelationalCommand.ExecuteNonQueryAsync(RelationalCommandParameterObject parameterObject, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Microsoft.EntityFrameworkCore.Migrations.Internal.MigrationCommandExecutor.ExecuteNonQueryAsync(IEnumerable`1 migrationCommands, IRelationalConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Microsoft.EntityFrameworkCore.Migrations.Internal.Migrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]            at Npgsql.EntityFrameworkCore.PostgreSQL.Migrations.Internal.NpgsqlMigrator.MigrateAsync(String targetMigration, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:12.75]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(380,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.Execute(DisposableCurrentDatabase isolated, String target, TaskCompletionSource`1 pid)&#xD;
+[xUnit.net 00:00:12.75]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(381,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.Execute(DisposableCurrentDatabase isolated, String target, TaskCompletionSource`1 pid)&#xD;
+[xUnit.net 00:00:12.75]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(140,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureLineageMigration_EmptyRoundTripRestoresPredecessor()&#xD;
+[xUnit.net 00:00:12.75]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3MigrationTests.cs(171,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureLineageMigration_EmptyRoundTripRestoresPredecessor()&#xD;
+[xUnit.net 00:00:12.75]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:13.53]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-27T08:12:37.0542519+07:00">
+        <Text>[xUnit.net 00:00:12.53]     TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureCurrentGuard_ExactBoundaryAllEntriesMatch [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-27T08:12:37.2705145+07:00">
+        <Text>[xUnit.net 00:00:12.75]     TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_CaptureLineageMigration_EmptyRoundTripRestoresPredecessor [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage;
 using Npgsql;
+using System.Reflection;
+using System.Text.RegularExpressions;
 using TagEkyc.Domain;
 using TagEkyc.Infrastructure.Persistence;
 using TagEkyc.Infrastructure.Persistence.Entities;
@@ -55,8 +57,9 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
     public async Task A3_MigrationPopulationGuard_WaitsForWriterThenRejectsWithoutLoss(bool down)
     {
         await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("a3_population_race");
-        if (down) await Tip88C1C6BA3ConsentRetentionTests.Prepare(isolated);
+        if (down) await Execute(isolated, MigrationId);
         else await Execute(isolated, PredecessorId);
+        Assert.Equal(down ? MigrationId : PredecessorId, (await History(isolated)).Last());
         await using var writer = isolated.CreateDbContext();
         var client = Tip88C1C6BA3ConsentRetentionTests.Client;
         var principal = Tip88C1C6BA3ConsentRetentionTests.Principal;
@@ -66,6 +69,8 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
         await new EfVerificationSessionRepository(writer).AddAsync(session);
         if (down) await Tip88C1C6BA3ConsentRetentionTests.Grant(writer, "SubjectConsentRecorder");
         var before = await Bodies(isolated);
+        var beforeHistory = await History(isolated);
+        var beforeCatalog = down ? await GuardCatalog(isolated) : null;
         await using var transaction = await writer.Database.BeginTransactionAsync();
         if (down)
         {
@@ -106,6 +111,8 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
             var failure = await Assert.ThrowsAsync<PostgresException>(() => running);
             Assert.Equal(down ? "A3_RETENTION_DOWN_POPULATED" : "A3_CAPTURE_LINEAGE_CUTOVER_ACTIVE", failure.MessageText);
             Assert.Equal(before, await Bodies(isolated));
+            Assert.Equal(beforeHistory, await History(isolated));
+            if (down) Assert.Equal(beforeCatalog, await GuardCatalog(isolated));
             if (down)
             {
                 foreach (var table in new[] { "raw_source_consent_references", "raw_source_consent_reference_events", "raw_source_consent_bindings" })
@@ -170,7 +177,9 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
     public async Task A3_CaptureLineageMigration_BodyDriftRejectsDownAtomically(string drift)
     {
         await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("a3_down_drift");
-        await Tip88C1C6BA3ConsentRetentionTests.Prepare(isolated);
+        await Execute(isolated, MigrationId);
+        Assert.Equal(MigrationId, (await History(isolated)).Last());
+        Assert.All(await GuardCatalog(isolated), row => Assert.Equal(row.ExpectedHash, row.ActualHash));
         await using (var db = isolated.CreateDbContext())
         {
             var body = await db.Database.SqlQuery<string>($"SELECT prosrc AS \"Value\" FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure({R20})").SingleAsync();
@@ -184,12 +193,97 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
             await command.ExecuteNonQueryAsync();
         }
         var beforeAttempt = await Bodies(isolated);
+        var beforeHistory = await History(isolated);
+        var beforeCatalog = await GuardCatalog(isolated);
+        var mismatch = Assert.Single(beforeCatalog, row => row.ExpectedHash != row.ActualHash);
+        Assert.Equal(R20, mismatch.Signature);
         var failure = await Assert.ThrowsAsync<PostgresException>(() => Execute(isolated, PredecessorId));
         Assert.Equal("A3_CAPTURE_CURRENT_BODY_MISMATCH", failure.MessageText);
         Assert.Equal(beforeAttempt, await Bodies(isolated));
+        Assert.Equal(beforeHistory, await History(isolated));
+        Assert.Equal(beforeCatalog, await GuardCatalog(isolated));
         await using var observer = isolated.CreateDbContext();
+        var retainedDrift = await observer.Database.SqlQuery<string>($"SELECT prosrc AS \"Value\" FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure({R20})").SingleAsync();
+        Assert.EndsWith(drift, retainedDrift, StringComparison.Ordinal);
         Assert.True(await observer.Database.SqlQueryRaw<bool>(
             "SELECT to_regclass('tagekyc.raw_source_consent_references') IS NOT NULL AS \"Value\"").SingleAsync());
+    }
+
+    [Fact]
+    public async Task A3_CaptureCurrentGuard_ExactBoundaryAllEntriesMatch()
+    {
+        await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("a3_guard_30_30");
+        await Execute(isolated, MigrationId);
+        var catalog = await GuardCatalog(isolated);
+        Assert.Equal(30, catalog.Length);
+        foreach (var row in catalog)
+        {
+            Assert.True(row.ExpectedHash == row.ActualHash,
+                $"Guard mismatch: {row.Signature} expected={row.ExpectedHash} actual={row.ActualHash}");
+            Console.WriteLine($"A3_GUARD_MATCH\t{row.Signature}\t{row.ExpectedHash}\t{row.ActualHash}");
+        }
+    }
+
+    [Fact]
+    public async Task A3_LatestToPredecessor_GuardFailureStopsAtExactA3Boundary()
+    {
+        await using var latest = await postgres.CreateDisposableCurrentDatabaseAsync("a3_latest_partial_progress");
+        await using var control = await postgres.CreateDisposableCurrentDatabaseAsync("a3_exact_boundary_control");
+        await Execute(control, MigrationId);
+        Assert.Equal(MigrationId, (await History(control)).Last());
+        await AppendBodyDrift(latest, R20, " ");
+        await AppendBodyDrift(control, R20, " ");
+
+        var latestHistory = await History(latest);
+        var latestCatalog = await GuardCatalog(latest);
+        var expectedHistory = await History(control);
+        var expectedBodies = await Bodies(control);
+        var expectedCatalog = await GuardCatalog(control);
+        var expectedMismatch = Assert.Single(expectedCatalog, row => row.ExpectedHash != row.ActualHash);
+        Assert.Equal(R20, expectedMismatch.Signature);
+
+        var failure = await Assert.ThrowsAsync<PostgresException>(() => Execute(latest, PredecessorId));
+        Assert.Equal("A3_CAPTURE_CURRENT_BODY_MISMATCH", failure.MessageText);
+        Assert.Equal(expectedHistory, await History(latest));
+        Assert.Equal(expectedBodies, await Bodies(latest));
+        Assert.Equal(expectedCatalog, await GuardCatalog(latest));
+        Assert.Equal(MigrationId, (await History(latest)).Last());
+
+        var afterCatalog = await GuardCatalog(latest);
+        var removedMigrations = latestHistory.Except(expectedHistory, StringComparer.Ordinal).ToArray();
+        Assert.Equal(new[]
+        {
+            "20260923090000_RawExportAssemblyDurableWorkSource",
+            "20260924120000_RawExportDeliveryRecipientCredential",
+            "20260924130000_RawExportLegacyConsentClassFence",
+            "20260925090000_RawExportAssemblyRetainedModeWorkSource",
+            "20260926120000_RawExportAssemblyPostSealRecovery"
+        }, removedMigrations);
+        var changedPairs = latestCatalog.Zip(afterCatalog)
+            .Where(pair => pair.First != pair.Second)
+            .ToArray();
+        foreach (var pair in changedPairs)
+        {
+            Assert.Equal(pair.First.Signature, pair.Second.Signature);
+            Assert.Equal(pair.First.ExpectedHash, pair.Second.ExpectedHash);
+            Assert.Equal(pair.First.Owner, pair.Second.Owner);
+            Assert.Equal(pair.First.SecurityDefiner, pair.Second.SecurityDefiner);
+            Assert.Equal(pair.First.Configuration, pair.Second.Configuration);
+            Assert.Equal(pair.First.Acl, pair.Second.Acl);
+        }
+        var changed = changedPairs.Select(pair => pair.First.Signature).ToArray();
+        Assert.Equal(new[]
+        {
+            "tagekyc.raw_export_stage_verified_source_ciphertext(uuid,uuid,bigint,bigint,bigint,bigint)",
+            "tagekyc.raw_export_commit_staged_source(uuid,bigint,bigint,bigint,bigint)",
+            "tagekyc.raw_export_publish_available_source(uuid,bigint,bigint)"
+        }, changed);
+        Console.WriteLine($"A3_LATEST_HISTORY_BEFORE={string.Join(',', latestHistory)}");
+        Console.WriteLine($"A3_HISTORY_AFTER_REJECTION={string.Join(',', expectedHistory)}");
+        Console.WriteLine($"A3_MIGRATIONS_DOWN_COMPLETED={string.Join(',', removedMigrations)}");
+        Console.WriteLine($"A3_GUARD_CATALOG_CHANGED={string.Join(',', changed)}");
+        foreach (var pair in changedPairs)
+            Console.WriteLine($"A3_CATALOG_DELTA\t{pair.First.Signature}\t{pair.First.ActualHash}\t{pair.Second.ActualHash}\tmetadata-unchanged");
     }
 
     private static async Task<SortedDictionary<string, string>> Bodies(PostgresPersistenceFixture.DisposableCurrentDatabase isolated)
@@ -217,6 +311,72 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
         while (await reader.ReadAsync()) values.Add(reader.GetString(0), reader.GetString(1).Replace("\r\n", "\n", StringComparison.Ordinal));
         Assert.Equal(24, values.Count); return values;
     }
+
+    private static async Task<string[]> History(PostgresPersistenceFixture.DisposableCurrentDatabase isolated)
+    {
+        await using var db = isolated.CreateDbContext();
+        return (await db.Database.GetAppliedMigrationsAsync()).ToArray();
+    }
+
+    private static async Task AppendBodyDrift(
+        PostgresPersistenceFixture.DisposableCurrentDatabase isolated,
+        string signature,
+        string drift)
+    {
+        await using var db = isolated.CreateDbContext();
+        var body = await db.Database.SqlQuery<string>($"SELECT prosrc AS \"Value\" FROM pg_catalog.pg_proc WHERE oid=pg_catalog.to_regprocedure({signature})").SingleAsync();
+        var definition = await db.Database.SqlQuery<string>($"SELECT pg_catalog.pg_get_functiondef(pg_catalog.to_regprocedure({signature})) AS \"Value\"").SingleAsync();
+        Assert.Contains(body, definition, StringComparison.Ordinal);
+        var mutation = definition.Replace(body, body + drift, StringComparison.Ordinal);
+        Assert.NotEqual(definition, mutation);
+        await db.Database.OpenConnectionAsync();
+        await using var command = db.Database.GetDbConnection().CreateCommand();
+        command.CommandText = mutation;
+        await command.ExecuteNonQueryAsync();
+    }
+
+    private static async Task<GuardObservation[]> GuardCatalog(PostgresPersistenceFixture.DisposableCurrentDatabase isolated)
+    {
+        var guard = Assert.IsType<string>(typeof(Tip88C1C6BA3RetainedIngressComposition)
+            .GetField("CaptureCurrentGuard", BindingFlags.NonPublic | BindingFlags.Static)!
+            .GetRawConstantValue());
+        var expected = Regex.Matches(guard, "\\('(?<signature>[^']+)','(?<hash>[0-9a-f]{64})'\\)")
+            .Select(match => (Signature: match.Groups["signature"].Value, Hash: match.Groups["hash"].Value))
+            .ToArray();
+        Assert.Equal(30, expected.Length);
+
+        var values = new List<GuardObservation>(expected.Length);
+        await using var db = isolated.CreateDbContext();
+        await db.Database.OpenConnectionAsync();
+        foreach (var entry in expected)
+        {
+            await using var command = db.Database.GetDbConnection().CreateCommand();
+            command.CommandText = """
+                SELECT encode(tagekyc_extensions.digest(convert_to(replace(p.prosrc,chr(13)||chr(10),chr(10)),'UTF8'),'sha256'),'hex'),
+                 pg_catalog.pg_get_userbyid(p.proowner),p.prosecdef::text,coalesce(p.proconfig::text,''),coalesce(p.proacl::text,'')
+                FROM pg_catalog.pg_proc p WHERE p.oid=pg_catalog.to_regprocedure(@signature)
+                """;
+            var parameter = command.CreateParameter();
+            parameter.ParameterName = "signature";
+            parameter.Value = entry.Signature;
+            command.Parameters.Add(parameter);
+            await using var reader = await command.ExecuteReaderAsync();
+            Assert.True(await reader.ReadAsync(), $"Missing guard function {entry.Signature}");
+            values.Add(new GuardObservation(entry.Signature, entry.Hash, reader.GetString(0), reader.GetString(1),
+                reader.GetString(2), reader.GetString(3), reader.GetString(4)));
+            Assert.False(await reader.ReadAsync(), $"Ambiguous guard function {entry.Signature}");
+        }
+        return values.ToArray();
+    }
+
+    private sealed record GuardObservation(
+        string Signature,
+        string ExpectedHash,
+        string ActualHash,
+        string Owner,
+        string SecurityDefiner,
+        string Configuration,
+        string Acl);
 
     private static async Task<string[]> TerminalFunctions(PostgresPersistenceFixture.DisposableCurrentDatabase isolated)
     {
