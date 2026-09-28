@@ -1,4 +1,5 @@
 using TagEkyc.Application.Ports;
+using TagEkyc.Application.CaptureRuntime;
 using TagEkyc.Contracts.RawExport;
 
 namespace TagEkyc.Application.RawExport;
@@ -7,7 +8,9 @@ public sealed class CaptureRuntimeRawIngressAdmissionService(
     IRawExportIngressCapacity capacity,
     IRawIngressMetadataBroker broker,
     ICaptureRuntimeRawIngressBodyPipeline bodyPipeline,
-    long maximumPlaintextWindowBytesPerStream) : ICaptureRuntimeRawIngressAdmission
+    long maximumPlaintextWindowBytesPerStream,
+    ISiteRawIngressQualificationRequestMeasurement? qualificationMeasurement = null)
+    : ICaptureRuntimeRawIngressAdmission
 {
     public async ValueTask<CaptureRuntimeRawIngressAdmissionResult> AdmitAsync(
         CaptureRuntimeRawIngressAdmissionContext context,
@@ -30,6 +33,8 @@ public sealed class CaptureRuntimeRawIngressAdmissionService(
             return Outcome(CaptureRuntimeRawIngressOutcome.CapacityUnavailable);
 
         var admission = await broker.AdmitAsync(context, cancellationToken).ConfigureAwait(false);
+        if (qualificationMeasurement?.QualificationRunId is not null)
+            qualificationMeasurement.MarkBrokerCommitted();
         return admission switch
         {
             RawIngressBrokerResult.Final final => ProjectFinal(final),

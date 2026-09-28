@@ -105,7 +105,8 @@ public sealed record CaptureRuntimeRawIngressAdmissionContext(
     Guid IngressIdempotencyKey, string MediaType, long ClaimedPlaintextLength,
     string ClaimedPlaintextDigest, DateTimeOffset CapturedAtUtc,
     DateTimeOffset PlaintextRetentionStartedAtUtc,
-    DateTimeOffset PlaintextRetentionExpiresAtUtc, long PlaintextRetentionBudgetSeconds);
+    DateTimeOffset PlaintextRetentionExpiresAtUtc, long PlaintextRetentionBudgetSeconds,
+    Guid? SiteQualificationRunId = null);
 
 public enum CaptureRuntimeRawIngressOutcome
 {

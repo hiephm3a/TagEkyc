@@ -144,6 +144,7 @@ public sealed class Tip88C1C6BA3R2R6TransportHarnessTests
     internal sealed class FixtureKeys : ICaptureRuntimeKeyStore, IDisposable
     {
         private readonly ECDsa key = ECDsa.Create(ECCurve.NamedCurves.nistP256);
+        internal byte[] Spki => key.ExportSubjectPublicKeyInfo();
         internal byte[] Thumbprint => SHA256.HashData(key.ExportSubjectPublicKeyInfo());
         public CaptureRuntimePublicKey CreateReserved(Guid candidateKeyId) => Open(candidateKeyId, []);
         public CaptureRuntimePublicKey Open(Guid candidateKeyId, ReadOnlySpan<byte> expectedThumbprint)

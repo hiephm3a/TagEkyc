@@ -4,17 +4,22 @@ param(
 )
 
 $ErrorActionPreference = 'Stop'
-$configuration = Get-Content -LiteralPath $ConfigurationPath -Raw | ConvertFrom-Json -AsHashtable
-$record = Get-Content -LiteralPath $CandidateRecordPath -Raw | ConvertFrom-Json -AsHashtable
+$configuration = Get-Content -LiteralPath $ConfigurationPath -Raw | ConvertFrom-Json
+$record = Get-Content -LiteralPath $CandidateRecordPath -Raw | ConvertFrom-Json
+function Get-JsonProperty([object]$Value, [string]$Name) {
+    $property = $Value.PSObject.Properties[$Name]
+    if ($null -eq $property) { return $null }
+    $property.Value
+}
 $prefix = 'TagEkyc:CaptureRuntime:SiteRawIngressTransportQualification:'
-$target = $configuration['TagEkyc:CaptureRuntime:SiteRawIngressTransportQualificationRecordPath']
-if ([string]::IsNullOrWhiteSpace($target) -or -not [IO.Path]::IsPathFullyQualified($target)) {
+$target = [string](Get-JsonProperty $configuration 'TagEkyc:CaptureRuntime:SiteRawIngressTransportQualificationRecordPath')
+if ([string]::IsNullOrWhiteSpace($target) -or -not [IO.Path]::IsPathRooted($target)) {
     throw 'SITE_QUALIFICATION_TARGET_PATH_INVALID'
 }
-if ($record.Count -ne 15 -or $record.status -cne 'PASS' -or
-    $record.siteId -cne $configuration[$prefix + 'SiteId'] -or
-    $record.endpointOrigin.TrimEnd('/') -cne $configuration[$prefix + 'EndpointOrigin'].TrimEnd('/') -or
-    $record.deploymentRevision -cne $configuration[$prefix + 'DeploymentRevision'] -or
+if (@($record.PSObject.Properties).Count -ne 15 -or $record.status -cne 'PASS' -or
+    $record.siteId -cne (Get-JsonProperty $configuration ($prefix + 'SiteId')) -or
+    $record.endpointOrigin.TrimEnd('/') -cne ([string](Get-JsonProperty $configuration ($prefix + 'EndpointOrigin'))).TrimEnd('/') -or
+    $record.deploymentRevision -cne (Get-JsonProperty $configuration ($prefix + 'DeploymentRevision')) -or
     [DateTimeOffset]$record.validUntilUtc -le [DateTimeOffset]::UtcNow -or
     $record.agentBodySendsWhileBOrR1Held -ne 0 -or
     $record.serverApplicationBodyReadsWhileBOrR1Held -ne 0 -or $record.rawPostCount -ne 1 -or

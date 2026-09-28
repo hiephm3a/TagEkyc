@@ -92,6 +92,9 @@ builder.Services.AddSingleton<ICaptureRuntimeSiteTransportQualificationSettingsP
 builder.Services.AddSingleton<ISiteRawIngressTransportQualificationRuntimeGate,
     SiteRawIngressTransportQualificationRuntimeGate>();
 builder.Services.AddHostedService<SiteRawIngressTransportQualificationMonitor>();
+builder.Services.AddScoped<SiteRawIngressQualificationRequestMeasurement>();
+builder.Services.AddScoped<ISiteRawIngressQualificationRequestMeasurement>(sp =>
+    sp.GetRequiredService<SiteRawIngressQualificationRequestMeasurement>());
 builder.Services.AddScoped<VerificationSessionApplicationService>();
 builder.Services.AddScoped<IVerificationSessionCommands>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
 builder.Services.AddScoped<IVerificationSessionQueries>(sp => sp.GetRequiredService<VerificationSessionApplicationService>());
@@ -206,6 +209,7 @@ app.MapRecipientPackageDeliveryEndpoints();
 app.MapRecipientPackageReferenceEndpoints();
 app.MapRecipientManagementEndpoints();
 app.MapRawExportControlPlaneEndpoints();
+app.MapSiteRawIngressQualificationMeasurementEndpoints();
 
 app.Run();
 

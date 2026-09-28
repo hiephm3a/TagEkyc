@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using TagEkyc.Application.Ports;
 using TagEkyc.Infrastructure.CaptureRuntime;
 using TagEkyc.Infrastructure.RawExport;
+using TagEkyc.Application.CaptureRuntime;
 
 namespace TagEkyc.Infrastructure.Persistence;
 
@@ -39,6 +40,8 @@ public static class TagEkycPersistenceServiceCollectionExtensions
         services.AddScoped<RawExportControlPlaneReadinessValidator>();
         services.AddScoped<RawExportSubjectConsentReadinessValidator>();
         services.AddScoped<RawExportJobReadinessValidator>();
+        services.AddScoped<ISiteRawIngressQualificationRunStore,
+            PostgresSiteRawIngressQualificationRunStore>();
         services.AddScoped<IVerificationFinalizationBoundary, EfVerificationFinalizationBoundary>();
         services.AddScoped<EfAppendIdempotencyBoundary>();
         services.AddScoped<IAppendIdempotencyRepository>(sp => sp.GetRequiredService<EfAppendIdempotencyBoundary>());

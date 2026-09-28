@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Net;
+using System.Net.Sockets;
 using System.Security.Cryptography;
 using Amazon.Runtime;
 using Amazon.S3;
@@ -34,6 +35,9 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
     private readonly List<string> buckets = [];
     private AmazonS3Client? cleanupAdmin;
     private int hostPort;
+    private TcpListener? isolatedRunnerBridge;
+    private CancellationTokenSource? isolatedRunnerBridgeStop;
+    private Task? isolatedRunnerBridgeLoop;
     private static readonly TimeSpan ProtocolUsabilityTimeout = TimeSpan.FromSeconds(20);
     private static readonly TimeSpan ProtocolUsabilityRetryDelay = TimeSpan.FromMilliseconds(250);
 
@@ -184,7 +188,24 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
             Image, "server", "/data", "--console-address", ":9001").ConfigureAwait(false);
         var mapping = (await DockerAsync("port", containerName, "9000/tcp").ConfigureAwait(false)).Trim();
         hostPort = int.Parse(mapping[(mapping.LastIndexOf(':') + 1)..], System.Globalization.CultureInfo.InvariantCulture);
-        ServiceUrl = new Uri($"http://127.0.0.1:{hostPort}", UriKind.Absolute);
+        // The isolated TLS runner itself executes inside Docker while it uses
+        // the host Docker socket for this nested MinIO fixture. In that one
+        // topology the published port belongs to the host, not the runner's
+        // loopback namespace.
+        if (Environment.GetEnvironmentVariable("A3_ISOLATED_TLS_CONTAINER") == "1")
+        {
+            isolatedRunnerBridgeStop = new();
+            isolatedRunnerBridge = new TcpListener(IPAddress.Loopback, 0);
+            isolatedRunnerBridge.Start();
+            var bridgePort = ((IPEndPoint)isolatedRunnerBridge.LocalEndpoint).Port;
+            isolatedRunnerBridgeLoop = RunIsolatedRunnerBridgeAsync(
+                isolatedRunnerBridge, hostPort, isolatedRunnerBridgeStop.Token);
+            ServiceUrl = new Uri($"http://127.0.0.1:{bridgePort}", UriKind.Absolute);
+        }
+        else
+        {
+            ServiceUrl = new Uri($"http://127.0.0.1:{hostPort}", UriKind.Absolute);
+        }
 
         using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(2) };
         var deadline = DateTimeOffset.UtcNow.AddSeconds(45);
@@ -367,10 +388,50 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
         }
         finally
         {
+            isolatedRunnerBridgeStop?.Cancel();
+            isolatedRunnerBridge?.Stop();
+            if (isolatedRunnerBridgeLoop is not null)
+            {
+                try { await isolatedRunnerBridgeLoop.ConfigureAwait(false); }
+                catch (OperationCanceledException) { }
+                catch (SocketException) when (isolatedRunnerBridgeStop?.IsCancellationRequested == true) { }
+            }
+            isolatedRunnerBridgeStop?.Dispose();
             cleanupAdmin?.Dispose();
             await CaptureContainerLogsAsync().ConfigureAwait(false);
             await DockerAsync("rm", "-f", containerName, allowFailure: true).ConfigureAwait(false);
             await DockerAsync("volume", "rm", volumeName, allowFailure: true).ConfigureAwait(false);
+        }
+    }
+
+    private static async Task RunIsolatedRunnerBridgeAsync(
+        TcpListener listener, int targetPort, CancellationToken stop)
+    {
+        while (!stop.IsCancellationRequested)
+        {
+            var downstream = await listener.AcceptTcpClientAsync(stop).ConfigureAwait(false);
+            _ = ForwardIsolatedRunnerConnectionAsync(downstream, targetPort, stop);
+        }
+    }
+
+    private static async Task ForwardIsolatedRunnerConnectionAsync(
+        TcpClient downstream, int targetPort, CancellationToken stop)
+    {
+        using (downstream)
+        using (var upstream = new TcpClient())
+        {
+            try
+            {
+                await upstream.ConnectAsync("host.docker.internal", targetPort, stop).ConfigureAwait(false);
+                await using var downstreamStream = downstream.GetStream();
+                await using var upstreamStream = upstream.GetStream();
+                var toUpstream = downstreamStream.CopyToAsync(upstreamStream, stop);
+                var toDownstream = upstreamStream.CopyToAsync(downstreamStream, stop);
+                await Task.WhenAny(toUpstream, toDownstream).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (stop.IsCancellationRequested) { }
+            catch (IOException) { }
+            catch (SocketException) { }
         }
     }
 
@@ -631,17 +692,50 @@ internal sealed class DurableObjectMinioFixture : IAsyncDisposable
             arguments.Add("-e");
             arguments.Add($"{item.Name}={item.Value}");
         }
+        string? policyVolume = null;
         if (policyDirectory is not null)
         {
-            arguments.Add("-v");
-            arguments.Add($"{policyDirectory}:/policies:ro");
+            if (Environment.GetEnvironmentVariable("A3_ISOLATED_TLS_CONTAINER") == "1")
+            {
+                // The Docker daemon is the host daemon, so it cannot bind a
+                // path from the isolated runner's filesystem. Populate a
+                // short-lived Docker volume instead of weakening the test to
+                // use a parallel object-store fixture.
+                policyVolume = $"tagekyc-test-policies-{Guid.NewGuid():N}";
+                await DockerAsync("volume", "create", policyVolume).ConfigureAwait(false);
+                foreach (var path in Directory.EnumerateFiles(policyDirectory, "*.json"))
+                {
+                    var encoded = Convert.ToBase64String(await File.ReadAllBytesAsync(path).ConfigureAwait(false));
+                    await DockerAsync(
+                        "run", "--rm", "-e", $"POLICY_DATA={encoded}",
+                        "-v", $"{policyVolume}:/policies", "--entrypoint", "/bin/sh", McImage,
+                        "-c", $"printf '%s' \"$POLICY_DATA\" | base64 -d > /policies/{Path.GetFileName(path)}")
+                        .ConfigureAwait(false);
+                }
+                arguments.Add("-v");
+                arguments.Add($"{policyVolume}:/policies:ro");
+            }
+            else
+            {
+                arguments.Add("-v");
+                arguments.Add($"{policyDirectory}:/policies:ro");
+            }
         }
         arguments.Add("--entrypoint");
         arguments.Add("/bin/sh");
         arguments.Add(McImage);
         arguments.Add("-c");
         arguments.Add(command);
-        await DockerAsync(arguments.ToArray(), allowFailure).ConfigureAwait(false);
+        try
+        {
+            await DockerAsync(arguments.ToArray(), allowFailure).ConfigureAwait(false);
+        }
+        finally
+        {
+            if (policyVolume is not null)
+                await DockerAsync(["volume", "rm", "-f", policyVolume], allowFailure: true)
+                    .ConfigureAwait(false);
+        }
     }
 
     private static string ObjectPolicy(string bucketName, string action) => $$"""

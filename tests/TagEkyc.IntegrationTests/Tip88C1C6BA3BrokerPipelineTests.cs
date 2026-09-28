@@ -1146,6 +1146,39 @@ public sealed class Tip88C1C6BA3BrokerHttpTests
 public sealed class Tip88C1C6BA3BrokerQualificationTests(PostgresPersistenceFixture postgres)
 {
     [Fact]
+    public async Task Ordinary_broker_request_never_invokes_failing_qualification_telemetry()
+    {
+        await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("a3_ordinary_no_telemetry");
+        await Tip88C1C6BA3ConsentRetentionTests.Prepare(isolated);
+        var scope = await Tip88C1C6BA3RetentionCheckpointTests.Seed(isolated, rawIngress: true);
+        await using var observer = isolated.CreateDbContext();
+        var login = await Tip88C1C6BA3SyntheticComposition.BrokerLogin(
+            observer.Database.GetConnectionString()!);
+        await using var source = NpgsqlDataSource.Create(login);
+        await using var services = Tip88C1C6BA3SyntheticComposition.PreflightServices();
+        var telemetry = new ThrowingQualificationObserver();
+        var broker = Tip88C1C6BA3SyntheticComposition.Broker(source,
+            services.GetRequiredService<IContentCommitmentService>(),
+            services.GetRequiredService<ISubjectRefTokenService>(),
+            qualificationObserver: telemetry);
+        var now = await observer.Database.SqlQueryRaw<DateTimeOffset>(
+            "SELECT clock_timestamp() AS \"Value\"").SingleAsync();
+        var context = new CaptureRuntimeRawIngressAdmissionContext(
+            Guid.Parse("40000000-0000-4000-8000-000000000001"),
+            Guid.Parse("50000000-0000-4000-8000-000000000001"),
+            Guid.Parse("60000000-0000-4000-8000-000000000001"), 1,
+            Guid.Parse("10000000-0000-4000-8000-000000000001"), 1,
+            now, new byte[32], new byte[32], 1, scope.Session, scope.Artifact, 1,
+            "LiveSelfieImage", Guid.NewGuid(), "image/jpeg", 24,
+            Convert.ToHexString(SHA256.HashData("synthetic-retainedsource"u8)).ToLowerInvariant(),
+            now.AddSeconds(-5), now.AddSeconds(-4), now.AddMinutes(5), 300);
+
+        Assert.IsType<RawIngressBrokerResult.Handoff>(
+            await broker.AdmitAsync(context, CancellationToken.None));
+        Assert.Equal(0, telemetry.Calls);
+    }
+
+    [Fact]
     public async Task P05_ActiveCommitmentKeyLossReturnsO05WithoutCustodyAndRestoredKeyCanRetry()
     {
         await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("a3_p05_active_key");
@@ -1401,6 +1434,10 @@ public sealed class Tip88C1C6BA3BrokerQualificationTests(PostgresPersistenceFixt
                     services.AddSingleton(DurableKeyCustodyOptions.Resolve(new ConfigurationManager()));
                     services.AddSingleton(brokerOptions);
                     services.AddSingleton(owners);
+                    // This historical raw-ingress graph predates the separate raw-export
+                    // control plane. Keep the proof scoped to its named startup boundary.
+                    services.RemoveAll<RawExportControlPlaneApplicationService>();
+                    services.RemoveAll<IRawExportControlPlaneApplicationService>();
                 });
             });
 
@@ -2036,7 +2073,19 @@ public sealed class Tip88C1C6BA3BrokerQualificationTests(PostgresPersistenceFixt
             var reply = await transport.HandleAsync(new(IPAddress.Loopback, IPAddress.Loopback, options.BaseUri.Port,
                 options.BaseUri.Authority, "POST", RawIngressBrokerOptions.AdmitPath, false, "application/json", bytes.Length,
                 false, false), body, CancellationToken.None);
-            Assert.Equal(503, reply.StatusCode); Assert.Empty(reply.Body);
+            if (defect == "missing-key")
+            {
+                Assert.Equal(200, reply.StatusCode);
+                var denied = Assert.IsType<RawIngressBrokerResult.Final>(
+                    RawIngressBrokerProtocol.ReadResponse(reply.Body));
+                Assert.Equal(RawExportSourceIngressCodes.CapabilityUnavailable,
+                    denied.Value.OutcomeCode);
+            }
+            else
+            {
+                Assert.Equal(503, reply.StatusCode);
+                Assert.Empty(reply.Body);
+            }
             Assert.Equal(before, await Snapshot());
         }
         finally { await observer.Database.ExecuteSqlRawAsync(restore); }
@@ -2052,6 +2101,15 @@ public sealed class Tip88C1C6BA3BrokerQualificationTests(PostgresPersistenceFixt
             UNION ALL SELECT 'head:'||row_to_json(t)::text FROM tagekyc.raw_export_source_head t
             ORDER BY "Value"
             """).ToArrayAsync();
+    }
+
+    private sealed class ThrowingQualificationObserver : ISiteRawIngressQualificationBrokerObserver
+    {
+        internal int Calls;
+        public Task HoldBeforeCommitAsync(Guid qualificationRunId, CancellationToken cancellationToken)
+        { Calls++; throw new InvalidOperationException("QUALIFICATION_TELEMETRY_UNAVAILABLE"); }
+        public Task RecordCommittedAsync(Guid qualificationRunId, CancellationToken cancellationToken)
+        { Calls++; throw new InvalidOperationException("QUALIFICATION_TELEMETRY_UNAVAILABLE"); }
     }
 }
 

@@ -42,12 +42,35 @@ try {
     $errors = $null
     $ast = [Management.Automation.Language.Parser]::ParseFile($invokePath, [ref]$tokens, [ref]$errors)
     Assert-True ($errors.Count -eq 0) 'Invoke tool did not parse.'
-    $function = @($ast.FindAll({ param($node)
-        $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
-        $node.Name -ceq 'Complete-ProbeSiteCandidate'
-    }, $true))
-    Assert-True ($function.Count -eq 1) 'Exact ProbeSite completion function was not found.'
-    . ([ScriptBlock]::Create($function[0].Extent.Text))
+    $invokeSource = Get-Content -LiteralPath $invokePath -Raw
+    Assert-True ($invokeSource -cmatch 'Assert-ProbeCandidateIsSeparate[ \t]+\$installedTarget[ \t]+\$candidate') `
+        'ProbeSite no longer invokes the candidate/install alias guard.'
+    foreach ($name in @('Complete-ProbeSiteCandidate','Assert-ProbeCandidateIsSeparate',
+            'Read-SyntheticAgentMeasurementOutput')) {
+        $function = @($ast.FindAll({ param($node)
+            $node -is [Management.Automation.Language.FunctionDefinitionAst] -and
+            $node.Name -ceq $name
+        }, $true))
+        Assert-True ($function.Count -eq 1) "Exact ProbeSite function $name was not found."
+        . ([ScriptBlock]::Create($function[0].Extent.Text))
+    }
+
+    $samePathReason = $null
+    try { Assert-ProbeCandidateIsSeparate $target $target }
+    catch { $samePathReason = $_.Exception.Message }
+    Assert-True ($samePathReason -ceq 'SITE_QUALIFICATION_CANDIDATE_MUST_NOT_BE_INSTALLED_TARGET') `
+        'ProbeSite allowed the candidate path to alias the installed record.'
+    $parsedOutput = Read-SyntheticAgentMeasurementOutput @(
+        '[capture] sanitized',
+        '{"SchemaVersion":1,"Status":"MEASURED","Qualifies":true,"Reports":[]}') 0
+    Assert-True ([bool]$parsedOutput.Qualifies) 'ProbeSite did not parse the Agent measurement envelope.'
+    $mismatchReason = $null
+    try {
+        Read-SyntheticAgentMeasurementOutput @(
+            '{"SchemaVersion":1,"Status":"MEASURED","Qualifies":true,"Reports":[]}') 2 | Out-Null
+    } catch { $mismatchReason = $_.Exception.Message }
+    Assert-True ($mismatchReason -ceq 'SITE_QUALIFICATION_SYNTHETIC_AGENT_MEASUREMENT_INVALID') `
+        'ProbeSite accepted a measurement whose process exit contradicted Qualifies.'
 
     $diagnosticOutput = @(Complete-ProbeSiteCandidate $configuration $candidate $false)
     Assert-True ($diagnosticOutput -contains

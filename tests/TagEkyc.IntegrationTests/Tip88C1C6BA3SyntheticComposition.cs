@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
+using TagEkyc.Application.CaptureRuntime;
+using TagEkyc.Application.Ports;
 using TagEkyc.Contracts.RawExport;
 using TagEkyc.Infrastructure.RawExport;
 
@@ -34,8 +36,9 @@ internal static class Tip88C1C6BA3SyntheticComposition
         RawIngressBrokerOptions options, bool missingKey = false, bool missingProvider = false,
         bool invalidProfile = false)
     {
-        var configuration = Configuration();
-        if (missingKey) configuration["TagEkyc:RawExport:ContentCommitment:FixtureKeys:fixture-content-commitment:1"] = null;
+        // Build the negative fixture without the key. Assigning null after adding it
+        // does not reliably mask the earlier ConfigurationManager provider value.
+        var configuration = Configuration(includeContentCommitmentKey: !missingKey);
         var services = new ServiceCollection().AddSingleton(source)
             .AddSingleton<ICustodyProfileProvider>(invalidProfile
                 ? new QualifiedBrokerProfiles(new FixtureSourceEncryptionProfileCatalog().GetActive() with { ChunkSize = 0 },
@@ -71,11 +74,18 @@ internal static class Tip88C1C6BA3SyntheticComposition
         }.ConnectionString;
     }
 
-    private static ConfigurationManager Configuration() => new()
+    private static ConfigurationManager Configuration(bool includeContentCommitmentKey = true)
     {
-        ["TagEkyc:RawExport:ContentCommitment:FixtureKeys:fixture-content-commitment:1"] = "0123456789abcdef0123456789abcdef",
-        ["TagEkyc:RawExport:SubjectRefToken:FixtureKeys:fixture-subject-ref-token:1"] = "abcdef0123456789abcdef0123456789",
-    };
+        var configuration = new ConfigurationManager
+        {
+            ["TagEkyc:RawExport:SubjectRefToken:FixtureKeys:fixture-subject-ref-token:1"] =
+                "abcdef0123456789abcdef0123456789",
+        };
+        if (includeContentCommitmentKey)
+            configuration["TagEkyc:RawExport:ContentCommitment:FixtureKeys:fixture-content-commitment:1"] =
+                "0123456789abcdef0123456789abcdef";
+        return configuration;
+    }
 
     internal static ConfigurationManager ObjectConfiguration(ProvisionalObjectCustodyOptions options)
     {
@@ -139,10 +149,12 @@ internal static class Tip88C1C6BA3SyntheticComposition
     internal static RawIngressBrokerTransactionFacade Broker(NpgsqlDataSource source,
         IContentCommitmentService commitment, ISubjectRefTokenService subject,
         bool extendedBounds = false, int configuredCommitmentVersion = 1,
-        RawIngressBrokerTransactionSettings? exactSettings = null) =>
+        RawIngressBrokerTransactionSettings? exactSettings = null,
+        ISiteRawIngressQualificationBrokerObserver? qualificationObserver = null) =>
         new(source, new RetainedSourceClaimPreflight(commitment, subject), new Profiles(extendedBounds),
             exactSettings ?? new(Guid.Parse("8bf2e6a5425a42689647465139fc46b0"), extendedBounds ? 3600 : 10, extendedBounds ? 5001 : 100,
-                new("fixture-content-commitment", configuredCommitmentVersion), new("fixture-subject-ref-token", 1), extendedBounds ? 6000 : 1000));
+                new("fixture-content-commitment", configuredCommitmentVersion), new("fixture-subject-ref-token", 1), extendedBounds ? 6000 : 1000),
+            qualificationObserver);
 
     private sealed class Profiles(bool extendedBounds) : ICustodyProfileProvider
     {

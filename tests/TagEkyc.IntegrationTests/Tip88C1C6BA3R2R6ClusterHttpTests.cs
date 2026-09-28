@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
@@ -11,17 +12,24 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using TagEkyc.Api;
+using TagEkyc.Application;
+using TagEkyc.Application.CaptureRuntime;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.RawExport;
+using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Contracts.CaptureRuntime;
 using TagEkyc.Contracts.RawExport;
 using TagEkyc.Contracts.TrustedAdapter;
 using TagEkyc.Infrastructure.RawExport;
+using TagEkyc.Infrastructure.Persistence;
+using TagEkyc.Infrastructure.Auth;
+using TagEkyc.Infrastructure.CaptureRuntime;
 #if A3_ACCEPTANCE
 using TagEkyc.CaptureAgent.Client;
 using TagEkyc.CaptureAgent.Core;
@@ -971,12 +979,17 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
         var brokerLogin = await Tip88C1C6BA3SyntheticComposition.BrokerLogin(observerConnection);
         await using var brokerSource = NpgsqlDataSource.Create(brokerLogin);
         await using var preflight = Tip88C1C6BA3SyntheticComposition.PreflightServices();
+        var qualificationBrokerObserver = new PostgresSiteRawIngressQualificationBrokerObserver(brokerSource);
         var broker = Tip88C1C6BA3SyntheticComposition.Broker(brokerSource,
             preflight.GetRequiredService<IContentCommitmentService>(),
-            preflight.GetRequiredService<ISubjectRefTokenService>());
+            preflight.GetRequiredService<ISubjectRefTokenService>(),
+            qualificationObserver: qualificationBrokerObserver);
+        var serverMeasurement = new JoinedQualificationRequestMeasurement();
         var firstRead = new ExpectFenceFirstRead(observerConnection);
         var admission = new CaptureRuntimeRawIngressAdmissionService(
-            new RawExportIngressCapacity(1, 2, 1_048_576, 2_097_152), broker, firstRead, 1_048_576);
+            new RawExportIngressCapacity(1, 2, 1_048_576, 2_097_152), broker, firstRead,
+            1_048_576, serverMeasurement);
+        var qualificationSettings = new MutableQualificationSettings();
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions { EnvironmentName = "Testing" });
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0,
             listen => listen.UseHttps(certificate)));
@@ -1090,6 +1103,154 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
         Assert.True(await ExpectFenceCommittedR1(observerConnection));
     }
 
+    [IsolatedTlsTheory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task SiteQualification_joined_agent_tls_kestrel_broker_postgres_report_is_complete(
+        bool loseFinalResponse)
+    {
+        using var certificate = new X509Certificate2(
+            Environment.GetEnvironmentVariable("A3_TEST_TLS_IP_PFX")!,
+            Environment.GetEnvironmentVariable("A3_TEST_TLS_PFX_PASSWORD"),
+            X509KeyStorageFlags.UserKeySet);
+        await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("a3_site_measurement_joined");
+        await Prepare(isolated);
+        var scope = await Tip88C1C6BA3RetentionCheckpointTests.Seed(isolated, rawIngress: true);
+        await using var observer = isolated.CreateDbContext();
+        var connectionString = new NpgsqlConnectionStringBuilder(observer.Database.GetConnectionString())
+            { Pooling = false }.ConnectionString;
+        var brokerLogin = await Tip88C1C6BA3SyntheticComposition.BrokerLogin(connectionString);
+        await using var brokerSource = NpgsqlDataSource.Create(brokerLogin);
+        var qualificationBrokerObserver = new PostgresSiteRawIngressQualificationBrokerObserver(brokerSource);
+        await using var preflight = Tip88C1C6BA3SyntheticComposition.PreflightServices();
+        var broker = Tip88C1C6BA3SyntheticComposition.Broker(brokerSource,
+            preflight.GetRequiredService<IContentCommitmentService>(),
+            preflight.GetRequiredService<ISubjectRefTokenService>(),
+            qualificationObserver: qualificationBrokerObserver);
+        var serverMeasurement = new JoinedQualificationRequestMeasurement();
+        await using var minio = await DurableObjectMinioFixture.StartAsync();
+        await using var logins = await Tip88C1C6BA3SyntheticComposition.CustodyLogins(connectionString);
+        await using var owners = Tip88C1C6BA3ContinuationWorkerTests.Owners(logins.Connections, minio);
+        await using var journalWrite = isolated.CreateDbContext();
+        await using var journalRead = isolated.CreateDbContext();
+        var custodyKeys = new FixtureDurableKekOperationProvider(
+            new PostgresFixtureKekJournal(journalWrite), new PostgresFixtureKekJournal(journalRead));
+        var brokerOptions = RawIngressBrokerOptions.Read(
+            Tip88C1C6BA3SyntheticComposition.BrokerConfiguration());
+        var bodyPipeline = new CaptureRuntimeRawIngressBodyPipeline(owners, custodyKeys, custodyKeys,
+            preflight.GetRequiredService<IContentCommitmentService>(),
+            DurableKeyCustodyOptions.Resolve(new ConfigurationManager()), brokerOptions,
+            CancellationToken.None);
+        var admission = new CaptureRuntimeRawIngressAdmissionService(
+            new RawExportIngressCapacity(1, 2, 1_048_576, 2_097_152), broker,
+            bodyPipeline, 1_048_576, serverMeasurement);
+        var settings = new MutableQualificationSettings();
+
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions { EnvironmentName = "Testing" });
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0,
+            listen => listen.UseHttps(certificate)));
+        builder.Services.AddDbContext<TagEkycDbContext>(options => options.UseNpgsql(connectionString));
+        builder.Services.AddScoped<ISiteRawIngressQualificationRunStore,
+            PostgresSiteRawIngressQualificationRunStore>();
+        builder.Services.AddSingleton<ICaptureRuntimeSiteTransportQualificationSettingsProvider>(settings);
+        builder.Services.AddSingleton<ISiteRawIngressTransportQualificationRuntimeGate,
+            UnqualifiedSiteGate>();
+        builder.Services.AddSingleton<ISiteRawIngressQualificationRequestMeasurement>(serverMeasurement);
+        builder.Services.AddSingleton<IApiKeyAuthenticator, QualificationApiKeyAuthenticator>();
+        builder.Services.AddSingleton<ICaptureRuntimeActivationEvidenceSealProvider>(
+            new ActivationEvidenceTestSeals.Provider(ActivationEvidenceTestSeals.Valid(0)));
+        builder.Services.AddSingleton<ICaptureRuntimeDbContextFactory>(
+            new CaptureRuntimeDbContextFactory(new(connectionString, connectionString)));
+        builder.Services.AddScoped<ICaptureRuntimeRequestAuthenticator, CaptureRuntimeRequestAuthenticator>();
+        builder.Services.AddSingleton<ICaptureRuntimeRawIngressAdmission>(admission);
+        await using var app = builder.Build();
+        app.MapSiteRawIngressQualificationMeasurementEndpoints();
+        app.MapCaptureRuntimeRawIngressEndpoints();
+        await app.StartAsync();
+        var origin = new Uri(app.Services.GetRequiredService<IServer>().Features
+            .Get<IServerAddressesFeature>()!.Addresses.Single());
+        settings.Current = new("synthetic-site", origin.AbsoluteUri.TrimEnd('/'),
+            "synthetic-deployment-1", TimeSpan.FromMinutes(5));
+
+        using var keys = new Tip88C1C6BA3R2R6TransportHarnessTests.FixtureKeys();
+        var plaintext = "synthetic-retainedsource"u8.ToArray();
+        using var fixture = new Tip88C1C6BA3R2R6TransportHarnessTests.TransportAgentFixture(
+            origin, keys, scope.Session, scope.Artifact,
+            rawClass: RawExportRawClass.LiveSelfieImage, plaintext: plaintext.ToArray());
+        await observer.Database.ExecuteSqlInterpolatedAsync($"""
+            UPDATE tagekyc.capture_runtime_credential_generations
+            SET "PublicVerifierSpki"={keys.Spki},"PublicKeyThumbprint"={keys.Thumbprint}
+            WHERE "CredentialId"={fixture.Journal.State.CredentialId!.Value}
+              AND "Generation"={fixture.Journal.State.Generation!.Value}
+            ;
+            UPDATE tagekyc.capture_execution_bindings
+            SET "PublicKeyThumbprint"={keys.Thumbprint}
+            WHERE "CredentialId"={fixture.Journal.State.CredentialId.Value}
+              AND "CredentialGeneration"={fixture.Journal.State.Generation.Value}
+            """);
+        await using (var enrollmentDb = isolated.CreateDbContext())
+        {
+            var enrollmentStore = new PostgresSiteRawIngressQualificationRunStore(enrollmentDb);
+            Assert.True(await enrollmentStore.EnrollSyntheticCredentialAsync(new(
+                settings.Current.SiteId, settings.Current.EndpointOrigin,
+                settings.Current.DeploymentRevision, fixture.Journal.State.CredentialId.Value,
+                fixture.Journal.State.Generation.Value, DateTimeOffset.UtcNow.AddMinutes(10),
+                QualificationApiKeyAuthenticator.ApiKeyId), DateTimeOffset.UtcNow,
+                CancellationToken.None));
+        }
+        using var qualification = new SiteRawIngressQualificationCoordinator(
+            origin, "synthetic-qualification-api-key",
+            loseFinalResponse ? "LostFinalNoRetry" : "FullBodyHeldCommit", 60);
+        using var agent = new CaptureRuntimeHttpClient(origin, fixture.Journal, keys, fixture.Clock,
+            siteQualification: qualification);
+        var now = fixture.Clock.UtcNow;
+        var cache = new RawExportAgentConfigurationCache(fixture.Journal.State.CaptureAgentId!.Value);
+        var limits = new RawExportAgentConfigurationLimits(600);
+        cache.Apply(new(false, new(fixture.Journal.State.CaptureAgentId.Value, Guid.NewGuid(), 1,
+            now.AddMinutes(-1), now.AddMinutes(20), true, 300, 100, 60, 1024, 1024, 4096,
+            1024, 4096, 1024), "\"site-qualification\""), now, limits);
+        using var retainedOwner = new RawExportRetainedSubmissionOwner(agent, cache, limits,
+            new(new(1024, 1024, 2, 2048)));
+        using var retained = retainedOwner.Adopt(new SensitiveByteBuffer(plaintext.ToArray()),
+            RawExportRawClass.LiveSelfieImage, fixture.Metadata.CapturedAtUtc);
+        var acceptance = new RawCaptureAcceptanceDto(scope.Artifact, Guid.NewGuid(), 1,
+            "LiveSelfieImage");
+        var send = retainedOwner.SubmitAsync(retained, scope.Session.ToString("N"),
+            acceptance, scope.Artifact);
+
+        if (loseFinalResponse)
+        {
+            var lost = await Assert.ThrowsAsync<CaptureAgentFlowException>(() =>
+                send.WaitAsync(TimeSpan.FromSeconds(120)));
+            Assert.Equal("SUBMISSION_STATE_UNKNOWN", lost.ReasonCode);
+            var retry = await Assert.ThrowsAsync<CaptureAgentFlowException>(() =>
+                retainedOwner.SubmitAsync(retained, scope.Session.ToString("N"),
+                    acceptance, scope.Artifact));
+            Assert.Equal("SUBMISSION_STATE_UNKNOWN", retry.ReasonCode);
+        }
+        else
+        {
+            _ = await send.WaitAsync(TimeSpan.FromSeconds(120));
+        }
+
+        var report = Assert.Single(qualification.Reports);
+        Assert.Equal("BrokerCommitted", report.State);
+        Assert.True(report.EvidenceComplete);
+        Assert.True(report.AgentObservationCompleted);
+        Assert.True(report.ServerObservationCompleted);
+        Assert.Equal(1, report.RawPostCount);
+        Assert.Equal(1, report.ClientTransportEntryCount);
+        Assert.Equal(plaintext.Length, report.ContentBytesCopied);
+        Assert.Equal(0, report.AgentBodyBytesSentWhileBrokerHeld);
+        Assert.Equal(0, report.ServerApplicationBodyReadsWhileBrokerHeld);
+        Assert.True(report.ObservedContinue);
+        Assert.False(report.ContinueObservedBeforeBrokerCommit);
+        Assert.False(report.ApplicationPrebufferObserved);
+        Assert.Equal(!loseFinalResponse, report.FinalResponseObserved);
+        Assert.True(report.KestrelContinueRelayedAfterCommit);
+        Assert.False(report.HiddenRetryObserved);
+    }
+
     // F3 is a topology mutation, not a product-source mutation. A transparent
     // intermediary forwards the headers to the real Kestrel/B transaction.
     // The mutation makes that intermediary synthesize 100 before Kestrel can
@@ -1126,18 +1287,34 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
         var brokerLogin = await Tip88C1C6BA3SyntheticComposition.BrokerLogin(observerConnection);
         await using var brokerSource = NpgsqlDataSource.Create(brokerLogin);
         await using var preflight = Tip88C1C6BA3SyntheticComposition.PreflightServices();
+        var qualificationBrokerObserver = new PostgresSiteRawIngressQualificationBrokerObserver(brokerSource);
         var broker = Tip88C1C6BA3SyntheticComposition.Broker(brokerSource,
             preflight.GetRequiredService<IContentCommitmentService>(),
-            preflight.GetRequiredService<ISubjectRefTokenService>());
+            preflight.GetRequiredService<ISubjectRefTokenService>(),
+            qualificationObserver: qualificationBrokerObserver);
+        var serverMeasurement = new JoinedQualificationRequestMeasurement();
+        var qualificationSettings = new MutableQualificationSettings();
         var firstRead = new ExpectFenceFirstRead(observerConnection);
         var admission = new CaptureRuntimeRawIngressAdmissionService(
-            new RawExportIngressCapacity(1, 2, 1_048_576, 2_097_152), broker, firstRead, 1_048_576);
+            new RawExportIngressCapacity(1, 2, 1_048_576, 2_097_152), broker, firstRead,
+            1_048_576, serverMeasurement);
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions { EnvironmentName = "Testing" });
         builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0,
             listen => listen.UseHttps(certificate)));
-        builder.Services.AddSingleton<ICaptureRuntimeRequestAuthenticator, AcceptedRuntimeAuthenticator>();
+        builder.Services.AddSingleton<ICaptureRuntimeDbContextFactory>(
+            new CaptureRuntimeDbContextFactory(new(observerConnection, observerConnection)));
+        builder.Services.AddScoped<ICaptureRuntimeRequestAuthenticator, CaptureRuntimeRequestAuthenticator>();
         builder.Services.AddSingleton<ICaptureRuntimeRawIngressAdmission>(admission);
-        builder.Services.AddCurrentSiteQualificationForRawIngressTests();
+        builder.Services.AddSingleton<ISiteRawIngressTransportQualificationRuntimeGate,
+            UnqualifiedSiteGate>();
+        builder.Services.AddDbContext<TagEkycDbContext>(options => options.UseNpgsql(observerConnection));
+        builder.Services.AddScoped<ISiteRawIngressQualificationRunStore,
+            PostgresSiteRawIngressQualificationRunStore>();
+        builder.Services.AddSingleton<ICaptureRuntimeSiteTransportQualificationSettingsProvider>(qualificationSettings);
+        builder.Services.AddSingleton<ISiteRawIngressQualificationRequestMeasurement>(serverMeasurement);
+        builder.Services.AddSingleton<IApiKeyAuthenticator, QualificationApiKeyAuthenticator>();
+        builder.Services.AddSingleton<ICaptureRuntimeActivationEvidenceSealProvider>(
+            new ActivationEvidenceTestSeals.Provider(ActivationEvidenceTestSeals.Valid(0)));
         await using var app = builder.Build();
         var rawPosts = 0;
         var serverBodyProbe = new ExpectFenceServerBodyProbe(observerConnection);
@@ -1151,19 +1328,61 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
             }
             await next(context);
         });
+        app.MapSiteRawIngressQualificationMeasurementEndpoints();
         app.MapCaptureRuntimeRawIngressEndpoints();
         await app.StartAsync();
         var address = new Uri(app.Services.GetRequiredService<IServer>().Features
             .Get<IServerAddressesFeature>()!.Addresses.Single());
         await using var intermediary = new ExpectFenceForwardingIntermediary(address, certificate,
             observerConnection, prematureContinue);
+        qualificationSettings.Current = new("synthetic-site",
+            intermediary.Origin.AbsoluteUri.TrimEnd('/'), "synthetic-deployment-1",
+            TimeSpan.FromMinutes(5));
         using var agentKeys = new Tip88C1C6BA3R2R6TransportHarnessTests.FixtureKeys();
+        var plaintext = "synthetic-retainedsource"u8.ToArray();
         using var fixture = new Tip88C1C6BA3R2R6TransportHarnessTests.TransportAgentFixture(
             intermediary.Origin, agentKeys, scope.Session, scope.Artifact,
-            rawClass: RawExportRawClass.LiveSelfieImage, plaintext: [0x5A]);
+            rawClass: RawExportRawClass.LiveSelfieImage, plaintext: plaintext.ToArray());
+        await observer.Database.ExecuteSqlInterpolatedAsync($"""
+            UPDATE tagekyc.capture_runtime_credential_generations
+            SET "PublicVerifierSpki"={agentKeys.Spki},"PublicKeyThumbprint"={agentKeys.Thumbprint}
+            WHERE "CredentialId"={fixture.Journal.State.CredentialId!.Value}
+              AND "Generation"={fixture.Journal.State.Generation!.Value}
+            ;
+            UPDATE tagekyc.capture_execution_bindings
+            SET "PublicKeyThumbprint"={agentKeys.Thumbprint}
+            WHERE "CredentialId"={fixture.Journal.State.CredentialId.Value}
+              AND "CredentialGeneration"={fixture.Journal.State.Generation.Value}
+            """);
+        await using (var enrollmentDb = isolated.CreateDbContext())
+        {
+            var enrollmentStore = new PostgresSiteRawIngressQualificationRunStore(enrollmentDb);
+            Assert.True(await enrollmentStore.EnrollSyntheticCredentialAsync(new(
+                qualificationSettings.Current.SiteId, qualificationSettings.Current.EndpointOrigin,
+                qualificationSettings.Current.DeploymentRevision,
+                fixture.Journal.State.CredentialId!.Value,
+                fixture.Journal.State.Generation!.Value,
+                DateTimeOffset.UtcNow.AddMinutes(10), QualificationApiKeyAuthenticator.ApiKeyId),
+                DateTimeOffset.UtcNow, CancellationToken.None));
+        }
+        using var qualification = new SiteRawIngressQualificationCoordinator(
+            intermediary.Origin, "synthetic-qualification-api-key", "FullBodyHeldCommit", 600);
         using var agent = new CaptureRuntimeHttpClient(intermediary.Origin, fixture.Journal,
-            agentKeys, fixture.Clock);
-        var send = agent.SubmitRawExportSourceAsync(fixture.Metadata, fixture.Lease);
+            agentKeys, fixture.Clock, siteQualification: qualification);
+        var now = fixture.Clock.UtcNow;
+        var cache = new RawExportAgentConfigurationCache(fixture.Journal.State.CaptureAgentId!.Value);
+        var limits = new RawExportAgentConfigurationLimits(600);
+        cache.Apply(new(false, new(fixture.Journal.State.CaptureAgentId.Value, Guid.NewGuid(), 1,
+            now.AddMinutes(-1), now.AddMinutes(20), true, 300, 100, 60, 1024, 1024, 4096,
+            1024, 4096, 1024), "\"site-qualification-f3\""), now, limits);
+        using var retainedOwner = new RawExportRetainedSubmissionOwner(agent, cache, limits,
+            new(new(1024, 1024, 2, 2048)));
+        using var retained = retainedOwner.Adopt(new SensitiveByteBuffer(plaintext.ToArray()),
+            RawExportRawClass.LiveSelfieImage, fixture.Metadata.CapturedAtUtc);
+        var acceptance = new RawCaptureAcceptanceDto(scope.Artifact, Guid.NewGuid(), 1,
+            "LiveSelfieImage");
+        var send = retainedOwner.SubmitAsync(retained, scope.Session.ToString("N"),
+            acceptance, scope.Artifact);
         try
         {
             var waiting = false;
@@ -1176,7 +1395,17 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
                 if (waiting) break;
                 await Task.Delay(25);
             }
-            Assert.True(waiting, "Forwarded headers did not reach the held B/R1 transaction.");
+            if (!waiting)
+            {
+                var runState = await observer.Database.SqlQueryRaw<string>("""
+                    SELECT COALESCE(pg_catalog.string_agg(
+                      q."State" || ':posts=' || q."RawPostCount"::text ||
+                      ':server=' || q."ServerBodyReadsWhileBrokerHeld"::text, ','), 'NONE') AS "Value"
+                    FROM tagekyc.site_raw_ingress_qualification_runs AS q
+                    """).SingleAsync();
+                throw new Xunit.Sdk.XunitException(
+                    $"Forwarded headers did not reach the held B/R1 transaction; run={runState}; rawPosts={Volatile.Read(ref rawPosts)}; send={send.Status}; proxy={intermediary.CompletionStatus}; trace={intermediary.Trace}.");
+            }
             Assert.False(await ExpectFenceCommittedR1(observerConnection));
             Assert.Equal(1, Volatile.Read(ref rawPosts));
             Assert.Equal(0, serverBodyProbe.FirstReadCalls);
@@ -1186,8 +1415,11 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
                 var committedAtProxyFirstBody = await intermediary.FirstBodyRead.WaitAsync(TimeSpan.FromSeconds(10));
                 // The intended F3 RED: the Agent trusted the TLS peer, but
                 // that peer was not the Kestrel workload that committed B/R1.
-                Assert.True(committedAtProxyFirstBody,
-                    "An intermediary-generated 100 released raw body before durable B/R1.");
+                if (Environment.GetEnvironmentVariable("A3_LAYER2_EXPECT_HOSTILE") == "1")
+                    Assert.False(committedAtProxyFirstBody);
+                else
+                    Assert.True(committedAtProxyFirstBody,
+                        "An intermediary-generated 100 released raw body before durable B/R1.");
             }
             else Assert.False(intermediary.FirstBodyRead.IsCompleted);
         }
@@ -1197,12 +1429,33 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
             await release.ExecuteNonQueryAsync();
         }
         var result = await send.WaitAsync(TimeSpan.FromSeconds(30));
-        Assert.Equal(RawExportSourceIngressCodes.TemporarilyUnavailable, result.OutcomeCode);
-        Assert.True(await intermediary.FirstBodyRead.WaitAsync(TimeSpan.FromSeconds(10)));
+        Assert.Equal(RawExportSourceIngressCodes.TemporarilyUnavailable, result.Result.OutcomeCode);
+        Assert.Equal(!prematureContinue,
+            await intermediary.FirstBodyRead.WaitAsync(TimeSpan.FromSeconds(10)));
         Assert.Equal(1, Volatile.Read(ref rawPosts));
         Assert.Equal(1, serverBodyProbe.FirstReadCalls);
         Assert.True(serverBodyProbe.CommittedAtFirstRead);
         Assert.True(firstRead.CommittedAtRead);
+        var qualificationReport = Assert.Single(qualification.Reports);
+        Assert.Equal(prematureContinue, qualificationReport.ContinueObservedBeforeBrokerCommit);
+        Assert.Equal(!prematureContinue, qualificationReport.KestrelContinueRelayedAfterCommit);
+        var proxyTrace = intermediary.Trace.Split('|', StringSplitOptions.RemoveEmptyEntries);
+        Assert.Contains(proxyTrace, entry => entry.Contains(
+            ":request:POST:/api/ekyc/site-transport-qualification/runs:raw=False",
+            StringComparison.Ordinal));
+        Assert.Contains(proxyTrace, entry => entry.Contains(
+            ":request:POST:/api/ekyc/raw-export/source-ingress:raw=True",
+            StringComparison.Ordinal));
+        Assert.Equal(prematureContinue ? 1 : 0, proxyTrace.Count(entry => entry.EndsWith(
+            ":early-continue-emitted:/api/ekyc/raw-export/source-ingress",
+            StringComparison.Ordinal)));
+        if (Environment.GetEnvironmentVariable("A3_SITE_QUALIFICATION_MEASUREMENT_PATH") is
+            { Length: > 0 } measurementPath)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(measurementPath)!);
+            await File.WriteAllBytesAsync(measurementPath,
+                JsonSerializer.SerializeToUtf8Bytes(qualificationReport));
+        }
         if (!prematureContinue &&
             Environment.GetEnvironmentVariable("A3_SITE_QUALIFICATION_RECORD_PATH") is { Length: > 0 } recordPath)
         {
@@ -1414,60 +1667,295 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
         return (bool)(await command.ExecuteScalarAsync())!;
     }
 
+    [IsolatedTlsFact]
+    public async Task ExpectFence_intermediary_propagates_unexpected_connection_fault_before_shutdown()
+    {
+        using var certificate = new X509Certificate2(
+            Environment.GetEnvironmentVariable("A3_TEST_TLS_IP_PFX")!,
+            Environment.GetEnvironmentVariable("A3_TEST_TLS_PFX_PASSWORD"),
+            X509KeyStorageFlags.UserKeySet);
+        var intermediary = new ExpectFenceForwardingIntermediary(
+            new Uri("https://127.0.0.1:1"), certificate, "unused", false,
+            _ => new IOException("F3_UNEXPECTED_CONNECTION_FAULT"));
+        using var client = new TcpClient();
+        await client.ConnectAsync(intermediary.Origin.IdnHost, intermediary.Origin.Port);
+        using var tls = new SslStream(client.GetStream());
+        await tls.AuthenticateAsClientAsync(new SslClientAuthenticationOptions
+        {
+            TargetHost = intermediary.Origin.IdnHost,
+            ApplicationProtocols = [SslApplicationProtocol.Http11],
+            CertificateRevocationCheckMode = X509RevocationMode.Online
+        });
+        await tls.WriteAsync(Encoding.ASCII.GetBytes(
+            "GET /fault HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n"));
+        await tls.FlushAsync();
+        for (var attempt = 0; attempt < 100 &&
+             !intermediary.Trace.Contains("fault:IOException", StringComparison.Ordinal); attempt++)
+            await Task.Delay(10);
+        Assert.Contains("fault:IOException", intermediary.Trace, StringComparison.Ordinal);
+        var failure = await Assert.ThrowsAsync<IOException>(async () =>
+            await intermediary.DisposeAsync().AsTask());
+        Assert.Equal("F3_UNEXPECTED_CONNECTION_FAULT", failure.Message);
+    }
+
+    [IsolatedTlsFact]
+    public async Task ExpectFence_intermediary_owned_cancellation_cleans_up_without_fault()
+    {
+        using var certificate = new X509Certificate2(
+            Environment.GetEnvironmentVariable("A3_TEST_TLS_IP_PFX")!,
+            Environment.GetEnvironmentVariable("A3_TEST_TLS_PFX_PASSWORD"),
+            X509KeyStorageFlags.UserKeySet);
+        var intermediary = new ExpectFenceForwardingIntermediary(
+            new Uri("https://127.0.0.1:1"), certificate, "unused", false);
+        using var client = new TcpClient();
+        await client.ConnectAsync(intermediary.Origin.IdnHost, intermediary.Origin.Port);
+        using var tls = new SslStream(client.GetStream());
+        await tls.AuthenticateAsClientAsync(new SslClientAuthenticationOptions
+        {
+            TargetHost = intermediary.Origin.IdnHost,
+            ApplicationProtocols = [SslApplicationProtocol.Http11],
+            CertificateRevocationCheckMode = X509RevocationMode.Online
+        });
+        for (var attempt = 0; attempt < 100 &&
+             !intermediary.Trace.Contains("tls-server-authenticated", StringComparison.Ordinal); attempt++)
+            await Task.Delay(10);
+        Assert.Contains("tls-server-authenticated", intermediary.Trace, StringComparison.Ordinal);
+        await intermediary.DisposeAsync();
+        Assert.DoesNotContain(":fault:", intermediary.Trace, StringComparison.Ordinal);
+        Assert.Contains(":shutdown:", intermediary.Trace, StringComparison.Ordinal);
+    }
+
+    [IsolatedTlsTheory]
+    [InlineData("agent-to-kestrel")]
+    [InlineData("kestrel-to-agent")]
+    public async Task ExpectFence_intermediary_preserves_forwarding_fault_that_precedes_shutdown(
+        string faultDirection)
+    {
+        using var certificate = new X509Certificate2(
+            Environment.GetEnvironmentVariable("A3_TEST_TLS_IP_PFX")!,
+            Environment.GetEnvironmentVariable("A3_TEST_TLS_PFX_PASSWORD"),
+            X509KeyStorageFlags.UserKeySet);
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+        {
+            EnvironmentName = "Testing"
+        });
+        builder.WebHost.ConfigureKestrel(options => options.Listen(IPAddress.Loopback, 0,
+            listen => listen.UseHttps(certificate)));
+        await using var app = builder.Build();
+        app.MapPost("/pending", async context =>
+            await Task.Delay(Timeout.InfiniteTimeSpan, context.RequestAborted));
+        await app.StartAsync();
+        var upstream = new Uri(app.Services.GetRequiredService<IServer>().Features
+            .Get<IServerAddressesFeature>()!.Addresses.Single());
+
+        var intermediary = new ExpectFenceForwardingIntermediary(
+            upstream, certificate, "unused", false,
+            forwardingFaultDirection: faultDirection);
+        using var client = new TcpClient();
+        await client.ConnectAsync(intermediary.Origin.IdnHost, intermediary.Origin.Port);
+        using var tls = new SslStream(client.GetStream());
+        await tls.AuthenticateAsClientAsync(new SslClientAuthenticationOptions
+        {
+            TargetHost = intermediary.Origin.IdnHost,
+            ApplicationProtocols = [SslApplicationProtocol.Http11],
+            CertificateRevocationCheckMode = X509RevocationMode.Online
+        });
+        await tls.WriteAsync(Encoding.ASCII.GetBytes(
+            "POST /pending HTTP/1.1\r\nHost: 127.0.0.1\r\nContent-Length: 1\r\nConnection: close\r\n\r\n"));
+        await tls.FlushAsync();
+
+        var expectedFault = $"forwarding-fault-observed:{faultDirection}:IOException";
+        for (var attempt = 0; attempt < 200 &&
+             !intermediary.Trace.Contains(expectedFault, StringComparison.Ordinal); attempt++)
+            await Task.Delay(10);
+        Assert.Contains("forwarding-started:agent-to-kestrel", intermediary.Trace,
+            StringComparison.Ordinal);
+        Assert.Contains("forwarding-started:kestrel-to-agent", intermediary.Trace,
+            StringComparison.Ordinal);
+        Assert.Contains(expectedFault, intermediary.Trace, StringComparison.Ordinal);
+        Assert.DoesNotContain(":fault:IOException", intermediary.Trace, StringComparison.Ordinal);
+
+        var failure = await Assert.ThrowsAsync<IOException>(async () =>
+            await intermediary.DisposeAsync().AsTask());
+        Assert.Equal($"F3_UNEXPECTED_FORWARDING_FAULT:{faultDirection}", failure.Message);
+        Assert.Contains(":fault:IOException", intermediary.Trace, StringComparison.Ordinal);
+    }
+
     private sealed class ExpectFenceForwardingIntermediary : IAsyncDisposable
     {
         private readonly TcpListener listener = new(IPAddress.Loopback, 0);
         private readonly CancellationTokenSource lifetime = new(TimeSpan.FromSeconds(40));
         private readonly Task completion;
-        private TcpClient? downstream;
-        private TcpClient? upstream;
+        private readonly ConcurrentDictionary<int, TcpClient> downstreams = new();
+        private readonly ConcurrentDictionary<int, TcpClient> upstreams = new();
+        private readonly ConcurrentDictionary<int, Task> connections = new();
         private readonly TaskCompletionSource<bool> firstBodyRead =
             new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private readonly ConcurrentQueue<string> trace = new();
+        private readonly Func<string, Exception?>? connectionFault;
+        private readonly string? forwardingFaultDirection;
+        private int connectionOrdinal;
 
         public Uri Origin { get; }
         public Task<bool> FirstBodyRead => firstBodyRead.Task;
+        public string Trace => string.Join("|", trace);
+        public string CompletionStatus => $"accept={completion.Status};connections=" +
+            string.Join(',', connections.OrderBy(pair => pair.Key)
+                .Select(pair => $"c{pair.Key}:{pair.Value.Status}"));
 
         public ExpectFenceForwardingIntermediary(Uri kestrelOrigin, X509Certificate2 certificate,
-            string observerConnection, bool prematureContinue)
+            string observerConnection, bool prematureContinue,
+            Func<string, Exception?>? connectionFault = null,
+            string? forwardingFaultDirection = null)
         {
+            this.connectionFault = connectionFault;
+            this.forwardingFaultDirection = forwardingFaultDirection;
             listener.Start();
             Origin = new Uri($"https://127.0.0.1:{((IPEndPoint)listener.LocalEndpoint).Port}");
-            completion = Task.Run(async () =>
-            {
-                var token = lifetime.Token;
-                downstream = await listener.AcceptTcpClientAsync(token);
-                using var agentTls = new SslStream(downstream.GetStream());
-                await agentTls.AuthenticateAsServerAsync(new SslServerAuthenticationOptions
-                {
-                    ServerCertificate = certificate,
-                    ApplicationProtocols = [SslApplicationProtocol.Http11]
-                }, token);
-                var headers = await ReadHeaders(agentTls, token);
-
-                upstream = new TcpClient();
-                await upstream.ConnectAsync(kestrelOrigin.IdnHost, kestrelOrigin.Port, token);
-                using var kestrelTls = new SslStream(upstream.GetStream());
-                await kestrelTls.AuthenticateAsClientAsync(new SslClientAuthenticationOptions
-                {
-                    TargetHost = kestrelOrigin.IdnHost,
-                    ApplicationProtocols = [SslApplicationProtocol.Http11],
-                    CertificateRevocationCheckMode = X509RevocationMode.Online
-                }, token);
-                await kestrelTls.WriteAsync(headers, token);
-                await kestrelTls.FlushAsync(token);
-                if (prematureContinue)
-                {
-                    await agentTls.WriteAsync(Encoding.ASCII.GetBytes("HTTP/1.1 100 Continue\r\n\r\n"), token);
-                    await agentTls.FlushAsync(token);
-                }
-
-                await Task.WhenAll(ForwardAgentBody(agentTls, kestrelTls, observerConnection, token),
-                    ForwardKestrelResponse(kestrelTls, agentTls, token));
-            });
+            completion = Task.Run(() => AcceptLoop(kestrelOrigin, certificate,
+                observerConnection, prematureContinue, lifetime.Token));
         }
 
-        private async Task ForwardAgentBody(SslStream agentTls, SslStream kestrelTls,
-            string observerConnection, CancellationToken token)
+        private async Task AcceptLoop(Uri kestrelOrigin, X509Certificate2 certificate,
+            string observerConnection, bool prematureContinue, CancellationToken token)
+        {
+            try
+            {
+                while (!token.IsCancellationRequested)
+                {
+                    var downstream = await listener.AcceptTcpClientAsync(token);
+                    var ordinal = Interlocked.Increment(ref connectionOrdinal);
+                    downstreams[ordinal] = downstream;
+                    trace.Enqueue($"c{ordinal}:accepted");
+                    connections[ordinal] = HandleConnection(ordinal, downstream, kestrelOrigin,
+                        certificate, observerConnection, prematureContinue, token);
+                }
+            }
+            catch (OperationCanceledException) when (token.IsCancellationRequested) { }
+            catch (ObjectDisposedException) when (token.IsCancellationRequested) { }
+            finally
+            {
+                await Task.WhenAll(connections.Values);
+            }
+        }
+
+        private async Task HandleConnection(int ordinal, TcpClient downstream,
+            Uri kestrelOrigin, X509Certificate2 certificate, string observerConnection,
+            bool prematureContinue, CancellationToken token)
+        {
+            var unexpectedForwardingFaults =
+                new ConcurrentQueue<System.Runtime.ExceptionServices.ExceptionDispatchInfo>();
+            try
+            {
+                using (downstream)
+                using (var agentTls = new SslStream(downstream.GetStream()))
+                {
+                    await agentTls.AuthenticateAsServerAsync(new SslServerAuthenticationOptions
+                    {
+                        ServerCertificate = certificate,
+                        ApplicationProtocols = [SslApplicationProtocol.Http11]
+                    }, token);
+                    trace.Enqueue($"c{ordinal}:tls-server-authenticated");
+                    var headers = await ReadHeaders(agentTls, token);
+                    var requestLine = Encoding.ASCII.GetString(headers).Split("\r\n", 2)[0].Split(' ');
+                    var method = requestLine.ElementAtOrDefault(0) ?? string.Empty;
+                    var path = requestLine.ElementAtOrDefault(1) ?? string.Empty;
+                    var isRaw = method == "POST" && path == "/api/ekyc/raw-export/source-ingress";
+                    trace.Enqueue($"c{ordinal}:request:{method}:{path}:raw={isRaw}");
+                    if (connectionFault?.Invoke(path) is { } injected) throw injected;
+
+                    using var upstream = new TcpClient();
+                    upstreams[ordinal] = upstream;
+                    await upstream.ConnectAsync(kestrelOrigin.IdnHost, kestrelOrigin.Port, token);
+                    using var kestrelTls = new SslStream(upstream.GetStream());
+                    await kestrelTls.AuthenticateAsClientAsync(new SslClientAuthenticationOptions
+                    {
+                        TargetHost = kestrelOrigin.IdnHost,
+                        ApplicationProtocols = [SslApplicationProtocol.Http11],
+                        CertificateRevocationCheckMode = X509RevocationMode.Online
+                    }, token);
+                    trace.Enqueue($"c{ordinal}:tls-upstream-authenticated");
+                    await kestrelTls.WriteAsync(headers, token);
+                    await kestrelTls.FlushAsync(token);
+                    if (prematureContinue && isRaw)
+                    {
+                        trace.Enqueue($"c{ordinal}:early-continue-emitted:{path}");
+                        await agentTls.WriteAsync(
+                            Encoding.ASCII.GetBytes("HTTP/1.1 100 Continue\r\n\r\n"), token);
+                        await agentTls.FlushAsync(token);
+                    }
+
+                    var bothForwardingStarted = new TaskCompletionSource(
+                        TaskCreationOptions.RunContinuationsAsynchronously);
+                    var forwardingStarted = 0;
+                    await Task.WhenAll(
+                        ObserveForwarding(ordinal, path, "agent-to-kestrel",
+                            () => ForwardAgentBody(ordinal, isRaw, agentTls, kestrelTls,
+                                observerConnection, token),
+                            unexpectedForwardingFaults, bothForwardingStarted,
+                            () => Interlocked.Increment(ref forwardingStarted), token),
+                        ObserveForwarding(ordinal, path, "kestrel-to-agent",
+                            () => ForwardKestrelResponse(kestrelTls, agentTls, token),
+                            unexpectedForwardingFaults, bothForwardingStarted,
+                            () => Interlocked.Increment(ref forwardingStarted), token));
+                }
+                trace.Enqueue($"c{ordinal}:completed");
+            }
+            catch (Exception error)
+            {
+                if (unexpectedForwardingFaults.TryDequeue(out var recorded))
+                {
+                    trace.Enqueue($"c{ordinal}:fault:{recorded.SourceException.GetType().Name}");
+                    recorded.Throw();
+                }
+                if (IsOwnedShutdown(error, token))
+                {
+                    trace.Enqueue($"c{ordinal}:shutdown:{error.GetType().Name}");
+                    return;
+                }
+                trace.Enqueue($"c{ordinal}:fault:{error.GetType().Name}");
+                throw;
+            }
+            finally
+            {
+                downstreams.TryRemove(ordinal, out _);
+                upstreams.TryRemove(ordinal, out _);
+            }
+        }
+
+        private async Task ObserveForwarding(int ordinal, string path, string direction,
+            Func<Task> forward,
+            ConcurrentQueue<System.Runtime.ExceptionServices.ExceptionDispatchInfo>
+                unexpectedForwardingFaults,
+            TaskCompletionSource bothForwardingStarted, Func<int> markStarted,
+            CancellationToken token)
+        {
+            trace.Enqueue($"c{ordinal}:forwarding-started:{direction}");
+            if (markStarted() == 2) bothForwardingStarted.TrySetResult();
+            await bothForwardingStarted.Task.WaitAsync(token);
+            try
+            {
+                if (string.Equals(forwardingFaultDirection, direction,
+                    StringComparison.Ordinal))
+                    throw new IOException($"F3_UNEXPECTED_FORWARDING_FAULT:{direction}");
+                await forward();
+            }
+            catch (Exception error)
+            {
+                if (!IsOwnedShutdown(error, token))
+                {
+                    unexpectedForwardingFaults.Enqueue(
+                        System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(error));
+                    trace.Enqueue($"c{ordinal}:forwarding-fault-observed:{direction}:" +
+                        error.GetType().Name);
+                }
+                throw;
+            }
+        }
+
+        private async Task ForwardAgentBody(int ordinal, bool observeRawBody,
+            SslStream agentTls, SslStream kestrelTls, string observerConnection,
+            CancellationToken token)
         {
             var buffer = new byte[4096];
             var first = true;
@@ -1478,7 +1966,9 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
                 if (first)
                 {
                     first = false;
-                    firstBodyRead.TrySetResult(await ExpectFenceCommittedR1(observerConnection));
+                    trace.Enqueue($"c{ordinal}:first-body-read:raw={observeRawBody}");
+                    if (observeRawBody)
+                        firstBodyRead.TrySetResult(await ExpectFenceCommittedR1(observerConnection));
                 }
                 await kestrelTls.WriteAsync(buffer.AsMemory(0, read), token);
                 await kestrelTls.FlushAsync(token);
@@ -1522,13 +2012,15 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
         {
             await lifetime.CancelAsync();
             listener.Stop();
-            downstream?.Dispose();
-            upstream?.Dispose();
+            foreach (var client in downstreams.Values) client.Dispose();
+            foreach (var client in upstreams.Values) client.Dispose();
             try { await completion; }
-            catch (Exception error) when (error is OperationCanceledException or SocketException or IOException
-                or System.Security.Authentication.AuthenticationException or ObjectDisposedException) { }
-            lifetime.Dispose();
+            finally { lifetime.Dispose(); }
         }
+
+        private static bool IsOwnedShutdown(Exception error, CancellationToken token) =>
+            token.IsCancellationRequested && error is OperationCanceledException or SocketException or IOException
+                or System.Security.Authentication.AuthenticationException or ObjectDisposedException;
     }
 
     private sealed class ExpectFenceServerBodyProbe(string connectionString)
@@ -1813,6 +2305,59 @@ public sealed class Tip88C1C6BA3R2R6ClusterHttpTests(PostgresPersistenceFixture 
                     Guid.Parse("10000000-0000-4000-8000-000000000001"), 1, 1, 1, 1,
                     request.SignedAtUtc, request.Nonce, SHA256.HashData(request.ExactSignedPreimage.Span))));
     }
+
+#if A3_ACCEPTANCE
+    private sealed class MutableQualificationSettings
+        : ICaptureRuntimeSiteTransportQualificationSettingsProvider
+    {
+        public CaptureRuntimeSiteTransportQualificationSettings Current { get; set; } = new(
+            "synthetic-site", "https://127.0.0.1:1", "synthetic-deployment-1",
+            TimeSpan.FromMinutes(5));
+    }
+
+    private sealed class UnqualifiedSiteGate : ISiteRawIngressTransportQualificationRuntimeGate
+    {
+        public CaptureRuntimeSiteTransportQualificationEvaluation Evaluate(DateTimeOffset now) => new(
+            CaptureRuntimeSiteTransportQualificationState.Missing,
+            CaptureRuntimeSiteTransportQualificationPolicy.InvalidCode);
+    }
+
+    private sealed class QualificationApiKeyAuthenticator : IApiKeyAuthenticator
+    {
+        internal static readonly Guid ApiKeyId =
+            Guid.Parse("30000000-0000-4000-8000-000000000001");
+        public Task<SessionOperationResult<AuthenticatedClientContext>> AuthenticateAsync(
+            HttpContext httpContext, string? requiredScope = null,
+            CancellationToken cancellationToken = default)
+        {
+            Assert.Equal(SiteRawIngressQualificationMeasurementEndpoints.Scope, requiredScope);
+            Assert.Equal("synthetic-qualification-api-key",
+                httpContext.Request.Headers["X-TagEkyc-Api-Key"].ToString());
+            return Task.FromResult(SessionOperationResult<AuthenticatedClientContext>.Success(new(
+                ApiKeyId,
+                Guid.Parse("30000000-0000-4000-8000-000000000002"), "qualification",
+                AuthenticatedCallerCategory.CaptureAgent,
+                new HashSet<string> { SiteRawIngressQualificationMeasurementEndpoints.Scope })));
+        }
+    }
+
+    private sealed class JoinedQualificationRequestMeasurement
+        : ISiteRawIngressQualificationRequestMeasurement
+    {
+        private int brokerCommitted;
+        private int readsWhileHeld;
+        public Guid? QualificationRunId { get; private set; }
+        public bool BrokerCommitted => Volatile.Read(ref brokerCommitted) != 0;
+        public int BodyReadsWhileBrokerHeld => Volatile.Read(ref readsWhileHeld);
+        public void Begin(Guid qualificationRunId) => QualificationRunId = qualificationRunId;
+        public void MarkBrokerCommitted() => Interlocked.Exchange(ref brokerCommitted, 1);
+        public void ObserveBodyRead()
+        {
+            if (!BrokerCommitted) Interlocked.Increment(ref readsWhileHeld);
+        }
+    }
+
+#endif
 }
 
 internal static class R2R6LoopbackHttpsHarness

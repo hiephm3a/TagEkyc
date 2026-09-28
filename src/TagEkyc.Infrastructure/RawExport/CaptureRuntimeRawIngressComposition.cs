@@ -149,7 +149,8 @@ public static class CaptureRuntimeRawIngressComposition
             var profiles = QualifiedBrokerProfiles.Capture(sp.GetRequiredService<ICustodyProfileProvider>());
             return new QualifiedRawIngressBroker(source, commitment, subject, options,
                 new RawIngressBrokerTransactionFacade(source,
-                    new RetainedSourceClaimPreflight(commitment, subject), profiles, options.TransactionSettings()));
+                    new RetainedSourceClaimPreflight(commitment, subject), profiles, options.TransactionSettings(),
+                    new PostgresSiteRawIngressQualificationBrokerObserver(source)));
         });
         services.AddScoped(sp => new RawIngressBrokerTransport(options, () => sp.GetRequiredService<IRawIngressMetadataBroker>()));
         return services;
@@ -170,7 +171,9 @@ internal sealed class DeferredCaptureRuntimeRawIngressAdmission(
             services.GetRequiredService<IRawIngressMetadataBroker>(),
             services.GetRequiredService<ICaptureRuntimeRawIngressBodyPipeline>(),
             services.GetRequiredService<CaptureRuntimeRawIngressComposition.RuntimeOwners>()
-                .MaximumPlaintextWindowBytesPerStream).AdmitAsync(context, body, cancellationToken);
+                .MaximumPlaintextWindowBytesPerStream,
+            services.GetService<ISiteRawIngressQualificationRequestMeasurement>())
+            .AdmitAsync(context, body, cancellationToken);
 }
 
 internal sealed class CaptureRuntimeA3Runtime(IServiceProvider services)
@@ -296,6 +299,10 @@ internal sealed class QualifiedRawIngressBroker(NpgsqlDataSource source,
         "tagekyc.capture_runtime_read_bound_raw_ingress(uuid,uuid,uuid,bigint,uuid,bigint,uuid,uuid,integer,text,bigint,timestamptz)",
         "tagekyc.raw_export_begin_retained_source_ingress_with_authority(uuid,uuid,text,text,text,uuid,uuid,uuid,integer,text,text,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,integer,uuid,integer,integer,uuid,bigint)",
         "tagekyc.complete_raw_export_source_ingress_claim_with_r2_handoff(uuid,text,text,text,uuid,bigint,bigint,text,timestamptz,text,bytea,integer,text,integer,bytea,integer,text,integer,bytea,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,text,integer,text,integer,text,bytea,integer,bytea,text,text,integer,text,integer,integer,integer,integer)"
+        ,"tagekyc.site_qualification_broker_mark_held(uuid)"
+        ,"tagekyc.site_qualification_broker_is_released(uuid)"
+        ,"tagekyc.site_qualification_broker_mark_committed(uuid)"
+        ,"tagekyc.site_qualification_broker_is_commit_acknowledged(uuid)"
     ];
 
     public async Task<RawIngressBrokerResult> AdmitAsync(CaptureRuntimeRawIngressAdmissionContext input,
@@ -339,7 +346,7 @@ internal sealed class QualifiedRawIngressBroker(NpgsqlDataSource source,
                 JOIN actor a ON a.oid=m.roleid)
               AND pg_catalog.has_schema_privilege(session_user,'tagekyc','USAGE')
               AND NOT pg_catalog.has_schema_privilege(session_user,'tagekyc','CREATE'),
-              (SELECT count(*) FROM functions)=3
+              (SELECT count(*) FROM functions)=7
               AND NOT EXISTS(SELECT 1 FROM functions p WHERE NOT p.prosecdef
                 OR pg_catalog.pg_get_userbyid(p.proowner)<>'tagekyc_raw_export_deployer'
                 OR p.proconfig IS DISTINCT FROM ARRAY['search_path=pg_catalog']::text[]

@@ -31,22 +31,55 @@ public static partial class RawExportSourceIngressEndpoints
         var siteGate = context.RequestServices
             .GetService<ISiteRawIngressTransportQualificationRuntimeGate>();
         var site = siteGate?.Evaluate(DateTimeOffset.UtcNow);
-        if (site is null || !site.AllowsRawIngress)
-            return RuntimeError(context, 503,
-                string.IsNullOrWhiteSpace(site?.Code)
-                    ? CaptureRuntimeSiteTransportQualificationPolicy.InvalidCode : site.Code);
+        var siteCode = string.IsNullOrWhiteSpace(site?.Code)
+            ? CaptureRuntimeSiteTransportQualificationPolicy.InvalidCode : site.Code;
+        var siteQualified = site is not null && site.AllowsRawIngress;
+        SiteRawIngressQualificationRawPost? qualificationPost = null;
+        ISiteRawIngressQualificationRunStore? qualificationStore = null;
+        ISiteRawIngressQualificationRequestMeasurement? qualificationMeasurement = null;
+
+        // A normal unqualified request is still rejected before authentication,
+        // admission, or a body read. Only an exact, short-lived run binding may
+        // proceed far enough to authenticate the ordinary CRT1 request.
         if (request.Headers.ContainsKey("X-TagEkyc-Api-Key") ||
             request.Headers.ContainsKey("X-TagEkyc-Platform-Operator-Key"))
-            return RuntimeError(context, 403, CaptureRuntimeErrorCodes.AccessDenied);
+            return siteQualified
+                ? RuntimeError(context, 403, CaptureRuntimeErrorCodes.AccessDenied)
+                : RuntimeError(context, 503, siteCode);
 
         if (!TryParse(request, out var metadata) ||
             !CaptureRuntimeCrt1RequestParser.TryComputeIngressMetadataDigest(request, out var digest))
-            return RuntimeError(context, 400, CaptureRuntimeErrorCodes.RequestInvalid);
-
+            return siteQualified
+                ? RuntimeError(context, 400, CaptureRuntimeErrorCodes.RequestInvalid)
+                : RuntimeError(context, 503, siteCode);
         if (!CaptureRuntimeCrt1RequestParser.TryCreate(request, "RawIngress", metadata.MediaType,
                 metadata.ClaimedPlaintextLength, metadata.ClaimedPlaintextDigest,
                 "ingress=IngressMetadataSha256=" + digest, out var signed))
-            return RuntimeError(context, 403, CaptureRuntimeErrorCodes.AccessDenied);
+            return siteQualified
+                ? RuntimeError(context, 403, CaptureRuntimeErrorCodes.AccessDenied)
+                : RuntimeError(context, 503, siteCode);
+
+        var qualificationBinding = new SiteRawIngressQualificationRunBinding(
+            signed!.CredentialId, signed.CredentialGeneration, metadata.IngressIdempotencyKey,
+            digest, metadata.MediaType, metadata.ClaimedPlaintextLength,
+            metadata.ClaimedPlaintextDigest);
+        // Renewal measurement is discovered even while a current PASS record keeps the
+        // site open. A missing/broken measurement plane may not affect ordinary traffic
+        // on an already-qualified site, but remains fail-closed for an unqualified site.
+        qualificationStore = context.RequestServices.GetService<ISiteRawIngressQualificationRunStore>();
+        var qualificationSettings = context.RequestServices
+            .GetService<ICaptureRuntimeSiteTransportQualificationSettingsProvider>()?.Current;
+        if (qualificationStore is not null && qualificationSettings is not null)
+        {
+            try
+            {
+                qualificationPost = await qualificationStore.ObserveRawPostAsync(qualificationSettings,
+                    qualificationBinding, DateTimeOffset.UtcNow, cancellationToken).ConfigureAwait(false);
+            }
+            catch (Exception) when (siteQualified) { qualificationPost = null; }
+        }
+        if (!siteQualified && qualificationPost is not { IsActive: true })
+            return RuntimeError(context, 503, siteCode);
 
         try
         {
@@ -66,6 +99,20 @@ public static partial class RawExportSourceIngressEndpoints
             // AuthenticateAsync returns only after its nonce transaction has committed.
             // No Binding/session/acceptance lookup belongs to this boundary.
             var actor = authentication.Value!;
+            if (qualificationPost is not null)
+            {
+                if (actor.CredentialId != qualificationBinding.CredentialId ||
+                    actor.CredentialGeneration != qualificationBinding.CredentialGeneration ||
+                    !await qualificationStore!.ConsumeAuthenticatedAsync(
+                        qualificationPost.QualificationRunId, qualificationBinding,
+                        DateTimeOffset.UtcNow, cancellationToken).ConfigureAwait(false))
+                    return RuntimeError(context, 503, siteCode);
+                qualificationMeasurement = context.RequestServices
+                    .GetService<ISiteRawIngressQualificationRequestMeasurement>();
+                if (qualificationMeasurement is null)
+                    return RuntimeError(context, 503, siteCode);
+                qualificationMeasurement.Begin(qualificationPost.QualificationRunId);
+            }
             if (request.Headers.ContainsKey("Content-Encoding") || request.Headers.ContainsKey("Trailer"))
                 return MapRuntimeResult(context, new(
                     CaptureRuntimeRawIngressOutcome.TransportProtocolInvalid,
@@ -79,9 +126,30 @@ public static partial class RawExportSourceIngressEndpoints
                 metadata.IngressIdempotencyKey, metadata.MediaType, metadata.ClaimedPlaintextLength,
                 metadata.ClaimedPlaintextDigest, metadata.CapturedAtUtc,
                 metadata.PlaintextRetentionStartedAtUtc, metadata.PlaintextRetentionExpiresAtUtc,
-                metadata.PlaintextRetentionBudgetSeconds);
-            var result = await admission.AdmitAsync(handoff, request.Body, cancellationToken);
-            return MapRuntimeResult(context, result);
+                metadata.PlaintextRetentionBudgetSeconds,
+                qualificationMeasurement?.QualificationRunId);
+            var body = qualificationMeasurement is null
+                ? request.Body
+                : new SiteRawIngressQualificationBodyStream(request.Body, qualificationMeasurement);
+            CaptureRuntimeRawIngressAdmissionResult? admissionResult = null;
+            try
+            {
+                admissionResult = await admission.AdmitAsync(handoff, body, cancellationToken);
+            }
+            finally
+            {
+                if (qualificationMeasurement?.QualificationRunId is { } runId)
+                    await qualificationStore!.RecordServerBodyReadsAsync(runId,
+                        qualificationMeasurement.BodyReadsWhileBrokerHeld,
+                        DateTimeOffset.UtcNow, CancellationToken.None).ConfigureAwait(false);
+            }
+            if (qualificationPost?.Mode is SiteRawIngressQualificationRunMode.LostFinalNoRetry)
+            {
+                // The server observer is durable before the connection is deliberately lost.
+                context.Abort();
+                return Results.Empty;
+            }
+            return MapRuntimeResult(context, admissionResult!);
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {

@@ -3,7 +3,9 @@ param(
     [string]$ResultPrefix = 'a3-expect-strict-linux-rollback',
     [switch]$EarlyContinueMutation,
     [switch]$ExpectedTestFailure,
+    [switch]$Layer2ExpectedHostile,
     [string]$QualificationRecordPath,
+    [string]$QualificationMeasurementPath,
     [string]$QualificationSiteId = 'development-site',
     [string]$QualificationDeploymentRevision = 'development-1'
 )
@@ -46,11 +48,23 @@ try {
             '-e', "A3_SITE_QUALIFICATION_SITE_ID=$QualificationSiteId",
             '-e', "A3_SITE_QUALIFICATION_DEPLOYMENT_REVISION=$QualificationDeploymentRevision")
     }
+    if ($QualificationMeasurementPath) {
+        $resolvedMeasurement = [System.IO.Path]::GetFullPath($QualificationMeasurementPath)
+        if (-not $resolvedMeasurement.StartsWith($repoRoot + [System.IO.Path]::DirectorySeparatorChar,
+                [System.StringComparison]::OrdinalIgnoreCase)) {
+            throw 'Qualification measurement must stay inside the TagEkyc repository.'
+        }
+        $measurementRelative = [System.IO.Path]::GetRelativePath(
+            $repoRoot, $resolvedMeasurement).Replace('\', '/')
+        $recordEnvironment += @(
+            '-e', "A3_SITE_QUALIFICATION_MEASUREMENT_PATH=/work/TagEkyc/$measurementRelative")
+    }
     $dockerArguments = @('run', '--rm', '--network', 'tagekyc_default',
         '-e', 'A3_ISOLATED_TLS_CONTAINER=1',
         '-e', "A3_TLS_FILTER=$TestFilter",
         '-e', "A3_TLS_RESULT_PREFIX=$ResultPrefix",
         '-e', "A3_F3_EARLY_CONTINUE=$([int]$EarlyContinueMutation.IsPresent)") +
+        @('-e', "A3_LAYER2_EXPECT_HOSTILE=$([int]$Layer2ExpectedHostile.IsPresent)") +
         $recordEnvironment + @(
         '-v', '/var/run/docker.sock:/var/run/docker.sock',
         '-v', "${parent}:/work",

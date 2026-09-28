@@ -1,5 +1,6 @@
 using Npgsql;
 using NpgsqlTypes;
+using TagEkyc.Application.CaptureRuntime;
 using TagEkyc.Application.Ports;
 using TagEkyc.Contracts.RawExport;
 
@@ -18,15 +19,18 @@ public sealed class RawIngressBrokerTransactionFacade : IRawIngressMetadataBroke
     private readonly RetainedSourceClaimPreflight preflight;
     private readonly ICustodyProfileProvider profiles;
     private readonly RawIngressBrokerTransactionSettings settings;
+    private readonly ISiteRawIngressQualificationBrokerObserver? qualificationObserver;
 
     internal RawIngressBrokerTransactionFacade(NpgsqlDataSource dataSource,
         RetainedSourceClaimPreflight preflight, ICustodyProfileProvider profiles,
-        RawIngressBrokerTransactionSettings settings)
+        RawIngressBrokerTransactionSettings settings,
+        ISiteRawIngressQualificationBrokerObserver? qualificationObserver = null)
     {
         this.dataSource = dataSource;
         this.preflight = preflight;
         this.profiles = profiles;
         this.settings = settings;
+        this.qualificationObserver = qualificationObserver;
         if (settings.EvaluationOwnerId == Guid.Empty
             || settings.EvaluationTokenTtlSeconds is < 1 or > 3600
             || settings.IdempotencyLockTimeoutMilliseconds is < 1 or > 30000
@@ -95,7 +99,11 @@ public sealed class RawIngressBrokerTransactionFacade : IRawIngressMetadataBroke
         }
         // Typed denials commit their authorized residue. Exceptions dispose B;
         // an uncertain commit is propagated, never reported as a proven rollback.
+        if (qualificationObserver is not null && input.SiteQualificationRunId is { } qualificationRunId)
+            await qualificationObserver.HoldBeforeCommitAsync(qualificationRunId, ct).ConfigureAwait(false);
         await transaction.CommitAsync(ct);
+        if (qualificationObserver is not null && input.SiteQualificationRunId is { } committedRunId)
+            await qualificationObserver.RecordCommittedAsync(committedRunId, ct).ConfigureAwait(false);
         return result;
     }
 

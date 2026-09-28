@@ -1,0 +1,39 @@
+run	passed	failed	classification	successor_or_reason
+a3-site-layer2-v3-focused-initial.trx	17	3	SUPERSEDED_IMPLEMENTATION_BASELINE	initial Layer 2 work-in-progress failed three PostgreSQL enrollment/run preconditions before the enrollment and run-store corrections; focused-a1 and current focused successors pass all three named tests
+a3-site-layer2-joined-r2-20260927084853-1.trx	0	1	PRODUCT_DEFECT_PREDECESSOR	numeric Mode wire value corrected; joined-final8 is 2/2 PASS
+a3-site-layer2-joined-r4-20260927090025-1.trx	1	1	SUPERSEDED_TEST_DEFECT	owner-layer exception expectation corrected; joined-final8 is 2/2 PASS
+a3-site-layer2-server-restored-v2-20260927090858-1.trx	17	3	INVALID_RUNNER_TOPOLOGY	nested container could not start three isolated migration clusters; host postgres gate and focused-restored-final are green
+a3-site-layer2-f3-early-continue-mutant-v2-20260927092315-1.trx	0	1	EVIDENCE_RED_TEST_TOPOLOGY	intentional early-Continue topology; current topology-red preserves the same signature
+a3-site-layer2-v3-null-mutant.trx	6	1	EVIDENCE_RED_PRODUCT_MUTATION	one NULL-safe binding arm restored; focused-restored-final is 29/29 PASS
+a3-site-layer2-v3-joined-final-20260927110602-1.trx	0	2	SUPERSEDED_TEST_HARNESS	MinIO readiness address was not reachable from nested runner; final8 is 2/2 PASS
+a3-site-layer2-v3-joined-final2-20260927111945-1.trx	0	2	SUPERSEDED_TEST_HARNESS	nested Docker policy bind was unavailable; final8 is 2/2 PASS
+a3-site-layer2-v3-joined-final3-20260927112938-1.trx	0	2	SUPERSEDED_TEST_HARNESS	custody object-owner fixture was incomplete; final8 is 2/2 PASS
+a3-site-layer2-v3-joined-final4-20260927114150-1.trx	0	2	SUPERSEDED_TEST_HARNESS	wrong lost-final exception expectation and timeout; final8 is 2/2 PASS
+a3-site-layer2-v3-joined-diagnostic-20260927115106-1.trx	0	2	INTENTIONAL_DIAGNOSTIC	confirmed qualification state BrokerCommitted; superseded by final8
+a3-site-layer2-v3-joined-final5-20260927120355-1.trx	0	2	SUPERSEDED_TEST_HARNESS	retained owner input was not yet used and returned RECAPTURE_REQUIRED; final8 is 2/2 PASS
+a3-site-layer2-v3-joined-diagnostic2-20260927121437-1.trx	0	2	INTENTIONAL_DIAGNOSTIC	confirmed complete qualification observation; superseded by final8
+a3-site-layer2-v3-joined-final6-20260927122512-1.trx	0	2	SUPERSEDED_TEST_HARNESS	retained-path binding still returned RECAPTURE_REQUIRED; final8 is 2/2 PASS
+a3-site-layer2-v3-joined-diagnostic3-20260927123303-1.trx	0	1	SUPERSEDED_DIAGNOSTIC_DEFECT	diagnostic queried a nonexistent column; superseded by later diagnostics and final8
+a3-site-layer2-v3-joined-diagnostic4-20260927123822-1.trx	0	1	INTENTIONAL_DIAGNOSTIC	showed no custody residue after RECAPTURE_REQUIRED; superseded by final8
+a3-site-layer2-v3-joined-diagnostic5-20260927124409-1.trx	0	1	INTENTIONAL_DIAGNOSTIC	isolated failure to admission after a complete broker qualification handshake; superseded by final8
+a3-site-layer2-v3-joined-final7-20260927125009-1.trx	0	2	SUPERSEDED_TEST_HARNESS	execution binding still used predecessor key thumbprint; final8 is 2/2 PASS
+a3-site-layer2-v3-joined-diagnostic6-20260927125842-1.trx	0	1	INTENTIONAL_DIAGNOSTIC	identified BindingInvalid; superseded by final8
+a3-site-layer2-v3-joined-diagnostic7-20260927130334-1.trx	0	1	INTENTIONAL_DIAGNOSTIC	captured exact BindingInvalid context; superseded by final8
+a3-site-layer2-v3-joined-diagnostic8-20260927130925-1.trx	0	1	INTENTIONAL_DIAGNOSTIC	confirmed BindingInvalid after adjacent prechecks; superseded by final8
+a3-site-layer2-v3-f3-transparent-final-20260927131928-1.trx	0	1	SUPERSEDED_TEST_HARNESS	F3 did not yet use the qualification bypass; transparent-final is 1/1 PASS
+a3-site-layer2-v3-f3-transparent-final2-20260927132448-1.trx	0	1	SUPERSEDED_TEST_HARNESS	changing only the site gate did not route the control channel; transparent-final is 1/1 PASS
+a3-site-layer2-v3-f3-transparent-final3-20260927133627-1.trx	0	1	SUPERSEDED_TEST_HARNESS	retained owner added but control request still occupied the single-connection intermediary; transparent-final is 1/1 PASS
+a3-site-layer2-v3-f3-diagnostic-final4-20260927134047-1.trx	0	1	INTENTIONAL_DIAGNOSTIC	proved run Registered, RawPostCount 0 and no raw connection; superseded by the connection-aware diagnostic and multi-connection proxy
+a3-site-layer2-v3-f3-topology-red-20260927135029-1.trx	0	1	EVIDENCE_RED_TEST_TOPOLOGY	intentional intermediary-generated 100; exact expected safety failure
+a3-site-layer2-v3-f3-hostile-observed-final-20260927135359-1.trx	0	1	SUPERSEDED_TEST_ASSERTION	a post-release assertion still expected pre-commit observation true; hostile-observed-final2 is 1/1 PASS
+a3-site-layer2-v3-focused-current.trx	95	4	SUPERSEDED_TEST_HARNESS	three historical Program graph tests retained the newer raw-export control plane without its repository; the missing-key row expected transport 503 instead of the established O05 HTTP 200 outcome; exact successors are program-graph-drift-restored2 3/3 and broker-qualification-restored2 25/25
+a3-site-layer2-v3-f3-proxy-diagnostic-20260927144345-1.trx	0	1	INTENTIONAL_DIAGNOSTIC	connection trace proved c1 was admin registration, rawPosts remained 0, and the single-accept proxy never accepted raw; superseded by multi-connection transparent PASS
+a3-site-layer2-v3-f3-proxy-topology-red-20260927150004-1.trx	0	1	EVIDENCE_RED_TEST_TOPOLOGY	multi-connection proxy emitted early 100 only for the exact raw POST; exact expected pre-B/R1 body safety failure
+a3-site-layer2-v3-f3-proxy-topology-red-final2-20260927151558-1.trx	0	1	EVIDENCE_RED_TEST_TOPOLOGY	final source adds explicit admin/raw trace assertions; raw-only early 100 still produces the exact expected pre-B/R1 body safety failure
+a3-site-layer2-v3-f3-proxy-topology-red-final3-20260927153623-1.trx	0	1	EVIDENCE_RED_TEST_TOPOLOGY	final source preserves non-cancellation proxy faults; raw-only early 100 still produces the exact expected pre-B/R1 body safety failure
+a3-site-layer2-v3-four-failure-diagnostic2-20260927170533-1.trx	0	3	EVIDENCE_RED_TEST_HARNESS	exact reproduction of the three historical Program graph DI failures; successor program-graph-drift-restored2 is 3/3 PASS
+a3-site-layer2-v3-broker-qualification-disposition-20260927171904-1.trx	24	1	EVIDENCE_RED_TEST_CONTRACT	reproduced the stale missing-key expectation of transport 503 while production intentionally returns the O05 CapabilityUnavailable final outcome; successor restored2 is 25/25 PASS
+a3-site-layer2-v3-broker-qualification-restored-20260927172328-1.trx	24	1	SUPERSEDED_TEST_CONTRACT	fixture now truly omitted the content key but the assertion still expected transport 503; successor restored2 asserts exact O05 HTTP 200 and CapabilityUnavailable and is 25/25 PASS
+a3-site-layer2-v3-f3-proxy-topology-red-final4-20260927174032-1.trx	0	1	EVIDENCE_RED_TEST_TOPOLOGY	current accept-loop source emits early 100 only for the exact raw POST and produces the exact expected pre-B/R1 body safety failure
+a3-site-layer2-v3-f3-proxy-topology-red-final5-20260928005816-1.trx	0	1	EVIDENCE_RED_TEST_TOPOLOGY	current per-forwarding fault-preservation source emits early 100 only for the exact raw POST and preserves the exact expected pre-B/R1 body safety failure
+# retained failed TRX: 37; failed tests: 55; classified: 37/37 runs and 55/55 failed tests

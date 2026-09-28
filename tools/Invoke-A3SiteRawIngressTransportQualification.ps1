@@ -4,16 +4,52 @@ param(
     [string]$EndpointOrigin,
     [string]$DeploymentRevision = 'development-harness-v1',
     [string]$RecordPath = 'TestResults/a3-site-qualification/development-transport-qualification.json',
+    [string]$CandidateRecordPath = 'TestResults/a3-site-qualification/site-transport-qualification-candidate.json',
     [string]$ConfigurationPath = 'TestResults/a3-site-qualification/site-configuration.json',
     [ValidateRange(0,10080)][int]$ExpiryWarningMinutes = 1440,
+    [string]$SyntheticAgentExecutablePath,
     [switch]$InstallOnPass
 )
 
 $ErrorActionPreference = 'Stop'
 $repoRoot = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 function Resolve-OperationalPath([string]$Path) {
-    if ([IO.Path]::IsPathFullyQualified($Path)) { return [IO.Path]::GetFullPath($Path) }
+    if ([IO.Path]::IsPathRooted($Path)) { return [IO.Path]::GetFullPath($Path) }
     [IO.Path]::GetFullPath((Join-Path $repoRoot $Path))
+}
+
+function Get-JsonProperty([object]$Value, [string]$Name) {
+    $property = $Value.PSObject.Properties[$Name]
+    if ($null -eq $property) { return $null }
+    $property.Value
+}
+
+function Assert-ProbeCandidateIsSeparate([string]$InstalledTarget, [string]$Candidate) {
+    if ([string]::IsNullOrWhiteSpace($InstalledTarget) -or
+        -not [IO.Path]::IsPathRooted($InstalledTarget) -or
+        [string]::Equals([IO.Path]::GetFullPath($InstalledTarget), $Candidate,
+            [StringComparison]::OrdinalIgnoreCase)) {
+        throw 'SITE_QUALIFICATION_CANDIDATE_MUST_NOT_BE_INSTALLED_TARGET'
+    }
+}
+
+function Read-SyntheticAgentMeasurementOutput([string[]]$Lines, [int]$ExitCode) {
+    $measurement = $null
+    for ($index = $Lines.Count - 1; $index -ge 0; $index--) {
+        $line = $Lines[$index]
+        if (-not $line.TrimStart().StartsWith('{')) { continue }
+        try {
+            $parsed = $line | ConvertFrom-Json
+            if ($parsed.SchemaVersion -eq 1 -and [string]$parsed.Status -ceq 'MEASURED') {
+                $measurement = $parsed
+                break
+            }
+        } catch { }
+    }
+    if ($null -eq $measurement -or (($ExitCode -eq 0) -ne [bool]$measurement.Qualifies)) {
+        throw 'SITE_QUALIFICATION_SYNTHETIC_AGENT_MEASUREMENT_INVALID'
+    }
+    $measurement
 }
 
 function Complete-ProbeSiteCandidate(
@@ -24,7 +60,7 @@ function Complete-ProbeSiteCandidate(
     if ([string]$candidateValue.status -cne 'PASS') {
         Write-Output "SITE_QUALIFICATION_INSTALLATION=BLOCKED_$([string]$candidateValue.status)"
         if ($InstallCandidate) {
-            throw 'SITE_QUALIFICATION_INSTALL_BLOCKED_MEASUREMENT_INCOMPLETE'
+            throw "SITE_QUALIFICATION_INSTALL_BLOCKED_$([string]$candidateValue.status)"
         }
         return
     }
@@ -70,15 +106,63 @@ if ($Mode -ceq 'ProbeSite') {
     if (-not (Test-Path -LiteralPath $configurationFile -PathType Leaf)) {
         throw 'SITE_CONFIGURATION_NOT_FOUND'
     }
-    $configuration = Get-Content -LiteralPath $configurationFile -Raw | ConvertFrom-Json -AsHashtable
+    $configuration = Get-Content -LiteralPath $configurationFile -Raw | ConvertFrom-Json
     $prefix = 'TagEkyc:CaptureRuntime:SiteRawIngressTransportQualification:'
-    $candidate = Resolve-OperationalPath $RecordPath
-    & (Join-Path $PSScriptRoot 'Test-A3SiteRawIngressTransport.ps1') `
-        -SiteId $configuration[$prefix + 'SiteId'] `
-        -EndpointOrigin $configuration[$prefix + 'EndpointOrigin'] `
-        -DeploymentRevision $configuration[$prefix + 'DeploymentRevision'] `
-        -OutputRecordPath $candidate
-    Complete-ProbeSiteCandidate $configurationFile $candidate $InstallOnPass.IsPresent
+    $candidate = Resolve-OperationalPath $CandidateRecordPath
+    $installedTarget = [string](Get-JsonProperty $configuration 'TagEkyc:CaptureRuntime:SiteRawIngressTransportQualificationRecordPath')
+    Assert-ProbeCandidateIsSeparate $installedTarget $candidate
+    if (Test-Path -LiteralPath $candidate -PathType Leaf) {
+        Remove-Item -LiteralPath $candidate -Force
+    }
+    $measurementPath = $null
+    try {
+        if (-not [string]::IsNullOrWhiteSpace($SyntheticAgentExecutablePath)) {
+            if (-not [IO.Path]::IsPathRooted($SyntheticAgentExecutablePath) -or
+                [IO.Path]::GetExtension($SyntheticAgentExecutablePath) -cne '.exe' -or
+                -not (Test-Path -LiteralPath $SyntheticAgentExecutablePath -PathType Leaf)) {
+                throw 'SITE_QUALIFICATION_SYNTHETIC_AGENT_EXECUTABLE_INVALID'
+            }
+            if ([string]::IsNullOrWhiteSpace($env:TAGEKYC_SITE_QUALIFICATION_API_KEY)) {
+                throw 'SITE_QUALIFICATION_API_KEY_MISSING'
+            }
+            $start = [Diagnostics.ProcessStartInfo]::new()
+            $start.FileName = $SyntheticAgentExecutablePath
+            $start.Arguments = 'qualify-site'
+            $start.UseShellExecute = $false
+            $start.CreateNoWindow = $true
+            $start.RedirectStandardOutput = $true
+            $start.RedirectStandardError = $true
+            $process = [Diagnostics.Process]::new()
+            $process.StartInfo = $start
+            if (-not $process.Start()) { throw 'SITE_QUALIFICATION_SYNTHETIC_AGENT_START_FAILED' }
+            $stdout = $process.StandardOutput.ReadToEnd()
+            $stderr = $process.StandardError.ReadToEnd()
+            $process.WaitForExit()
+            $agentExitCode = $process.ExitCode
+            $process.Dispose()
+            $agentOutput = @($stdout -split "`r?`n")
+            try { $agentMeasurement = Read-SyntheticAgentMeasurementOutput $agentOutput $agentExitCode }
+            catch { throw "SITE_QUALIFICATION_SYNTHETIC_AGENT_MEASUREMENT_INVALID exit=$agentExitCode stderr=$($stderr.Trim())" }
+            $measurementPath = Join-Path ([IO.Path]::GetTempPath()) `
+                "tagekyc-site-measurement-$([Guid]::NewGuid().ToString('N')).json"
+            [IO.File]::WriteAllText($measurementPath,
+                ($agentMeasurement | ConvertTo-Json -Depth 8 -Compress),
+                [Text.UTF8Encoding]::new($false))
+        }
+        & (Join-Path $PSScriptRoot 'Test-A3SiteRawIngressTransport.ps1') `
+            -SiteId (Get-JsonProperty $configuration ($prefix + 'SiteId')) `
+            -EndpointOrigin (Get-JsonProperty $configuration ($prefix + 'EndpointOrigin')) `
+            -DeploymentRevision (Get-JsonProperty $configuration ($prefix + 'DeploymentRevision')) `
+            -OutputRecordPath $candidate -MeasurementReportPath $measurementPath
+        Complete-ProbeSiteCandidate $configurationFile $candidate $InstallOnPass.IsPresent
+    }
+    finally {
+        if ($null -ne $measurementPath -and
+            $measurementPath.StartsWith([IO.Path]::GetTempPath(), [StringComparison]::OrdinalIgnoreCase) -and
+            (Test-Path -LiteralPath $measurementPath -PathType Leaf)) {
+            Remove-Item -LiteralPath $measurementPath -Force
+        }
+    }
     return
 }
 
