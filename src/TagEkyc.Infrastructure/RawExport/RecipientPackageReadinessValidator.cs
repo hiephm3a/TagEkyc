@@ -34,8 +34,23 @@ public sealed class RecipientPackageReadinessValidator(
         if (!options.IsSyntacticallyValid || options.Topology == RecipientPackageTopology.Invalid)
             throw new RecipientPackageReadinessException(Codes[0]);
         if (options.Topology == RecipientPackageTopology.Disabled) return;
-        if (options.Provider is null || services.GetService<IRecipientPackageConnectionFactory>() is null)
+        var connections = services.GetService<IRecipientPackageConnectionFactory>();
+        if (options.Provider is null || connections is null)
             throw new RecipientPackageReadinessException(Codes[1]);
+        try
+        {
+            foreach (var capability in Enum.GetValues<RecipientPackageDatabaseCapability>())
+                await using (await connections.OpenAsync(capability, cancellationToken)
+                    .ConfigureAwait(false)) { }
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch
+        {
+            throw new RecipientPackageReadinessException(Codes[1]);
+        }
 
         var connection = db.Database.GetDbConnection() as NpgsqlConnection
             ?? throw new RecipientPackageReadinessException(Codes[2]);

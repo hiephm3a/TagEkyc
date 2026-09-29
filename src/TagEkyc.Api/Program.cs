@@ -42,7 +42,8 @@ builder.Services
 ConfigureEvidenceSigning(builder);
 ConfigureRawExportPermitTtl(builder);
 ConfigureRawExportJobLease(builder);
-builder.Services.AddTagEkycCustodyProfiles(builder.Configuration);
+builder.Services.AddTagEkycCustodyProfiles(
+    builder.Configuration, builder.Environment.IsProduction());
 if (DurableKeyTopologyOptions.Resolve(builder.Configuration).Topology
     == DurableKeyTopology.ProcessLocalFixture)
 {
@@ -55,7 +56,8 @@ var recipientPackageOptions = RecipientPackageOptions.Resolve(builder.Configurat
 if (recipientPackageOptions.Topology == RecipientPackageTopology.S3CompatibleDurable
     && recipientPackageOptions.IsSyntacticallyValid)
 {
-    builder.Services.AddTagEkycRecipientPackage(builder.Configuration);
+    builder.Services.AddTagEkycRecipientPackage(
+        builder.Configuration, builder.Environment.IsProduction());
 }
 else
 {
@@ -122,7 +124,8 @@ builder.Services.AddScoped<IRawExportControlPlaneApplicationService>(sp =>
     sp.GetRequiredService<RawExportControlPlaneApplicationService>());
 builder.Services.AddPreparedRawExportSourceIngressServices();
 builder.Services.AddCaptureRuntimeA3HostLifecycle();
-builder.Services.AddTagEkycCaptureRuntimeRawIngressHostGraph();
+builder.Services.AddTagEkycCaptureRuntimeRawIngress(
+    builder.Configuration, builder.Environment.IsProduction());
 builder.Services.AddSingleton<ICaptureAgentConfigurationProvider, CaptureAgentConfigurationProvider>();
 builder.Services.AddSingleton<IRawExportIngressCapacity>(sp =>
 {

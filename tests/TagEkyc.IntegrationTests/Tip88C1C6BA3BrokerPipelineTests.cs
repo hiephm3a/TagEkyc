@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -79,6 +80,51 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
             StringComparison.Ordinal);
         Assert.DoesNotContain("CAPTURE_RUNTIME_STARTUP_NOT_READY", failure,
             StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public async Task ActivatedCompositionCandidateSelectsRuntimeIngressAndBlocksAtSiteGateBeforeBody()
+    {
+        var admission = new CountingAdmission();
+        var body = new RequestBodyReadProbe();
+        using var factory = StartupSelectionFactory(activated: true,
+            DurableWorkerZeroOpenSeal(), assemblyTopology: "DurableWorker",
+            siteQualification: new ActivationEvidenceTestSeals.MissingQualificationProvider(),
+            rawAdmission: admission, bodyReadProbe: body);
+        using var client = factory.CreateClient();
+        using var health = await client.GetAsync("/health");
+        using var siteHealth = await client.GetAsync("/health/site-transport-qualification");
+        using var request = new HttpRequestMessage(HttpMethod.Post,
+            "/api/ekyc/raw-export/source-ingress")
+        {
+            Content = new ByteArrayContent([0x01])
+        };
+        request.Content.Headers.ContentLength = 1;
+        using var response = await client.SendAsync(request);
+        var failure = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.OK, health.StatusCode);
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, siteHealth.StatusCode);
+        Assert.Equal(1, request.Content.Headers.ContentLength);
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Equal(Encoding.UTF8.GetByteCount(failure), response.Content.Headers.ContentLength);
+        Assert.Contains(CaptureRuntimeSiteTransportQualificationPolicy.InvalidCode, failure,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INCOMPLETE", failure,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("CAPTURE_RUNTIME_ACTIVATION_EVIDENCE_INVALID", failure,
+            StringComparison.Ordinal);
+        Assert.DoesNotContain("CAPTURE_RUNTIME_STARTUP_NOT_READY", failure,
+            StringComparison.Ordinal);
+        Assert.Equal(0, admission.Calls);
+        Assert.Equal(0, body.ReadCalls);
+
+        var raw = Assert.Single(factory.Services.GetServices<EndpointDataSource>()
+            .SelectMany(source => source.Endpoints)
+            .OfType<RouteEndpoint>(), endpoint =>
+                endpoint.RoutePattern.RawText == "/api/ekyc/raw-export/source-ingress");
+        Assert.Equal("RuntimeIngressAsync",
+            raw.Metadata.GetMetadata<MethodInfo>()!.Name);
     }
 
     [Fact]
@@ -281,6 +327,8 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
                     services.RemoveAll<ICaptureRuntimeRawIngressAdmission>();
                     services.AddSingleton<ICaptureRuntimeRawIngressAdmission>(
                         rawAdmission ?? new NeverAdmission());
+                    services.TryAddSingleton<ISiteRawIngressQualificationRunStore,
+                        UnusedQualificationRunStore>();
                     if (bodyReadProbe is not null)
                         services.AddSingleton<IStartupFilter>(
                             new RequestBodyReadProbeStartupFilter(bodyReadProbe));
@@ -433,6 +481,45 @@ public sealed class Tip88C1C6BA3ApiHostGraphTests
     private sealed class RequestBodyReadProbe
     {
         internal int ReadCalls;
+    }
+
+    // The controlled in-memory host never selects a qualification run. The
+    // registration is still required so minimal-API metadata treats this port
+    // as a service rather than inferring an invalid request-body parameter.
+    private sealed class UnusedQualificationRunStore : ISiteRawIngressQualificationRunStore
+    {
+        private static Exception Unused() =>
+            new InvalidOperationException("Qualification run store must not be invoked by this host proof.");
+
+        public Task<bool> EnrollSyntheticCredentialAsync(
+            SiteRawIngressQualificationSyntheticCredentialEnrollment enrollment,
+            DateTimeOffset now, CancellationToken cancellationToken) => throw Unused();
+        public Task<SiteRawIngressQualificationRunHandle?> RegisterAsync(
+            SiteRawIngressQualificationRunRegistration registration, DateTimeOffset now,
+            CancellationToken cancellationToken) => throw Unused();
+        public Task<SiteRawIngressQualificationRawPost?> ObserveRawPostAsync(
+            CaptureRuntimeSiteTransportQualificationSettings settings,
+            SiteRawIngressQualificationRunBinding binding, DateTimeOffset now,
+            CancellationToken cancellationToken) => throw Unused();
+        public Task<bool> ConsumeAuthenticatedAsync(Guid qualificationRunId,
+            SiteRawIngressQualificationRunBinding binding, DateTimeOffset now,
+            CancellationToken cancellationToken) => throw Unused();
+        public Task<bool> ReleaseBrokerAsync(Guid qualificationRunId, DateTimeOffset now,
+            SiteRawIngressQualificationRunAccess access,
+            CancellationToken cancellationToken) => throw Unused();
+        public Task<bool> AcknowledgeBrokerCommitAsync(Guid qualificationRunId, DateTimeOffset now,
+            SiteRawIngressQualificationRunAccess access,
+            CancellationToken cancellationToken) => throw Unused();
+        public Task<bool> RecordAgentObservationAsync(Guid qualificationRunId,
+            SiteRawIngressQualificationAgentObservation observation, DateTimeOffset now,
+            SiteRawIngressQualificationRunAccess access,
+            CancellationToken cancellationToken) => throw Unused();
+        public Task<bool> RecordServerBodyReadsAsync(Guid qualificationRunId,
+            int readsWhileBrokerHeld, DateTimeOffset now,
+            CancellationToken cancellationToken) => throw Unused();
+        public Task<SiteRawIngressQualificationRunReport?> ReadAsync(Guid qualificationRunId,
+            DateTimeOffset now, SiteRawIngressQualificationRunAccess access,
+            CancellationToken cancellationToken) => throw Unused();
     }
 
     private sealed class RequestBodyReadProbeStartupFilter(RequestBodyReadProbe probe) : IStartupFilter

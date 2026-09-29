@@ -17,8 +17,8 @@ public static class ManagedApiKeyParser
             return null;
         }
 
-        var separator = presentedApiKey.IndexOf('_', marker.Length);
-        if (separator < 0)
+        var separator = marker.Length + ManagedApiKeyConstants.KeyPrefixLength;
+        if (presentedApiKey.Length <= separator || presentedApiKey[separator] != '_')
         {
             return null;
         }

@@ -21,7 +21,7 @@ internal sealed class S3CompatibleRecipientPackageProvider :
     private readonly IAmazonS3 lifecycle;
     private readonly IAmazonS3 posture;
 
-    internal S3CompatibleRecipientPackageProvider(
+    public S3CompatibleRecipientPackageProvider(
         RecipientPackageOptions options,
         RecipientPackageObjectClientFactory factory)
     {

@@ -80,6 +80,21 @@ public static class CaptureRuntimeRawIngressComposition
         return AddA3Graph(services);
     }
 
+    public static IServiceCollection AddTagEkycCaptureRuntimeRawIngress(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        bool isProduction)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+        ArgumentNullException.ThrowIfNull(configuration);
+        var configured = CaptureRuntimeRawIngressProductionOptions.Resolve(
+            configuration, isProduction);
+        return configured.Owners is null
+            ? services.AddTagEkycCaptureRuntimeRawIngressHostGraph()
+            : services.AddTagEkycCaptureRuntimeRawIngress(
+                RawIngressBrokerOptions.Read(configuration), configured.Owners);
+    }
+
     // The ordinary API host registers the graph even in Prepared, but does not
     // choose owner credentials, object stores, or provider implementations.
     // Activated readiness resolves those explicit dependencies and fails closed

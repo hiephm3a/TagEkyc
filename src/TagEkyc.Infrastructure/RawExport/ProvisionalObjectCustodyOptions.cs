@@ -30,7 +30,13 @@ public sealed record ProvisionalObjectCustodyOptions(
 
     internal static ProvisionalObjectCustodyOptions Resolve(IConfiguration configuration)
     {
-        var section = configuration.GetSection(SectionPath);
+        ArgumentNullException.ThrowIfNull(configuration);
+        return Resolve(configuration.GetSection(SectionPath));
+    }
+
+    internal static ProvisionalObjectCustodyOptions Resolve(IConfigurationSection section)
+    {
+        ArgumentNullException.ThrowIfNull(section);
         var topologyRaw = section["Topology"];
         var capabilityRaw = section["Capability"];
         var topologyValid = Enum.TryParse<ProvisionalObjectTopology>(topologyRaw, false, out var topology)

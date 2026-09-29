@@ -1,0 +1,7 @@
+run	passed	failed	classification	reason	successor
+production-composition-correction.trx	5	3	PRODUCT_COMPOSITION_PREDECESSOR	Broker lacked its DbContext composition and the existing recipient provider constructor could not be activated by DI.	production-composition-correction-final-v4.trx
+production-composition-correction-r2.trx	7	1	SUPERSEDED_TEST_FIXTURE	The focused broker fixture omitted existing custody time-bound configuration required by the real graph.	production-composition-correction-final-v4.trx
+production-composition-boundary3-generic-code-mutant.trx	12	5	EVIDENCE_RED_PRODUCT_MUTATION	All four production rejection codes were collapsed to one generic code; the four broker arms and predecessor API custody assertion rejected the mutation.	production-composition-boundary3-final-restored.trx
+production-composition-boundary3-restored-a2.trx	1	1	SUPERSEDED_TEST_HARNESS	The controlled InMemory A3 host omitted the already-existing Layer-2 run-store port, so minimal-API metadata inferred it as a request body and endpoint initialization returned 500 before the intended site-gate assertions.	production-composition-boundary3-restored-a3.trx
+production-program-registration-throw-mutant-red.trx	0	1	EVIDENCE_RED_PRODUCT_MUTATION	Restoring the exact predecessor registration-time throw killed the actual Production Program at Program.cs:45 before Build and /health.	production-composition-boundary3-final-restored.trx
+# summary: 5 retained failed runs; 11 failed tests; 0 unclassified

@@ -1,0 +1,12 @@
+PRODUCTION_COMPOSITION_ACTUAL_PRODUCTION_HOST_PROOF
+baseline_head=9761963aab14ce83dcc56881178c178d9830c3cb
+environment=Production
+source_sha256=d860f2be3df8493a516989346f65feab84faaf92038bf64f9d6988c2d6f5ee17
+process_reached_listener=YES
+health_http_status=200
+health_body={"status":"ok","service":"TagEkyc.Api"}
+site_health_http_status=200
+site_health_body={"state":"NotRequired","code":null,"validUntilUtc":null}
+registration_time_fixture_throw=ABSENT
+seal_revision=22_UNCHANGED_MANIFEST_DRIFT_EXPECTED
+commit_push=NO

@@ -10,13 +10,23 @@ public static class RecipientPackageServiceCollectionExtensions
 {
     public static IServiceCollection AddTagEkycRecipientPackage(
         this IServiceCollection services,
-        IConfiguration configuration)
+        IConfiguration configuration) =>
+        services.AddTagEkycRecipientPackage(configuration, isProduction: false);
+
+    public static IServiceCollection AddTagEkycRecipientPackage(
+        this IServiceCollection services,
+        IConfiguration configuration,
+        bool isProduction)
     {
         var options = RecipientPackageOptions.Resolve(configuration);
         services.TryAddSingleton(options);
         services.TryAddScoped<RecipientPackageReadinessValidator>();
         if (!options.IsSyntacticallyValid || options.Topology != RecipientPackageTopology.S3CompatibleDurable)
             return services;
+        services.TryAddSingleton(RecipientPackageDatabaseOptions.Resolve(
+            configuration, isProduction));
+        services.TryAddScoped<IRecipientPackageConnectionFactory,
+            RecipientPackageConnectionFactory>();
         services.TryAddScoped<RecipientPackageRepository>();
         services.TryAddScoped<RecipientPackageCryptoService>();
         services.TryAddScoped<RecipientPackageObjectClientFactory>();

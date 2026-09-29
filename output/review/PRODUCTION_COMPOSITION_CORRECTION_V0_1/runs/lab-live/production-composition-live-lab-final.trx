@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="48f9576e-f39b-48bf-8e7c-465c2845167a" name="@tagekyc-lab 2026-09-28 13:33:30" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-28T13:33:30.4322590+00:00" queuing="2026-09-28T13:33:30.4322591+00:00" start="2026-09-28T13:33:28.6602585+00:00" finish="2026-09-28T13:33:30.4482643+00:00" />
+  <TestSettings name="default" id="0ecd8076-978f-435d-a37c-a4ec82837c79">
+    <Deployment runDeploymentRoot="_tagekyc-lab_2026-09-28_13_33_30" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="2473477a-ec80-40db-9d8b-23d23047121c" testId="f8a98a37-b929-25eb-2b72-10d1ad29f8cb" testName="TagEkyc.IntegrationTests.ProductionCompositionLabProofTests.Lab_recipient_factory_opens_exact_three_production_roles" computerName="tagekyc-lab" duration="00:00:00.1168935" startTime="2026-09-28T13:33:30.2627781+00:00" endTime="2026-09-28T13:33:30.2627784+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2473477a-ec80-40db-9d8b-23d23047121c" />
+    <UnitTestResult executionId="cc2f49d4-6a57-4a0e-afba-e050f636b0a9" testId="b77aa1f8-c9e6-fc9c-3c9e-239cb67435a1" testName="TagEkyc.IntegrationTests.ProductionCompositionLabProofTests.Lab_runtime_owners_open_exact_existing_role_connections" computerName="tagekyc-lab" duration="00:00:00.1046257" startTime="2026-09-28T13:33:30.1457175+00:00" endTime="2026-09-28T13:33:30.1457177+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cc2f49d4-6a57-4a0e-afba-e050f636b0a9" />
+    <UnitTestResult executionId="5a16ab3c-3822-4616-8895-ddb7b0e6f541" testId="ed4f91a5-db2c-a844-1504-2ca961dd3fc2" testName="TagEkyc.IntegrationTests.ProductionCompositionLabProofTests.Lab_broker_graph_uses_exact_login_and_resolves_existing_services" computerName="tagekyc-lab" duration="00:00:00.3073167" startTime="2026-09-28T13:33:30.0405403+00:00" endTime="2026-09-28T13:33:30.0405816+00:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5a16ab3c-3822-4616-8895-ddb7b0e6f541" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionLabProofTests.Lab_broker_graph_uses_exact_login_and_resolves_existing_services" storage="/opt/tagekyc/candidates/production-composition/tests/tagekyc.integrationtests/bin/debug/net8.0/tagekyc.integrationtests.dll" id="ed4f91a5-db2c-a844-1504-2ca961dd3fc2">
+      <Execution id="5a16ab3c-3822-4616-8895-ddb7b0e6f541" />
+      <TestMethod codeBase="/opt/tagekyc/candidates/production-composition/tests/TagEkyc.IntegrationTests/bin/Debug/net8.0/TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionLabProofTests" name="Lab_broker_graph_uses_exact_login_and_resolves_existing_services" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionLabProofTests.Lab_runtime_owners_open_exact_existing_role_connections" storage="/opt/tagekyc/candidates/production-composition/tests/tagekyc.integrationtests/bin/debug/net8.0/tagekyc.integrationtests.dll" id="b77aa1f8-c9e6-fc9c-3c9e-239cb67435a1">
+      <Execution id="cc2f49d4-6a57-4a0e-afba-e050f636b0a9" />
+      <TestMethod codeBase="/opt/tagekyc/candidates/production-composition/tests/TagEkyc.IntegrationTests/bin/Debug/net8.0/TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionLabProofTests" name="Lab_runtime_owners_open_exact_existing_role_connections" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionLabProofTests.Lab_recipient_factory_opens_exact_three_production_roles" storage="/opt/tagekyc/candidates/production-composition/tests/tagekyc.integrationtests/bin/debug/net8.0/tagekyc.integrationtests.dll" id="f8a98a37-b929-25eb-2b72-10d1ad29f8cb">
+      <Execution id="2473477a-ec80-40db-9d8b-23d23047121c" />
+      <TestMethod codeBase="/opt/tagekyc/candidates/production-composition/tests/TagEkyc.IntegrationTests/bin/Debug/net8.0/TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionLabProofTests" name="Lab_recipient_factory_opens_exact_three_production_roles" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="f8a98a37-b929-25eb-2b72-10d1ad29f8cb" executionId="2473477a-ec80-40db-9d8b-23d23047121c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b77aa1f8-c9e6-fc9c-3c9e-239cb67435a1" executionId="cc2f49d4-6a57-4a0e-afba-e050f636b0a9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ed4f91a5-db2c-a844-1504-2ca961dd3fc2" executionId="5a16ab3c-3822-4616-8895-ddb7b0e6f541" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="3" executed="3" passed="3" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.31)
+[xUnit.net 00:00:00.21]   Discovering: TagEkyc.IntegrationTests
+[xUnit.net 00:00:00.50]   Discovered:  TagEkyc.IntegrationTests
+[xUnit.net 00:00:00.51]   Starting:    TagEkyc.IntegrationTests
+[xUnit.net 00:00:01.12]   Finished:    TagEkyc.IntegrationTests
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

@@ -145,7 +145,7 @@ public sealed class ApiKeyProvisioningService(
         };
     }
 
-    private static bool ScopesMatchCategory(AuthenticatedCallerCategory callerCategory, IReadOnlySet<string> scopes) =>
+    internal static bool ScopesMatchCategory(AuthenticatedCallerCategory callerCategory, IReadOnlySet<string> scopes) =>
         callerCategory switch
         {
             AuthenticatedCallerCategory.BusinessConsumer => scopes.All(scope =>
@@ -155,6 +155,8 @@ public sealed class ApiKeyProvisioningService(
                 scope.StartsWith("capture.", StringComparison.Ordinal)),
             AuthenticatedCallerCategory.TrustedAdapter => scopes.All(scope =>
                 scope.StartsWith("trusted.", StringComparison.Ordinal)),
+            AuthenticatedCallerCategory.OperatorAdmin => scopes.All(scope =>
+                scope.StartsWith("operator.", StringComparison.Ordinal)),
             _ => false,
         };
 

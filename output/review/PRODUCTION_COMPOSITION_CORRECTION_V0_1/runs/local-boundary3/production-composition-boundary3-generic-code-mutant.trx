@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="ad1eb83a-2843-49eb-a8db-fc4358a08817" name="3AVNN@LEARNPC 2026-09-29 11:18:57" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-29T11:18:57.5196374+07:00" queuing="2026-09-29T11:18:57.5196376+07:00" start="2026-09-29T11:18:56.4019089+07:00" finish="2026-09-29T11:18:57.5991085+07:00" />
+  <TestSettings name="default" id="48ff7c2a-559c-4c5d-a57f-4df4f9358b95">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-29_11_18_57" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="a8df643f-3de8-49b5-9e73-7caba5dbf375" testId="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;operator.site-qualification.enroll&quot;, expected: True)" computerName="LEARNPC" duration="00:00:00.0025193" startTime="2026-09-29T11:18:57.4704062+07:00" endTime="2026-09-29T11:18:57.4704063+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a8df643f-3de8-49b5-9e73-7caba5dbf375" />
+    <UnitTestResult executionId="e305a362-ccce-4149-a322-48fb4579d61f" testId="3fb7944c-e11f-6c5b-04f0-e2eaa8386298" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Existing_managed_key_generator_always_round_trips_fixed_length_prefix" computerName="LEARNPC" duration="00:00:00.0021137" startTime="2026-09-29T11:18:57.5009657+07:00" endTime="2026-09-29T11:18:57.5009657+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e305a362-ccce-4149-a322-48fb4579d61f" />
+    <UnitTestResult executionId="b2a2ac66-d11a-4529-ad9a-1b02f8bc2fbd" testId="edfa2e98-b249-825a-668d-b637c26ce7a3" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;capture.raw-export.site-qualification&quot;, expected: False)" computerName="LEARNPC" duration="00:00:00.0000051" startTime="2026-09-29T11:18:57.4704648+07:00" endTime="2026-09-29T11:18:57.4704649+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b2a2ac66-d11a-4529-ad9a-1b02f8bc2fbd" />
+    <UnitTestResult executionId="70c95184-b552-4ed0-a3ed-e711c2fd8328" testId="97e38191-8e3d-8346-3808-e0405c8b5a55" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm" computerName="LEARNPC" duration="00:00:00.0007607" startTime="2026-09-29T11:18:57.5011849+07:00" endTime="2026-09-29T11:18:57.5011850+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="70c95184-b552-4ed0-a3ed-e711c2fd8328">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+                            ↓ (pos 17)&#xD;
+Expected: "PROD_RAW_EXPORT_CUSTODY_PROFILE_FIXTURE_A"···&#xD;
+Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+                            ↑ (pos 17)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 143&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="723cbd9b-9772-41af-9e0f-f78ec52eee92" testId="0a6a52c4-2cec-06d4-674e-61ef43afed2d" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_host_cannot_register_fixture_custody_profile" computerName="LEARNPC" duration="00:00:00.0047517" startTime="2026-09-29T11:18:57.4702399+07:00" endTime="2026-09-29T11:18:57.4702400+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="723cbd9b-9772-41af-9e0f-f78ec52eee92">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+                            ↓ (pos 17)&#xD;
+Expected: "PROD_RAW_EXPORT_CUSTODY_PROFILE_FIXTURE_A"···&#xD;
+Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+                            ↑ (pos 17)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_host_cannot_register_fixture_custody_profile() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 154&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="fed652fb-e963-4126-b0f4-04f7adee8a43" testId="073b6a96-772e-5d07-4812-3f5caf697552" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" computerName="LEARNPC" duration="00:00:00.0302851" startTime="2026-09-29T11:18:57.4437989+07:00" endTime="2026-09-29T11:18:57.4438311+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fed652fb-e963-4126-b0f4-04f7adee8a43" />
+    <UnitTestResult executionId="e5815bae-be9d-40f4-954e-f782d6f033fc" testId="87317a4b-ede9-63d6-2451-0a7a62444943" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_broker_composition_registers_fixture_claim_services_and_exact_login" computerName="LEARNPC" duration="00:00:00.0529499" startTime="2026-09-29T11:18:57.5346795+07:00" endTime="2026-09-29T11:18:57.5346798+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e5815bae-be9d-40f4-954e-f782d6f033fc" />
+    <UnitTestResult executionId="ef615227-6acf-41cc-88d6-29011c67dccc" testId="9ec261f7-a3fa-5688-e939-437dbbca1555" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;capture.raw-export.site-qualification&quot;, expected: True)" computerName="LEARNPC" duration="00:00:00.0004431" startTime="2026-09-29T11:18:57.4704283+07:00" endTime="2026-09-29T11:18:57.4704283+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ef615227-6acf-41cc-88d6-29011c67dccc" />
+    <UnitTestResult executionId="e84e737d-207c-45cc-95b0-582450db6dab" testId="06e75008-3fdd-0cde-000e-2194ee7fa912" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_recipient_factory_rejects_direct_connection_strings" computerName="LEARNPC" duration="00:00:00.0048310" startTime="2026-09-29T11:18:57.4482154+07:00" endTime="2026-09-29T11:18:57.4482155+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e84e737d-207c-45cc-95b0-582450db6dab" />
+    <UnitTestResult executionId="b0c8667d-9d11-48f9-b1d0-76e3fac27f32" testId="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory" computerName="LEARNPC" duration="00:00:00.0048288" startTime="2026-09-29T11:18:57.4729476+07:00" endTime="2026-09-29T11:18:57.4729477+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b0c8667d-9d11-48f9-b1d0-76e3fac27f32" />
+    <UnitTestResult executionId="5f63af22-0b34-44ae-ba83-fec40069e5bd" testId="35da3392-a083-8558-cd39-4059ffb4cc74" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" computerName="LEARNPC" duration="00:00:00.0005097" startTime="2026-09-29T11:18:57.5352496+07:00" endTime="2026-09-29T11:18:57.5352498+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5f63af22-0b34-44ae-ba83-fec40069e5bd" />
+    <UnitTestResult executionId="b5d2ed61-6464-4013-a7cc-5b362e16f497" testId="fb7067aa-8e16-6004-46f2-6bec0a14e52e" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_runtime_owner_composition_rejects_direct_connection_strings" computerName="LEARNPC" duration="00:00:00.0006362" startTime="2026-09-29T11:18:57.5009877+07:00" endTime="2026-09-29T11:18:57.5009877+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b5d2ed61-6464-4013-a7cc-5b362e16f497" />
+    <UnitTestResult executionId="96419cc7-ed22-48c4-ad9e-9f3658738a1c" testId="58e67411-e13a-f5a8-2401-a5bb33c6c0e0" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm" computerName="LEARNPC" duration="00:00:00.0011562" startTime="2026-09-29T11:18:57.5004828+07:00" endTime="2026-09-29T11:18:57.5004831+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="96419cc7-ed22-48c4-ad9e-9f3658738a1c">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+                            ↓ (pos 17)&#xD;
+Expected: "PROD_RAW_EXPORT_CONTENT_COMMITMENT_FIXTUR"···&#xD;
+Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+                            ↑ (pos 17)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 123&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="53b8f94e-9019-4096-a75e-167639d3a79b" testId="7fec0327-80ca-e8e8-0af7-0552b68c5121" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm" computerName="LEARNPC" duration="00:00:00.0009346" startTime="2026-09-29T11:18:57.5009315+07:00" endTime="2026-09-29T11:18:57.5009317+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="53b8f94e-9019-4096-a75e-167639d3a79b">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+                           ↓ (pos 16)&#xD;
+Expected: "PROD_RAW_EXPORT_SUBJECT_REF_TOKEN_FIXTURE"···&#xD;
+Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+                           ↑ (pos 16)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 133&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d8b1c7d6-f609-4530-ae04-629210cc6af7" testId="81c2ac88-dbb3-c718-f987-f09eb8209df5" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_without_qualified_claim_providers_fails_closed" computerName="LEARNPC" duration="00:00:00.0017727" startTime="2026-09-29T11:18:57.4752523+07:00" endTime="2026-09-29T11:18:57.4752524+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d8b1c7d6-f609-4530-ae04-629210cc6af7">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Strings differ&#xD;
+                                         ↓ (pos 30)&#xD;
+Expected: "PROD_RAW_EXPORT_CLAIM_PROVIDERS_MISSING"&#xD;
+Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+                                         ↑ (pos 30)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_without_qualified_claim_providers_fails_closed() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 114&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2eb62e49-76af-4ee4-b3b2-7d0871cf9417" testId="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;operator.site-qualification.enroll&quot;, expected: False)" computerName="LEARNPC" duration="00:00:00.0000139" startTime="2026-09-29T11:18:57.4704468+07:00" endTime="2026-09-29T11:18:57.4704468+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2eb62e49-76af-4ee4-b3b2-7d0871cf9417" />
+    <UnitTestResult executionId="d3d7ef96-a09c-46be-8d41-5b9df89bc8d6" testId="578539e7-6c2e-1d87-270f-abce79ca7666" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_database_options_reject_direct_connection_string" computerName="LEARNPC" duration="00:00:00.0006561" startTime="2026-09-29T11:18:57.5006515+07:00" endTime="2026-09-29T11:18:57.5006516+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d3d7ef96-a09c-46be-8d41-5b9df89bc8d6" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_recipient_factory_rejects_direct_connection_strings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="06e75008-3fdd-0cde-000e-2194ee7fa912">
+      <Execution id="e84e737d-207c-45cc-95b0-582450db6dab" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_recipient_factory_rejects_direct_connection_strings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_without_qualified_claim_providers_fails_closed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="81c2ac88-dbb3-c718-f987-f09eb8209df5">
+      <Execution id="d8b1c7d6-f609-4530-ae04-629210cc6af7" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_without_qualified_claim_providers_fails_closed" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_runtime_owner_composition_rejects_direct_connection_strings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="fb7067aa-8e16-6004-46f2-6bec0a14e52e">
+      <Execution id="b5d2ed61-6464-4013-a7cc-5b362e16f497" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_runtime_owner_composition_rejects_direct_connection_strings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7fec0327-80ca-e8e8-0af7-0552b68c5121">
+      <Execution id="53b8f94e-9019-4096-a75e-167639d3a79b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_broker_composition_registers_fixture_claim_services_and_exact_login" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="87317a4b-ede9-63d6-2451-0a7a62444943">
+      <Execution id="e5815bae-be9d-40f4-954e-f782d6f033fc" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Development_broker_composition_registers_fixture_claim_services_and_exact_login" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_host_cannot_register_fixture_custody_profile" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0a6a52c4-2cec-06d4-674e-61ef43afed2d">
+      <Execution id="723cbd9b-9772-41af-9e0f-f78ec52eee92" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_api_host_cannot_register_fixture_custody_profile" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="35da3392-a083-8558-cd39-4059ffb4cc74">
+      <Execution id="5f63af22-0b34-44ae-ba83-fec40069e5bd" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6">
+      <Execution id="b0c8667d-9d11-48f9-b1d0-76e3fac27f32" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Recipient_package_composition_registers_exact_three_role_factory" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;capture.raw-export.site-qualification&quot;, expected: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="edfa2e98-b249-825a-668d-b637c26ce7a3">
+      <Execution id="b2a2ac66-d11a-4529-ad9a-1b02f8bc2fbd" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;operator.site-qualification.enroll&quot;, expected: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9">
+      <Execution id="2eb62e49-76af-4ee4-b3b2-7d0871cf9417" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;operator.site-qualification.enroll&quot;, expected: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9">
+      <Execution id="a8df643f-3de8-49b5-9e73-7caba5dbf375" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="073b6a96-772e-5d07-4812-3f5caf697552">
+      <Execution id="fed652fb-e963-4126-b0f4-04f7adee8a43" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_database_options_reject_direct_connection_string" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="578539e7-6c2e-1d87-270f-abce79ca7666">
+      <Execution id="d3d7ef96-a09c-46be-8d41-5b9df89bc8d6" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_database_options_reject_direct_connection_string" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Existing_managed_key_generator_always_round_trips_fixed_length_prefix" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="3fb7944c-e11f-6c5b-04f0-e2eaa8386298">
+      <Execution id="e305a362-ccce-4149-a322-48fb4579d61f" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Existing_managed_key_generator_always_round_trips_fixed_length_prefix" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="97e38191-8e3d-8346-3808-e0405c8b5a55">
+      <Execution id="70c95184-b552-4ed0-a3ed-e711c2fd8328" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="58e67411-e13a-f5a8-2401-a5bb33c6c0e0">
+      <Execution id="96419cc7-ed22-48c4-ad9e-9f3658738a1c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;capture.raw-export.site-qualification&quot;, expected: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9ec261f7-a3fa-5688-e939-437dbbca1555">
+      <Execution id="ef615227-6acf-41cc-88d6-29011c67dccc" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9" executionId="a8df643f-3de8-49b5-9e73-7caba5dbf375" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3fb7944c-e11f-6c5b-04f0-e2eaa8386298" executionId="e305a362-ccce-4149-a322-48fb4579d61f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="edfa2e98-b249-825a-668d-b637c26ce7a3" executionId="b2a2ac66-d11a-4529-ad9a-1b02f8bc2fbd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="97e38191-8e3d-8346-3808-e0405c8b5a55" executionId="70c95184-b552-4ed0-a3ed-e711c2fd8328" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0a6a52c4-2cec-06d4-674e-61ef43afed2d" executionId="723cbd9b-9772-41af-9e0f-f78ec52eee92" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="073b6a96-772e-5d07-4812-3f5caf697552" executionId="fed652fb-e963-4126-b0f4-04f7adee8a43" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="87317a4b-ede9-63d6-2451-0a7a62444943" executionId="e5815bae-be9d-40f4-954e-f782d6f033fc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9ec261f7-a3fa-5688-e939-437dbbca1555" executionId="ef615227-6acf-41cc-88d6-29011c67dccc" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="06e75008-3fdd-0cde-000e-2194ee7fa912" executionId="e84e737d-207c-45cc-95b0-582450db6dab" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6" executionId="b0c8667d-9d11-48f9-b1d0-76e3fac27f32" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="35da3392-a083-8558-cd39-4059ffb4cc74" executionId="5f63af22-0b34-44ae-ba83-fec40069e5bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fb7067aa-8e16-6004-46f2-6bec0a14e52e" executionId="b5d2ed61-6464-4013-a7cc-5b362e16f497" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="58e67411-e13a-f5a8-2401-a5bb33c6c0e0" executionId="96419cc7-ed22-48c4-ad9e-9f3658738a1c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7fec0327-80ca-e8e8-0af7-0552b68c5121" executionId="53b8f94e-9019-4096-a75e-167639d3a79b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="81c2ac88-dbb3-c718-f987-f09eb8209df5" executionId="d8b1c7d6-f609-4530-ae04-629210cc6af7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9" executionId="2eb62e49-76af-4ee4-b3b2-7d0871cf9417" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="578539e7-6c2e-1d87-270f-abce79ca7666" executionId="d3d7ef96-a09c-46be-8d41-5b9df89bc8d6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="17" executed="17" passed="12" failed="5" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.49]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.65]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.65]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.74]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:00.74]                                   ↓ (pos 17)&#xD;
+[xUnit.net 00:00:00.74]       Expected: "PROD_RAW_EXPORT_CUSTODY_PROFILE_FIXTURE_A"···&#xD;
+[xUnit.net 00:00:00.74]       Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+[xUnit.net 00:00:00.74]                                   ↑ (pos 17)&#xD;
+[xUnit.net 00:00:00.74]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.74]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(154,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_host_cannot_register_fixture_custody_profile()&#xD;
+[xUnit.net 00:00:00.74]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:00.74]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:00.75]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:00.75]                                                ↓ (pos 30)&#xD;
+[xUnit.net 00:00:00.75]       Expected: "PROD_RAW_EXPORT_CLAIM_PROVIDERS_MISSING"&#xD;
+[xUnit.net 00:00:00.75]       Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+[xUnit.net 00:00:00.75]                                                ↑ (pos 30)&#xD;
+[xUnit.net 00:00:00.75]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.75]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(114,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_without_qualified_claim_providers_fails_closed()&#xD;
+[xUnit.net 00:00:00.75]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:00.75]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:00.77]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:00.77]                                   ↓ (pos 17)&#xD;
+[xUnit.net 00:00:00.77]       Expected: "PROD_RAW_EXPORT_CONTENT_COMMITMENT_FIXTUR"···&#xD;
+[xUnit.net 00:00:00.77]       Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+[xUnit.net 00:00:00.77]                                   ↑ (pos 17)&#xD;
+[xUnit.net 00:00:00.77]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.77]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(123,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm()&#xD;
+[xUnit.net 00:00:00.77]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:00.77]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:00.77]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:00.77]                                  ↓ (pos 16)&#xD;
+[xUnit.net 00:00:00.77]       Expected: "PROD_RAW_EXPORT_SUBJECT_REF_TOKEN_FIXTURE"···&#xD;
+[xUnit.net 00:00:00.77]       Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+[xUnit.net 00:00:00.77]                                  ↑ (pos 16)&#xD;
+[xUnit.net 00:00:00.77]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.77]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(133,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm()&#xD;
+[xUnit.net 00:00:00.77]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:00.77]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:00.77]       Assert.Equal() Failure: Strings differ&#xD;
+[xUnit.net 00:00:00.77]                                   ↓ (pos 17)&#xD;
+[xUnit.net 00:00:00.77]       Expected: "PROD_RAW_EXPORT_CUSTODY_PROFILE_FIXTURE_A"···&#xD;
+[xUnit.net 00:00:00.77]       Actual:   "PROD_RAW_EXPORT_CLAIM_PROVIDER_INVALID"&#xD;
+[xUnit.net 00:00:00.78]                                   ↑ (pos 17)&#xD;
+[xUnit.net 00:00:00.78]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.78]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(143,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm()&#xD;
+[xUnit.net 00:00:00.78]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:00.78]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:00.81]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-29T11:18:57.4681942+07:00">
+        <Text>[xUnit.net 00:00:00.74]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_host_cannot_register_fixture_custody_profile [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-29T11:18:57.4751030+07:00">
+        <Text>[xUnit.net 00:00:00.75]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_without_qualified_claim_providers_fails_closed [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-29T11:18:57.5238886+07:00">
+        <Text>[xUnit.net 00:00:00.77]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-29T11:18:57.5239457+07:00">
+        <Text>[xUnit.net 00:00:00.77]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-29T11:18:57.5239902+07:00">
+        <Text>[xUnit.net 00:00:00.77]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

@@ -1,0 +1,233 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="da4910d3-711d-47cf-a008-f145f66653e1" name="3AVNN@LEARNPC 2026-09-28 20:09:14" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-09-28T20:09:14.4296708+07:00" queuing="2026-09-28T20:09:14.4296711+07:00" start="2026-09-28T20:09:10.8277599+07:00" finish="2026-09-28T20:09:14.4364543+07:00" />
+  <TestSettings name="default" id="977fbf64-22d5-49dc-804e-ea4ee8cd2291">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-09-28_20_09_14" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="fc80f9d6-a875-4b3f-93a8-82566b553d87" testId="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory" computerName="LEARNPC" duration="00:00:00.0075808" startTime="2026-09-28T20:09:14.3461755+07:00" endTime="2026-09-28T20:09:14.3461757+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fc80f9d6-a875-4b3f-93a8-82566b553d87">
+      <Output>
+        <ErrorInfo>
+          <Message>System.AggregateException : Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator': Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator'.) (Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider': A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.) (Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider': Unable to resolve service for type 'TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider'.)&#xD;
+---- System.InvalidOperationException : Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator': Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator'.&#xD;
+-------- System.InvalidOperationException : Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator'.&#xD;
+---- System.InvalidOperationException : Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider': A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+-------- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+---- System.InvalidOperationException : Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider': Unable to resolve service for type 'TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider'.&#xD;
+-------- System.InvalidOperationException : Unable to resolve service for type 'TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider'.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions.BuildServiceProvider(IServiceCollection services, ServiceProviderOptions options)&#xD;
+   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 65&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+----- Inner Stack Trace #1 (System.InvalidOperationException) -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+----- Inner Stack Trace #2 (System.InvalidOperationException) -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+----- Inner Stack Trace #3 (System.InvalidOperationException) -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="736d2c8e-cebe-449f-a399-9617e8531290" testId="9ec261f7-a3fa-5688-e939-437dbbca1555" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;capture.raw-export.site-qualification&quot;, expected: True)" computerName="LEARNPC" duration="00:00:00.0002892" startTime="2026-09-28T20:09:14.3365564+07:00" endTime="2026-09-28T20:09:14.3365565+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="736d2c8e-cebe-449f-a399-9617e8531290" />
+    <UnitTestResult executionId="517fe214-592a-4771-9eae-dcdb7aaea1fe" testId="edfa2e98-b249-825a-668d-b637c26ce7a3" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;capture.raw-export.site-qualification&quot;, expected: False)" computerName="LEARNPC" duration="00:00:00.0000110" startTime="2026-09-28T20:09:14.3371683+07:00" endTime="2026-09-28T20:09:14.3371684+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="517fe214-592a-4771-9eae-dcdb7aaea1fe" />
+    <UnitTestResult executionId="2aced547-2ee8-411c-953f-197c7909f8cd" testId="35da3392-a083-8558-cd39-4059ffb4cc74" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" computerName="LEARNPC" duration="00:00:00.0008371" startTime="2026-09-28T20:09:14.3462773+07:00" endTime="2026-09-28T20:09:14.3462773+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2aced547-2ee8-411c-953f-197c7909f8cd" />
+    <UnitTestResult executionId="70acee34-68a9-4cf4-b3de-b377517e943b" testId="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;operator.site-qualification.enroll&quot;, expected: False)" computerName="LEARNPC" duration="00:00:00.0000100" startTime="2026-09-28T20:09:14.3365985+07:00" endTime="2026-09-28T20:09:14.3365986+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="70acee34-68a9-4cf4-b3de-b377517e943b" />
+    <UnitTestResult executionId="8ac58f98-0479-4ae2-9009-84e196aa5f24" testId="073b6a96-772e-5d07-4812-3f5caf697552" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" computerName="LEARNPC" duration="00:00:00.1457536" startTime="2026-09-28T20:09:14.3303223+07:00" endTime="2026-09-28T20:09:14.3303483+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8ac58f98-0479-4ae2-9009-84e196aa5f24">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : Cannot resolve scoped service 'TagEkyc.Application.Ports.ICaptureRuntimeRawIngressAdmission' from root provider.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.ValidateResolution(ServiceCallSite callSite, IServiceScope scope, IServiceScope rootScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 41&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="ccd71f2f-9655-4cda-9dad-f487f2e6bc14" testId="b2ddc8a9-753b-6a2f-09c5-8b3f7942cfd2" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Broker_composition_registers_existing_claim_services_and_exact_login" computerName="LEARNPC" duration="00:00:00.0078098" startTime="2026-09-28T20:09:14.3343208+07:00" endTime="2026-09-28T20:09:14.3343208+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ccd71f2f-9655-4cda-9dad-f487f2e6bc14">
+      <Output>
+        <ErrorInfo>
+          <Message>System.AggregateException : Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: TagEkyc.Contracts.RawExport.IRawExportSourceClaimComparisonBroker Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker': Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker'.)&#xD;
+---- System.InvalidOperationException : Error while validating the service descriptor 'ServiceType: TagEkyc.Contracts.RawExport.IRawExportSourceClaimComparisonBroker Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker': Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker'.&#xD;
+-------- System.InvalidOperationException : Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker'.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions.BuildServiceProvider(IServiceCollection services, ServiceProviderOptions options)&#xD;
+   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Broker_composition_registers_existing_claim_services_and_exact_login() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 90&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="480385c1-234b-484c-9b78-b6adbb88bf47" testId="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;operator.site-qualification.enroll&quot;, expected: True)" computerName="LEARNPC" duration="00:00:00.0024122" startTime="2026-09-28T20:09:14.3364325+07:00" endTime="2026-09-28T20:09:14.3364326+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="480385c1-234b-484c-9b78-b6adbb88bf47" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Broker_composition_registers_existing_claim_services_and_exact_login" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b2ddc8a9-753b-6a2f-09c5-8b3f7942cfd2">
+      <Execution id="ccd71f2f-9655-4cda-9dad-f487f2e6bc14" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Broker_composition_registers_existing_claim_services_and_exact_login" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="35da3392-a083-8558-cd39-4059ffb4cc74">
+      <Execution id="2aced547-2ee8-411c-953f-197c7909f8cd" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6">
+      <Execution id="fc80f9d6-a875-4b3f-93a8-82566b553d87" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Recipient_package_composition_registers_exact_three_role_factory" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;capture.raw-export.site-qualification&quot;, expected: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="edfa2e98-b249-825a-668d-b637c26ce7a3">
+      <Execution id="517fe214-592a-4771-9eae-dcdb7aaea1fe" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;operator.site-qualification.enroll&quot;, expected: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9">
+      <Execution id="70acee34-68a9-4cf4-b3de-b377517e943b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;operator.site-qualification.enroll&quot;, expected: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9">
+      <Execution id="480385c1-234b-484c-9b78-b6adbb88bf47" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="073b6a96-772e-5d07-4812-3f5caf697552">
+      <Execution id="8ac58f98-0479-4ae2-9009-84e196aa5f24" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;capture.raw-export.site-qualification&quot;, expected: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9ec261f7-a3fa-5688-e939-437dbbca1555">
+      <Execution id="736d2c8e-cebe-449f-a399-9617e8531290" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6" executionId="fc80f9d6-a875-4b3f-93a8-82566b553d87" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9ec261f7-a3fa-5688-e939-437dbbca1555" executionId="736d2c8e-cebe-449f-a399-9617e8531290" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="edfa2e98-b249-825a-668d-b637c26ce7a3" executionId="517fe214-592a-4771-9eae-dcdb7aaea1fe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="35da3392-a083-8558-cd39-4059ffb4cc74" executionId="2aced547-2ee8-411c-953f-197c7909f8cd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9" executionId="70acee34-68a9-4cf4-b3de-b377517e943b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="073b6a96-772e-5d07-4812-3f5caf697552" executionId="8ac58f98-0479-4ae2-9009-84e196aa5f24" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b2ddc8a9-753b-6a2f-09c5-8b3f7942cfd2" executionId="ccd71f2f-9655-4cda-9dad-f487f2e6bc14" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9" executionId="480385c1-234b-484c-9b78-b6adbb88bf47" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="8" executed="8" passed="5" failed="3" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:01.54]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.74]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.74]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.94]       System.InvalidOperationException : Cannot resolve scoped service 'TagEkyc.Application.Ports.ICaptureRuntimeRawIngressAdmission' from root provider.&#xD;
+[xUnit.net 00:00:01.94]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.94]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteValidator.ValidateResolution(ServiceCallSite callSite, IServiceScope scope, IServiceScope rootScope)&#xD;
+[xUnit.net 00:00:01.94]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.94]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.95]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(41,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback()&#xD;
+[xUnit.net 00:00:01.95]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:01.95]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:01.95]       System.AggregateException : Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: TagEkyc.Contracts.RawExport.IRawExportSourceClaimComparisonBroker Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker': Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker'.)&#xD;
+[xUnit.net 00:00:01.95]       ---- System.InvalidOperationException : Error while validating the service descriptor 'ServiceType: TagEkyc.Contracts.RawExport.IRawExportSourceClaimComparisonBroker Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker': Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker'.&#xD;
+[xUnit.net 00:00:01.95]       -------- System.InvalidOperationException : Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RawExportSourceClaimComparisonBroker'.&#xD;
+[xUnit.net 00:00:01.95]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions.BuildServiceProvider(IServiceCollection services, ServiceProviderOptions options)&#xD;
+[xUnit.net 00:00:01.95]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(90,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Broker_composition_registers_existing_claim_services_and_exact_login()&#xD;
+[xUnit.net 00:00:01.95]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:01.95]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:01.95]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+[xUnit.net 00:00:01.95]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.95]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+[xUnit.net 00:00:01.96]       System.AggregateException : Some services are not able to be constructed (Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator': Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator'.) (Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider': A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.) (Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider': Unable to resolve service for type 'TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider'.)&#xD;
+[xUnit.net 00:00:01.96]       ---- System.InvalidOperationException : Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator': Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator'.&#xD;
+[xUnit.net 00:00:01.96]       -------- System.InvalidOperationException : Unable to resolve service for type 'TagEkyc.Infrastructure.Persistence.TagEkycDbContext' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackageReadinessValidator'.&#xD;
+[xUnit.net 00:00:01.96]       ---- System.InvalidOperationException : Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider': A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.96]       -------- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.S3CompatibleRecipientPackageProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.96]       ---- System.InvalidOperationException : Error while validating the service descriptor 'ServiceType: TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider Lifetime: Scoped ImplementationType: TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider': Unable to resolve service for type 'TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider'.&#xD;
+[xUnit.net 00:00:01.96]       -------- System.InvalidOperationException : Unable to resolve service for type 'TagEkyc.Infrastructure.RawExport.RawExportAssemblyRepository' while attempting to activate 'TagEkyc.Infrastructure.RawExport.RecipientPackagePreparationProvider'.&#xD;
+[xUnit.net 00:00:01.96]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceCollectionContainerBuilderExtensions.BuildServiceProvider(IServiceCollection services, ServiceProviderOptions options)&#xD;
+[xUnit.net 00:00:01.96]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(65,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory()&#xD;
+[xUnit.net 00:00:01.96]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:01.96]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:01.96]         ----- Inner Stack Trace #1 (System.InvalidOperationException) -----&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+[xUnit.net 00:00:01.96]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+[xUnit.net 00:00:01.96]         ----- Inner Stack Trace #2 (System.InvalidOperationException) -----&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+[xUnit.net 00:00:01.96]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+[xUnit.net 00:00:01.96]         ----- Inner Stack Trace #3 (System.InvalidOperationException) -----&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider..ctor(ICollection`1 serviceDescriptors, ServiceProviderOptions options)&#xD;
+[xUnit.net 00:00:01.96]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateArgumentCallSites(ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain, ParameterInfo[] parameters, Boolean throwIfCallSiteNotFound)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceDescriptor serviceDescriptor, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.96]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.ValidateService(ServiceDescriptor descriptor)&#xD;
+[xUnit.net 00:00:01.97]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-28T20:09:14.3274873+07:00">
+        <Text>[xUnit.net 00:00:01.94]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-28T20:09:14.3338656+07:00">
+        <Text>[xUnit.net 00:00:01.95]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Broker_composition_registers_existing_claim_services_and_exact_login [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-09-28T20:09:14.3452868+07:00">
+        <Text>[xUnit.net 00:00:01.96]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

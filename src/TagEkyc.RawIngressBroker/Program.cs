@@ -14,9 +14,10 @@ builder.WebHost.ConfigureKestrel(server =>
     server.Limits.MaxRequestBodySize = 16384;
     server.Limits.RequestHeadersTimeout = TimeSpan.FromMilliseconds(options.RequestTimeoutMilliseconds);
 });
-// Qualified database/profile/key services must be explicitly composed. Their
-// absence stays 503; this host never installs synthetic providers by default.
-builder.Services.AddTagEkycRawIngressBrokerTransport(options);
+// Compose the existing production claim-comparison services and the exact
+// broker LOGIN. This host never installs synthetic providers or SET ROLE.
+builder.Services.AddTagEkycRawIngressBroker(
+    builder.Configuration, builder.Environment.IsProduction());
 var app = builder.Build();
 app.Run(async context =>
 {

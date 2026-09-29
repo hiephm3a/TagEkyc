@@ -6,6 +6,7 @@ using TagEkyc.Application;
 using TagEkyc.Application.CaptureRuntime;
 using TagEkyc.Application.Ports;
 using TagEkyc.Application.LocalDev;
+using TagEkyc.Application.VerificationSessions;
 using TagEkyc.Infrastructure.Auth;
 using TagEkyc.Infrastructure.CaptureRuntime;
 using TagEkyc.Infrastructure.Persistence;
@@ -29,6 +30,12 @@ try
         && string.Equals(args[1], "revoke", StringComparison.Ordinal))
     {
         return await RunPlatformCommandAsync(() => RevokePlatformOperatorAsync(ParseArgs(args[2..])));
+    }
+
+    if (args.Length >= 2 && string.Equals(args[0], "site-qualification", StringComparison.Ordinal)
+        && string.Equals(args[1], "provision", StringComparison.Ordinal))
+    {
+        return await ProvisionSiteQualificationApiKeyAsync(ParseArgs(args[2..]));
     }
 
     var parsed = ParseArgs(args);
@@ -80,6 +87,64 @@ static async Task<int> RunPlatformCommandAsync(Func<Task<int>> command)
         Console.Error.WriteLine("Invalid Capture Runtime platform-operator command.");
         return 30;
     }
+}
+
+static async Task<int> ProvisionSiteQualificationApiKeyAsync(
+    IReadOnlyDictionary<string, string> parsed)
+{
+    RequireExactKeys(parsed,
+        "--profile",
+        "--client-application-id",
+        "--principal-id",
+        "--expires-at",
+        "--connection-string-secret-ref",
+        "--pepper-secret-ref");
+    var profile = Require(parsed, "--profile");
+    var (category, scope, expectedClientApplicationId) = profile switch
+    {
+        "operator-enrollment" => (AuthenticatedCallerCategory.OperatorAdmin,
+            "operator.site-qualification.enroll",
+            LocalDevRuntimePolicySource.BusinessClientId),
+        "capture-agent-measurement" => (AuthenticatedCallerCategory.CaptureAgent,
+            "capture.raw-export.site-qualification",
+            LocalDevRuntimePolicySource.OtherBusinessClientId),
+        _ => throw new InvalidOperationException(
+            "SITE_QUALIFICATION_APIKEY_PROFILE_INVALID"),
+    };
+    var clientApplicationId = ParseRequiredGuid(parsed, "--client-application-id");
+    if (clientApplicationId != expectedClientApplicationId)
+        throw new InvalidOperationException(
+            "SITE_QUALIFICATION_APIKEY_CLIENT_POLICY_INVALID");
+    var principalId = ParseRequiredGuid(parsed, "--principal-id");
+    var expiresAt = ParseRequiredUtc(parsed, "--expires-at");
+    var connectionString = SecretRefResolver.Resolve(
+        Require(parsed, "--connection-string-secret-ref")).Value;
+    var pepper = ApiKeyStorePepperResolver.Resolve(
+        Require(parsed, "--pepper-secret-ref"));
+    var options = new DbContextOptionsBuilder<TagEkycDbContext>()
+        .UseNpgsql(connectionString)
+        .Options;
+    await using var db = new TagEkycDbContext(options);
+    var service = new ApiKeyProvisioningService(
+        db,
+        pepper,
+        new SiteQualificationProvisioningPolicySource(clientApplicationId, scope),
+        new RandomManagedApiKeyGenerator());
+    var result = await service.ProvisionAsync(new(
+        clientApplicationId,
+        category,
+        new HashSet<string>(StringComparer.Ordinal) { scope },
+        expiresAt,
+        principalId,
+        $"site-qualification:{profile}:{principalId:N}"));
+    Console.WriteLine($"profile={profile}");
+    Console.WriteLine($"callerCategory={category}");
+    Console.WriteLine($"scope={scope}");
+    Console.WriteLine($"apiKeyId={result.ApiKeyId}");
+    Console.WriteLine($"clientApplicationId={result.ClientApplicationId}");
+    Console.WriteLine($"keyPrefix={result.KeyPrefix}");
+    Console.WriteLine($"apiKey={result.PresentedKey}");
+    return 0;
 }
 
 static async Task<int> ProvisionPlatformOperatorAsync(IReadOnlyDictionary<string, string> parsed)
@@ -339,6 +404,29 @@ static Guid? TryParseGuid(string? value) =>
 static void Usage()
 {
     Console.Error.WriteLine("Usage: TagEkyc.ApiKeyProvisioner --connection-string-secret-ref env:DB --pepper-secret-ref env:PEPPER --client-application-id <guid> --caller-category BusinessConsumer --scopes business.session.create,session.complete");
+    Console.Error.WriteLine("       TagEkyc.ApiKeyProvisioner site-qualification provision --profile operator-enrollment|capture-agent-measurement --connection-string-secret-ref env:DB --pepper-secret-ref env:PEPPER --client-application-id <uuid-n> --principal-id <uuid-n> --expires-at <utc-timestamp>");
     Console.Error.WriteLine("       TagEkyc.ApiKeyProvisioner platform-operator provision --connection-string-secret-ref env:DB --operation-id <uuid-n> --principal-id <uuid-n> --expires-at <utc-timestamp> --capture-runtime-verifier-pepper-version <positive-int> --capture-runtime-verifier-pepper-secret-ref <secret-ref>");
     Console.Error.WriteLine("       TagEkyc.ApiKeyProvisioner platform-operator revoke --connection-string-secret-ref env:DB --operation-id <uuid-n> --credential-id <uuid-n> --expected-revision <positive-int>");
+}
+
+file sealed class SiteQualificationProvisioningPolicySource(
+    Guid clientApplicationId,
+    string scope) : ILocalDevClientPolicyProvider
+{
+    private readonly LocalDevClientPolicy policy = new LocalDevRuntimePolicySource()
+        .Policies.Single(value =>
+            value.ClientApplicationId == LocalDevRuntimePolicySource.BusinessClientId) with
+        {
+            ClientApplicationId = clientApplicationId,
+            AllowedCallerScopes = new HashSet<string>(StringComparer.Ordinal) { scope },
+        };
+
+    public Task<LocalDevClientPolicy?> GetPolicyAsync(
+        Guid requestedClientApplicationId,
+        CancellationToken cancellationToken = default)
+    {
+        cancellationToken.ThrowIfCancellationRequested();
+        return Task.FromResult<LocalDevClientPolicy?>(
+            requestedClientApplicationId == clientApplicationId ? policy : null);
+    }
 }

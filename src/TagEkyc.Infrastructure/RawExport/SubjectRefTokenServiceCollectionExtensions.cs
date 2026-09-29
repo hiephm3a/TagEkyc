@@ -23,6 +23,7 @@ public static class SubjectRefTokenServiceCollectionExtensions
                 ConfigurationProtectedValueProvider>());
         services.TryAddSingleton(new ProtectedValueResolverOptions());
         services.TryAddSingleton(TimeProvider.System);
+        services.TryAddSingleton<FixtureSubjectTokenCatalog>();
         services.TryAddSingleton(serviceProvider =>
             ProtectedValueProviderRegistry.CreateTerminal(
                 serviceProvider.GetServices<IProtectedValueProvider>()));
@@ -30,7 +31,7 @@ public static class SubjectRefTokenServiceCollectionExtensions
             serviceProvider =>
             {
                 var resolver = new ProtectedValueResolver(
-                    new FixtureSubjectTokenCatalog(),
+                    serviceProvider.GetRequiredService<FixtureSubjectTokenCatalog>(),
                     serviceProvider.GetRequiredService<
                         ProtectedValueProviderRegistry>(),
                     serviceProvider.GetRequiredService<
