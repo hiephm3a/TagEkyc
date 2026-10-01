@@ -24,6 +24,9 @@ public static class RawExportSourceClaimComparisonServiceCollectionExtensions
 
         if (isProduction)
         {
+            services.AddTagEkycProductionRawExportClaimProviders(
+                configuration);
+            services.AddTagEkycCustodyProfiles(configuration, isProduction: true);
             RawExportClaimProviderProductionGuard.RequireQualified(services);
         }
         else
@@ -68,8 +71,29 @@ internal static class RawExportClaimProviderProductionGuard
             throw new InvalidOperationException(
                 RawExportCustodyProfileReadinessValidator.FixtureActive);
 
-        // There is no ratified production key/profile catalog implementation in
-        // this repository. Unknown registrations are not treated as qualified.
-        throw new InvalidOperationException(ProvidersMissing);
+        if (!HasExactSingleton<IContentCommitmentService,
+                OpenBaoContentCommitmentService>(services)
+            || !HasExactSingleton<ISubjectRefTokenService,
+                OpenBaoSubjectRefTokenService>(services)
+            || !services.Any(descriptor =>
+                descriptor.ServiceType == typeof(RawExportClaimProviderReadinessValidator)))
+            throw new InvalidOperationException(ProvidersMissing);
+
+        if (!services.Any(descriptor =>
+                descriptor.ServiceType == typeof(ICustodyProfileProvider)
+                && descriptor.ImplementationType == typeof(OpenBaoProductionCustodyProfileProvider)))
+            throw new InvalidOperationException(
+                RawExportCustodyProfileReadinessValidator.ProfileMissing);
+    }
+
+    private static bool HasExactSingleton<TService, TImplementation>(
+        IServiceCollection services) where TImplementation : class, TService
+    {
+        var registrations = services
+            .Where(descriptor => descriptor.ServiceType == typeof(TService))
+            .ToArray();
+        return registrations.Length == 1
+               && registrations[0].Lifetime == ServiceLifetime.Singleton
+               && registrations[0].ImplementationType == typeof(TImplementation);
     }
 }

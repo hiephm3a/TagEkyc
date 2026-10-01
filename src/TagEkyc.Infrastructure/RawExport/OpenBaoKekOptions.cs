@@ -2,6 +2,14 @@ using Microsoft.Extensions.Configuration;
 
 namespace TagEkyc.Infrastructure.RawExport;
 
+internal record OpenBaoConnectionOptions(
+    Uri Address,
+    string? Namespace,
+    string RoleIdSecretRef,
+    string SecretIdSecretRef,
+    string? CaCertificatePath,
+    TimeSpan RequestTimeout);
+
 internal sealed record OpenBaoKekOptions(
     Uri Address,
     string? Namespace,
@@ -12,7 +20,13 @@ internal sealed record OpenBaoKekOptions(
     string KeyName,
     int KeyVersion,
     string KeyFingerprint,
-    TimeSpan RequestTimeout)
+    TimeSpan RequestTimeout) : OpenBaoConnectionOptions(
+        Address,
+        Namespace,
+        RoleIdSecretRef,
+        SecretIdSecretRef,
+        CaCertificatePath,
+        RequestTimeout)
 {
     internal const string SectionName = "TagEkyc:RawExport:AttemptKey:OpenBao";
     internal const string KeyProviderId = "openbao-transit";

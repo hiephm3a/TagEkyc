@@ -1,0 +1,1045 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="6190f795-9739-43b5-af91-cf4b17e3f3db" name="3AVNN@LEARNPC 2026-10-01 10:15:45" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-01T10:15:45.8968977+07:00" queuing="2026-10-01T10:15:45.8968981+07:00" start="2026-10-01T10:15:42.7156374+07:00" finish="2026-10-01T10:15:46.4818029+07:00" />
+  <TestSettings name="default" id="e217d1ad-4dc1-4230-a3c4-c01efc83acb4">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-01_10_15_45" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="94b86f6c-d988-42a0-b561-03a77710af72" testId="7fec0327-80ca-e8e8-0af7-0552b68c5121" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm" computerName="LEARNPC" duration="00:00:00.0004431" startTime="2026-10-01T10:15:46.3689362+07:00" endTime="2026-10-01T10:15:46.3689363+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="94b86f6c-d988-42a0-b561-03a77710af72" />
+    <UnitTestResult executionId="2c40f7b4-7593-4fe8-b3b2-10784981efb1" testId="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;operator.site-qualification.enroll&quot;, expected: True)" computerName="LEARNPC" duration="00:00:00.0018399" startTime="2026-10-01T10:15:46.3615645+07:00" endTime="2026-10-01T10:15:46.3615648+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2c40f7b4-7593-4fe8-b3b2-10784981efb1" />
+    <UnitTestResult executionId="fbfddbf8-ca15-4def-a2a8-9660d4969434" testId="4113efee-1359-b421-8bb3-caf91ed2d63a" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Caller_cancellation_is_propagated_before_provider_access" computerName="LEARNPC" duration="00:00:00.0016148" startTime="2026-10-01T10:15:45.9031105+07:00" endTime="2026-10-01T10:15:45.9031108+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fbfddbf8-ca15-4def-a2a8-9660d4969434">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.ThrowsAny() Failure: Exception type was not compatible&#xD;
+Expected: typeof(System.OperationCanceledException)&#xD;
+Actual:   typeof(System.InvalidOperationException)&#xD;
+---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Caller_cancellation_is_propagated_before_provider_access() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 151&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs:line 468&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass6_0.&lt;&lt;Caller_cancellation_is_propagated_before_provider_access&gt;b__0&gt;d.MoveNext() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 152&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="22fcf531-503c-40c5-a790-5d644fefacee" testId="d9d0ce30-37ed-cf54-707b-107aefb050c7" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Exact_OpenBao_HMAC_shape_yields_the_existing_32_byte_contract" computerName="LEARNPC" duration="00:00:00.0076694" startTime="2026-10-01T10:15:45.8841827+07:00" endTime="2026-10-01T10:15:45.8841829+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="22fcf531-503c-40c5-a790-5d644fefacee" />
+    <UnitTestResult executionId="795dcfbd-ab71-486a-8dcc-0acb739341ba" testId="00e9e768-9704-ce28-e5cf-dea15b979ed8" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(keyId: &quot;unknown&quot;, keyVersion: 1)" computerName="LEARNPC" duration="00:00:00.0006728" startTime="2026-10-01T10:15:45.8907623+07:00" endTime="2026-10-01T10:15:45.8907625+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="795dcfbd-ab71-486a-8dcc-0acb739341ba">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs:line 468&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(String keyId, Int32 keyVersion) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 116&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="6ba85235-08e8-447c-b0c6-c90e48a4f0ce" testId="a616d050-0a13-d32f-e302-e666df69c494" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_key_metadata_is_readiness_RED(type: &quot;hmac&quot;, exportable: False, plaintextBackup: False, hasVersion: False)" computerName="LEARNPC" duration="00:00:00.0007184" startTime="2026-10-01T10:15:45.8467203+07:00" endTime="2026-10-01T10:15:45.8467203+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6ba85235-08e8-447c-b0c6-c90e48a4f0ce" />
+    <UnitTestResult executionId="51520b0d-74ac-4d55-8369-cd66d4a6d9a9" testId="fb7067aa-8e16-6004-46f2-6bec0a14e52e" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_runtime_owner_composition_rejects_direct_connection_strings" computerName="LEARNPC" duration="00:00:00.0004199" startTime="2026-10-01T10:15:46.3716118+07:00" endTime="2026-10-01T10:15:46.3716119+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="51520b0d-74ac-4d55-8369-cd66d4a6d9a9" />
+    <UnitTestResult executionId="2fc18bee-214b-46bf-9b44-39fad10eb051" testId="d80bd303-b641-427c-9d99-f89ec4069ae3" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(arm: &quot;kek-role&quot;)" computerName="LEARNPC" duration="00:00:00.0003153" startTime="2026-10-01T10:15:45.8756001+07:00" endTime="2026-10-01T10:15:45.8756009+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2fc18bee-214b-46bf-9b44-39fad10eb051">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: Exception type was not an exact match&#xD;
+Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+Actual:   typeof(System.InvalidOperationException)&#xD;
+---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(String arm) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 65&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass2_0.&lt;Shared_AppRole_key_or_KEK_credential_is_readiness_RED&gt;b__0() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 66</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="6dd7fd4f-be42-49cc-a3e6-07be0e710c26" testId="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;operator.site-qualification.enroll&quot;, expected: False)" computerName="LEARNPC" duration="00:00:00.0000141" startTime="2026-10-01T10:15:46.3620970+07:00" endTime="2026-10-01T10:15:46.3620970+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6dd7fd4f-be42-49cc-a3e6-07be0e710c26" />
+    <UnitTestResult executionId="97f44763-221d-4f52-84b9-4b7a7b88706f" testId="6af56aea-a7bc-b7ef-720a-6f8d6f3de6ad" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(arm: &quot;key&quot;)" computerName="LEARNPC" duration="00:00:00.0127407" startTime="2026-10-01T10:15:45.8737459+07:00" endTime="2026-10-01T10:15:45.8737461+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="97f44763-221d-4f52-84b9-4b7a7b88706f">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: Exception type was not an exact match&#xD;
+Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+Actual:   typeof(System.InvalidOperationException)&#xD;
+---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(String arm) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 65&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass2_0.&lt;Shared_AppRole_key_or_KEK_credential_is_readiness_RED&gt;b__0() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 66</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="22757c02-ff30-47d7-82e8-22cb63816e64" testId="6a2a476b-baf8-228f-bdef-7f1348764f98" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v2:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;···)" computerName="LEARNPC" duration="00:00:00.0002920" startTime="2026-10-01T10:15:45.8842530+07:00" endTime="2026-10-01T10:15:45.8842531+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="22757c02-ff30-47d7-82e8-22cb63816e64" />
+    <UnitTestResult executionId="a9d42860-7588-43b2-acd4-53b96be2076e" testId="39249a5e-9a82-7739-d7ff-4c7206306332" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_key_metadata_is_readiness_RED(type: &quot;hmac&quot;, exportable: False, plaintextBackup: True, hasVersion: True)" computerName="LEARNPC" duration="00:00:00.1099643" startTime="2026-10-01T10:15:45.8447227+07:00" endTime="2026-10-01T10:15:45.8447351+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a9d42860-7588-43b2-acd4-53b96be2076e" />
+    <UnitTestResult executionId="00dd8708-e249-472f-b072-8eb7d1e8b06a" testId="e120280c-8fd6-1d2c-2d93-829699e097c2" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v1:not-base64&quot;)" computerName="LEARNPC" duration="00:00:00.0007315" startTime="2026-10-01T10:15:45.8844237+07:00" endTime="2026-10-01T10:15:45.8844237+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="00dd8708-e249-472f-b072-8eb7d1e8b06a" />
+    <UnitTestResult executionId="e396f200-d377-4d8f-80f5-2027de6ae860" testId="e9d14836-1037-d59b-ed06-4146c45d073d" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_registers_only_OpenBao_claim_providers_and_missing_catalog_is_readiness_RED" computerName="LEARNPC" duration="00:00:00.1331272" startTime="2026-10-01T10:15:45.8747058+07:00" endTime="2026-10-01T10:15:45.8747059+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e396f200-d377-4d8f-80f5-2027de6ae860">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs:line 468&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_registers_only_OpenBao_claim_providers_and_missing_catalog_is_readiness_RED() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 131&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="35c8f970-4d0d-4d1f-8630-10c8b8c23213" testId="e864bcad-77ef-7150-9d59-a2096ebf4faa" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Missing_catalog_is_readiness_RED" computerName="LEARNPC" duration="00:00:00.0006304" startTime="2026-10-01T10:15:45.9036846+07:00" endTime="2026-10-01T10:15:45.9036848+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="35c8f970-4d0d-4d1f-8630-10c8b8c23213">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: Exception type was not an exact match&#xD;
+Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+Actual:   typeof(System.InvalidOperationException)&#xD;
+---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Missing_catalog_is_readiness_RED() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 37&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass1_0.&lt;Missing_catalog_is_readiness_RED&gt;b__0() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 38</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d3b88806-37c7-436f-b94b-05cf611f5749" testId="79b5747f-f255-b082-f067-7ccea752c3c7" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_custody_registration_excludes_fixtures_while_readiness_rejects_fixture_profile" computerName="LEARNPC" duration="00:00:00.0010586" startTime="2026-10-01T10:15:45.8849167+07:00" endTime="2026-10-01T10:15:45.8849168+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d3b88806-37c7-436f-b94b-05cf611f5749">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoProductionCustodyProfileProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_custody_registration_excludes_fixtures_while_readiness_rejects_fixture_profile() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 195&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="0624b36b-7feb-43b0-aa69-c09deab5ba62" testId="58e67411-e13a-f5a8-2401-a5bb33c6c0e0" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm" computerName="LEARNPC" duration="00:00:00.0010460" startTime="2026-10-01T10:15:46.3682486+07:00" endTime="2026-10-01T10:15:46.3682487+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0624b36b-7feb-43b0-aa69-c09deab5ba62" />
+    <UnitTestResult executionId="a4cfd783-f7fb-42c0-9aba-b90ffa81bd59" testId="87317a4b-ede9-63d6-2451-0a7a62444943" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_broker_composition_registers_fixture_claim_services_and_exact_login" computerName="LEARNPC" duration="00:00:00.0442229" startTime="2026-10-01T10:15:46.4161584+07:00" endTime="2026-10-01T10:15:46.4161590+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a4cfd783-f7fb-42c0-9aba-b90ffa81bd59" />
+    <UnitTestResult executionId="fdd8f904-8ab9-40c3-b3dd-003a33e9fe68" testId="35da3392-a083-8558-cd39-4059ffb4cc74" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" computerName="LEARNPC" duration="00:00:00.0003062" startTime="2026-10-01T10:15:46.4165209+07:00" endTime="2026-10-01T10:15:46.4165209+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fdd8f904-8ab9-40c3-b3dd-003a33e9fe68" />
+    <UnitTestResult executionId="72d43db7-f3c4-4d31-b433-b7359027777c" testId="ace66ea2-aac1-20f5-673a-d9461591d68d" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_custody_registration_keeps_fixture_catalogs_and_provider" computerName="LEARNPC" duration="00:00:00.0008600" startTime="2026-10-01T10:15:46.3629928+07:00" endTime="2026-10-01T10:15:46.3629930+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="72d43db7-f3c4-4d31-b433-b7359027777c" />
+    <UnitTestResult executionId="233cb426-0d47-48f8-942f-98bfaa696720" testId="baf12313-dff8-5e11-b71a-de1fb03c78fb" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_key_metadata_is_readiness_RED(type: &quot;aes256-gcm96&quot;, exportable: False, plaintextBackup: False, hasVersion: True)" computerName="LEARNPC" duration="00:00:00.0000212" startTime="2026-10-01T10:15:45.8469791+07:00" endTime="2026-10-01T10:15:45.8469791+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="233cb426-0d47-48f8-942f-98bfaa696720" />
+    <UnitTestResult executionId="2392c349-332e-477d-b416-5a5deea86016" testId="043ddacb-e539-2410-f317-fff5e6bd9ae6" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Inactive_subject_selector_is_ProviderFailure" computerName="LEARNPC" duration="00:00:00.0006284" startTime="2026-10-01T10:15:45.9004464+07:00" endTime="2026-10-01T10:15:45.9004465+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2392c349-332e-477d-b416-5a5deea86016">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoSubjectRefTokenService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_2(IServiceProvider sp) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs:line 470&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Inactive_subject_selector_is_ProviderFailure() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 135&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="60daeab3-b5f6-4d12-9bec-7ca2340e6b98" testId="073b6a96-772e-5d07-4812-3f5caf697552" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" computerName="LEARNPC" duration="00:00:00.0097682" startTime="2026-10-01T10:15:45.8843127+07:00" endTime="2026-10-01T10:15:45.8843127+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="60daeab3-b5f6-4d12-9bec-7ca2340e6b98" />
+    <UnitTestResult executionId="b8588c7c-a4fd-468d-8664-a81a964140d8" testId="f6fc5eb0-6bc6-1de5-b2e9-0f9edd9d378c" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(arm: &quot;role&quot;)" computerName="LEARNPC" duration="00:00:00.0001148" startTime="2026-10-01T10:15:45.8763099+07:00" endTime="2026-10-01T10:15:45.8763100+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b8588c7c-a4fd-468d-8664-a81a964140d8">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: Exception type was not an exact match&#xD;
+Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+Actual:   typeof(System.InvalidOperationException)&#xD;
+---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(String arm) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 65&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass2_0.&lt;Shared_AppRole_key_or_KEK_credential_is_readiness_RED&gt;b__0() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 66</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="f4600cd7-d4d5-4cae-8d10-877b4da863c6" testId="b7dac6e6-06b5-a4d0-18b0-7bc6294d2e29" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(arm: &quot;missing-id&quot;)" computerName="LEARNPC" duration="00:00:00.0006219" startTime="2026-10-01T10:15:45.8985819+07:00" endTime="2026-10-01T10:15:45.8985820+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f4600cd7-d4d5-4cae-8d10-877b4da863c6">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: Exception type was not an exact match&#xD;
+Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+Actual:   typeof(System.InvalidOperationException)&#xD;
+---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(String arm) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 97&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass3_0.&lt;Active_selector_must_resolve_to_an_active_catalog_entry&gt;b__0() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 98</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="b8cb8a72-f357-4267-9939-7e293a94fb8b" testId="4436eb5c-487f-e7e4-2939-6aeb2bbfbb3e" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_program_reaches_build_and_serves_health_with_fixture_profile_fail_closed_in_readiness" computerName="LEARNPC" duration="00:00:00.4714587" startTime="2026-10-01T10:15:46.3594042+07:00" endTime="2026-10-01T10:15:46.3594045+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b8cb8a72-f357-4267-9939-7e293a94fb8b">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoProductionCustodyProfileProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_program_reaches_build_and_serves_health_with_fixture_profile_fail_closed_in_readiness() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs:line 258&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="3a37aa59-c0b7-4f1d-861a-7bbe6e69605a" testId="4d47f762-de8c-36ad-c33d-e93ea02a56ae" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_key_metadata_is_readiness_RED(type: &quot;hmac&quot;, exportable: True, plaintextBackup: False, hasVersion: True)" computerName="LEARNPC" duration="00:00:00.0000623" startTime="2026-10-01T10:15:45.8469407+07:00" endTime="2026-10-01T10:15:45.8469408+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3a37aa59-c0b7-4f1d-861a-7bbe6e69605a" />
+    <UnitTestResult executionId="e2c87353-a8ff-4114-9e58-1c6dbe2bfca6" testId="9ec261f7-a3fa-5688-e939-437dbbca1555" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;capture.raw-export.site-qualification&quot;, expected: True)" computerName="LEARNPC" duration="00:00:00.0003862" startTime="2026-10-01T10:15:46.3620199+07:00" endTime="2026-10-01T10:15:46.3620201+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e2c87353-a8ff-4114-9e58-1c6dbe2bfca6" />
+    <UnitTestResult executionId="9a5f3a64-c1ba-404b-a2ac-f01db0928cea" testId="687f02aa-7b15-f68e-6e97-94cbf7e9ea07" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(arm: &quot;expired&quot;)" computerName="LEARNPC" duration="00:00:00.0001002" startTime="2026-10-01T10:15:45.8997137+07:00" endTime="2026-10-01T10:15:45.8997138+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9a5f3a64-c1ba-404b-a2ac-f01db0928cea">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: Exception type was not an exact match&#xD;
+Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+Actual:   typeof(System.InvalidOperationException)&#xD;
+---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(String arm) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 97&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass3_0.&lt;Active_selector_must_resolve_to_an_active_catalog_entry&gt;b__0() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 98</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="d500097a-0f00-4b6a-8676-28c4182b9a07" testId="edfa2e98-b249-825a-668d-b637c26ce7a3" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;capture.raw-export.site-qualification&quot;, expected: False)" computerName="LEARNPC" duration="00:00:00.0000038" startTime="2026-10-01T10:15:46.3621516+07:00" endTime="2026-10-01T10:15:46.3621516+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d500097a-0f00-4b6a-8676-28c4182b9a07" />
+    <UnitTestResult executionId="874801ae-e4d1-4117-b1a6-106cd347ca67" testId="f699b39d-9f25-c4ab-53f6-62dac0c0cfed" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(keyId: &quot;content-v1&quot;, keyVersion: 2)" computerName="LEARNPC" duration="00:00:00.0002520" startTime="2026-10-01T10:15:45.8979335+07:00" endTime="2026-10-01T10:15:45.8979337+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="874801ae-e4d1-4117-b1a6-106cd347ca67">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs:line 468&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(String keyId, Int32 keyVersion) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 116&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="2fcc438b-e17d-4791-9327-ed78310b34b2" testId="bdc0940c-9b66-844d-2020-c8510a6b43dc" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(arm: &quot;wrong-version&quot;)" computerName="LEARNPC" duration="00:00:00.0002115" startTime="2026-10-01T10:15:45.8991497+07:00" endTime="2026-10-01T10:15:45.8991497+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2fcc438b-e17d-4791-9327-ed78310b34b2">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: Exception type was not an exact match&#xD;
+Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+Actual:   typeof(System.InvalidOperationException)&#xD;
+---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(String arm) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 97&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass3_0.&lt;Active_selector_must_resolve_to_an_active_catalog_entry&gt;b__0() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 98</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="44e601b3-2890-4ad2-a148-890c01836321" testId="578539e7-6c2e-1d87-270f-abce79ca7666" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_database_options_reject_direct_connection_string" computerName="LEARNPC" duration="00:00:00.0001529" startTime="2026-10-01T10:15:46.3684542+07:00" endTime="2026-10-01T10:15:46.3684543+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="44e601b3-2890-4ad2-a148-890c01836321" />
+    <UnitTestResult executionId="b114bbdc-157b-4310-8009-cccb037574c0" testId="3fb7944c-e11f-6c5b-04f0-e2eaa8386298" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Existing_managed_key_generator_always_round_trips_fixed_length_prefix" computerName="LEARNPC" duration="00:00:00.0021520" startTime="2026-10-01T10:15:46.3711533+07:00" endTime="2026-10-01T10:15:46.3711536+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b114bbdc-157b-4310-8009-cccb037574c0" />
+    <UnitTestResult executionId="26c21758-1277-4250-af87-60d51fb72ad7" testId="28e6270c-b031-f830-e655-dc2d41ed6ba3" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;&quot;)" computerName="LEARNPC" duration="00:00:00.0000171" startTime="2026-10-01T10:15:45.8844632+07:00" endTime="2026-10-01T10:15:45.8844632+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="26c21758-1277-4250-af87-60d51fb72ad7" />
+    <UnitTestResult executionId="10d1f789-63cb-4cef-96ff-81e7685df154" testId="70c2ac20-0d22-de48-3172-d947dbecf25d" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v1:AQID&quot;)" computerName="LEARNPC" duration="00:00:00.0006388" startTime="2026-10-01T10:15:45.8842937+07:00" endTime="2026-10-01T10:15:45.8842938+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="10d1f789-63cb-4cef-96ff-81e7685df154" />
+    <UnitTestResult executionId="6dfd53d0-eba2-4dda-a218-6758ea1cd17a" testId="06e75008-3fdd-0cde-000e-2194ee7fa912" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_recipient_factory_rejects_direct_connection_strings" computerName="LEARNPC" duration="00:00:00.0044909" startTime="2026-10-01T10:15:45.9005231+07:00" endTime="2026-10-01T10:15:45.9005232+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6dfd53d0-eba2-4dda-a218-6758ea1cd17a" />
+    <UnitTestResult executionId="1c4527dc-bfb0-4da2-801d-7b119c1360f7" testId="256c687f-a455-7ed9-3ac0-334b458b816e" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Production_graph_contains_only_OpenBao_claim_providers" computerName="LEARNPC" duration="00:00:00.0021365" startTime="2026-10-01T10:15:45.9013469+07:00" endTime="2026-10-01T10:15:45.9013470+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1c4527dc-bfb0-4da2-801d-7b119c1360f7">
+      <Output>
+        <ErrorInfo>
+          <Message>System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.</Message>
+          <StackTrace>   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs:line 468&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+   at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+   at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Production_graph_contains_only_OpenBao_claim_providers() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 19&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="fa264581-5676-44ec-bdbb-725a19d03523" testId="9f16228b-2bae-b48a-9656-54e89c3fd776" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: null)" computerName="LEARNPC" duration="00:00:00.0000353" startTime="2026-10-01T10:15:45.8843817+07:00" endTime="2026-10-01T10:15:45.8843818+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fa264581-5676-44ec-bdbb-725a19d03523" />
+    <UnitTestResult executionId="860dfc5e-85cd-40a6-8d65-796878345ed3" testId="97e38191-8e3d-8346-3808-e0405c8b5a55" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm" computerName="LEARNPC" duration="00:00:00.0002054" startTime="2026-10-01T10:15:46.3718570+07:00" endTime="2026-10-01T10:15:46.3718571+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="860dfc5e-85cd-40a6-8d65-796878345ed3" />
+    <UnitTestResult executionId="4e3ce858-a192-44cd-adb7-321260e19401" testId="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory" computerName="LEARNPC" duration="00:00:00.0040798" startTime="2026-10-01T10:15:46.3671531+07:00" endTime="2026-10-01T10:15:46.3671534+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4e3ce858-a192-44cd-adb7-321260e19401" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="28e6270c-b031-f830-e655-dc2d41ed6ba3">
+      <Execution id="26c21758-1277-4250-af87-60d51fb72ad7" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(keyId: &quot;unknown&quot;, keyVersion: 1)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="00e9e768-9704-ce28-e5cf-dea15b979ed8">
+      <Execution id="795dcfbd-ab71-486a-8dcc-0acb739341ba" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Wrong_content_selector_is_ProviderFailure" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_key_metadata_is_readiness_RED(type: &quot;hmac&quot;, exportable: True, plaintextBackup: False, hasVersion: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="4d47f762-de8c-36ad-c33d-e93ea02a56ae">
+      <Execution id="3a37aa59-c0b7-4f1d-861a-7bbe6e69605a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Wrong_key_metadata_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(arm: &quot;missing-id&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b7dac6e6-06b5-a4d0-18b0-7bc6294d2e29">
+      <Execution id="f4600cd7-d4d5-4cae-8d10-877b4da863c6" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Active_selector_must_resolve_to_an_active_catalog_entry" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="58e67411-e13a-f5a8-2401-a5bb33c6c0e0">
+      <Execution id="0624b36b-7feb-43b0-aa69-c09deab5ba62" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Missing_catalog_is_readiness_RED" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="e864bcad-77ef-7150-9d59-a2096ebf4faa">
+      <Execution id="35c8f970-4d0d-4d1f-8630-10c8b8c23213" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Missing_catalog_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v2:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;···)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6a2a476b-baf8-228f-bdef-7f1348764f98">
+      <Execution id="22757c02-ff30-47d7-82e8-22cb63816e64" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="97e38191-8e3d-8346-3808-e0405c8b5a55">
+      <Execution id="860dfc5e-85cd-40a6-8d65-796878345ed3" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;capture.raw-export.site-qualification&quot;, expected: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9ec261f7-a3fa-5688-e939-437dbbca1555">
+      <Execution id="e2c87353-a8ff-4114-9e58-1c6dbe2bfca6" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(arm: &quot;key&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6af56aea-a7bc-b7ef-720a-6f8d6f3de6ad">
+      <Execution id="97f44763-221d-4f52-84b9-4b7a7b88706f" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Shared_AppRole_key_or_KEK_credential_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_key_metadata_is_readiness_RED(type: &quot;hmac&quot;, exportable: False, plaintextBackup: True, hasVersion: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="39249a5e-9a82-7739-d7ff-4c7206306332">
+      <Execution id="a9d42860-7588-43b2-acd4-53b96be2076e" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Wrong_key_metadata_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_program_reaches_build_and_serves_health_with_fixture_profile_fail_closed_in_readiness" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="4436eb5c-487f-e7e4-2939-6aeb2bbfbb3e">
+      <Execution id="b8cb8a72-f357-4267-9939-7e293a94fb8b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_program_reaches_build_and_serves_health_with_fixture_profile_fail_closed_in_readiness" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_database_options_reject_direct_connection_string" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="578539e7-6c2e-1d87-270f-abce79ca7666">
+      <Execution id="44e601b3-2890-4ad2-a148-890c01836321" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_database_options_reject_direct_connection_string" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7fec0327-80ca-e8e8-0af7-0552b68c5121">
+      <Execution id="94b86f6c-d988-42a0-b561-03a77710af72" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(arm: &quot;role&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f6fc5eb0-6bc6-1de5-b2e9-0f9edd9d378c">
+      <Execution id="b8588c7c-a4fd-468d-8664-a81a964140d8" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Shared_AppRole_key_or_KEK_credential_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_key_metadata_is_readiness_RED(type: &quot;hmac&quot;, exportable: False, plaintextBackup: False, hasVersion: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="a616d050-0a13-d32f-e302-e666df69c494">
+      <Execution id="6ba85235-08e8-447c-b0c6-c90e48a4f0ce" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Wrong_key_metadata_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(arm: &quot;kek-role&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d80bd303-b641-427c-9d99-f89ec4069ae3">
+      <Execution id="2fc18bee-214b-46bf-9b44-39fad10eb051" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Shared_AppRole_key_or_KEK_credential_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Inactive_subject_selector_is_ProviderFailure" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="043ddacb-e539-2410-f317-fff5e6bd9ae6">
+      <Execution id="2392c349-332e-477d-b416-5a5deea86016" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Inactive_subject_selector_is_ProviderFailure" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_broker_composition_registers_fixture_claim_services_and_exact_login" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="87317a4b-ede9-63d6-2451-0a7a62444943">
+      <Execution id="a4cfd783-f7fb-42c0-9aba-b90ffa81bd59" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Development_broker_composition_registers_fixture_claim_services_and_exact_login" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Production_graph_contains_only_OpenBao_claim_providers" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="256c687f-a455-7ed9-3ac0-334b458b816e">
+      <Execution id="1c4527dc-bfb0-4da2-801d-7b119c1360f7" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Production_graph_contains_only_OpenBao_claim_providers" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;operator.site-qualification.enroll&quot;, expected: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9">
+      <Execution id="2c40f7b4-7593-4fe8-b3b2-10784981efb1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(arm: &quot;wrong-version&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="bdc0940c-9b66-844d-2020-c8510a6b43dc">
+      <Execution id="2fcc438b-e17d-4791-9327-ed78310b34b2" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Active_selector_must_resolve_to_an_active_catalog_entry" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v1:not-base64&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="e120280c-8fd6-1d2c-2d93-829699e097c2">
+      <Execution id="00dd8708-e249-472f-b072-8eb7d1e8b06a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_registers_only_OpenBao_claim_providers_and_missing_catalog_is_readiness_RED" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="e9d14836-1037-d59b-ed06-4146c45d073d">
+      <Execution id="e396f200-d377-4d8f-80f5-2027de6ae860" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_registers_only_OpenBao_claim_providers_and_missing_catalog_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(arm: &quot;expired&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="687f02aa-7b15-f68e-6e97-94cbf7e9ea07">
+      <Execution id="9a5f3a64-c1ba-404b-a2ac-f01db0928cea" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Active_selector_must_resolve_to_an_active_catalog_entry" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="073b6a96-772e-5d07-4812-3f5caf697552">
+      <Execution id="60daeab3-b5f6-4d12-9bec-7ca2340e6b98" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(keyId: &quot;content-v1&quot;, keyVersion: 2)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f699b39d-9f25-c4ab-53f6-62dac0c0cfed">
+      <Execution id="874801ae-e4d1-4117-b1a6-106cd347ca67" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Wrong_content_selector_is_ProviderFailure" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Exact_OpenBao_HMAC_shape_yields_the_existing_32_byte_contract" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d9d0ce30-37ed-cf54-707b-107aefb050c7">
+      <Execution id="22fcf531-503c-40c5-a790-5d644fefacee" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Exact_OpenBao_HMAC_shape_yields_the_existing_32_byte_contract" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_runtime_owner_composition_rejects_direct_connection_strings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="fb7067aa-8e16-6004-46f2-6bec0a14e52e">
+      <Execution id="51520b0d-74ac-4d55-8369-cd66d4a6d9a9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_runtime_owner_composition_rejects_direct_connection_strings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_custody_registration_keeps_fixture_catalogs_and_provider" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ace66ea2-aac1-20f5-673a-d9461591d68d">
+      <Execution id="72d43db7-f3c4-4d31-b433-b7359027777c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Development_custody_registration_keeps_fixture_catalogs_and_provider" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="35da3392-a083-8558-cd39-4059ffb4cc74">
+      <Execution id="fdd8f904-8ab9-40c3-b3dd-003a33e9fe68" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;capture.raw-export.site-qualification&quot;, expected: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="edfa2e98-b249-825a-668d-b637c26ce7a3">
+      <Execution id="d500097a-0f00-4b6a-8676-28c4182b9a07" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v1:AQID&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="70c2ac20-0d22-de48-3172-d947dbecf25d">
+      <Execution id="10d1f789-63cb-4cef-96ff-81e7685df154" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_custody_registration_excludes_fixtures_while_readiness_rejects_fixture_profile" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="79b5747f-f255-b082-f067-7ccea752c3c7">
+      <Execution id="d3b88806-37c7-436f-b94b-05cf611f5749" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_custody_registration_excludes_fixtures_while_readiness_rejects_fixture_profile" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Existing_managed_key_generator_always_round_trips_fixed_length_prefix" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="3fb7944c-e11f-6c5b-04f0-e2eaa8386298">
+      <Execution id="b114bbdc-157b-4310-8009-cccb037574c0" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Existing_managed_key_generator_always_round_trips_fixed_length_prefix" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6">
+      <Execution id="4e3ce858-a192-44cd-adb7-321260e19401" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Recipient_package_composition_registers_exact_three_role_factory" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_key_metadata_is_readiness_RED(type: &quot;aes256-gcm96&quot;, exportable: False, plaintextBackup: False, hasVersion: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="baf12313-dff8-5e11-b71a-de1fb03c78fb">
+      <Execution id="233cb426-0d47-48f8-942f-98bfaa696720" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Wrong_key_metadata_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_recipient_factory_rejects_direct_connection_strings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="06e75008-3fdd-0cde-000e-2194ee7fa912">
+      <Execution id="6dfd53d0-eba2-4dda-a218-6758ea1cd17a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_recipient_factory_rejects_direct_connection_strings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Caller_cancellation_is_propagated_before_provider_access" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="4113efee-1359-b421-8bb3-caf91ed2d63a">
+      <Execution id="fbfddbf8-ca15-4def-a2a8-9660d4969434" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Caller_cancellation_is_propagated_before_provider_access" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: null)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9f16228b-2bae-b48a-9656-54e89c3fd776">
+      <Execution id="fa264581-5676-44ec-bdbb-725a19d03523" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;operator.site-qualification.enroll&quot;, expected: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9">
+      <Execution id="6dd7fd4f-be42-49cc-a3e6-07be0e710c26" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="7fec0327-80ca-e8e8-0af7-0552b68c5121" executionId="94b86f6c-d988-42a0-b561-03a77710af72" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9" executionId="2c40f7b4-7593-4fe8-b3b2-10784981efb1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4113efee-1359-b421-8bb3-caf91ed2d63a" executionId="fbfddbf8-ca15-4def-a2a8-9660d4969434" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d9d0ce30-37ed-cf54-707b-107aefb050c7" executionId="22fcf531-503c-40c5-a790-5d644fefacee" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="00e9e768-9704-ce28-e5cf-dea15b979ed8" executionId="795dcfbd-ab71-486a-8dcc-0acb739341ba" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a616d050-0a13-d32f-e302-e666df69c494" executionId="6ba85235-08e8-447c-b0c6-c90e48a4f0ce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fb7067aa-8e16-6004-46f2-6bec0a14e52e" executionId="51520b0d-74ac-4d55-8369-cd66d4a6d9a9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d80bd303-b641-427c-9d99-f89ec4069ae3" executionId="2fc18bee-214b-46bf-9b44-39fad10eb051" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9" executionId="6dd7fd4f-be42-49cc-a3e6-07be0e710c26" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6af56aea-a7bc-b7ef-720a-6f8d6f3de6ad" executionId="97f44763-221d-4f52-84b9-4b7a7b88706f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6a2a476b-baf8-228f-bdef-7f1348764f98" executionId="22757c02-ff30-47d7-82e8-22cb63816e64" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="39249a5e-9a82-7739-d7ff-4c7206306332" executionId="a9d42860-7588-43b2-acd4-53b96be2076e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e120280c-8fd6-1d2c-2d93-829699e097c2" executionId="00dd8708-e249-472f-b072-8eb7d1e8b06a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e9d14836-1037-d59b-ed06-4146c45d073d" executionId="e396f200-d377-4d8f-80f5-2027de6ae860" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e864bcad-77ef-7150-9d59-a2096ebf4faa" executionId="35c8f970-4d0d-4d1f-8630-10c8b8c23213" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="79b5747f-f255-b082-f067-7ccea752c3c7" executionId="d3b88806-37c7-436f-b94b-05cf611f5749" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="58e67411-e13a-f5a8-2401-a5bb33c6c0e0" executionId="0624b36b-7feb-43b0-aa69-c09deab5ba62" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="87317a4b-ede9-63d6-2451-0a7a62444943" executionId="a4cfd783-f7fb-42c0-9aba-b90ffa81bd59" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="35da3392-a083-8558-cd39-4059ffb4cc74" executionId="fdd8f904-8ab9-40c3-b3dd-003a33e9fe68" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ace66ea2-aac1-20f5-673a-d9461591d68d" executionId="72d43db7-f3c4-4d31-b433-b7359027777c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="baf12313-dff8-5e11-b71a-de1fb03c78fb" executionId="233cb426-0d47-48f8-942f-98bfaa696720" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="043ddacb-e539-2410-f317-fff5e6bd9ae6" executionId="2392c349-332e-477d-b416-5a5deea86016" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="073b6a96-772e-5d07-4812-3f5caf697552" executionId="60daeab3-b5f6-4d12-9bec-7ca2340e6b98" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f6fc5eb0-6bc6-1de5-b2e9-0f9edd9d378c" executionId="b8588c7c-a4fd-468d-8664-a81a964140d8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b7dac6e6-06b5-a4d0-18b0-7bc6294d2e29" executionId="f4600cd7-d4d5-4cae-8d10-877b4da863c6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4436eb5c-487f-e7e4-2939-6aeb2bbfbb3e" executionId="b8cb8a72-f357-4267-9939-7e293a94fb8b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4d47f762-de8c-36ad-c33d-e93ea02a56ae" executionId="3a37aa59-c0b7-4f1d-861a-7bbe6e69605a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9ec261f7-a3fa-5688-e939-437dbbca1555" executionId="e2c87353-a8ff-4114-9e58-1c6dbe2bfca6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="687f02aa-7b15-f68e-6e97-94cbf7e9ea07" executionId="9a5f3a64-c1ba-404b-a2ac-f01db0928cea" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="edfa2e98-b249-825a-668d-b637c26ce7a3" executionId="d500097a-0f00-4b6a-8676-28c4182b9a07" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f699b39d-9f25-c4ab-53f6-62dac0c0cfed" executionId="874801ae-e4d1-4117-b1a6-106cd347ca67" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="bdc0940c-9b66-844d-2020-c8510a6b43dc" executionId="2fcc438b-e17d-4791-9327-ed78310b34b2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="578539e7-6c2e-1d87-270f-abce79ca7666" executionId="44e601b3-2890-4ad2-a148-890c01836321" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3fb7944c-e11f-6c5b-04f0-e2eaa8386298" executionId="b114bbdc-157b-4310-8009-cccb037574c0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="28e6270c-b031-f830-e655-dc2d41ed6ba3" executionId="26c21758-1277-4250-af87-60d51fb72ad7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="70c2ac20-0d22-de48-3172-d947dbecf25d" executionId="10d1f789-63cb-4cef-96ff-81e7685df154" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="06e75008-3fdd-0cde-000e-2194ee7fa912" executionId="6dfd53d0-eba2-4dda-a218-6758ea1cd17a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="256c687f-a455-7ed9-3ac0-334b458b816e" executionId="1c4527dc-bfb0-4da2-801d-7b119c1360f7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9f16228b-2bae-b48a-9656-54e89c3fd776" executionId="fa264581-5676-44ec-bdbb-725a19d03523" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="97e38191-8e3d-8346-3808-e0405c8b5a55" executionId="860dfc5e-85cd-40a6-8d65-796878345ed3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6" executionId="4e3ce858-a192-44cd-adb7-321260e19401" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="41" executed="41" passed="26" failed="15" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:01.46]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.65]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.65]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.83]       Assert.Throws() Failure: Exception type was not an exact match&#xD;
+[xUnit.net 00:00:01.83]       Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+[xUnit.net 00:00:01.83]       Actual:   typeof(System.InvalidOperationException)&#xD;
+[xUnit.net 00:00:01.83]       ---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.83]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.83]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(65,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(String arm)&#xD;
+[xUnit.net 00:00:01.83]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.83]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.83]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.83]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(66,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass2_0.&lt;Shared_AppRole_key_or_KEK_credential_is_readiness_RED&gt;b__0()&#xD;
+[xUnit.net 00:00:01.83]       System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.83]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.83]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.83]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs(468,0): at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.83]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.83]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(131,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_registers_only_OpenBao_claim_providers_and_missing_catalog_is_readiness_RED()&#xD;
+[xUnit.net 00:00:01.83]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.83]       Assert.Throws() Failure: Exception type was not an exact match&#xD;
+[xUnit.net 00:00:01.83]       Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+[xUnit.net 00:00:01.83]       Actual:   typeof(System.InvalidOperationException)&#xD;
+[xUnit.net 00:00:01.83]       ---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.83]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.83]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(65,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(String arm)&#xD;
+[xUnit.net 00:00:01.83]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.83]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.83]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.83]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(66,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass2_0.&lt;Shared_AppRole_key_or_KEK_credential_is_readiness_RED&gt;b__0()&#xD;
+[xUnit.net 00:00:01.83]       Assert.Throws() Failure: Exception type was not an exact match&#xD;
+[xUnit.net 00:00:01.83]       Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+[xUnit.net 00:00:01.83]       Actual:   typeof(System.InvalidOperationException)&#xD;
+[xUnit.net 00:00:01.83]       ---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.83]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.83]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(65,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(String arm)&#xD;
+[xUnit.net 00:00:01.83]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.83]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.83]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.83]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.83]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(66,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass2_0.&lt;Shared_AppRole_key_or_KEK_credential_is_readiness_RED&gt;b__0()&#xD;
+[xUnit.net 00:00:01.84]       System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoProductionCustodyProfileProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.84]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.84]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.84]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(195,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_custody_registration_excludes_fixtures_while_readiness_rejects_fixture_profile()&#xD;
+[xUnit.net 00:00:01.84]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.84]       System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.84]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.84]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.84]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs(468,0): at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.84]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.84]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.84]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(116,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(String keyId, Int32 keyVersion)&#xD;
+[xUnit.net 00:00:01.84]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.84]       System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.85]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.85]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs(468,0): at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.85]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(116,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(String keyId, Int32 keyVersion)&#xD;
+[xUnit.net 00:00:01.85]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.85]       Assert.Throws() Failure: Exception type was not an exact match&#xD;
+[xUnit.net 00:00:01.85]       Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+[xUnit.net 00:00:01.85]       Actual:   typeof(System.InvalidOperationException)&#xD;
+[xUnit.net 00:00:01.85]       ---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.85]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(97,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(String arm)&#xD;
+[xUnit.net 00:00:01.85]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.85]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.85]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(98,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass3_0.&lt;Active_selector_must_resolve_to_an_active_catalog_entry&gt;b__0()&#xD;
+[xUnit.net 00:00:01.85]       Assert.Throws() Failure: Exception type was not an exact match&#xD;
+[xUnit.net 00:00:01.85]       Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+[xUnit.net 00:00:01.85]       Actual:   typeof(System.InvalidOperationException)&#xD;
+[xUnit.net 00:00:01.85]       ---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.85]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(97,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(String arm)&#xD;
+[xUnit.net 00:00:01.85]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.85]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.85]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(98,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass3_0.&lt;Active_selector_must_resolve_to_an_active_catalog_entry&gt;b__0()&#xD;
+[xUnit.net 00:00:01.85]       Assert.Throws() Failure: Exception type was not an exact match&#xD;
+[xUnit.net 00:00:01.85]       Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+[xUnit.net 00:00:01.85]       Actual:   typeof(System.InvalidOperationException)&#xD;
+[xUnit.net 00:00:01.85]       ---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.85]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(97,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(String arm)&#xD;
+[xUnit.net 00:00:01.85]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.85]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.85]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(98,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass3_0.&lt;Active_selector_must_resolve_to_an_active_catalog_entry&gt;b__0()&#xD;
+[xUnit.net 00:00:01.85]       System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoSubjectRefTokenService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.85]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.85]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs(470,0): at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_2(IServiceProvider sp)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.85]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(135,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Inactive_subject_selector_is_ProviderFailure()&#xD;
+[xUnit.net 00:00:01.85]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.85]       System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.85]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.85]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs(468,0): at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.85]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.85]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.85]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(19,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Production_graph_contains_only_OpenBao_claim_providers()&#xD;
+[xUnit.net 00:00:01.85]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:01.85]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:01.86]       Assert.ThrowsAny() Failure: Exception type was not compatible&#xD;
+[xUnit.net 00:00:01.86]       Expected: typeof(System.OperationCanceledException)&#xD;
+[xUnit.net 00:00:01.86]       Actual:   typeof(System.InvalidOperationException)&#xD;
+[xUnit.net 00:00:01.86]       ---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoContentCommitmentService' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.86]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.86]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(151,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Caller_cancellation_is_propagated_before_provider_access()&#xD;
+[xUnit.net 00:00:01.86]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.86]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.86]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.ServiceProviderEngineScope.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.86]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\OpenBaoClaimProviders.cs(468,0): at TagEkyc.Infrastructure.RawExport.OpenBaoClaimProviderServiceCollectionExtensions.&lt;&gt;c.&lt;AddTagEkycProductionRawExportClaimProviders&gt;b__0_1(IServiceProvider sp)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSiteMain(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.VisitRootCache(ServiceCallSite callSite, RuntimeResolverContext context)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteVisitor`2.VisitCallSite(ServiceCallSite callSite, TArgument argument)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteRuntimeResolver.Resolve(ServiceCallSite callSite, ServiceProviderEngineScope scope)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.86]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.86]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(152,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass6_0.&lt;&lt;Caller_cancellation_is_propagated_before_provider_access&gt;b__0&gt;d.MoveNext()&#xD;
+[xUnit.net 00:00:01.86]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.86]       Assert.Throws() Failure: Exception type was not an exact match&#xD;
+[xUnit.net 00:00:01.86]       Expected: typeof(TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessException)&#xD;
+[xUnit.net 00:00:01.86]       Actual:   typeof(System.InvalidOperationException)&#xD;
+[xUnit.net 00:00:01.86]       ---- System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.RawExportClaimProviderReadinessValidator' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:01.86]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.86]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(37,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Missing_catalog_is_readiness_RED()&#xD;
+[xUnit.net 00:00:01.86]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:01.86]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:01.86]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService(IServiceProvider provider, Type serviceType)&#xD;
+[xUnit.net 00:00:01.86]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:01.86]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(38,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.&lt;&gt;c__DisplayClass1_0.&lt;Missing_catalog_is_readiness_RED&gt;b__0()&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+[xUnit.net 00:00:02.31]       System.InvalidOperationException : A suitable constructor for type 'TagEkyc.Infrastructure.RawExport.OpenBaoProductionCustodyProfileProvider' could not be located. Ensure the type is concrete and services are registered for all parameters of a public constructor.&#xD;
+[xUnit.net 00:00:02.31]       Stack Trace:&#xD;
+[xUnit.net 00:00:02.31]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateConstructorCallSite(ResultCache lifetime, ServiceIdentifier serviceIdentifier, Type implementationType, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:02.31]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceDescriptor descriptor, ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain, Int32 slot)&#xD;
+[xUnit.net 00:00:02.31]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.TryCreateExact(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:02.31]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.CreateCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:02.31]            at Microsoft.Extensions.DependencyInjection.ServiceLookup.CallSiteFactory.GetCallSite(ServiceIdentifier serviceIdentifier, CallSiteChain callSiteChain)&#xD;
+[xUnit.net 00:00:02.31]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.CreateServiceAccessor(ServiceIdentifier serviceIdentifier)&#xD;
+[xUnit.net 00:00:02.31]            at System.Collections.Concurrent.ConcurrentDictionary`2.GetOrAdd(TKey key, Func`2 valueFactory)&#xD;
+[xUnit.net 00:00:02.31]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(ServiceIdentifier serviceIdentifier, ServiceProviderEngineScope serviceProviderEngineScope)&#xD;
+[xUnit.net 00:00:02.31]            at Microsoft.Extensions.DependencyInjection.ServiceProvider.GetService(Type serviceType)&#xD;
+[xUnit.net 00:00:02.31]            at Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService[T](IServiceProvider provider)&#xD;
+[xUnit.net 00:00:02.31]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\ProductionCompositionCorrectionTests.cs(258,0): at TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_program_reaches_build_and_serves_health_with_fixture_profile_fail_closed_in_readiness()&#xD;
+[xUnit.net 00:00:02.31]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:02.37]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.8718934+07:00">
+        <Text>[xUnit.net 00:00:01.82]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(arm: "key") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.8741552+07:00">
+        <Text>[xUnit.net 00:00:01.83]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_registers_only_OpenBao_claim_providers_and_missing_catalog_is_readiness_RED [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.8750954+07:00">
+        <Text>[xUnit.net 00:00:01.83]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(arm: "kek-role") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.8759166+07:00">
+        <Text>[xUnit.net 00:00:01.83]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Shared_AppRole_key_or_KEK_credential_is_readiness_RED(arm: "role") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9037861+07:00">
+        <Text>[xUnit.net 00:00:01.84]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_custody_registration_excludes_fixtures_while_readiness_rejects_fixture_profile [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9044647+07:00">
+        <Text>[xUnit.net 00:00:01.84]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(keyId: "unknown", keyVersion: 1) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9045630+07:00">
+        <Text>[xUnit.net 00:00:01.84]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Wrong_content_selector_is_ProviderFailure(keyId: "content-v1", keyVersion: 2) [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9047494+07:00">
+        <Text>[xUnit.net 00:00:01.85]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(arm: "missing-id") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9048183+07:00">
+        <Text>[xUnit.net 00:00:01.85]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(arm: "wrong-version") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9048852+07:00">
+        <Text>[xUnit.net 00:00:01.85]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Active_selector_must_resolve_to_an_active_catalog_entry(arm: "expired") [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9049443+07:00">
+        <Text>[xUnit.net 00:00:01.85]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Inactive_subject_selector_is_ProviderFailure [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9050226+07:00">
+        <Text>[xUnit.net 00:00:01.85]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Production_graph_contains_only_OpenBao_claim_providers [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9067567+07:00">
+        <Text>[xUnit.net 00:00:01.86]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Caller_cancellation_is_propagated_before_provider_access [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:45.9068913+07:00">
+        <Text>[xUnit.net 00:00:01.86]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Missing_catalog_is_readiness_RED [FAIL]</Text>
+      </RunInfo>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:15:46.3591654+07:00">
+        <Text>[xUnit.net 00:00:02.31]     TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_program_reaches_build_and_serves_health_with_fixture_profile_fail_closed_in_readiness [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

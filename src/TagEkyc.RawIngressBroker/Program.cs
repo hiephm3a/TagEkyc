@@ -19,6 +19,9 @@ builder.WebHost.ConfigureKestrel(server =>
 builder.Services.AddTagEkycRawIngressBroker(
     builder.Configuration, builder.Environment.IsProduction());
 var app = builder.Build();
+if (app.Environment.IsProduction())
+    await app.Services.GetRequiredService<RawExportClaimProviderReadinessValidator>()
+        .ValidateAsync(app.Lifetime.ApplicationStopping);
 app.Run(async context =>
 {
     var request = context.Request;

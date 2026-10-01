@@ -19,6 +19,7 @@ public static class CustodyProfileServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(configuration);
 
+        services.TryAddSingleton(configuration);
         services.TryAddSingleton(
             CustodyTimeBoundsState.Resolve(configuration));
 
@@ -29,8 +30,15 @@ public static class CustodyProfileServiceCollectionExtensions
         // health endpoint, or site-qualification surfaces from starting.
         if (isProduction)
         {
-            services.TryAddSingleton(sp => OpenBaoKekOptions.Resolve(configuration));
-            services.TryAddSingleton<ICustodyProfileProvider, OpenBaoProductionCustodyProfileProvider>();
+            if (string.Equals(
+                    RawExportCustodyProfileState.Resolve(configuration, isProduction: true).Profile,
+                    "OpenBao",
+                    StringComparison.Ordinal))
+            {
+                services.TryAddSingleton(sp => OpenBaoKekOptions.Resolve(configuration));
+                services.TryAddSingleton<ICustodyProfileProvider,
+                    OpenBaoProductionCustodyProfileProvider>();
+            }
             return services;
         }
 

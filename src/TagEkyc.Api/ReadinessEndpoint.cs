@@ -284,6 +284,24 @@ internal sealed class RawExportAttemptKeyReadinessCheck(
     }
 }
 
+internal sealed class RawExportClaimProviderReadinessCheck(
+    RawExportClaimProviderReadinessValidator validator) : IReadinessCheck
+{
+    public async Task<IReadOnlyList<ReadinessIssue>> CheckAsync(
+        CancellationToken cancellationToken)
+    {
+        try
+        {
+            await validator.ValidateAsync(cancellationToken);
+            return [];
+        }
+        catch (RawExportClaimProviderReadinessException exception)
+        {
+            return [ReadinessEndpoint.DatabaseIssue(exception.Code)];
+        }
+    }
+}
+
 internal sealed class RecipientPackageDeliveryReadinessCheck(
     RecipientPackageDeliveryReadinessValidator validator) : IReadinessCheck
 {

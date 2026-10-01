@@ -92,7 +92,7 @@ internal sealed class FixtureCustodyProfileProvider(
 
 internal sealed class OpenBaoProductionCustodyProfileProvider : ICustodyProfileProvider
 {
-    internal OpenBaoProductionCustodyProfileProvider(
+    public OpenBaoProductionCustodyProfileProvider(
         Microsoft.Extensions.Configuration.IConfiguration configuration,
         OpenBaoKekOptions openBao,
         CustodyTimeBoundsState timeBoundsState)

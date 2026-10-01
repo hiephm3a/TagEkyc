@@ -222,6 +222,8 @@ internal sealed class CaptureRuntimeA3Runtime(IServiceProvider services)
             _ = services.GetRequiredService<IRawExportCaptureAcceptancePolicyProvider>();
             _ = services.GetRequiredService<ICaptureRuntimeHostLifetime>();
             _ = services.GetRequiredService<ICaptureRuntimeRawIngressBodyPipeline>();
+            if (services.GetService<RawExportClaimProviderReadinessValidator>() is { } claimProviders)
+                await claimProviders.ValidateAsync(ct).ConfigureAwait(false);
             if (!await services.GetRequiredService<RawSourceRetentionReadinessValidator>()
                 .IsReadyAsync(ct).ConfigureAwait(false)) return false;
             var scopes = services.GetRequiredService<CaptureRuntimeCustodyProviderScopes>();

@@ -22,6 +22,113 @@ namespace TagEkyc.IntegrationTests;
 public sealed class OpenBaoRealTransitIntegrationTests(PostgresPersistenceFixture postgres)
 {
     [Fact]
+    public async Task Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated()
+    {
+        await using var bao = await OpenBaoRealHarness.StartAsync();
+        var configuration = OpenBaoProductionClaimProviderTests.Configuration();
+        ConfigureClaimProvider(configuration, "ContentCommitment", bao,
+            bao.ContentRoleIdPath, bao.ContentSecretIdPath);
+        ConfigureClaimProvider(configuration, "SubjectRefToken", bao,
+            bao.SubjectRoleIdPath, bao.SubjectSecretIdPath);
+        var services = new ServiceCollection();
+        services.AddTagEkycProductionRawExportClaimProviders(configuration);
+        using var provider = services.BuildServiceProvider();
+        using (var metadata = await bao.RootKeyMetadataAsync("content-hmac"))
+        {
+            var data = metadata.RootElement.GetProperty("data");
+            Assert.False(data.TryGetProperty("keys", out _));
+            Assert.Equal(1, data.GetProperty("latest_version").GetInt32());
+            Assert.Equal(0, data.GetProperty("min_available_version").GetInt32());
+        }
+        await provider.GetRequiredService<RawExportClaimProviderReadinessValidator>()
+            .ValidateAsync(CancellationToken.None);
+
+        var payload = Encoding.UTF8.GetBytes("tagekyc-claim-provider-interop-v1");
+        var content = await provider.GetRequiredService<IContentCommitmentService>()
+            .ComputeAsync(new("content-v1", 1), payload, CancellationToken.None);
+        var subject = await provider.GetRequiredService<ISubjectRefTokenService>()
+            .ComputeAsync(new("subject-v1", 1), payload, CancellationToken.None);
+        Assert.True(content.IsSuccess);
+        Assert.True(subject.IsSuccess);
+        Assert.Equal(32, content.Mac.Length);
+        Assert.Equal(32, subject.Token.Length);
+        Assert.NotEqual(content.Mac.ToArray(), subject.Token.ToArray());
+        Assert.Equal(await bao.RootHmacAsync("content-hmac", payload, 1), content.Mac.ToArray());
+        Assert.Equal(await bao.RootHmacAsync("subject-hmac", payload, 1), subject.Token.ToArray());
+        Assert.True(await bao.RootVerifyHmacAsync(
+            "content-hmac", payload, content.Mac.ToArray(), 1));
+        Assert.True(await bao.RootVerifyHmacAsync(
+            "subject-hmac", payload, subject.Token.ToArray(), 1));
+
+        Assert.False(await bao.AppRoleCanHmacAsync(
+            bao.ContentRoleIdPath, bao.ContentSecretIdPath, "subject-hmac", payload));
+        Assert.False(await bao.AppRoleCanHmacAsync(
+            bao.SubjectRoleIdPath, bao.SubjectSecretIdPath, "content-hmac", payload));
+
+        await bao.SetContentClaimPolicyAsync(includeSubjectKey: true);
+        try
+        {
+            var overbroadServices = new ServiceCollection();
+            overbroadServices.AddTagEkycProductionRawExportClaimProviders(configuration);
+            using var overbroadProvider = overbroadServices.BuildServiceProvider();
+            var separation = await Assert.ThrowsAsync<RawExportClaimProviderReadinessException>(() =>
+                overbroadProvider.GetRequiredService<RawExportClaimProviderReadinessValidator>()
+                    .ValidateAsync(CancellationToken.None));
+            Assert.Equal(RawExportClaimProviderReadinessValidator.SeparationInvalid,
+                separation.Code);
+        }
+        finally
+        {
+            await bao.SetContentClaimPolicyAsync(includeSubjectKey: false);
+        }
+
+        var wrongVersionConfiguration = OpenBaoProductionClaimProviderTests.Configuration();
+        ConfigureClaimProvider(wrongVersionConfiguration, "ContentCommitment", bao,
+            bao.ContentRoleIdPath, bao.ContentSecretIdPath);
+        ConfigureClaimProvider(wrongVersionConfiguration, "SubjectRefToken", bao,
+            bao.SubjectRoleIdPath, bao.SubjectSecretIdPath);
+        wrongVersionConfiguration[$"{OpenBaoProductionClaimProviderTests.Root}:ContentCommitment:Keys:0:KeyVersion"] =
+            "2";
+        wrongVersionConfiguration[$"{RawIngressBrokerOptions.SectionName}:CommitmentSelectorVersion"] =
+            "2";
+        var wrongVersionServices = new ServiceCollection();
+        wrongVersionServices.AddTagEkycProductionRawExportClaimProviders(
+            wrongVersionConfiguration);
+        using (var wrongVersionProvider = wrongVersionServices.BuildServiceProvider())
+        {
+            var wrongVersion = await Assert.ThrowsAsync<RawExportClaimProviderReadinessException>(() =>
+                wrongVersionProvider.GetRequiredService<RawExportClaimProviderReadinessValidator>()
+                    .ValidateAsync(CancellationToken.None));
+            Assert.Equal(RawExportClaimProviderReadinessValidator.ProviderInvalid,
+                wrongVersion.Code);
+            Assert.Contains("OPENBAO_HMAC_KEY_REFERENCE_INVALID:VERSION",
+                wrongVersion.InnerException?.Message,
+                StringComparison.Ordinal);
+        }
+
+        var deniedConfiguration = OpenBaoProductionClaimProviderTests.Configuration();
+        ConfigureClaimProvider(deniedConfiguration, "ContentCommitment", bao,
+            bao.ContentRoleIdPath, bao.ContentSecretIdPath);
+        ConfigureClaimProvider(deniedConfiguration, "SubjectRefToken", bao,
+            bao.SubjectRoleIdPath, bao.SubjectSecretIdPath);
+        deniedConfiguration[$"{OpenBaoProductionClaimProviderTests.Root}:ContentCommitment:Keys:0:TransitKeyName"] =
+            "content-forbidden";
+        var deniedServices = new ServiceCollection();
+        deniedServices.AddTagEkycProductionRawExportClaimProviders(deniedConfiguration);
+        using var deniedProvider = deniedServices.BuildServiceProvider();
+        var denied = await deniedProvider.GetRequiredService<IContentCommitmentService>()
+            .ComputeAsync(new("content-v1", 1), payload, CancellationToken.None);
+        Assert.False(denied.IsSuccess);
+        Assert.Equal(ContentCommitmentFailure.ProviderFailure, denied.Failure);
+
+        await bao.StopAsync();
+        var unavailable = await provider.GetRequiredService<IContentCommitmentService>()
+            .ComputeAsync(new("content-v1", 1), payload, CancellationToken.None);
+        Assert.False(unavailable.IsSuccess);
+        Assert.Equal(ContentCommitmentFailure.ProviderFailure, unavailable.Failure);
+    }
+
+    [Fact]
     public async Task Real_TLS_Raft_AppRole_Transit_survives_restart_and_closes_the_Transit_to_journal_crash_window()
     {
         await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("openbao_real_transit");
@@ -194,6 +301,22 @@ public sealed class OpenBaoRealTransitIntegrationTests(PostgresPersistenceFixtur
             SELECT tagekyc.raw_export_mark_attempt_key_preparation_expired(
               {prepared.ReservationId},{prepared.PreparationId},{prepared.Fence}) AS "Value"
             """).SingleAsync());
+    }
+
+    private static void ConfigureClaimProvider(
+        ConfigurationManager configuration,
+        string section,
+        OpenBaoRealHarness bao,
+        string roleIdPath,
+        string secretIdPath)
+    {
+        var prefix = $"{OpenBaoProductionClaimProviderTests.Root}:{section}";
+        configuration[$"{prefix}:Address"] = bao.Address.AbsoluteUri;
+        configuration[$"{prefix}:RoleIdSecretRef"] = $"file:{roleIdPath}";
+        configuration[$"{prefix}:SecretIdSecretRef"] = $"file:{secretIdPath}";
+        configuration[$"{prefix}:CaCertificatePath"] = bao.CaPath;
+        configuration[$"{prefix}:TransitMount"] = "transit";
+        configuration[$"{prefix}:RequestTimeoutSeconds"] = "5";
     }
 
     private static async Task<OpaquePreparation> PrepareOpaqueAsync(
@@ -384,6 +507,10 @@ internal sealed class OpenBaoRealHarness : IAsyncDisposable
     internal string CaPath { get; }
     internal string RoleIdPath { get; }
     internal string SecretIdPath { get; }
+    internal string ContentRoleIdPath => Path.Combine(root, "content-role-id");
+    internal string ContentSecretIdPath => Path.Combine(root, "content-secret-id");
+    internal string SubjectRoleIdPath => Path.Combine(root, "subject-role-id");
+    internal string SubjectSecretIdPath => Path.Combine(root, "subject-secret-id");
     internal string KeyFingerprint { get; private set; } = string.Empty;
 
     internal static async Task<OpenBaoRealHarness> StartAsync()
@@ -511,6 +638,74 @@ internal sealed class OpenBaoRealHarness : IAsyncDisposable
                 : "path \"transit/*\" { capabilities=[\"deny\"] }",
         });
 
+    internal Task SetContentClaimPolicyAsync(bool includeSubjectKey) =>
+        RootPostAsync("/v1/sys/policies/acl/tagekyc-content-commitment", new
+        {
+            policy = "path \"transit/hmac/content-hmac/*\" { capabilities=[\"update\"] }\n" +
+                     "path \"transit/keys/content-hmac\" { capabilities=[\"read\"] }" +
+                     (includeSubjectKey
+                         ? "\npath \"transit/hmac/subject-hmac/*\" { capabilities=[\"update\"] }"
+                         : string.Empty),
+        });
+
+    internal async Task<byte[]> RootHmacAsync(
+        string keyName,
+        byte[] payload,
+        int keyVersion)
+    {
+        using var response = await RootPostAsync(
+            $"/v1/transit/hmac/{Uri.EscapeDataString(keyName)}/sha2-256",
+            new { input = Convert.ToBase64String(payload), key_version = keyVersion });
+        return OpenBaoTransitHmacClient.ParseHmac(
+            response.RootElement.GetProperty("data").GetProperty("hmac").GetString(),
+            keyVersion);
+    }
+
+    internal Task<JsonDocument> RootKeyMetadataAsync(string keyName) =>
+        RootGetAsync($"/v1/transit/keys/{Uri.EscapeDataString(keyName)}");
+
+    internal async Task<bool> RootVerifyHmacAsync(
+        string keyName,
+        byte[] payload,
+        byte[] hmac,
+        int keyVersion)
+    {
+        using var response = await RootPostAsync(
+            $"/v1/transit/verify/{Uri.EscapeDataString(keyName)}/sha2-256",
+            new
+            {
+                input = Convert.ToBase64String(payload),
+                hmac = $"vault:v{keyVersion}:{Convert.ToBase64String(hmac)}",
+            });
+        return response.RootElement.GetProperty("data").GetProperty("valid").GetBoolean();
+    }
+
+    internal async Task<bool> AppRoleCanHmacAsync(
+        string roleIdPath,
+        string secretIdPath,
+        string keyName,
+        byte[] payload)
+    {
+        using var login = await PostAsync("/v1/auth/approle/login", new
+        {
+            role_id = (await File.ReadAllTextAsync(roleIdPath)).Trim(),
+            secret_id = (await File.ReadAllTextAsync(secretIdPath)).Trim(),
+        });
+        var token = login.RootElement.GetProperty("auth").GetProperty("client_token").GetString();
+        using var request = new HttpRequestMessage(HttpMethod.Post,
+            $"/v1/transit/hmac/{Uri.EscapeDataString(keyName)}/sha2-256")
+        {
+            Content = JsonContent.Create(new
+            {
+                input = Convert.ToBase64String(payload),
+                key_version = 1,
+            }),
+        };
+        request.Headers.TryAddWithoutValidation("X-Vault-Token", token);
+        using var response = await rootClient.SendAsync(request);
+        return response.IsSuccessStatusCode;
+    }
+
     private async Task InitializeAsync()
     {
         using (var initialized = await PostAsync("/v1/sys/init", new { secret_shares = 1, secret_threshold = 1 }))
@@ -528,6 +723,16 @@ internal sealed class OpenBaoRealHarness : IAsyncDisposable
         using (var metadata = await RootGetAsync("/v1/transit/keys/raw-export"))
             KeyFingerprint = OpenBaoTransitKekOperationProvider.ComputeKeyFingerprint(
                 metadata.RootElement.GetProperty("data"), 1);
+        await RootPostAsync("/v1/transit/keys/content-hmac", new
+        {
+            type = "hmac", derived = false, exportable = false,
+            allow_plaintext_backup = false, key_size = 32,
+        });
+        await RootPostAsync("/v1/transit/keys/subject-hmac", new
+        {
+            type = "hmac", derived = false, exportable = false,
+            allow_plaintext_backup = false, key_size = 32,
+        });
         await RootPostAsync("/v1/sys/policies/acl/tagekyc-raw-export", new
         {
             policy = "path \"transit/encrypt/raw-export\" { capabilities=[\"update\"] }\n" +
@@ -545,6 +750,43 @@ internal sealed class OpenBaoRealHarness : IAsyncDisposable
                 role.RootElement.GetProperty("data").GetProperty("role_id").GetString()! + "\n");
         using (var secret = await RootPostAsync("/v1/auth/approle/role/tagekyc-raw-export/secret-id", new { }))
             await File.WriteAllTextAsync(SecretIdPath,
+                secret.RootElement.GetProperty("data").GetProperty("secret_id").GetString()! + "\n");
+        await CreateClaimRoleAsync(
+            "tagekyc-content-commitment",
+            "tagekyc-content-commitment",
+            "content-hmac",
+            ContentRoleIdPath,
+            ContentSecretIdPath);
+        await CreateClaimRoleAsync(
+            "tagekyc-subject-ref-token",
+            "tagekyc-subject-ref-token",
+            "subject-hmac",
+            SubjectRoleIdPath,
+            SubjectSecretIdPath);
+    }
+
+    private async Task CreateClaimRoleAsync(
+        string policyName,
+        string roleName,
+        string keyName,
+        string roleIdPath,
+        string secretIdPath)
+    {
+        await RootPostAsync($"/v1/sys/policies/acl/{policyName}", new
+        {
+            policy = $"path \"transit/hmac/{keyName}/*\" {{ capabilities=[\"update\"] }}\n" +
+                     $"path \"transit/keys/{keyName}\" {{ capabilities=[\"read\"] }}",
+        });
+        await RootPostAsync($"/v1/auth/approle/role/{roleName}", new
+        {
+            token_policies = new[] { policyName }, token_ttl = "4s", token_max_ttl = "4s",
+            secret_id_num_uses = 0, secret_id_ttl = "20m",
+        });
+        using (var role = await RootGetAsync($"/v1/auth/approle/role/{roleName}/role-id"))
+            await File.WriteAllTextAsync(roleIdPath,
+                role.RootElement.GetProperty("data").GetProperty("role_id").GetString()! + "\n");
+        using (var secret = await RootPostAsync($"/v1/auth/approle/role/{roleName}/secret-id", new { }))
+            await File.WriteAllTextAsync(secretIdPath,
                 secret.RootElement.GetProperty("data").GetProperty("secret_id").GetString()! + "\n");
     }
 

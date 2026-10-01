@@ -17,8 +17,11 @@ public static class DurableKeyCustodyServiceCollectionExtensions
         if (topology.Topology == DurableKeyTopology.DurableKey)
         {
             services.TryAddSingleton(sp => OpenBaoKekOptions.Resolve(configuration));
-            services.TryAddSingleton<OpenBaoHttpTransport>();
-            services.TryAddSingleton<OpenBaoTokenSession>();
+            services.TryAddSingleton<OpenBaoHttpTransport>(sp =>
+                new(sp.GetRequiredService<OpenBaoKekOptions>()));
+            services.TryAddSingleton<OpenBaoTokenSession>(sp =>
+                new(sp.GetRequiredService<OpenBaoHttpTransport>(),
+                    sp.GetRequiredService<OpenBaoKekOptions>()));
             services.TryAddScoped<PostgresOpenBaoKekJournal>();
             services.TryAddScoped<OpenBaoTransitKekOperationProvider>();
             services.TryAddScoped<IKekOperationProvider>(sp =>

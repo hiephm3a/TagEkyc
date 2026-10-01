@@ -13,6 +13,7 @@ using TagEkyc.Application.CaptureRuntime;
 using TagEkyc.Application.Ports;
 using TagEkyc.Contracts.RawExport;
 using TagEkyc.Infrastructure.Auth;
+using TagEkyc.Infrastructure.ProtectedValues;
 using TagEkyc.Infrastructure.RawExport;
 
 namespace TagEkyc.IntegrationTests;
@@ -114,11 +115,24 @@ public sealed class ProductionCompositionCorrectionTests
     }
 
     [Fact]
-    public void Production_broker_without_qualified_claim_providers_fails_closed()
+    public async Task Production_claim_registration_contains_only_OpenBao_providers_and_missing_catalog_is_readiness_RED()
     {
-        var error = ProductionBrokerError((_, _) => { });
+        var configuration = BrokerConfiguration();
+        var services = new ServiceCollection();
+        services.AddTagEkycProductionRawExportClaimProviders(configuration);
+        using var provider = services.BuildServiceProvider();
 
-        Assert.Equal("PROD_RAW_EXPORT_CLAIM_PROVIDERS_MISSING", error.Message);
+        Assert.IsType<OpenBaoContentCommitmentService>(
+            provider.GetRequiredService<IContentCommitmentService>());
+        Assert.IsType<OpenBaoSubjectRefTokenService>(
+            provider.GetRequiredService<ISubjectRefTokenService>());
+        Assert.Null(provider.GetService<FixtureContentCommitmentCatalog>());
+        Assert.Null(provider.GetService<FixtureSubjectTokenCatalog>());
+        var failure = await Assert.ThrowsAsync<RawExportClaimProviderReadinessException>(() =>
+            provider.GetRequiredService<RawExportClaimProviderReadinessValidator>()
+                .ValidateAsync(CancellationToken.None));
+        Assert.Equal(RawExportClaimProviderReadinessValidator.ConfigurationInvalid,
+            failure.Code);
     }
 
     [Fact]
@@ -138,6 +152,26 @@ public sealed class ProductionCompositionCorrectionTests
             services.AddTagEkycSubjectRefToken(configuration));
 
         Assert.Equal("PROD_RAW_EXPORT_SUBJECT_REF_TOKEN_FIXTURE_ACTIVE",
+            error.Message);
+    }
+
+    [Theory]
+    [InlineData("content")]
+    [InlineData("subject")]
+    public void Production_broker_rejects_pre_registered_unknown_claim_provider(
+        string arm)
+    {
+        var error = ProductionBrokerError((services, _) =>
+        {
+            if (arm == "content")
+                services.AddSingleton<IContentCommitmentService,
+                    UnknownContentCommitmentService>();
+            else
+                services.AddSingleton<ISubjectRefTokenService,
+                    UnknownSubjectRefTokenService>();
+        });
+
+        Assert.Equal(RawExportClaimProviderProductionGuard.ProvidersMissing,
             error.Message);
     }
 
@@ -240,6 +274,79 @@ public sealed class ProductionCompositionCorrectionTests
     }
 
     [Theory]
+    [InlineData("missing")]
+    [InlineData("malformed")]
+    [InlineData("unreadable-directory")]
+    public async Task Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code(
+        string arm)
+    {
+        var databaseSecret = $"TAGEKYC_CLAIM_CA_DB_{Guid.NewGuid():N}";
+        var pepperSecret = $"TAGEKYC_CLAIM_CA_PEPPER_{Guid.NewGuid():N}";
+        var candidateCa = arm == "unreadable-directory"
+            ? Path.GetTempPath()
+            : Path.Combine(Path.GetTempPath(), $"claim-ca-{Guid.NewGuid():N}.pem");
+        if (arm == "malformed")
+            await File.WriteAllTextAsync(candidateCa, "not-a-certificate");
+        Environment.SetEnvironmentVariable(databaseSecret,
+            "Host=127.0.0.1;Port=1;Database=unused;Username=unused;Password=synthetic-only;Timeout=1");
+        Environment.SetEnvironmentVariable(pepperSecret,
+            Convert.ToBase64String(new byte[32]));
+        var claimConfiguration = OpenBaoProductionClaimProviderTests.Configuration();
+        claimConfiguration[$"{OpenBaoProductionClaimProviderTests.Root}:ContentCommitment:CaCertificatePath"] = candidateCa;
+        claimConfiguration[$"{OpenBaoProductionClaimProviderTests.Root}:SubjectRefToken:CaCertificatePath"] = candidateCa;
+
+        using var factory = new HistoricalPreparedWebApplicationFactory()
+            .WithWebHostBuilder(builder =>
+            {
+                builder.UseSetting("environment", "Production");
+                builder.UseSetting("TagEkyc:Persistence:Provider", "Postgres");
+                builder.UseSetting("TagEkyc:Persistence:ConnectionStringSecretRef",
+                    $"env:{databaseSecret}");
+                builder.UseSetting("TagEkyc:ApiKeyStore:Backend", "Postgres");
+                builder.UseSetting("TagEkyc:ApiKeyStore:PepperSecretRef",
+                    $"env:{pepperSecret}");
+                builder.UseSetting("TagEkyc:EvidenceSigning:Backend", "Pkcs11");
+                builder.UseSetting("TagEkyc:Retention:RegulatedEvidenceRetentionDays", "30");
+                builder.UseSetting("TagEkyc:DecisionThresholds:FaceMatch", "0.80");
+                builder.UseSetting("TagEkyc:DecisionThresholds:Liveness", "0.80");
+                builder.UseSetting(RawExportCustodyProfileState.ConfigurationPath, "Fixture");
+                foreach (var pair in claimConfiguration.AsEnumerable())
+                    if (pair.Value is not null)
+                        builder.UseSetting(pair.Key, pair.Value);
+                foreach (var pair in BrokerConfiguration().AsEnumerable())
+                    if (pair.Value is not null
+                        && !pair.Key.EndsWith("SelectorId", StringComparison.Ordinal)
+                        && !pair.Key.EndsWith("SelectorVersion", StringComparison.Ordinal))
+                        builder.UseSetting(pair.Key, pair.Value);
+                builder.ConfigureTestServices(services =>
+                {
+                    services.RemoveAll<IHostedService>();
+                    services.RemoveAll<IReadinessCheck>();
+                    var readinessType = typeof(Program).Assembly.GetType(
+                        "TagEkyc.Api.RawExportClaimProviderReadinessCheck",
+                        throwOnError: true)!;
+                    services.AddScoped(typeof(IReadinessCheck), readinessType);
+                });
+            });
+
+        using var client = factory.CreateClient();
+        using var response = await client.GetAsync("/readiness");
+        var body = await response.Content.ReadAsStringAsync();
+
+        Assert.Equal(HttpStatusCode.ServiceUnavailable, response.StatusCode);
+        Assert.Contains(RawExportClaimProviderReadinessValidator.ProviderInvalid,
+            body, StringComparison.Ordinal);
+        Assert.DoesNotContain(nameof(FileNotFoundException), body, StringComparison.Ordinal);
+        Assert.DoesNotContain(nameof(System.Security.Cryptography.CryptographicException),
+            body, StringComparison.Ordinal);
+        Assert.DoesNotContain(nameof(UnauthorizedAccessException), body,
+            StringComparison.Ordinal);
+
+        if (arm == "malformed")
+            File.Delete(candidateCa);
+    }
+
+    [Theory]
     [InlineData(AuthenticatedCallerCategory.OperatorAdmin,
         "operator.site-qualification.enroll", true)]
     [InlineData(AuthenticatedCallerCategory.CaptureAgent,
@@ -321,6 +428,26 @@ public sealed class ProductionCompositionCorrectionTests
         arrange(services, configuration);
         return Assert.Throws<InvalidOperationException>(() =>
             services.AddTagEkycRawIngressBroker(configuration, isProduction: true));
+    }
+
+    private sealed class UnknownContentCommitmentService : IContentCommitmentService
+    {
+        public ValueTask<ContentCommitmentResult> ComputeAsync(
+            CommitmentKeySelector selector,
+            ReadOnlyMemory<byte> lpPayload,
+            CancellationToken cancellationToken) =>
+            ValueTask.FromResult(ContentCommitmentResult.Failed(
+                ContentCommitmentFailure.ProviderFailure));
+    }
+
+    private sealed class UnknownSubjectRefTokenService : ISubjectRefTokenService
+    {
+        public ValueTask<SubjectRefTokenResult> ComputeAsync(
+            SubjectTokenKeySelector selector,
+            ReadOnlyMemory<byte> lpPayload,
+            CancellationToken cancellationToken) =>
+            ValueTask.FromResult(SubjectRefTokenResult.Failed(
+                SubjectRefTokenFailure.ProviderFailure));
     }
 
     private static ConfigurationManager BrokerConfiguration(int port = 45679) => new()
@@ -456,7 +583,7 @@ public sealed class ProductionCompositionLabProofTests
     }
 
     [Fact]
-    public async Task Lab_broker_database_uses_exact_login_while_production_claim_graph_fails_closed()
+    public async Task Lab_broker_database_uses_exact_login_while_missing_custody_profile_fails_closed()
     {
         var configuration = BrokerConfiguration();
         configuration[$"{RawIngressBrokerOptions.SectionName}:DatabaseConnectionStringSecretRef"] =
@@ -470,7 +597,7 @@ public sealed class ProductionCompositionLabProofTests
         var error = Assert.Throws<InvalidOperationException>(() =>
             new ServiceCollection().AddTagEkycRawIngressBroker(
                 configuration, isProduction: true));
-        Assert.Equal("PROD_RAW_EXPORT_CLAIM_PROVIDERS_MISSING",
+        Assert.Equal(RawExportCustodyProfileReadinessValidator.ProfileMissing,
             error.Message);
     }
 

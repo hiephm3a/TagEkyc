@@ -51,6 +51,9 @@ if (DurableKeyTopologyOptions.Resolve(builder.Configuration).Topology
 }
 builder.Services.AddTagEkycDurableKeyCustody(builder.Configuration);
 if (builder.Environment.IsProduction())
+    builder.Services.AddTagEkycProductionRawExportClaimProviders(
+        builder.Configuration);
+if (builder.Environment.IsProduction())
     builder.Services.AddTagEkycProvisionalObjectCustody(builder.Configuration);
 var recipientPackageOptions = RecipientPackageOptions.Resolve(builder.Configuration);
 if (recipientPackageOptions.Topology == RecipientPackageTopology.S3CompatibleDurable
@@ -409,6 +412,7 @@ static void ConfigureReadiness(WebApplicationBuilder builder)
     builder.Services.AddScoped<IReadinessCheck, RawExportPermitTtlReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, RawExportJobReadinessCheck>();
     builder.Services.AddScoped<IReadinessCheck, DurableKeyCustodyReadinessCheck>();
+    builder.Services.AddScoped<IReadinessCheck, RawExportClaimProviderReadinessCheck>();
     if (builder.Services.Any(descriptor =>
             descriptor.ServiceType == typeof(ProvisionalObjectCustodyReadinessValidator)))
         builder.Services.AddScoped<IReadinessCheck, ProvisionalObjectCustodyReadinessCheck>();

@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="6962b5d6-e153-43eb-a1d1-52b3b97b917d" name="3AVNN@LEARNPC 2026-10-01 10:18:59" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-01T10:18:59.5168693+07:00" queuing="2026-10-01T10:18:59.5168698+07:00" start="2026-10-01T10:18:27.9456504+07:00" finish="2026-10-01T10:18:59.6288852+07:00" />
+  <TestSettings name="default" id="8951fe81-f86a-4531-9444-753b5575cb1d">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-01_10_18_59" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="95bb92af-6feb-427f-a263-4482b530b64c" testId="5f967436-e292-acf0-28b2-5fef16b2fd4d" testName="TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated" computerName="LEARNPC" duration="00:00:17.0144775" startTime="2026-10-01T10:18:58.5127187+07:00" endTime="2026-10-01T10:18:58.5127490+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="95bb92af-6feb-427f-a263-4482b530b64c">
+      <Output>
+        <ErrorInfo>
+          <Message>{"errors":["1 error occurred:\n\t* invalid key size for HMAC key, must be between 32 and 512 bytes\n\n"]}
+</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoRealHarness.RootPostAsync(String path, Object value) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs:line 746&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoRealHarness.InitializeAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs:line 665&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoRealHarness.StartAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs:line 524&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoRealHarness.StartAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs:line 531&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs:line 27&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5f967436-e292-acf0-28b2-5fef16b2fd4d">
+      <Execution id="95bb92af-6feb-427f-a263-4482b530b64c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests" name="Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="5f967436-e292-acf0-28b2-5fef16b2fd4d" executionId="95bb92af-6feb-427f-a263-4482b530b64c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.14]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.28]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.29]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:30.25]       {"errors":["1 error occurred:\n\t* invalid key size for HMAC key, must be between 32 and 512 bytes\n\n"]}
+&#xD;
+[xUnit.net 00:00:30.25]       Stack Trace:&#xD;
+[xUnit.net 00:00:30.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs(746,0): at TagEkyc.IntegrationTests.OpenBaoRealHarness.RootPostAsync(String path, Object value)&#xD;
+[xUnit.net 00:00:30.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs(665,0): at TagEkyc.IntegrationTests.OpenBaoRealHarness.InitializeAsync()&#xD;
+[xUnit.net 00:00:30.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs(524,0): at TagEkyc.IntegrationTests.OpenBaoRealHarness.StartAsync()&#xD;
+[xUnit.net 00:00:30.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs(531,0): at TagEkyc.IntegrationTests.OpenBaoRealHarness.StartAsync()&#xD;
+[xUnit.net 00:00:30.25]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs(27,0): at TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated()&#xD;
+[xUnit.net 00:00:30.25]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:31.31]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:18:58.5109152+07:00">
+        <Text>[xUnit.net 00:00:30.24]     TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

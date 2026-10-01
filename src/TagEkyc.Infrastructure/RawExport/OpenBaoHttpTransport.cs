@@ -9,9 +9,9 @@ namespace TagEkyc.Infrastructure.RawExport;
 internal sealed class OpenBaoHttpTransport : IDisposable
 {
     private readonly HttpClient client;
-    private readonly OpenBaoKekOptions options;
+    private readonly OpenBaoConnectionOptions options;
 
-    internal OpenBaoHttpTransport(OpenBaoKekOptions options)
+    internal OpenBaoHttpTransport(OpenBaoConnectionOptions options)
     {
         this.options = options;
         var handler = new SocketsHttpHandler
@@ -108,7 +108,7 @@ internal sealed class OpenBaoTransportException(int statusCode, bool transient, 
     internal bool IsTransient { get; } = transient;
 }
 
-internal sealed class OpenBaoTokenSession(OpenBaoHttpTransport transport, OpenBaoKekOptions options)
+internal sealed class OpenBaoTokenSession(OpenBaoHttpTransport transport, OpenBaoConnectionOptions options)
 {
     private readonly SemaphoreSlim gate = new(1, 1);
     private string? token;

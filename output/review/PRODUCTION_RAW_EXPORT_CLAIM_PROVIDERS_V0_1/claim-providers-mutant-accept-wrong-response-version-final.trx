@@ -1,0 +1,79 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="240752d3-ed1f-4c23-91ad-70247fe68722" name="3AVNN@LEARNPC 2026-10-01 10:34:54" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-01T10:34:54.9815711+07:00" queuing="2026-10-01T10:34:54.9815712+07:00" start="2026-10-01T10:34:53.9809756+07:00" finish="2026-10-01T10:34:54.9856277+07:00" />
+  <TestSettings name="default" id="57d61605-3090-4755-89b1-9c189a780608">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-01_10_34_54" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="bcf0944c-8a8e-48d1-8ee5-1ddf8f768397" testId="28e6270c-b031-f830-e655-dc2d41ed6ba3" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;&quot;)" computerName="LEARNPC" duration="00:00:00.0000108" startTime="2026-10-01T10:34:54.9058153+07:00" endTime="2026-10-01T10:34:54.9058153+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bcf0944c-8a8e-48d1-8ee5-1ddf8f768397" />
+    <UnitTestResult executionId="411bb28a-c926-4127-a500-bd327353f544" testId="6a2a476b-baf8-228f-bdef-7f1348764f98" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v2:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;···)" computerName="LEARNPC" duration="00:00:00.0030559" startTime="2026-10-01T10:34:54.9034107+07:00" endTime="2026-10-01T10:34:54.9034250+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="411bb28a-c926-4127-a500-bd327353f544">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: No exception was thrown&#xD;
+Expected: typeof(System.Text.Json.JsonException)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(String value) in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs:line 168&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="57bddfc3-867e-4a62-b0e2-2269a6a0c5b5" testId="70c2ac20-0d22-de48-3172-d947dbecf25d" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v1:AQID&quot;)" computerName="LEARNPC" duration="00:00:00.0007504" startTime="2026-10-01T10:34:54.9055491+07:00" endTime="2026-10-01T10:34:54.9055492+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="57bddfc3-867e-4a62-b0e2-2269a6a0c5b5" />
+    <UnitTestResult executionId="5d9d0d12-0ca8-4f0d-b3c8-7d588c48222d" testId="e120280c-8fd6-1d2c-2d93-829699e097c2" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v1:not-base64&quot;)" computerName="LEARNPC" duration="00:00:00.0000721" startTime="2026-10-01T10:34:54.9057954+07:00" endTime="2026-10-01T10:34:54.9057955+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5d9d0d12-0ca8-4f0d-b3c8-7d588c48222d" />
+    <UnitTestResult executionId="247af115-d837-4504-945d-c2325dfc9045" testId="9f16228b-2bae-b48a-9656-54e89c3fd776" testName="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: null)" computerName="LEARNPC" duration="00:00:00.0000439" startTime="2026-10-01T10:34:54.9056357+07:00" endTime="2026-10-01T10:34:54.9056357+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="247af115-d837-4504-945d-c2325dfc9045" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v1:not-base64&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="e120280c-8fd6-1d2c-2d93-829699e097c2">
+      <Execution id="5d9d0d12-0ca8-4f0d-b3c8-7d588c48222d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="28e6270c-b031-f830-e655-dc2d41ed6ba3">
+      <Execution id="bcf0944c-8a8e-48d1-8ee5-1ddf8f768397" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v2:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA&quot;···)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6a2a476b-baf8-228f-bdef-7f1348764f98">
+      <Execution id="411bb28a-c926-4127-a500-bd327353f544" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: null)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9f16228b-2bae-b48a-9656-54e89c3fd776">
+      <Execution id="247af115-d837-4504-945d-c2325dfc9045" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: &quot;vault:v1:AQID&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="70c2ac20-0d22-de48-3172-d947dbecf25d">
+      <Execution id="57bddfc3-867e-4a62-b0e2-2269a6a0c5b5" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests" name="Malformed_or_wrong_version_OpenBao_HMAC_is_rejected" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="28e6270c-b031-f830-e655-dc2d41ed6ba3" executionId="bcf0944c-8a8e-48d1-8ee5-1ddf8f768397" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6a2a476b-baf8-228f-bdef-7f1348764f98" executionId="411bb28a-c926-4127-a500-bd327353f544" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="70c2ac20-0d22-de48-3172-d947dbecf25d" executionId="57bddfc3-867e-4a62-b0e2-2269a6a0c5b5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e120280c-8fd6-1d2c-2d93-829699e097c2" executionId="5d9d0d12-0ca8-4f0d-b3c8-7d588c48222d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9f16228b-2bae-b48a-9656-54e89c3fd776" executionId="247af115-d837-4504-945d-c2325dfc9045" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="5" executed="5" passed="4" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.39]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.56]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.56]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.60]       Assert.Throws() Failure: No exception was thrown&#xD;
+[xUnit.net 00:00:00.60]       Expected: typeof(System.Text.Json.JsonException)&#xD;
+[xUnit.net 00:00:00.60]       Stack Trace:&#xD;
+[xUnit.net 00:00:00.60]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoProductionClaimProviderTests.cs(168,0): at TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(String value)&#xD;
+[xUnit.net 00:00:00.60]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:00.60]            at System.Reflection.MethodBaseInvoker.InvokeDirectByRefWithFewArgs(Object obj, Span`1 copyOfArgs, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:00.60]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:34:54.9020740+07:00">
+        <Text>[xUnit.net 00:00:00.60]     TagEkyc.IntegrationTests.OpenBaoProductionClaimProviderTests.Malformed_or_wrong_version_OpenBao_HMAC_is_rejected(value: "vault:v2:AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA"···) [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

@@ -1,0 +1,53 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="db7417bf-69f1-4007-94ee-4f303bb02391" name="3AVNN@LEARNPC 2026-10-01 10:23:58" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-01T10:23:58.8704847+07:00" queuing="2026-10-01T10:23:58.8704848+07:00" start="2026-10-01T10:23:34.9128587+07:00" finish="2026-10-01T10:23:59.3502502+07:00" />
+  <TestSettings name="default" id="87d11ee1-7eea-41ed-ba39-767bdde00476">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-01_10_23_58" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="c4275ff4-4e32-4799-87ad-29b12e06aa5e" testId="5f967436-e292-acf0-28b2-5fef16b2fd4d" testName="TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated" computerName="LEARNPC" duration="00:00:11.4202589" startTime="2026-10-01T10:23:58.2745651+07:00" endTime="2026-10-01T10:23:58.2746079+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c4275ff4-4e32-4799-87ad-29b12e06aa5e">
+      <Output>
+        <ErrorInfo>
+          <Message>{"request_id":"8d127d5c-f835-805b-9c9d-14dbdf8cd853","lease_id":"","renewable":false,"lease_duration":0,"data":{"allow_plaintext_backup":false,"auto_rotate_period":0,"deletion_allowed":false,"derived":false,"exportable":false,"imported_key":false,"key_size":32,"latest_version":1,"min_available_version":0,"min_decryption_version":1,"min_encryption_version":0,"name":"content-hmac","soft_deleted":false,"supports_decryption":false,"supports_derivation":false,"supports_encryption":false,"supports_signing":false,"type":"hmac"},"wrap_info":null,"warnings":null,"auth":null}</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs:line 37&#xD;
+   at TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs:line 85&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5f967436-e292-acf0-28b2-5fef16b2fd4d">
+      <Execution id="c4275ff4-4e32-4799-87ad-29b12e06aa5e" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests" name="Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="5f967436-e292-acf0-28b2-5fef16b2fd4d" executionId="c4275ff4-4e32-4799-87ad-29b12e06aa5e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.21]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.36]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.36]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:23.06]       {"request_id":"8d127d5c-f835-805b-9c9d-14dbdf8cd853","lease_id":"","renewable":false,"lease_duration":0,"data":{"allow_plaintext_backup":false,"auto_rotate_period":0,"deletion_allowed":false,"derived":false,"exportable":false,"imported_key":false,"key_size":32,"latest_version":1,"min_available_version":0,"min_decryption_version":1,"min_encryption_version":0,"name":"content-hmac","soft_deleted":false,"supports_decryption":false,"supports_derivation":false,"supports_encryption":false,"supports_signing":false,"type":"hmac"},"wrap_info":null,"warnings":null,"auth":null}&#xD;
+[xUnit.net 00:00:23.06]       Stack Trace:&#xD;
+[xUnit.net 00:00:23.06]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs(37,0): at TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated()&#xD;
+[xUnit.net 00:00:23.06]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\OpenBaoRealTransitIntegrationTests.cs(85,0): at TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated()&#xD;
+[xUnit.net 00:00:23.06]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:24.08]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-01T10:23:58.2726747+07:00">
+        <Text>[xUnit.net 00:00:23.06]     TagEkyc.IntegrationTests.OpenBaoRealTransitIntegrationTests.Real_TLS_AppRole_HMAC_claim_providers_are_exact_versioned_and_policy_isolated [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>
