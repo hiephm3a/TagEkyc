@@ -79,6 +79,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
     public DbSet<RawExportKeyProviderOperationRow> RawExportKeyProviderOperations => Set<RawExportKeyProviderOperationRow>();
     public DbSet<RawExportAttemptKeyPreparationEventRow> RawExportAttemptKeyPreparationEvents => Set<RawExportAttemptKeyPreparationEventRow>();
     public DbSet<RawExportFixtureKekWrapJournalRow> RawExportFixtureKekWrapJournal => Set<RawExportFixtureKekWrapJournalRow>();
+    public DbSet<RawExportOpenBaoKekOperationJournalRow> RawExportOpenBaoKekOperationJournal => Set<RawExportOpenBaoKekOperationJournalRow>();
     public DbSet<RawExportProvisionalObjectRow> RawExportProvisionalObjects => Set<RawExportProvisionalObjectRow>();
     public DbSet<RawExportProvisionalObjectEventRow> RawExportProvisionalObjectEvents => Set<RawExportProvisionalObjectEventRow>();
     public DbSet<RawExportSourcePublicationRow> RawExportSourcePublications => Set<RawExportSourcePublicationRow>();
@@ -145,6 +146,7 @@ public sealed class TagEkycDbContext(DbContextOptions<TagEkycDbContext> options)
         modelBuilder.ApplyConfiguration(new RawExportKeyProviderOperationConfig());
         modelBuilder.ApplyConfiguration(new RawExportAttemptKeyPreparationEventConfig());
         modelBuilder.ApplyConfiguration(new RawExportFixtureKekWrapJournalConfig());
+        modelBuilder.ApplyConfiguration(new RawExportOpenBaoKekOperationJournalConfig());
         modelBuilder.ApplyConfiguration(new RawExportProvisionalObjectConfig());
         modelBuilder.ApplyConfiguration(new RawExportProvisionalObjectEventConfig());
         modelBuilder.ApplyConfiguration(new RawExportSourcePublicationConfig());

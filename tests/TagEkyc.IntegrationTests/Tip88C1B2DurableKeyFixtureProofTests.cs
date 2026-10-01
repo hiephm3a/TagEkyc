@@ -156,6 +156,7 @@ public sealed class Tip88C1B2DurableKeyFixtureProofTests(PostgresPersistenceFixt
         var second = Assert.IsType<KekWrapResult.Wrapped>(await provider.WrapDekAsync(
             Reference(), token, context, secondCandidate, CancellationToken.None));
         AssertMaterialEqual(first.Material, second.Material);
+        var legacy = Assert.IsType<LegacyAesGcmWrappedMaterial>(first.Material);
         await using (var direct = new NpgsqlConnection(logins.WrapConnectionString))
         {
             await direct.OpenAsync();
@@ -170,9 +171,9 @@ public sealed class Tip88C1B2DurableKeyFixtureProofTests(PostgresPersistenceFixt
             command.Parameters.AddWithValue("context", context);
             await using var reader = await command.ExecuteReaderAsync();
             Assert.True(await reader.ReadAsync());
-            Assert.Equal(first.Material.Ciphertext, (byte[])reader[0]);
-            Assert.Equal(first.Material.Nonce, (byte[])reader[1]);
-            Assert.Equal(first.Material.Tag, (byte[])reader[2]);
+            Assert.Equal(legacy.Ciphertext, (byte[])reader[0]);
+            Assert.Equal(legacy.Nonce, (byte[])reader[1]);
+            Assert.Equal(legacy.Tag, (byte[])reader[2]);
         }
         Assert.Equal(1L, await CountAsync());
     }
@@ -862,9 +863,11 @@ public sealed class Tip88C1B2DurableKeyFixtureProofTests(PostgresPersistenceFixt
 
     private static void AssertMaterialEqual(KekWrappedMaterial expected, KekWrappedMaterial actual)
     {
-        Assert.Equal(expected.Ciphertext, actual.Ciphertext);
-        Assert.Equal(expected.Nonce, actual.Nonce);
-        Assert.Equal(expected.Tag, actual.Tag);
+        var expectedLegacy = Assert.IsType<LegacyAesGcmWrappedMaterial>(expected);
+        var actualLegacy = Assert.IsType<LegacyAesGcmWrappedMaterial>(actual);
+        Assert.Equal(expectedLegacy.Ciphertext, actualLegacy.Ciphertext);
+        Assert.Equal(expectedLegacy.Nonce, actualLegacy.Nonce);
+        Assert.Equal(expectedLegacy.Tag, actualLegacy.Tag);
         Assert.Equal(expected.SuiteId, actual.SuiteId);
         Assert.Equal(expected.SuiteVersion, actual.SuiteVersion);
         Assert.Equal(expected.ProviderResourceReference, actual.ProviderResourceReference);

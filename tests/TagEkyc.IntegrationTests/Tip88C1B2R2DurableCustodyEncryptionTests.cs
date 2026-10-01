@@ -3006,7 +3006,7 @@ public sealed class Tip88C1B2R2DurableCustodyEncryptionDatabaseTests(
         await using var transaction = await connection.BeginTransactionAsync();
         await ExecuteAsync(connection, transaction, "SET LOCAL ROLE tagekyc_raw_export_custody_encryptor;");
         await using var command = new NpgsqlCommand(
-            "SELECT * FROM tagekyc.raw_export_prepare_attempt_key_reservation(@reservation,@attempt,@artifact)",
+            "SELECT * FROM tagekyc.raw_export_prepare_attempt_key_reservation(@reservation,@attempt,@artifact,'LEGACY_AES_GCM_SPLIT',1,'AES-256-GCM',1)",
             connection,
             transaction);
         command.Parameters.AddWithValue("reservation", source.AttemptKeyReservationId);

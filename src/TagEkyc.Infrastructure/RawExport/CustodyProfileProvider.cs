@@ -89,3 +89,29 @@ internal sealed class FixtureCustodyProfileProvider(
         ?? throw new RawExportCustodyProfileReadinessException(
             RawExportCustodyProfileReadinessValidator.TimeBoundsInvalid);
 }
+
+internal sealed class OpenBaoProductionCustodyProfileProvider : ICustodyProfileProvider
+{
+    internal OpenBaoProductionCustodyProfileProvider(
+        Microsoft.Extensions.Configuration.IConfiguration configuration,
+        OpenBaoKekOptions openBao,
+        CustodyTimeBoundsState timeBoundsState)
+    {
+        var section = configuration.GetSection("TagEkyc:RawExport:CustodyProfile");
+        static string Required(Microsoft.Extensions.Configuration.IConfigurationSection section,string key) =>
+            string.IsNullOrWhiteSpace(section[key]) ? throw new RawExportCustodyProfileReadinessException(RawExportCustodyProfileReadinessValidator.ProfileInvalid) : section[key]!.Trim();
+        if(!int.TryParse(section["SourceEncryptionProfileVersion"],out var profileVersion) || profileVersion<1
+           || !int.TryParse(section["EncryptionFramingVersion"],out var framingVersion) || framingVersion<1
+           || !int.TryParse(section["ChunkSize"],out var chunkSize) || chunkSize<1)
+            throw new RawExportCustodyProfileReadinessException(RawExportCustodyProfileReadinessValidator.ProfileInvalid);
+        ActiveSourceEncryptionProfile=new(
+            Required(section,"StorageProfileId"),Required(section,"SourceEncryptionProfileId"),profileVersion,
+            Required(section,"EncryptionSuiteId"),framingVersion,Required(section,"NonceStrategyId"),chunkSize);
+        ActiveKekReference=new(openBao.Reference.KeyProviderId,openBao.Reference.KekId,openBao.Reference.KekVersion,openBao.Reference.KekFingerprint);
+        TimeBounds=timeBoundsState.Value ?? throw new RawExportCustodyProfileReadinessException(RawExportCustodyProfileReadinessValidator.TimeBoundsInvalid);
+    }
+
+    public SourceEncryptionProfileBundle ActiveSourceEncryptionProfile { get; }
+    public KekReferenceBundle ActiveKekReference { get; }
+    public CustodyTimeBounds TimeBounds { get; }
+}

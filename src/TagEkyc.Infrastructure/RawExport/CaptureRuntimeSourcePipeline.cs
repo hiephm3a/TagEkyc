@@ -72,6 +72,8 @@ internal sealed class CaptureRuntimeSourcePipeline
     {
         if (source == Guid.Empty) throw Invalid();
         await using var scope = await scopes.OpenReconcilerAsync(ct);
+        var effectiveKeyRecovery = scope.Services.GetService<IKekProvisioningRecoveryOperation>() ?? keyRecovery;
+        var effectiveVerificationKeyProvider = scope.Services.GetService<IKekOperationProvider>() ?? verificationKeyProvider;
         var reader = Reader(scope);
         var before = await reader.ReadAsync(source, ct);
         if (before is null) return new(RetainedContinuationStep.None, null);
@@ -142,18 +144,18 @@ internal sealed class CaptureRuntimeSourcePipeline
             else if (ObjectSettledForTerminal(before)
                 && key?.PreparationDisposition == "AbandonRequested"
                 && key.ProviderOperationState == "CleanupRequired"
-                && keyRecovery is not null)
+                && effectiveKeyRecovery is not null)
             {
-                acknowledged = await CleanupTerminalKeyProviderAsync(scope, before, key, keyRecovery, ct);
+                acknowledged = await CleanupTerminalKeyProviderAsync(scope, before, key, effectiveKeyRecovery, ct);
                 step = acknowledged ? RetainedContinuationStep.CleanupTerminalKeyProvider
                     : RetainedContinuationStep.None;
             }
             else if (ObjectSettledForTerminal(before)
                 && key?.PreparationDisposition == "AbandonRequested"
                 && key.ProviderOperationState is "Issued" or "ResultObserved"
-                && keyRecovery is not null)
+                && effectiveKeyRecovery is not null)
             {
-                acknowledged = await ResolveTerminalKeyProviderAsync(scope, before, key, keyRecovery, ct);
+                acknowledged = await ResolveTerminalKeyProviderAsync(scope, before, key, effectiveKeyRecovery, ct);
                 step = acknowledged ? RetainedContinuationStep.ResolveTerminalKeyProvider
                     : RetainedContinuationStep.None;
             }
@@ -174,7 +176,7 @@ internal sealed class CaptureRuntimeSourcePipeline
             (step, acknowledged) = await AdvanceIncompleteObjectAsync(scope, before, ct).ConfigureAwait(false);
         }
         else if (before.ObjectState == "ObjectPresentPendingVerification"
-            && verificationKeyProvider is not null
+            && effectiveVerificationKeyProvider is not null
             && contentCommitments is not null
             && keyCustodyOptions is not null)
         {
@@ -354,13 +356,15 @@ internal sealed class CaptureRuntimeSourcePipeline
 
         if (item.ResourceKind == "AttemptKeyReservation")
         {
+            var recovery = reconcilerScope.Services.GetService<IKekProvisioningRecoveryOperation>()
+                ?? keyRecovery;
             var context = await ReadCleanupKeyAsync(reconcilerScope, before.CustodyPrincipalId,
                 item.ResourceId!.Value, item.ResourceAttemptId!.Value, ct).ConfigureAwait(false);
             if (context.PreparationDisposition == "AbandonRequested"
                 && context.ProviderOperationState is not ("CleanedUp" or "AbsenceProven")
-                && keyRecovery is not null)
+                && recovery is not null)
             {
-                var result = await reconciliation.ReconcileKeyAsync(command, keyRecovery, ct)
+                var result = await reconciliation.ReconcileKeyAsync(command, recovery, ct)
                     .ConfigureAwait(false);
                 ValidateCleanupComplete(result, before, item, allowPending: true);
                 return RetainedContinuationStep.ReconcileCleanupResource;
@@ -541,9 +545,11 @@ internal sealed class CaptureRuntimeSourcePipeline
         CancellationToken ct)
     {
         var db = scope.Services.GetRequiredService<TagEkycDbContext>();
+        var provider = scope.Services.GetService<IKekOperationProvider>() ?? verificationKeyProvider;
+        if (provider is null) throw Invalid();
         var verifier = new RawExportR2CompletionVerifier(new RawExportR2Repository(db),
             scope.Services.GetRequiredService<IProvisionalObjectReconciler>(),
-            new AttemptAeadVerificationOperationService(db, verificationKeyProvider!, keyCustodyOptions!),
+            new AttemptAeadVerificationOperationService(db, provider, keyCustodyOptions!),
             contentCommitments!);
         var result = await verifier.ExecuteAsync(new(before.CustodyPrincipalId, before.AttemptId,
             before.EncryptionAttemptRevision, before.Fence, before.ObjectCustodyId!.Value), ct)
@@ -1389,14 +1395,17 @@ internal sealed class CaptureRuntimeRawIngressBodyPipeline(
         RawExportR2WriterResult written;
         await using (var writer = await scopes.OpenWriterAsync(cancellationToken).ConfigureAwait(false))
         {
+            var effectiveKeyProvider = writer.Services.GetService<IKekOperationProvider>() ?? keyProvider;
             var db = writer.Services.GetRequiredService<TagEkycDbContext>();
             var source = writer.Services.GetRequiredService<NpgsqlDataSource>();
             var recorder = new RawExportR2TerminalIntentRecorder(source, handoff.CustodyActorPrincipalId,
                 brokerOptions.RequestTimeoutMilliseconds, hostStopping);
             var orchestrator = new RawExportR2EncryptionOrchestrator(
                 new RawExportR2Repository(db),
-                new PostgresAttemptKeyReservationProvider(db, new PostgresKeyProviderOperationMap(db), keyProvider),
-                new AttemptAeadEncryptionOperationService(db, keyProvider, keyOptions),
+                new PostgresAttemptKeyReservationProvider(db, new PostgresKeyProviderOperationMap(db), effectiveKeyProvider,
+                    writer.Services.GetService<IKekWrappedMaterialProfileSource>()
+                        ?? new LegacyKekWrappedMaterialProfileSource()),
+                new AttemptAeadEncryptionOperationService(db, effectiveKeyProvider, keyOptions),
                 contentCommitments,
                 writer.Services.GetRequiredService<IProvisionalObjectWriter>(),
                 recorder,

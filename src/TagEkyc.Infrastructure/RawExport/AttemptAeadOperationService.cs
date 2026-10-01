@@ -17,11 +17,28 @@ internal sealed class AttemptAeadEncryptionOperationService(
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
         timeout.CancelAfter(options.BoundedAeadOperationDuration);
         var envelope = await ReadEnvelopeAsync(request.AttemptKeyReservationId, timeout.Token) ?? throw new InvalidOperationException("RAW_EXPORT_KEY_NOT_ACTIVE");
-        using var lease = await provider.UnwrapDekAsync(envelope.Reference,envelope.Wrapped,envelope.ContextFingerprint,timeout.Token);
+        AttemptDekLease lease;
+        try
+        {
+            lease = await provider.UnwrapDekAsync(
+                envelope.Reference, envelope.Wrapped, envelope.ContextFingerprint, timeout.Token)
+                .ConfigureAwait(false);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception error)
+        {
+            throw new InvalidOperationException("RAW_EXPORT_KEY_ACCESS_INDETERMINATE", error);
+        }
+        using (lease)
+        {
         var output=new byte[request.Input.Length]; var tag=new byte[16];
         using var aes=new AesGcm(lease.Material.Span,16);
         aes.Encrypt(request.Nonce.Span,request.Input.Span,output,tag,request.AssociatedData.Span);
         return new(output,tag);
+        }
     }
 
     private static void Validate(AttemptAeadChunkRequest request)
@@ -33,11 +50,23 @@ internal sealed class AttemptAeadEncryptionOperationService(
     {
         await db.Database.OpenConnectionAsync(token);
         await using var command=(NpgsqlCommand)db.Database.GetDbConnection().CreateCommand();
-        command.CommandText="SELECT * FROM tagekyc.raw_export_read_active_attempt_key_envelope(@r)"; command.Parameters.AddWithValue("r",id);
+        command.CommandText="SELECT * FROM tagekyc.raw_export_read_active_attempt_key_material(@r)"; command.Parameters.AddWithValue("r",id);
         await using var reader=await command.ExecuteReaderAsync(token); if(!await reader.ReadAsync(token)) return null;
         var context=(byte[])reader[1]; var reference=new KekReference(reader.GetString(2),reader.GetString(3),reader.GetInt32(4),reader.GetString(5));
-        var wrapped=new KekWrappedMaterial((byte[])reader[8],(byte[])reader[9],(byte[])reader[10],reader.GetString(6),reader.GetInt32(7),"active-envelope",Convert.ToHexString((byte[])reader[11]));
+        var wrapped=ReadMaterial(reader);
         return new(reference,context,wrapped);
+    }
+    private static KekWrappedMaterial ReadMaterial(NpgsqlDataReader reader)
+    {
+        var receipt=Convert.ToHexString((byte[])reader[14]);
+        return reader.GetString(6) switch
+        {
+            KekWrappedMaterialRepresentations.LegacyAesGcmSplit when reader.GetInt32(7)==1 && !reader.IsDBNull(10) && !reader.IsDBNull(11) && !reader.IsDBNull(12) && reader.IsDBNull(13) =>
+                new LegacyAesGcmWrappedMaterial((byte[])reader[10],(byte[])reader[11],(byte[])reader[12],reader.GetString(8),reader.GetInt32(9),"active-envelope",receipt),
+            KekWrappedMaterialRepresentations.OpaqueProviderCiphertext when reader.GetInt32(7)==1 && reader.IsDBNull(10) && reader.IsDBNull(11) && reader.IsDBNull(12) && !reader.IsDBNull(13) =>
+                new OpaqueProviderWrappedMaterial((byte[])reader[13],reader.GetString(8),reader.GetInt32(9),"active-envelope",receipt),
+            _ => throw new CryptographicException("RAW_EXPORT_WRAPPED_MATERIAL_INVALID"),
+        };
     }
     private sealed record ActiveEnvelope(KekReference Reference,byte[] ContextFingerprint,KekWrappedMaterial Wrapped);
 }
@@ -131,18 +160,28 @@ internal sealed class AttemptAeadVerificationOperationService(
     {
         await db.Database.OpenConnectionAsync(token);
         await using var command = (NpgsqlCommand)db.Database.GetDbConnection().CreateCommand();
-        command.CommandText = "SELECT * FROM tagekyc.raw_export_read_active_attempt_key_envelope(@r)";
+        command.CommandText = "SELECT * FROM tagekyc.raw_export_read_active_attempt_key_material(@r)";
         command.Parameters.AddWithValue("r", id);
         await using var reader = await command.ExecuteReaderAsync(token);
         if (!await reader.ReadAsync(token)) return null;
         var context = (byte[])reader[1];
         var reference = new KekReference(
             reader.GetString(2), reader.GetString(3), reader.GetInt32(4), reader.GetString(5));
-        var wrapped = new KekWrappedMaterial(
-            (byte[])reader[8], (byte[])reader[9], (byte[])reader[10],
-            reader.GetString(6), reader.GetInt32(7), "active-envelope",
-            Convert.ToHexString((byte[])reader[11]));
+        var wrapped = ReadMaterial(reader);
         return new(reference, context, wrapped);
+    }
+
+    private static KekWrappedMaterial ReadMaterial(NpgsqlDataReader reader)
+    {
+        var receipt=Convert.ToHexString((byte[])reader[14]);
+        return reader.GetString(6) switch
+        {
+            KekWrappedMaterialRepresentations.LegacyAesGcmSplit when reader.GetInt32(7)==1 && !reader.IsDBNull(10) && !reader.IsDBNull(11) && !reader.IsDBNull(12) && reader.IsDBNull(13) =>
+                new LegacyAesGcmWrappedMaterial((byte[])reader[10],(byte[])reader[11],(byte[])reader[12],reader.GetString(8),reader.GetInt32(9),"active-envelope",receipt),
+            KekWrappedMaterialRepresentations.OpaqueProviderCiphertext when reader.GetInt32(7)==1 && reader.IsDBNull(10) && reader.IsDBNull(11) && reader.IsDBNull(12) && !reader.IsDBNull(13) =>
+                new OpaqueProviderWrappedMaterial((byte[])reader[13],reader.GetString(8),reader.GetInt32(9),"active-envelope",receipt),
+            _ => throw new CryptographicException("RAW_EXPORT_WRAPPED_MATERIAL_INVALID"),
+        };
     }
 
     private sealed record ActiveEnvelope(

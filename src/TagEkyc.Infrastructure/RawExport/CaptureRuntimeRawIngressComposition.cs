@@ -123,10 +123,16 @@ public static class CaptureRuntimeRawIngressComposition
         services.TryAddSingleton(sp =>
         {
             var owners = sp.GetRequiredService<RuntimeOwners>();
+            CaptureRuntimeCustodyProviderScopes.OpenBaoDependencies? openBao = null;
+            if (sp.GetService<OpenBaoKekOptions>() is { } options
+                && sp.GetService<OpenBaoHttpTransport>() is { } transport
+                && sp.GetService<OpenBaoTokenSession>() is { } tokenSession)
+                openBao = new(options, transport, tokenSession);
             return new CaptureRuntimeCustodyProviderScopes(
                 owners.WriterConnectionString, owners.WriterObject,
                 owners.ReconcilerConnectionString, owners.ReconcilerObject,
-                owners.LifecycleConnectionString, owners.LifecycleObject);
+                owners.LifecycleConnectionString, owners.LifecycleObject,
+                openBao);
         });
         services.TryAddSingleton<RawIngressBrokerHttpClient>(sp =>
             new(sp.GetRequiredService<RawIngressBrokerOptions>()));
@@ -294,7 +300,7 @@ internal sealed class QualifiedRawIngressBroker(NpgsqlDataSource source,
         "raw_export_inspect_attempt_key_reservation", "raw_export_mark_attempt_key_preparation_expired",
         "raw_export_mark_key_provider_cleanup_required", "raw_export_mark_provisional_object_cleanup_required",
         "raw_export_mark_provisional_object_verified", "raw_export_prepare_attempt_key_reservation",
-        "raw_export_publish_available_source", "raw_export_read_active_attempt_key_envelope",
+        "raw_export_publish_available_source", "raw_export_read_active_attempt_key_material",
         "raw_export_read_current_attempt_key_recovery_context", "raw_export_read_next_source_cleanup_item",
         "raw_export_read_provisional_object_lifecycle_context", "raw_export_read_provisional_object_reconcile_context",
         "raw_export_read_source_encryption_context", "raw_export_read_source_verification_context",
@@ -308,6 +314,12 @@ internal sealed class QualifiedRawIngressBroker(NpgsqlDataSource source,
         "raw_export_terminate_retained_r2_before_provider_start",
         "raw_export_record_retained_r2_terminal_intent", "raw_export_finalize_retained_r2_terminal",
         "raw_export_read_retained_source_continuation", "raw_export_list_retained_source_continuations"
+        ,"raw_export_openbao_issue_kek_operation"
+        ,"raw_export_openbao_record_wrapped"
+        ,"raw_export_openbao_read_kek_operation"
+        ,"raw_export_openbao_prove_absence"
+        ,"raw_export_openbao_require_cleanup"
+        ,"raw_export_openbao_complete_cleanup"
     ];
     internal static readonly string[] Functions =
     [

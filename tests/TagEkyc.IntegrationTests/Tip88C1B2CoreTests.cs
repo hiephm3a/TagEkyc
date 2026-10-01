@@ -608,7 +608,7 @@ public sealed class Tip88C1B2CoreTests(PostgresPersistenceFixture postgres)
         Assert.Equal(0L, (long)(await command.ExecuteScalarAsync() ?? -1L));
     }
 
-    private async Task<CandidateFixture> SeedCandidateAsync(
+    internal async Task<CandidateFixture> SeedCandidateAsync(
         TimeSpan? remainingRetention = null)
     {
         var actor = Guid.NewGuid();
@@ -981,7 +981,7 @@ public sealed class Tip88C1B2CoreTests(PostgresPersistenceFixture postgres)
         return (bool)(await command.ExecuteScalarAsync() ?? false);
     }
 
-    private sealed record CandidateFixture(
+    internal sealed record CandidateFixture(
         Guid PolicyId,
         Guid IngressClaimId,
         RawExportSourceClaimComparisonCommand Command);

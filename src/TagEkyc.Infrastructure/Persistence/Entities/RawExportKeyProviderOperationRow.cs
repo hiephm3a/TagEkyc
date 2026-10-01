@@ -10,9 +10,12 @@ public sealed class RawExportKeyProviderOperationRow
     public long PreparationFence { get; set; }
     public byte[] AttemptKeyContextFingerprint { get; set; } = [];
     public string ProviderOperationState { get; set; } = string.Empty;
+    public string? MaterialRepresentationId { get; set; }
+    public int? MaterialRepresentationVersion { get; set; }
     public byte[]? WrappedDekCiphertext { get; set; }
     public byte[]? WrappedDekNonce { get; set; }
     public byte[]? WrappedDekTag { get; set; }
+    public byte[]? OpaqueWrappedDekPayload { get; set; }
     public byte[]? WrappedDekMetadataDigest { get; set; }
     public string? WrappingSuiteId { get; set; }
     public int? WrappingSuiteVersion { get; set; }

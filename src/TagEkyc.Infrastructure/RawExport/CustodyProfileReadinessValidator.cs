@@ -122,20 +122,22 @@ public sealed class RawExportCustodyProfileReadinessValidator
                 ProfileMissing);
         }
 
-        if (!string.Equals(
-                profileState.Profile,
-                "Fixture",
-                StringComparison.Ordinal))
+        var fixture = string.Equals(profileState.Profile,"Fixture",StringComparison.Ordinal);
+        var openBao = string.Equals(profileState.Profile,"OpenBao",StringComparison.Ordinal);
+        if (!fixture && !openBao)
         {
             throw new RawExportCustodyProfileReadinessException(
                 ProfileInvalid);
         }
 
-        if (profileState.IsProduction)
+        if (profileState.IsProduction && fixture)
         {
             throw new RawExportCustodyProfileReadinessException(
                 FixtureActive);
         }
+
+        if (!profileState.IsProduction && openBao)
+            throw new RawExportCustodyProfileReadinessException(ProfileInvalid);
 
         if (timeBoundsState.Value is null)
         {

@@ -16,22 +16,33 @@ internal sealed class CaptureRuntimeCustodyProviderScopes : IAsyncDisposable
     internal const string LifecycleLogin = "tagekyc_raw_export_lifecycle_login";
     private readonly ServiceProvider[] owners;
 
+    internal sealed record OpenBaoDependencies(
+        OpenBaoKekOptions Options,
+        OpenBaoHttpTransport Transport,
+        OpenBaoTokenSession TokenSession);
+
     // Literal grants from DurableKeyProd, DurableObjectCustody, R2, R3,
     // R4R6 and the A3 forward migration. Bits: Writer=1, Reconciler=2,
     // Lifecycle=4. Expected rights never come from the live role's ACL.
     internal static IReadOnlyList<(string Signature, int Roles)> StageRights { get; } = Array.AsReadOnly<(string Signature, int Roles)>(
     [
-        ("raw_export_prepare_attempt_key_reservation(uuid,uuid,uuid)",1),
-        ("raw_export_record_key_provider_wrapped_result(uuid,uuid,uuid,bigint,text,bytea,bytea,bytea,text,integer,text,text)",1),
+        ("raw_export_prepare_attempt_key_reservation(uuid,uuid,uuid,text,integer,text,integer)",1),
+        ("raw_export_record_key_provider_wrapped_result(uuid,uuid,uuid,bigint,text,text,integer,bytea,bytea,bytea,bytea,text,integer,text,text)",1),
         ("raw_export_activate_attempt_key_reservation(uuid,uuid,bigint)",1),
         ("raw_export_inspect_attempt_key_reservation(uuid)",3),
-        ("raw_export_read_active_attempt_key_envelope(uuid)",3),
+        ("raw_export_read_active_attempt_key_material(uuid)",3),
+        ("raw_export_openbao_issue_kek_operation(text,bytea,text,text,integer,text,text,integer,text,integer)",1),
+        ("raw_export_openbao_record_wrapped(text,bytea,bigint,bytea,text)",1),
+        ("raw_export_openbao_read_kek_operation(text,bytea)",2),
+        ("raw_export_openbao_prove_absence(text,bytea,bigint)",2),
+        ("raw_export_openbao_require_cleanup(text,bytea,bigint)",2),
+        ("raw_export_openbao_complete_cleanup(text,bytea)",2),
         ("raw_export_mark_attempt_key_preparation_expired(uuid,uuid,bigint)",2),
         ("raw_export_resolve_attempt_key_provider_outcome(uuid,uuid,bigint,text,text,text,text)",2),
         ("raw_export_mark_key_provider_cleanup_required(uuid,uuid,uuid,bigint,text,text)",2),
         ("raw_export_record_key_provider_cleanup_observation(uuid,uuid,uuid,bigint,text,text,text,text)",2),
         ("raw_export_acknowledge_key_provider_cleanup(uuid,uuid,uuid,bigint,text,text,text,text)",2),
-        ("raw_export_record_recovered_key_provider_result(uuid,uuid,bigint,text,bytea,bytea,bytea,text,integer,text,text)",2),
+        ("raw_export_record_recovered_key_provider_result(uuid,uuid,bigint,text,text,integer,bytea,bytea,bytea,bytea,text,integer,text,text)",2),
         ("raw_export_revoke_attempt_key_reservation(uuid,text)",6),
         ("raw_export_read_current_attempt_key_recovery_context(uuid)",2),
         ("raw_export_request_abandon_attempt_key_reservation(uuid,text)",4),
@@ -78,6 +89,16 @@ internal sealed class CaptureRuntimeCustodyProviderScopes : IAsyncDisposable
         string writerConnection, ProvisionalObjectCustodyOptions writerOptions,
         string reconcilerConnection, ProvisionalObjectCustodyOptions reconcilerOptions,
         string lifecycleConnection, ProvisionalObjectCustodyOptions lifecycleOptions)
+        : this(writerConnection, writerOptions, reconcilerConnection, reconcilerOptions,
+            lifecycleConnection, lifecycleOptions, null)
+    {
+    }
+
+    internal CaptureRuntimeCustodyProviderScopes(
+        string writerConnection, ProvisionalObjectCustodyOptions writerOptions,
+        string reconcilerConnection, ProvisionalObjectCustodyOptions reconcilerOptions,
+        string lifecycleConnection, ProvisionalObjectCustodyOptions lifecycleOptions,
+        OpenBaoDependencies? openBao)
     {
         var connections = new[] { writerConnection, reconcilerConnection, lifecycleConnection };
         var logins = new[] { WriterLogin, ReconcilerLogin, LifecycleLogin };
@@ -106,7 +127,9 @@ internal sealed class CaptureRuntimeCustodyProviderScopes : IAsyncDisposable
         // caller's ambient transaction, including later connections from these
         // data sources. Suppressing only the qualification call is insufficient.
         foreach (var builder in builders) builder.Enlist = false;
-        owners = Enumerable.Range(0, 3).Select(i => Build(builders[i].ConnectionString, options[i], i)).ToArray();
+        owners = Enumerable.Range(0, 3)
+            .Select(i => Build(builders[i].ConnectionString, options[i], i, openBao))
+            .ToArray();
     }
 
     internal Task<RoleScope> OpenWriterAsync(CancellationToken ct) => OpenAsync(0, ct);
@@ -140,6 +163,14 @@ internal sealed class CaptureRuntimeCustodyProviderScopes : IAsyncDisposable
             // production object/GovArt readiness gate is NOT bypassed or changed
             // here: a successful role scope is not production activation.
             _ = scope.ServiceProvider.GetRequiredService(ProviderType(role));
+            if (role is 0 or 1 && scope.ServiceProvider.GetService<IKekOperationProvider>() is { } keyProvider)
+            {
+                if (keyProvider is not IDurableKekProviderCapabilitySource capability
+                    || !capability.Capabilities.IsDurable || !capability.Capabilities.IsKekQualified
+                    || !capability.Capabilities.SupportsRecovery || !capability.Capabilities.SupportsCleanup)
+                    throw Invalid("KEY_PROVIDER_CAPABILITY");
+                _ = scope.ServiceProvider.GetRequiredService<IKekProvisioningRecoveryOperation>();
+            }
             return new RoleScope(scope);
         }
         catch
@@ -185,7 +216,8 @@ internal sealed class CaptureRuntimeCustodyProviderScopes : IAsyncDisposable
         if (await sql.ExecuteScalarAsync(ct) is not true) throw Invalid("STAGE_PRIVILEGES");
     }
 
-    private static ServiceProvider Build(string connection, ProvisionalObjectCustodyOptions options, int role)
+    private static ServiceProvider Build(string connection, ProvisionalObjectCustodyOptions options, int role,
+        OpenBaoDependencies? openBao)
     {
         var services = new ServiceCollection();
         services.AddSingleton(_ => NpgsqlDataSource.Create(connection));
@@ -198,6 +230,23 @@ internal sealed class CaptureRuntimeCustodyProviderScopes : IAsyncDisposable
         services.AddScoped<CustodyRoleReadinessValidator>();
         services.AddScoped<ProvisionalObjectCustodyRepository>();
         services.AddScoped<ProvisionalObjectCustodyReadinessValidator>();
+        if (openBao is not null && role is 0 or 1)
+        {
+            services.AddScoped<PostgresOpenBaoKekJournal>();
+            services.AddScoped<OpenBaoTransitKekOperationProvider>(sp => new(
+                openBao.Options,
+                openBao.Transport,
+                openBao.TokenSession,
+                sp.GetRequiredService<PostgresOpenBaoKekJournal>()));
+            services.AddScoped<IKekOperationProvider>(sp =>
+                sp.GetRequiredService<OpenBaoTransitKekOperationProvider>());
+            services.AddScoped<IKekProvisioningRecoveryOperation>(sp =>
+                sp.GetRequiredService<OpenBaoTransitKekOperationProvider>());
+            services.AddScoped<IDurableKekProviderCapabilitySource>(sp =>
+                sp.GetRequiredService<OpenBaoTransitKekOperationProvider>());
+            services.AddSingleton<IKekWrappedMaterialProfileSource>(
+                new OpenBaoKekWrappedMaterialProfileSource());
+        }
         // Explicit factories preserve the existing internal provider constructors.
         switch (role)
         {

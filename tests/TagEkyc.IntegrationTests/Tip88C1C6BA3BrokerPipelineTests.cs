@@ -1941,8 +1941,8 @@ public sealed class Tip88C1C6BA3BrokerQualificationTests(PostgresPersistenceFixt
               AND r.rolname IN ('tagekyc_raw_export_custody_encryptor','tagekyc_raw_export_reconciler','tagekyc_raw_export_lifecycle')
             GROUP BY p.oid
             """).ToListAsync();
-        Assert.Equal(41, rows.Count);
-        Assert.Equal(41, CaptureRuntimeCustodyProviderScopes.StageRights.Count);
+        Assert.Equal(47, rows.Count);
+        Assert.Equal(47, CaptureRuntimeCustodyProviderScopes.StageRights.Count);
         // PostgreSQL regprocedure prints timestamptz as timestamp with time zone;
         // compare exact OIDs via regprocedure rather than a display formatter.
         foreach (var expected in CaptureRuntimeCustodyProviderScopes.StageRights)
@@ -1976,8 +1976,8 @@ public sealed class Tip88C1C6BA3BrokerQualificationTests(PostgresPersistenceFixt
                 'tagekyc_raw_export_reconciler','tagekyc_raw_export_lifecycle') AND acl.privilege_type='EXECUTE')
             ORDER BY "Value"
             """).ToArrayAsync();
-        Assert.Equal(41, stageNames.Length);
-        Assert.Equal(43, QualifiedRawIngressBroker.ForbiddenFunctions.Length);
+        Assert.Equal(47, stageNames.Length);
+        Assert.Equal(49, QualifiedRawIngressBroker.ForbiddenFunctions.Length);
         Assert.Equal(stageNames.Append("raw_export_begin_source_ingress_with_authority_core")
             .Append("raw_export_reenter_retained_source").Order(),
             QualifiedRawIngressBroker.ForbiddenFunctions.Order());

@@ -15,15 +15,17 @@ public sealed class RawExportAttemptKeyReservationConfig
                 octet_length("EncryptionAttemptFingerprint") = 32
                 AND octet_length("AttemptKeyContextFingerprint") = 32
                 AND "KekVersion" >= 1
-                AND "WrappingSuiteId" = 'AES-256-GCM'
-                AND "WrappingSuiteVersion" = 1
+                AND "MaterialRepresentationId" IN ('LEGACY_AES_GCM_SPLIT','OPAQUE_PROVIDER_CIPHERTEXT')
+                AND "MaterialRepresentationVersion" = 1
+                AND "WrappingSuiteVersion" >= 1
                 AND "CurrentPreparationFence" >= 1
                 AND "ResolutionAttemptCount" >= 0
                 AND "CleanupAttemptCount" >= 0
                 AND "RowRevision" >= 1
                 AND "PreparationDisposition" IN ('PreparingLive','PreparingExpiredAwaitingResolution','ProviderOutcomeUnknown','ProviderCorruptOrUnverifiable','ProviderCleanupRequired','ReadyForFreshPreparation','Active','Revoked','AbandonRequested','ReservationAbandoned')
-                AND (("WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "WrappedDekMetadataDigest" IS NULL)
-                  OR (octet_length("WrappedDekCiphertext") = 32 AND octet_length("WrappedDekNonce") = 12 AND octet_length("WrappedDekTag") = 16 AND octet_length("WrappedDekMetadataDigest") = 32))
+                AND (("WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "OpaqueWrappedDekPayload" IS NULL AND "WrappedDekMetadataDigest" IS NULL)
+                  OR ("MaterialRepresentationId"='LEGACY_AES_GCM_SPLIT' AND octet_length("WrappedDekCiphertext") = 32 AND octet_length("WrappedDekNonce") = 12 AND octet_length("WrappedDekTag") = 16 AND "OpaqueWrappedDekPayload" IS NULL AND octet_length("WrappedDekMetadataDigest") = 32)
+                  OR ("MaterialRepresentationId"='OPAQUE_PROVIDER_CIPHERTEXT' AND "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND octet_length("OpaqueWrappedDekPayload") BETWEEN 1 AND 4096 AND octet_length("WrappedDekMetadataDigest") = 32))
                 AND ("CurrentProviderOperationToken" IS NULL OR "CurrentProviderOperationToken" ~ '^[A-Za-z0-9_-]{43}$')
                 """);
             table.HasCheckConstraint("ck_raw_export_attempt_key_reservation_text", """
@@ -33,6 +35,8 @@ public sealed class RawExportAttemptKeyReservationConfig
                   AND octet_length("KekId") BETWEEN 1 AND 512 AND "KekId" !~ '[\x00-\x1f\x7f]'
                 AND "KekFingerprint"=btrim("KekFingerprint") AND "KekFingerprint"=normalize("KekFingerprint",NFC)
                   AND octet_length("KekFingerprint") BETWEEN 1 AND 512 AND "KekFingerprint" !~ '[\x00-\x1f\x7f]'
+                AND "MaterialRepresentationId"=btrim("MaterialRepresentationId") AND "MaterialRepresentationId"=normalize("MaterialRepresentationId",NFC)
+                  AND octet_length("MaterialRepresentationId") BETWEEN 1 AND 512 AND "MaterialRepresentationId" !~ '[\x00-\x1f\x7f]'
                 AND "WrappingSuiteId"=btrim("WrappingSuiteId") AND "WrappingSuiteId"=normalize("WrappingSuiteId",NFC)
                   AND octet_length("WrappingSuiteId") BETWEEN 1 AND 512 AND "WrappingSuiteId" !~ '[\x00-\x1f\x7f]'
                 AND ("RevocationReasonCode" IS NULL OR (
@@ -44,41 +48,54 @@ public sealed class RawExportAttemptKeyReservationConfig
                   WHEN "PreparationDisposition" = 'PreparingLive'
                     THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL
                       AND "CleanupAttemptCount"=0 AND NOT "CleanupOperatorInterventionRequired" AND "NextCleanupAttemptNotBeforeUtc" IS NULL AND "CleanupDeadlineUtc" IS NULL
-                      AND "WrappedDekCiphertext" IS NULL AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
+                      AND "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "OpaqueWrappedDekPayload" IS NULL AND "WrappedDekMetadataDigest" IS NULL
+                      AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
                   WHEN "PreparationDisposition" = 'PreparingExpiredAwaitingResolution'
                     THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL
                       AND "ResolutionDeadlineUtc" IS NOT NULL AND "CleanupAttemptCount"=0 AND NOT "CleanupOperatorInterventionRequired"
-                      AND "NextCleanupAttemptNotBeforeUtc" IS NULL AND "CleanupDeadlineUtc" IS NULL AND "WrappedDekCiphertext" IS NULL AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
+                      AND "NextCleanupAttemptNotBeforeUtc" IS NULL AND "CleanupDeadlineUtc" IS NULL
+                      AND "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "OpaqueWrappedDekPayload" IS NULL AND "WrappedDekMetadataDigest" IS NULL
+                      AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
                   WHEN "PreparationDisposition" = 'ProviderOutcomeUnknown'
                     THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL
                       AND "ResolutionDeadlineUtc" IS NOT NULL AND "NextResolutionAttemptNotBeforeUtc" IS NOT NULL AND "ResolutionAttemptCount">0
                       AND "CleanupAttemptCount"=0 AND NOT "CleanupOperatorInterventionRequired" AND "NextCleanupAttemptNotBeforeUtc" IS NULL AND "CleanupDeadlineUtc" IS NULL
-                      AND "WrappedDekCiphertext" IS NULL AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
+                      AND "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "OpaqueWrappedDekPayload" IS NULL AND "WrappedDekMetadataDigest" IS NULL
+                      AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
                   WHEN "PreparationDisposition" = 'Active'
-                    THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL AND "PreparedAtUtc" IS NOT NULL AND "WrappedDekCiphertext" IS NOT NULL
+                    THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL AND "PreparedAtUtc" IS NOT NULL AND "WrappedDekMetadataDigest" IS NOT NULL
                       AND "NextResolutionAttemptNotBeforeUtc" IS NULL AND "ResolutionDeadlineUtc" IS NULL AND "NextCleanupAttemptNotBeforeUtc" IS NULL AND "CleanupDeadlineUtc" IS NULL
                       AND NOT "CleanupOperatorInterventionRequired" AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
                   WHEN "PreparationDisposition" = 'Revoked'
-                    THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL AND "PreparedAtUtc" IS NOT NULL AND "WrappedDekCiphertext" IS NOT NULL
+                    THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL AND "PreparedAtUtc" IS NOT NULL AND "WrappedDekMetadataDigest" IS NOT NULL
                       AND "NextResolutionAttemptNotBeforeUtc" IS NULL AND "ResolutionDeadlineUtc" IS NULL AND "NextCleanupAttemptNotBeforeUtc" IS NULL AND "CleanupDeadlineUtc" IS NULL
                       AND NOT "CleanupOperatorInterventionRequired" AND "RevokedAtUtc" IS NOT NULL AND "RevocationReasonCode" IS NOT NULL
                   WHEN "PreparationDisposition" = 'ProviderCleanupRequired'
                     THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL AND "CleanupDeadlineUtc" IS NOT NULL
-                      AND "NextResolutionAttemptNotBeforeUtc" IS NULL AND "ResolutionDeadlineUtc" IS NULL AND "WrappedDekCiphertext" IS NULL AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
+                      AND "NextResolutionAttemptNotBeforeUtc" IS NULL AND "ResolutionDeadlineUtc" IS NULL
+                      AND "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "OpaqueWrappedDekPayload" IS NULL AND "WrappedDekMetadataDigest" IS NULL
+                      AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
                   WHEN "PreparationDisposition" = 'ReadyForFreshPreparation'
                     THEN "CurrentPreparationId" IS NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NULL AND "CurrentProviderOperationToken" IS NULL
                       AND "NextResolutionAttemptNotBeforeUtc" IS NULL AND "ResolutionDeadlineUtc" IS NULL AND "NextCleanupAttemptNotBeforeUtc" IS NULL AND "CleanupDeadlineUtc" IS NULL
-                      AND NOT "CleanupOperatorInterventionRequired" AND "WrappedDekCiphertext" IS NULL AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
+                      AND NOT "CleanupOperatorInterventionRequired"
+                      AND "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "OpaqueWrappedDekPayload" IS NULL AND "WrappedDekMetadataDigest" IS NULL
+                      AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
                   WHEN "PreparationDisposition" = 'ProviderCorruptOrUnverifiable'
                     THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL
-                      AND "WrappedDekCiphertext" IS NULL AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
+                      AND "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "OpaqueWrappedDekPayload" IS NULL AND "WrappedDekMetadataDigest" IS NULL
+                      AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
                   WHEN "PreparationDisposition" = 'AbandonRequested'
                     THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NOT NULL AND "CurrentProviderOperationToken" IS NOT NULL
-                      AND "NextResolutionAttemptNotBeforeUtc" IS NULL AND "ResolutionDeadlineUtc" IS NULL AND "WrappedDekCiphertext" IS NULL AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
+                      AND "NextResolutionAttemptNotBeforeUtc" IS NULL AND "ResolutionDeadlineUtc" IS NULL
+                      AND "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "OpaqueWrappedDekPayload" IS NULL AND "WrappedDekMetadataDigest" IS NULL
+                      AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
                   WHEN "PreparationDisposition" = 'ReservationAbandoned'
                     THEN "CurrentPreparationId" IS NOT NULL AND "CurrentPreparationLeaseExpiresAtUtc" IS NULL AND "CurrentProviderOperationToken" IS NOT NULL
                       AND "NextResolutionAttemptNotBeforeUtc" IS NULL AND "ResolutionDeadlineUtc" IS NULL AND "NextCleanupAttemptNotBeforeUtc" IS NULL AND "CleanupDeadlineUtc" IS NULL
-                      AND NOT "CleanupOperatorInterventionRequired" AND "WrappedDekCiphertext" IS NULL AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
+                      AND NOT "CleanupOperatorInterventionRequired"
+                      AND "WrappedDekCiphertext" IS NULL AND "WrappedDekNonce" IS NULL AND "WrappedDekTag" IS NULL AND "OpaqueWrappedDekPayload" IS NULL AND "WrappedDekMetadataDigest" IS NULL
+                      AND "PreparedAtUtc" IS NULL AND "RevokedAtUtc" IS NULL AND "RevocationReasonCode" IS NULL
                   ELSE FALSE
                 END
                 """);
@@ -87,7 +104,7 @@ public sealed class RawExportAttemptKeyReservationConfig
         entity.Property(x => x.AttemptKeyReservationId).ValueGeneratedNever();
         entity.Property(x => x.EncryptionAttemptFingerprint).HasColumnType("bytea");
         entity.Property(x => x.AttemptKeyContextFingerprint).HasColumnType("bytea");
-        foreach (var p in new[] { nameof(RawExportAttemptKeyReservationRow.KeyProviderId), nameof(RawExportAttemptKeyReservationRow.KekId), nameof(RawExportAttemptKeyReservationRow.KekFingerprint), nameof(RawExportAttemptKeyReservationRow.WrappingSuiteId), nameof(RawExportAttemptKeyReservationRow.RevocationReasonCode) })
+        foreach (var p in new[] { nameof(RawExportAttemptKeyReservationRow.KeyProviderId), nameof(RawExportAttemptKeyReservationRow.KekId), nameof(RawExportAttemptKeyReservationRow.KekFingerprint), nameof(RawExportAttemptKeyReservationRow.MaterialRepresentationId), nameof(RawExportAttemptKeyReservationRow.WrappingSuiteId), nameof(RawExportAttemptKeyReservationRow.RevocationReasonCode) })
             entity.Property<string?>(p).HasMaxLength(512);
         entity.Property(x => x.CurrentProviderOperationToken).HasMaxLength(43);
         entity.Property(x => x.CurrentPreparationFence).HasDefaultValue(1L);

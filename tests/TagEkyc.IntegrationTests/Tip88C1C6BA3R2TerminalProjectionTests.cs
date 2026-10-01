@@ -2252,7 +2252,8 @@ public sealed class Tip88C1C6BA3R2TerminalProjectionTests(
             await blocker.Database.ExecuteSqlRawAsync("SET LOCAL ROLE tagekyc_raw_export_custody_encryptor");
             Assert.Equal("PreparingLive", await blocker.Database.SqlQuery<string>($"""
                 SELECT outcome AS "Value" FROM tagekyc.raw_export_prepare_attempt_key_reservation(
-                 {handoff.AttemptKeyReservationId},{handoff.AttemptId},{handoff.SourceArtifactId})
+                 {handoff.AttemptKeyReservationId},{handoff.AttemptId},{handoff.SourceArtifactId},
+                 'LEGACY_AES_GCM_SPLIT',1,'AES-256-GCM',1)
                 """).SingleAsync());
             var pending = NpsOn(recovery, handoff);
             await WaitAtSession(observer, recoveryPid, scope.Session);
@@ -2326,7 +2327,8 @@ public sealed class Tip88C1C6BA3R2TerminalProjectionTests(
             await Actor(writer, Principal);
             Assert.Equal("PreparingLive", await writer.Database.SqlQuery<string>($"""
                 SELECT outcome AS "Value" FROM tagekyc.raw_export_prepare_attempt_key_reservation(
-                 {handoff.AttemptKeyReservationId},{handoff.AttemptId},{handoff.SourceArtifactId})
+                 {handoff.AttemptKeyReservationId},{handoff.AttemptId},{handoff.SourceArtifactId},
+                 'LEGACY_AES_GCM_SPLIT',1,'AES-256-GCM',1)
                 """).SingleAsync());
             await transaction.CommitAsync();
         }

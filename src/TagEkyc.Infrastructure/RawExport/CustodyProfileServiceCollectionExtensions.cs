@@ -28,7 +28,11 @@ public static class CustodyProfileServiceCollectionExtensions
         // rejecting a configured Fixture profile without preventing the host,
         // health endpoint, or site-qualification surfaces from starting.
         if (isProduction)
+        {
+            services.TryAddSingleton(sp => OpenBaoKekOptions.Resolve(configuration));
+            services.TryAddSingleton<ICustodyProfileProvider, OpenBaoProductionCustodyProfileProvider>();
             return services;
+        }
 
         services.TryAddSingleton<
             FixtureSourceEncryptionProfileCatalog>();

@@ -1,0 +1,20 @@
+  Determining projects to restore...
+  Restored /work/src/TagEkyc.Application/TagEkyc.Application.csproj (in 98 ms).
+  Restored /work/src/TagEkyc.Contracts/TagEkyc.Contracts.csproj (in 90 ms).
+  Restored /work/src/TagEkyc.Domain/TagEkyc.Domain.csproj (in 90 ms).
+  Restored /work/src/TagEkyc.Infrastructure/TagEkyc.Infrastructure.csproj (in 8.59 sec).
+  TagEkyc.Domain -> /tmp/artifacts/bin/TagEkyc.Domain/debug/TagEkyc.Domain.dll
+  TagEkyc.Contracts -> /tmp/artifacts/bin/TagEkyc.Contracts/debug/TagEkyc.Contracts.dll
+  TagEkyc.Application -> /tmp/artifacts/bin/TagEkyc.Application/debug/TagEkyc.Application.dll
+/work/src/TagEkyc.Infrastructure/RawExport/RawExportCaptureAcceptanceResolver.cs(32,17): warning CS8604: Possible null reference argument for parameter 'ProducerId' in 'RawExportResolvedCaptureAcceptance.RawExportResolvedCaptureAcceptance(Guid CaptureAcceptanceId, string SessionChallengeHash, string ProducerId, string CaptureAgentInstanceId)'. [/work/src/TagEkyc.Infrastructure/TagEkyc.Infrastructure.csproj]
+/work/src/TagEkyc.Infrastructure/RawExport/RawExportCaptureAcceptanceResolver.cs(33,17): warning CS8604: Possible null reference argument for parameter 'CaptureAgentInstanceId' in 'RawExportResolvedCaptureAcceptance.RawExportResolvedCaptureAcceptance(Guid CaptureAcceptanceId, string SessionChallengeHash, string ProducerId, string CaptureAgentInstanceId)'. [/work/src/TagEkyc.Infrastructure/TagEkyc.Infrastructure.csproj]
+  TagEkyc.Infrastructure -> /tmp/artifacts/bin/TagEkyc.Infrastructure/debug/TagEkyc.Infrastructure.dll
+
+Build succeeded.
+
+/work/src/TagEkyc.Infrastructure/RawExport/RawExportCaptureAcceptanceResolver.cs(32,17): warning CS8604: Possible null reference argument for parameter 'ProducerId' in 'RawExportResolvedCaptureAcceptance.RawExportResolvedCaptureAcceptance(Guid CaptureAcceptanceId, string SessionChallengeHash, string ProducerId, string CaptureAgentInstanceId)'. [/work/src/TagEkyc.Infrastructure/TagEkyc.Infrastructure.csproj]
+/work/src/TagEkyc.Infrastructure/RawExport/RawExportCaptureAcceptanceResolver.cs(33,17): warning CS8604: Possible null reference argument for parameter 'CaptureAgentInstanceId' in 'RawExportResolvedCaptureAcceptance.RawExportResolvedCaptureAcceptance(Guid CaptureAcceptanceId, string SessionChallengeHash, string ProducerId, string CaptureAgentInstanceId)'. [/work/src/TagEkyc.Infrastructure/TagEkyc.Infrastructure.csproj]
+    2 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:20.36

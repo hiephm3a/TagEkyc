@@ -16,7 +16,7 @@ namespace TagEkyc.IntegrationTests;
 public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgres)
 {
     internal const string MigrationId = "20260913120000_Tip88C1C6BA3RetainedIngressComposition";
-    private const string CurrentMigrationId = "20260927120000_SiteQualificationMeasurementPlane";
+    private const string CurrentMigrationId = "20260930082453_OpenBaoProductionKekProvider";
     private const string PredecessorId = "20260908120000_Tip88C1C6BA1Foundation";
     private const string R20 = "tagekyc.capture_runtime_issue_or_replace_capability(uuid,uuid,text,uuid,bigint,uuid,uuid,text,bytea,integer,bytea,timestamptz,uuid,uuid,jsonb)";
     private const string CompletionSignature = "tagekyc.complete_raw_export_source_ingress_claim(uuid,text,text,text,uuid,bigint,bigint,text,timestamptz,text,bytea,integer,text,integer,bytea,integer,text,integer,bytea,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,text,integer,text,integer,text,bytea,integer,bytea,text,text,integer,text,integer,integer,integer,integer)";
@@ -273,6 +273,7 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
 
         var failure = await Assert.ThrowsAsync<PostgresException>(() => Execute(latest, PredecessorId));
         Assert.Equal("A3_CAPTURE_CURRENT_BODY_MISMATCH", failure.MessageText);
+        Assert.Equal(R20, failure.Detail);
         Assert.Equal(expectedHistory, await History(latest));
         Assert.Equal(expectedBodies, await Bodies(latest));
         Assert.Equal(expectedCatalog, await GuardCatalog(latest));
@@ -286,7 +287,9 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
             "20260924120000_RawExportDeliveryRecipientCredential",
             "20260924130000_RawExportLegacyConsentClassFence",
             "20260925090000_RawExportAssemblyRetainedModeWorkSource",
-            "20260926120000_RawExportAssemblyPostSealRecovery"
+            "20260926120000_RawExportAssemblyPostSealRecovery",
+            "20260927120000_SiteQualificationMeasurementPlane",
+            "20260930082453_OpenBaoProductionKekProvider"
         }, removedMigrations);
         var changedPairs = latestCatalog.Zip(afterCatalog)
             .Where(pair => pair.First != pair.Second)
@@ -298,7 +301,8 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
             Assert.Equal(pair.First.Owner, pair.Second.Owner);
             Assert.Equal(pair.First.SecurityDefiner, pair.Second.SecurityDefiner);
             Assert.Equal(pair.First.Configuration, pair.Second.Configuration);
-            Assert.Equal(pair.First.Acl, pair.Second.Acl);
+            Assert.True(pair.First.Acl == pair.Second.Acl,
+                $"ACL changed for {pair.First.Signature}: before={pair.First.Acl} after={pair.Second.Acl}");
         }
         var changed = changedPairs.Select(pair => pair.First.Signature).ToArray();
         Assert.Equal(new[]
@@ -307,6 +311,7 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
             "tagekyc.raw_export_commit_staged_source(uuid,bigint,bigint,bigint,bigint)",
             "tagekyc.raw_export_publish_available_source(uuid,bigint,bigint)"
         }, changed);
+
         Console.WriteLine($"A3_LATEST_HISTORY_BEFORE={string.Join(',', latestHistory)}");
         Console.WriteLine($"A3_HISTORY_AFTER_REJECTION={string.Join(',', expectedHistory)}");
         Console.WriteLine($"A3_MIGRATIONS_DOWN_COMPLETED={string.Join(',', removedMigrations)}");
@@ -333,6 +338,8 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
              'raw_export_read_source_encryption_context','raw_export_freeze_job_source_bindings',
              'raw_export_seal_authenticated_assembly','raw_export_c3_current_authority_eligible',
              'raw_export_begin_recipient_package_delivery_stream')
+              AND (p.proname<>'raw_export_prepare_attempt_key_reservation'
+                OR p.oid=pg_catalog.to_regprocedure('tagekyc.raw_export_prepare_attempt_key_reservation(uuid,uuid,uuid)'))
             ORDER BY p.proname
             """;
         await using var reader = await command.ExecuteReaderAsync();

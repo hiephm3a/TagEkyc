@@ -10,7 +10,7 @@ namespace TagEkyc.IntegrationTests;
 public sealed class SiteQualificationMeasurementPlanePostgresTests
 {
     private const string Previous = "20260926120000_RawExportAssemblyPostSealRecovery";
-    private const string Current = "20260927120000_SiteQualificationMeasurementPlane";
+    private const string Current = "20260930082453_OpenBaoProductionKekProvider";
 
     [Theory]
     [InlineData(0)]

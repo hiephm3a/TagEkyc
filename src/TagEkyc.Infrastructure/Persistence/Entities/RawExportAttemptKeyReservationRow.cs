@@ -10,6 +10,8 @@ public sealed class RawExportAttemptKeyReservationRow
     public int KekVersion { get; set; }
     public string KekFingerprint { get; set; } = string.Empty;
     public byte[] AttemptKeyContextFingerprint { get; set; } = [];
+    public string MaterialRepresentationId { get; set; } = string.Empty;
+    public int MaterialRepresentationVersion { get; set; }
     public string WrappingSuiteId { get; set; } = string.Empty;
     public int WrappingSuiteVersion { get; set; }
     public string PreparationDisposition { get; set; } = string.Empty;
@@ -27,6 +29,7 @@ public sealed class RawExportAttemptKeyReservationRow
     public byte[]? WrappedDekCiphertext { get; set; }
     public byte[]? WrappedDekNonce { get; set; }
     public byte[]? WrappedDekTag { get; set; }
+    public byte[]? OpaqueWrappedDekPayload { get; set; }
     public byte[]? WrappedDekMetadataDigest { get; set; }
     public long RowRevision { get; set; }
     public DateTimeOffset? PreparedAtUtc { get; set; }

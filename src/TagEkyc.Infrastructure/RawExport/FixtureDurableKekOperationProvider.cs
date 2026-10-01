@@ -104,9 +104,10 @@ internal sealed class PostgresFixtureKekJournal(TagEkycDbContext db)
             command.Parameters.AddWithValue("context", contextFingerprint.ToArray());
             if (sql.Contains("_wrap(", StringComparison.Ordinal))
             {
-                AddNullable(command, "ciphertext", NpgsqlDbType.Bytea, candidate?.Ciphertext);
-                AddNullable(command, "nonce", NpgsqlDbType.Bytea, candidate?.Nonce);
-                AddNullable(command, "tag", NpgsqlDbType.Bytea, candidate?.Tag);
+                var legacy = candidate as LegacyAesGcmWrappedMaterial;
+                AddNullable(command, "ciphertext", NpgsqlDbType.Bytea, legacy?.Ciphertext);
+                AddNullable(command, "nonce", NpgsqlDbType.Bytea, legacy?.Nonce);
+                AddNullable(command, "tag", NpgsqlDbType.Bytea, legacy?.Tag);
                 AddNullable(command, "suite", NpgsqlDbType.Text, candidate?.SuiteId);
                 AddNullable(command, "version", NpgsqlDbType.Integer, candidate?.SuiteVersion);
             }
@@ -199,7 +200,7 @@ internal sealed class FixtureDurableKekOperationProvider(
             aad = ComputeAad(reference, attemptKeyContextFingerprint.Span);
             using (var aes = new AesGcm(FixtureKek, 16))
                 aes.Encrypt(nonce, candidate.Material.Span, ciphertext, tag, aad);
-            var provisional = new KekWrappedMaterial(
+            var provisional = new LegacyAesGcmWrappedMaterial(
                 ciphertext,
                 nonce,
                 tag,
@@ -269,10 +270,11 @@ internal sealed class FixtureDurableKekOperationProvider(
         CancellationToken cancellationToken)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        if (!FixtureDurableKekCatalog.Matches(reference)
+        if (wrapped is not LegacyAesGcmWrappedMaterial legacy
+            || !FixtureDurableKekCatalog.Matches(reference)
             || attemptKeyContextFingerprint.Length != 32
-            || wrapped.Ciphertext.Length != 32 || wrapped.Nonce.Length != 12
-            || wrapped.Tag.Length != 16
+            || legacy.Ciphertext.Length != 32 || legacy.Nonce.Length != 12
+            || legacy.Tag.Length != 16
             || !string.Equals(wrapped.SuiteId, FixtureDurableKekCatalog.WrappingSuiteId, StringComparison.Ordinal)
             || wrapped.SuiteVersion != FixtureDurableKekCatalog.WrappingSuiteVersion)
             throw new CryptographicException("Fixture wrapped DEK shape is invalid.");
@@ -281,7 +283,7 @@ internal sealed class FixtureDurableKekOperationProvider(
         try
         {
             using var aes = new AesGcm(FixtureKek, 16);
-            aes.Decrypt(wrapped.Nonce, wrapped.Ciphertext, wrapped.Tag, plaintext, aad);
+            aes.Decrypt(legacy.Nonce, legacy.Ciphertext, legacy.Tag, plaintext, aad);
             return Task.FromResult(AttemptDekLease.CreateOwned(plaintext));
         }
         catch
@@ -380,7 +382,7 @@ internal sealed class FixtureDurableKekOperationProvider(
             || !string.Equals(result.ProviderResourceReference, expectedResource, StringComparison.Ordinal)
             || !string.Equals(result.ProviderOperationReceipt, expectedReceipt, StringComparison.Ordinal))
             return false;
-        material = new KekWrappedMaterial(
+        material = new LegacyAesGcmWrappedMaterial(
             ciphertext,
             nonce,
             tag,

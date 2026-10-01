@@ -35,6 +35,8 @@ public sealed class DurableKeyProviderReadinessValidator(
         await csprng.ValidateAsync(cancellationToken);
         if (!capabilitySource.Capabilities.IsKekQualified)
             throw new DurableKeyReadinessException(Codes[3]);
+        if (provider is IOpenBaoKekProviderReadiness openBao)
+            await openBao.ValidateAsync(cancellationToken).ConfigureAwait(false);
         var hashAclIsExact = await db.Database.SqlQueryRaw<bool>("""
             SELECT p.proowner=(SELECT oid FROM pg_catalog.pg_roles WHERE rolname='tagekyc_raw_export_deployer')
                AND NOT pg_catalog.has_function_privilege('public',p.oid,'EXECUTE')

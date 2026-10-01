@@ -21,7 +21,27 @@ internal interface IAttemptDekCandidate : IDisposable
     ReadOnlyMemory<byte> Material { get; }
 }
 
-internal sealed record KekWrappedMaterial(
+internal static class KekWrappedMaterialRepresentations
+{
+    internal const string LegacyAesGcmSplit = "LEGACY_AES_GCM_SPLIT";
+    internal const string OpaqueProviderCiphertext = "OPAQUE_PROVIDER_CIPHERTEXT";
+    internal const int Version1 = 1;
+}
+
+internal abstract record KekWrappedMaterial(
+    string RepresentationId,
+    int RepresentationVersion,
+    string SuiteId,
+    int SuiteVersion,
+    string ProviderResourceReference,
+    string Receipt)
+{
+    internal abstract ReadOnlyMemory<byte> ExactPayload { get; }
+
+    public sealed override string ToString() => "KekWrappedMaterial { [REDACTED] }";
+}
+
+internal sealed record LegacyAesGcmWrappedMaterial(
     byte[] Ciphertext,
     byte[] Nonce,
     byte[] Tag,
@@ -29,8 +49,43 @@ internal sealed record KekWrappedMaterial(
     int SuiteVersion,
     string ProviderResourceReference,
     string Receipt)
+    : KekWrappedMaterial(
+        KekWrappedMaterialRepresentations.LegacyAesGcmSplit,
+        KekWrappedMaterialRepresentations.Version1,
+        SuiteId,
+        SuiteVersion,
+        ProviderResourceReference,
+        Receipt)
 {
-    public override string ToString() => "KekWrappedMaterial { [REDACTED] }";
+    internal override ReadOnlyMemory<byte> ExactPayload => Ciphertext;
+}
+
+internal sealed record OpaqueProviderWrappedMaterial(
+    byte[] OpaquePayload,
+    string SuiteId,
+    int SuiteVersion,
+    string ProviderResourceReference,
+    string Receipt)
+    : KekWrappedMaterial(
+        KekWrappedMaterialRepresentations.OpaqueProviderCiphertext,
+        KekWrappedMaterialRepresentations.Version1,
+        SuiteId,
+        SuiteVersion,
+        ProviderResourceReference,
+        Receipt)
+{
+    internal override ReadOnlyMemory<byte> ExactPayload => OpaquePayload;
+}
+
+internal sealed record KekWrappedMaterialProfile(
+    string RepresentationId,
+    int RepresentationVersion,
+    string WrappingSchemeId,
+    int WrappingSchemeVersion);
+
+internal interface IKekWrappedMaterialProfileSource
+{
+    KekWrappedMaterialProfile Current { get; }
 }
 
 internal abstract record KekWrapResult

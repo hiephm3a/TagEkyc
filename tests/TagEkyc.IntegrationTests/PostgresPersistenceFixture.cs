@@ -88,6 +88,8 @@ public sealed class PostgresPersistenceFixture : IAsyncLifetime
     public sealed class DisposableCurrentDatabase(
         string adminConnectionString, string connectionString, string databaseName) : IAsyncDisposable
     {
+        internal string ConnectionString { get; } = connectionString;
+
         public TagEkycDbContext CreateDbContext() => new(new DbContextOptionsBuilder<TagEkycDbContext>()
             .UseNpgsql(connectionString).Options);
 

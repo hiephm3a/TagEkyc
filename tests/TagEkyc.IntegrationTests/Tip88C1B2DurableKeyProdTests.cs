@@ -36,8 +36,9 @@ public sealed class Tip88C1B2DurableKeyProdTests(PostgresPersistenceFixture post
             command.CommandText = """
                 SELECT tagekyc.raw_export_record_key_provider_wrapped_result(
                     @operation,@reservation,@preparation,@fence,@token,
+                    'LEGACY_AES_GCM_SPLIT',1,
                     decode(repeat('20',32),'hex'),decode(repeat('01',12),'hex'),
-                    decode(repeat('40',16),'hex'),'AES-256-GCM',1,
+                    decode(repeat('40',16),'hex'),NULL::bytea,'AES-256-GCM',1,
                     'receipt-integration','provider-resource-integration')
                 """;
             command.Parameters.AddWithValue("operation", prepared.OperationId);
@@ -167,7 +168,7 @@ public sealed class Tip88C1B2DurableKeyProdTests(PostgresPersistenceFixture post
         command.Parameters.AddWithValue("functions", CallableFunctions);
         await using var reader = await command.ExecuteReaderAsync();
         Assert.True(await reader.ReadAsync());
-        Assert.Equal(15, reader.GetInt64(0));
+        Assert.Equal(24, reader.GetInt64(0));
         Assert.Equal(5, reader.GetInt64(1));
         Assert.Equal(1, reader.GetInt64(2));
     }
@@ -245,7 +246,8 @@ public sealed class Tip88C1B2DurableKeyProdTests(PostgresPersistenceFixture post
         Assert.True(await ScalarAsync<bool>(connection, """
             SELECT
               (SELECT count(*)=1 FROM pg_catalog.pg_proc p JOIN pg_catalog.pg_namespace n ON n.oid=p.pronamespace
-               WHERE n.nspname='tagekyc' AND p.proname='raw_export_record_recovered_key_provider_result')
+               WHERE n.nspname='tagekyc' AND p.proname='raw_export_record_recovered_key_provider_result'
+                 AND pg_catalog.has_function_privilege('tagekyc_raw_export_reconciler',p.oid,'EXECUTE'))
               AND NOT pg_catalog.has_function_privilege('tagekyc_raw_export_reconciler',
                 'tagekyc.raw_export_activate_recovered_attempt_key_reservation_internal(uuid,uuid,bigint,bytea,bytea,bytea,bytea,text,bytea)'::regprocedure,'EXECUTE')
             """));
@@ -573,7 +575,7 @@ public sealed class Tip88C1B2DurableKeyProdTests(PostgresPersistenceFixture post
             Assert.Equal("Activated", await ActivateAsync(s));
             Assert.Equal(32, await ScalarAsync<int>(third, """
                 SELECT octet_length(wrapped_dek_metadata_digest)
-                FROM tagekyc.raw_export_read_active_attempt_key_envelope(@reservation)
+                FROM tagekyc.raw_export_read_active_attempt_key_material(@reservation)
                 """, ("reservation", source.ReservationId)));
             var denied = await Assert.ThrowsAsync<PostgresException>(() =>
                 ScalarAsync<long>(third, "SELECT count(*) FROM tagekyc.raw_export_attempt_key_reservations"));
@@ -1754,8 +1756,9 @@ public sealed class Tip88C1B2DurableKeyProdTests(PostgresPersistenceFixture post
         return await ScalarAsync<string>(s.Connection, """
             SELECT tagekyc.raw_export_record_key_provider_wrapped_result(
                 @operation,@reservation,@preparation,@fence,@token,
+                'LEGACY_AES_GCM_SPLIT',1,
                 decode(repeat('20',32),'hex'),decode(repeat('01',12),'hex'),
-                decode(repeat('40',16),'hex'),'AES-256-GCM',1,
+                decode(repeat('40',16),'hex'),NULL::bytea,'AES-256-GCM',1,
                 'receipt-integration','provider-resource-integration')
             """,
             ("operation", s.Prepared.OperationId), ("reservation", s.Source.ReservationId),
@@ -1845,7 +1848,8 @@ public sealed class Tip88C1B2DurableKeyProdTests(PostgresPersistenceFixture post
         return await ScalarAsync<string>(s.Connection, """
             SELECT tagekyc.raw_export_record_recovered_key_provider_result(
                 @reservation,@preparation,@fence,@token,
-                decode(repeat('20',32),'hex'),decode(repeat('01',12),'hex'),decode(repeat('40',16),'hex'),
+                'LEGACY_AES_GCM_SPLIT',1,
+                decode(repeat('20',32),'hex'),decode(repeat('01',12),'hex'),decode(repeat('40',16),'hex'),NULL::bytea,
                 'AES-256-GCM',1,'provider-resource-recovered','provider-receipt-recovered')
             """, ("reservation", s.Source.ReservationId),
             ("preparation", s.Prepared.PreparationId), ("fence", s.Prepared.Fence),
@@ -2024,7 +2028,7 @@ public sealed class Tip88C1B2DurableKeyProdTests(PostgresPersistenceFixture post
         await using var command = connection.CreateCommand();
         command.CommandText = """
             SELECT * FROM tagekyc.raw_export_prepare_attempt_key_reservation(
-                @reservation,@attempt,@source)
+                @reservation,@attempt,@source,'LEGACY_AES_GCM_SPLIT',1,'AES-256-GCM',1)
             """;
         command.Parameters.AddWithValue("reservation", source.ReservationId);
         command.Parameters.AddWithValue("attempt", source.AttemptId);
@@ -2065,7 +2069,13 @@ public sealed class Tip88C1B2DurableKeyProdTests(PostgresPersistenceFixture post
         "raw_export_revoke_attempt_key_reservation",
         "raw_export_inspect_attempt_key_reservation",
         "raw_export_read_current_attempt_key_recovery_context",
-        "raw_export_read_active_attempt_key_envelope",
+        "raw_export_read_active_attempt_key_material",
+        "raw_export_openbao_issue_kek_operation",
+        "raw_export_openbao_record_wrapped",
+        "raw_export_openbao_read_kek_operation",
+        "raw_export_openbao_prove_absence",
+        "raw_export_openbao_require_cleanup",
+        "raw_export_openbao_complete_cleanup",
     ];
 
     private sealed record SourceIdentity(Guid ReservationId, Guid AttemptId, Guid SourceArtifactId);
