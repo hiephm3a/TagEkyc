@@ -1,4 +1,6 @@
 using System.Text;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Configuration;
 using Npgsql;
 using TagEkyc.Application.Ports;
@@ -535,8 +537,11 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         var state = RawExportAuthoritySnapshotProfileState.Resolve(
             configuration,
             isProduction: false);
-        await new RawExportAuthoritySnapshotReadinessValidator(state)
-            .ValidateAsync(CancellationToken.None);
+        await using (var db = postgres.CreateDbContext())
+        {
+            await new RawExportAuthoritySnapshotReadinessValidator(state, db)
+                .ValidateAsync(CancellationToken.None);
+        }
 
         var productionConfiguration = new ConfigurationBuilder()
             .AddInMemoryCollection(new Dictionary<string, string?>
@@ -548,8 +553,181 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         var productionState = RawExportAuthoritySnapshotProfileState.Resolve(
             productionConfiguration,
             isProduction: true);
-        await new RawExportAuthoritySnapshotReadinessValidator(productionState)
-            .ValidateAsync(CancellationToken.None);
+        await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync(
+            "authority_readiness_empty");
+        await using var productionDb = isolated.CreateDbContext();
+        await productionDb.Database.ExecuteSqlRawAsync(
+            "TRUNCATE TABLE tagekyc.raw_export_authority_snapshots CASCADE");
+        var productionValidator = new RawExportAuthoritySnapshotReadinessValidator(
+            productionState,
+            productionDb);
+        await productionValidator.ValidateAsync(CancellationToken.None);
+
+        await using (var transaction = await productionDb.Database.BeginTransactionAsync())
+        {
+            const string signature =
+                "tagekyc.raw_export_begin_production_source_ingress_with_authority(" +
+                "uuid,uuid,text,text,text,uuid,uuid,uuid,integer,text,text,bigint,text," +
+                "timestamptz,timestamptz,timestamptz,integer,text,integer,uuid,integer,integer)";
+            await using var readDefinition = productionDb.Database.GetDbConnection().CreateCommand();
+            readDefinition.Transaction = productionDb.Database.CurrentTransaction!.GetDbTransaction();
+            readDefinition.CommandText =
+                "SELECT pg_catalog.pg_get_functiondef(pg_catalog.to_regprocedure(@signature));";
+            readDefinition.Parameters.Add(new NpgsqlParameter("signature", signature));
+            var currentDefinition = Assert.IsType<string>(
+                await readDefinition.ExecuteScalarAsync());
+            var driftedDefinition = currentDefinition.Replace(
+                "SELECT * FROM tagekyc.raw_export_begin_source_ingress_with_authority_core",
+                "SELECT *  FROM tagekyc.raw_export_begin_source_ingress_with_authority_core",
+                StringComparison.Ordinal);
+            Assert.NotEqual(currentDefinition, driftedDefinition);
+
+            await using var applyDrift = productionDb.Database.GetDbConnection().CreateCommand();
+            applyDrift.Transaction = productionDb.Database.CurrentTransaction!.GetDbTransaction();
+            applyDrift.CommandText = driftedDefinition;
+            await applyDrift.ExecuteNonQueryAsync();
+
+            var exception = await Assert.ThrowsAsync<RawExportAuthoritySnapshotReadinessException>(
+                () => productionValidator.ValidateAsync(CancellationToken.None));
+            Assert.Equal(
+                RawExportAuthoritySnapshotReadinessValidator.ProductionProducerInvalid,
+                exception.Code);
+            await transaction.RollbackAsync();
+        }
+
+        await productionValidator.ValidateAsync(CancellationToken.None);
+
+        await using (var transaction = await productionDb.Database.BeginTransactionAsync())
+        {
+            await productionDb.Database.ExecuteSqlRawAsync(
+                """
+                REVOKE EXECUTE ON FUNCTION
+                    tagekyc.raw_export_append_retained_authority_snapshot(
+                        uuid,uuid,text,uuid,bigint)
+                    FROM tagekyc_raw_export_claim_broker;
+                """);
+            var exception = await Assert.ThrowsAsync<RawExportAuthoritySnapshotReadinessException>(
+                () => productionValidator.ValidateAsync(CancellationToken.None));
+            Assert.Equal(
+                RawExportAuthoritySnapshotReadinessValidator.ProductionProducerInvalid,
+                exception.Code);
+            await transaction.RollbackAsync();
+        }
+
+        await productionValidator.ValidateAsync(CancellationToken.None);
+
+        await AssertReadinessRejectsExecuteGrantAsync(
+            productionDb,
+            productionValidator,
+            "withdraw-broker");
+        await AssertReadinessRejectsExecuteGrantAsync(
+            productionDb,
+            productionValidator,
+            "withdraw-runtime");
+        await AssertReadinessRejectsExecuteGrantAsync(
+            productionDb,
+            productionValidator,
+            "revoke-broker");
+        await AssertReadinessRejectsExecuteGrantAsync(
+            productionDb,
+            productionValidator,
+            "revoke-runtime");
+
+        await using (var transaction = await productionDb.Database.BeginTransactionAsync())
+        {
+            await productionDb.Database.ExecuteSqlRawAsync(
+                """
+                GRANT EXECUTE ON FUNCTION
+                    tagekyc.raw_export_begin_source_ingress_with_authority_core(
+                        uuid,uuid,text,text,text,uuid,uuid,uuid,integer,text,text,
+                        bigint,text,timestamptz,timestamptz,timestamptz,integer,
+                        text,integer,uuid,integer,integer,text)
+                    TO tagekyc_raw_export_claim_broker;
+                """);
+            var exception = await Assert.ThrowsAsync<RawExportAuthoritySnapshotReadinessException>(
+                () => productionValidator.ValidateAsync(CancellationToken.None));
+            Assert.Equal(
+                RawExportAuthoritySnapshotReadinessValidator.ProductionProducerInvalid,
+                exception.Code);
+            await transaction.RollbackAsync();
+        }
+
+        await productionValidator.ValidateAsync(CancellationToken.None);
+
+        await using (var transaction = await productionDb.Database.BeginTransactionAsync())
+        {
+            await productionDb.Database.ExecuteSqlRawAsync(
+                """
+                REVOKE EXECUTE ON FUNCTION
+                    tagekyc.raw_export_begin_production_source_ingress_with_authority(
+                        uuid,uuid,text,text,text,uuid,uuid,uuid,integer,text,text,
+                        bigint,text,timestamptz,timestamptz,timestamptz,integer,
+                        text,integer,uuid,integer,integer)
+                    FROM tagekyc_raw_export_claim_broker;
+                """);
+            var exception = await Assert.ThrowsAsync<RawExportAuthoritySnapshotReadinessException>(
+                () => productionValidator.ValidateAsync(CancellationToken.None));
+            Assert.Equal(
+                RawExportAuthoritySnapshotReadinessValidator.ProductionProducerInvalid,
+                exception.Code);
+            await transaction.RollbackAsync();
+        }
+
+        await productionValidator.ValidateAsync(CancellationToken.None);
+
+        await using (var transaction = await productionDb.Database.BeginTransactionAsync())
+        {
+            await productionDb.Database.ExecuteSqlRawAsync(
+                """
+                GRANT INSERT ON TABLE tagekyc.raw_export_authority_snapshots
+                    TO tagekyc_raw_export_claim_broker;
+                """);
+            var exception = await Assert.ThrowsAsync<RawExportAuthoritySnapshotReadinessException>(
+                () => productionValidator.ValidateAsync(CancellationToken.None));
+            Assert.Equal(
+                RawExportAuthoritySnapshotReadinessValidator.ProductionProducerInvalid,
+                exception.Code);
+            await transaction.RollbackAsync();
+        }
+
+        await productionValidator.ValidateAsync(CancellationToken.None);
+    }
+
+    private static async Task AssertReadinessRejectsExecuteGrantAsync(
+        TagEkycDbContext database,
+        RawExportAuthoritySnapshotReadinessValidator validator,
+        string arm)
+    {
+        var grant = arm switch
+        {
+            "withdraw-broker" =>
+                "GRANT EXECUTE ON FUNCTION " +
+                "tagekyc.raw_export_withdraw_authority_snapshot(uuid,uuid,uuid,text,bigint,uuid) " +
+                "TO tagekyc_raw_export_claim_broker;",
+            "withdraw-runtime" =>
+                "GRANT EXECUTE ON FUNCTION " +
+                "tagekyc.raw_export_withdraw_authority_snapshot(uuid,uuid,uuid,text,bigint,uuid) " +
+                "TO tagekyc_runtime;",
+            "revoke-broker" =>
+                "GRANT EXECUTE ON FUNCTION " +
+                "tagekyc.raw_export_revoke_authority_snapshot(uuid,uuid,uuid,text,bigint,uuid) " +
+                "TO tagekyc_raw_export_claim_broker;",
+            "revoke-runtime" =>
+                "GRANT EXECUTE ON FUNCTION " +
+                "tagekyc.raw_export_revoke_authority_snapshot(uuid,uuid,uuid,text,bigint,uuid) " +
+                "TO tagekyc_runtime;",
+            _ => throw new ArgumentOutOfRangeException(nameof(arm), arm, null),
+        };
+
+        await using var transaction = await database.Database.BeginTransactionAsync();
+        await database.Database.ExecuteSqlRawAsync(grant);
+        var exception = await Assert.ThrowsAsync<RawExportAuthoritySnapshotReadinessException>(
+            () => validator.ValidateAsync(CancellationToken.None));
+        Assert.Equal(
+            RawExportAuthoritySnapshotReadinessValidator.ProductionProducerInvalid,
+            exception.Code);
+        await transaction.RollbackAsync();
+        await validator.ValidateAsync(CancellationToken.None);
     }
 
     private async Task<AuthorityScope> SeedScopeAsync()
@@ -965,7 +1143,7 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
             """;
     }
 
-    private static async Task AssertReadinessFailureAsync(
+    private async Task AssertReadinessFailureAsync(
         string? profile,
         bool isProduction,
         string expectedCode)
@@ -980,10 +1158,10 @@ public sealed class Tip88C1B2AuthoritySnapshotTests(
         var state = RawExportAuthoritySnapshotProfileState.Resolve(
             configuration,
             isProduction);
-        var exception =
-            await Assert.ThrowsAsync<RawExportAuthoritySnapshotReadinessException>(
-                () => new RawExportAuthoritySnapshotReadinessValidator(state)
-                    .ValidateAsync(CancellationToken.None));
+        await using var db = postgres.CreateDbContext();
+        var exception = await Assert.ThrowsAsync<RawExportAuthoritySnapshotReadinessException>(
+            () => new RawExportAuthoritySnapshotReadinessValidator(state, db)
+                .ValidateAsync(CancellationToken.None));
         Assert.Equal(expectedCode, exception.Code);
         Assert.Equal(expectedCode, exception.Message);
     }

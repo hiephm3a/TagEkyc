@@ -1,0 +1,11 @@
+  TagEkyc.Contracts -> D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Contracts\bin\Debug\net8.0\TagEkyc.Contracts.dll
+  TagEkyc.Domain -> D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Domain\bin\Debug\net8.0\TagEkyc.Domain.dll
+  TagEkyc.Application -> D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Application\bin\Debug\net8.0\TagEkyc.Application.dll
+  TagEkyc.Infrastructure -> D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\bin\Debug\net8.0\TagEkyc.Infrastructure.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.28
+INFRA_EXIT_CODE=0
