@@ -879,6 +879,8 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
                  NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
              GRANT tagekyc_runtime TO "{role}"
                  WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
+             GRANT tagekyc_application_persistence TO "{role}"
+                 WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
              """,
             admin);
         await create.ExecuteNonQueryAsync();
@@ -901,7 +903,8 @@ public sealed class Tip88B1RawExportControlPlaneTests(PostgresPersistenceFixture
         finally
         {
             await using var cleanup = new NpgsqlCommand(
-                $"""
+                 $"""
+                 REVOKE tagekyc_application_persistence FROM "{role}";
                  REVOKE tagekyc_runtime FROM "{role}";
                  DROP ROLE "{role}";
                  """,

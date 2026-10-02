@@ -28,6 +28,10 @@ TIP-88B1-E3 closes the resolver runtime read-boundary slice with:
 ## Security posture
 
 - The application login inherits only `tagekyc_runtime`.
+- **Superseded:** the application LOGIN now inherits the exact pair
+  `{tagekyc_runtime, tagekyc_application_persistence}` under the ratified
+  Production Application Persistence Principal Amendment; see "Verification-Core
+  Persistence Capability" in `docs/deployment/hospital_trial/postgres_migration_runbook.md`.
 - Production readiness requires `session_user == current_user`; active `SET ROLE`
   is unsupported.
 - PostgreSQL 16 is the minimum supported server version for the required

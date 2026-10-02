@@ -1,0 +1,36 @@
+Build started 02/10/2026 4:06:46 CH.
+Logging verbosity is set to: Normal.     1>Project "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\TagEkyc.IntegrationTests.csproj" on node 1 (default targets).
+     1>GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       CoreGenerateAssemblyInfo:
+       Skipping target "CoreGenerateAssemblyInfo" because all output files are up-to-date with respect to the input files.
+       _GenerateSourceLinkFile:
+         Source Link file 'obj\Debug\net8.0\TagEkyc.IntegrationTests.sourcelink.json' is up-to-date.
+       CoreCompile:
+       Skipping target "CoreCompile" because all output files are up-to-date with respect to the input files.
+       _CopyFilesMarkedCopyLocal:
+         Copying file from "D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\bin\Debug\net8.0\TagEkyc.Infrastructure.dll" to "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.Infrastructure.dll".
+         Copying file from "D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\bin\Debug\net8.0\TagEkyc.Infrastructure.pdb" to "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.Infrastructure.pdb".
+         Touching "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\obj\Debug\net8.0\TagEkyc..3552B8ED.Up2Date".
+       _CopyOutOfDateSourceItemsToOutputDirectory:
+       Building target "_CopyOutOfDateSourceItemsToOutputDirectory" partially, because some output files are out of date with respect to their input files.
+         Copying file from "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\obj\Debug\net8.0\MvcTestingAppManifest.json" to "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\MvcTestingAppManifest.json".
+       GenerateBuildDependencyFile:
+       Skipping target "GenerateBuildDependencyFile" because all output files are up-to-date with respect to the input files.
+       GenerateBuildRuntimeConfigurationFiles:
+       Skipping target "GenerateBuildRuntimeConfigurationFiles" because all output files are up-to-date with respect to the input files.
+       CopyFilesToOutputDirectory:
+         TagEkyc.IntegrationTests -> D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll
+       _MvcCopyDependencyFiles:
+         Copying file from "D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Api\bin\Debug\net8.0\TagEkyc.Api.deps.json" to "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.Api.deps.json".
+         Copying file from "D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Application\bin\Debug\net8.0\TagEkyc.Application.deps.json" to "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.Application.deps.json".
+         Copying file from "D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Contracts\bin\Debug\net8.0\TagEkyc.Contracts.deps.json" to "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.Contracts.deps.json".
+         Copying file from "D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Domain\bin\Debug\net8.0\TagEkyc.Domain.deps.json" to "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.Domain.deps.json".
+         Copying file from "D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\bin\Debug\net8.0\TagEkyc.Infrastructure.deps.json" to "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.Infrastructure.deps.json".
+     1>Done Building Project "D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\TagEkyc.IntegrationTests.csproj" (default targets).
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:01.13

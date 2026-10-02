@@ -1,0 +1,11 @@
+D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportCaptureAcceptanceResolver.cs(32,17): warning CS8604: Possible null reference argument for parameter 'ProducerId' in 'RawExportResolvedCaptureAcceptance.RawExportResolvedCaptureAcceptance(Guid CaptureAcceptanceId, string SessionChallengeHash, string ProducerId, string CaptureAgentInstanceId)'. [D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\TagEkyc.Infrastructure.csproj]
+D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportCaptureAcceptanceResolver.cs(33,17): warning CS8604: Possible null reference argument for parameter 'CaptureAgentInstanceId' in 'RawExportResolvedCaptureAcceptance.RawExportResolvedCaptureAcceptance(Guid CaptureAcceptanceId, string SessionChallengeHash, string ProducerId, string CaptureAgentInstanceId)'. [D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\TagEkyc.Infrastructure.csproj]
+
+Build succeeded.
+
+D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportCaptureAcceptanceResolver.cs(32,17): warning CS8604: Possible null reference argument for parameter 'ProducerId' in 'RawExportResolvedCaptureAcceptance.RawExportResolvedCaptureAcceptance(Guid CaptureAcceptanceId, string SessionChallengeHash, string ProducerId, string CaptureAgentInstanceId)'. [D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\TagEkyc.Infrastructure.csproj]
+D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\RawExport\RawExportCaptureAcceptanceResolver.cs(33,17): warning CS8604: Possible null reference argument for parameter 'CaptureAgentInstanceId' in 'RawExportResolvedCaptureAcceptance.RawExportResolvedCaptureAcceptance(Guid CaptureAcceptanceId, string SessionChallengeHash, string ProducerId, string CaptureAgentInstanceId)'. [D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\TagEkyc.Infrastructure.csproj]
+    2 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:04.88

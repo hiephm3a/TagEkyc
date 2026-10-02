@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="f44d9322-81bd-4b3b-8e01-2a5f3e34f978" name="3AVNN@LEARNPC 2026-10-02 11:14:12" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-02T11:14:12.5065842+07:00" queuing="2026-10-02T11:14:12.5065844+07:00" start="2026-10-02T11:13:54.3036931+07:00" finish="2026-10-02T11:14:12.5111650+07:00" />
+  <TestSettings name="default" id="acad927d-ea8f-4f90-87a7-42f0d63fb079">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-02_11_14_12" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="d58fab11-b172-4ad2-973c-55ff921bb21b" testId="ef1816f5-7fcb-ffa8-b1d4-c14a6a27a53a" testName="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid" computerName="LEARNPC" duration="00:00:00.2148176" startTime="2026-10-02T11:14:11.1491713+07:00" endTime="2026-10-02T11:14:11.1491845+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d58fab11-b172-4ad2-973c-55ff921bb21b">
+      <Output>
+        <ErrorInfo>
+          <Message>TagEkyc.Infrastructure.Persistence.RawExportControlPlaneReadinessException : PROD_RAW_EXPORT_CONTROL_PLANE_FORBIDDEN_TABLE_PRIVILEGE</Message>
+          <StackTrace>   at TagEkyc.Infrastructure.Persistence.RawExportControlPlaneReadinessValidator.Throw(String code) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\RawExportControlPlaneReadinessValidator.cs:line 268&#xD;
+   at TagEkyc.Infrastructure.Persistence.RawExportControlPlaneReadinessValidator.ValidateAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\RawExportControlPlaneReadinessValidator.cs:line 259&#xD;
+   at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs:line 227&#xD;
+   at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs:line 229&#xD;
+   at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs:line 238&#xD;
+   at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs:line 248&#xD;
+   at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs:line 248&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ef1816f5-7fcb-ffa8-b1d4-c14a6a27a53a">
+      <Execution id="d58fab11-b172-4ad2-973c-55ff921bb21b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests" name="F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="ef1816f5-7fcb-ffa8-b1d4-c14a6a27a53a" executionId="d58fab11-b172-4ad2-973c-55ff921bb21b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.19]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.36]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.37]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:16.52]       TagEkyc.Infrastructure.Persistence.RawExportControlPlaneReadinessException : PROD_RAW_EXPORT_CONTROL_PLANE_FORBIDDEN_TABLE_PRIVILEGE&#xD;
+[xUnit.net 00:00:16.52]       Stack Trace:&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\RawExportControlPlaneReadinessValidator.cs(268,0): at TagEkyc.Infrastructure.Persistence.RawExportControlPlaneReadinessValidator.Throw(String code)&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\RawExportControlPlaneReadinessValidator.cs(259,0): at TagEkyc.Infrastructure.Persistence.RawExportControlPlaneReadinessValidator.ValidateAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs(227,0): at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid()&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs(229,0): at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid()&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs(238,0): at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid()&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs(248,0): at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid()&#xD;
+[xUnit.net 00:00:16.52]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88B1E3ResolverReadBoundaryTests.cs(248,0): at TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid()&#xD;
+[xUnit.net 00:00:16.52]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:17.76]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-02T11:14:11.1474743+07:00">
+        <Text>[xUnit.net 00:00:16.52]     TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

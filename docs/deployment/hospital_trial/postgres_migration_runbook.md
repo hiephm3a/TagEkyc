@@ -33,8 +33,11 @@ After migration, production startup must fail closed unless all are true:
 - `__EFMigrationsHistory` exists.
 - There are no pending EF migrations.
 - `tagekyc.append_idempotency_records` exists.
+- The current LOGIN can read `public."__EFMigrationsHistory"`,
+  `tagekyc.append_idempotency_records`, and `tagekyc.api_keys`; a privilege gap
+  reports `PROD_DB_PRIVILEGE_INVALID`, never an object-missing or pending code.
 
-Failure codes are sanitized: `PROD_DB_UNREACHABLE`, `PROD_DB_PROVIDER_INVALID`, `PROD_DB_MIGRATION_HISTORY_MISSING`, `PROD_DB_MIGRATIONS_PENDING`, `PROD_DB_REQUIRED_TABLE_MISSING`.
+Failure codes are sanitized: `PROD_DB_UNREACHABLE`, `PROD_DB_PROVIDER_INVALID`, `PROD_DB_MIGRATION_HISTORY_MISSING`, `PROD_DB_MIGRATIONS_PENDING`, `PROD_DB_REQUIRED_TABLE_MISSING`, `PROD_DB_PRIVILEGE_INVALID`.
 
 ## Audit Append-Only Posture
 
@@ -48,6 +51,93 @@ For stronger runtime hardening, deploy with separate identities:
 - For the append-only tables, the runtime role should have `INSERT`/`SELECT` only and no `UPDATE`, `DELETE`, `ALTER`, `DROP`, or trigger-disable capability.
 
 This is deployment guidance, not auto-applied SQL. Concrete role names and grants belong to the hospital deployment plan. A migration run by the schema owner cannot make that same owner least-privileged; the runtime role split must be provisioned operationally.
+
+## Verification-Core Persistence Capability
+
+Migration `20261002120000_ProductionApplicationPersistencePrincipal` creates the
+`NOLOGIN` capability role `tagekyc_application_persistence`. The ordinary API
+LOGIN must be a direct inheriting member of exactly both ordinary capabilities:
+`tagekyc_runtime` and `tagekyc_application_persistence`. It must not use
+`SET ROLE`, and it must not inherit the deployer, bootstrapper, capture-runtime,
+claim-broker, assembly, or recipient capabilities.
+
+`tagekyc_application_persistence` has exactly one cluster-wide member: the
+ordinary API LOGIN used by this deployment. A second LOGIN or role must never be
+granted this capability. Because PostgreSQL roles and memberships are
+cluster-global, multiple TagEkyc databases in one cluster are supported only when
+they intentionally use that same ordinary API LOGIN and database `CONNECT` is
+restricted to the intended principals. Deployments requiring different ordinary
+API LOGINs per database must use separate PostgreSQL clusters or obtain a new
+ratified namespaced-role topology; do not add another member to this role.
+
+Provision the ordinary API LOGIN after the migration has created the capability:
+
+```sql
+GRANT tagekyc_runtime TO <app_login_role>
+  WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
+GRANT tagekyc_application_persistence TO <app_login_role>
+  WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
+```
+
+Do not grant core table privileges to `tagekyc_runtime` or directly to the LOGIN.
+The migration owns the exact application-persistence surface of
+`tagekyc_application_persistence`: `SELECT` and `INSERT` on the eight core
+persistence tables, plus column-scoped `UPDATE` on the terminal/session-result
+columns of `verification_sessions`; `SELECT` only on `tagekyc.api_keys` and
+`public."__EFMigrationsHistory"`; explicit schema `USAGE` on `tagekyc` and
+`public`; and `EXECUTE` only on the pinned
+`tagekyc.raw_export_managed_recipient_scope_matches(...)` comparison function.
+That SECURITY DEFINER function returns a boolean and is the application-
+persistence capability's only path to the three managed-recipient companion
+tables. It never returns key or credential material. The capability has no
+direct table/column privilege on those tables, no sequence access, no schema
+`CREATE`, no table-wide `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, or
+`TRIGGER`. Historical C5 migrations separately grant `tagekyc_runtime` direct
+`SELECT` on those three tables; because the ordinary LOGIN inherits runtime,
+this amendment is hardening of the new capability, not removal of that older
+read path. Any revocation of the C5 grants is a separate reviewed correction.
+
+Production startup and `/readiness` fail closed with
+`PROD_APPLICATION_PERSISTENCE_ROLE_INVALID` for role/membership leakage,
+`PROD_APPLICATION_PERSISTENCE_PRIVILEGE_INVALID` for missing or excess
+privileges, and `PROD_APPLICATION_PERSISTENCE_RECIPIENT_FUNCTION_INVALID` for
+recipient comparison-function owner/body/config/ACL drift. The validator scans
+ACL entries across every non-system schema and relation kind `r/p/v/m/f`, plus
+sequences and functions; allowlisted objects are schema-qualified. The census
+also rejects relation grants to `PUBLIC`, ownership by the ordinary LOGIN or
+application capability, and `WITH GRANT OPTION` on every allowed schema,
+relation, column, or function grant.
+The role is cluster-global; migration `Down` removes this database's
+privileges but deliberately does not drop a role that another database in the
+cluster may still use.
+
+### Provision the first production Active API key
+
+After migrations and the two role-membership grants, run the shipped
+`TagEkyc.ApiKeyProvisioner` tool from the release bundle with an approved
+schema-owner/migration/provisioning write identity and the production pepper
+secret. Never use the ordinary application LOGIN for this command: it has
+`SELECT` only on `tagekyc.api_keys`, so INSERT is intentionally denied. The
+tool is the supported production provisioning workflow; do not issue ad-hoc
+SQL INSERT statements and do not construct `ApiKeyProvisioningService` from
+application code:
+
+```powershell
+dotnet tools/TagEkyc.ApiKeyProvisioner/TagEkyc.ApiKeyProvisioner.dll `
+  --connection-string-secret-ref env:TAGEKYC_POSTGRES_CONNECTION_STRING `
+  --pepper-secret-ref env:TAGEKYC_API_KEY_PEPPER `
+  --client-application-id <approved-client-uuid> `
+  --caller-category BusinessConsumer `
+  --scopes business.session.create,business.session.read,session.complete `
+  --principal-id <approved-principal-uuid> `
+  --credential-ref <change-ticket-or-vault-reference>
+```
+
+Capture the one-time `apiKey` output directly into the approved secret store;
+never place it in logs, source control, or the database in plaintext. Readiness
+and runtime authentication must then pass through the separate ordinary LOGIN.
+The provisioning identity must not be placed in the API host's runtime
+configuration.
 
 ## Raw-Export Rule-Table Privilege Gate (TIP-88A)
 
@@ -74,7 +164,7 @@ TIP-88B1 (migration `20260712133151_Tip88B1RawExportControlPlane`) adds 4 append
   - `tagekyc_raw_export_deployer` — owns the SD functions; has INSERT on the 4 event tables. NOT the app's connection role.
   - `tagekyc_runtime` — a least-privilege runtime CAPABILITY role (created `NOLOGIN`): the migration grants it `USAGE` on the schema + `EXECUTE` on the 4 append functions. It does NOT grant it table `SELECT` and it CANNOT be a login principal directly.
   - `tagekyc_raw_export_bootstrapper` — deploy-only: `EXECUTE` on `raw_export_bootstrap_global_authority(...)` to seed the initial root authorities.
-  - **The app connects as a dedicated inheriting LOGIN principal `<app_login_role>` whose only transitive role membership is `tagekyc_runtime`** — NOT as the deployer/bootstrapper. `SET ROLE` is not supported for the production E3 readiness connection: `session_user` must equal `current_user`. Exactly one `pg_auth_members` row may exist across all grantors for the login-to-runtime pair; that row must have no admin option, must inherit, and must not permit SET. The effective login must fail the direct-event-table-write privilege check and pass the function/owner-backing-read checks.
+  - **The ordinary API connects as the dedicated inheriting LOGIN principal `<app_login_role>` whose complete ordinary capability set is `tagekyc_runtime` plus `tagekyc_application_persistence`** — NOT the deployer/bootstrapper or any raw-export worker capability. `SET ROLE` is not supported for the production E3 readiness connection: `session_user` must equal `current_user`. Exactly one `pg_auth_members` row may exist across all grantors for each of the two membership edges; each row must have no admin option, must inherit, and must not permit SET. The persistence capability is independently constrained to the verification-core tables and has no raw-export table access. The effective login must fail the direct-event-table-write privilege check and pass the function/owner-backing-read checks.
   - The former direct resolver/readiness table-SELECT set is obsolete after TIP-88B1-E3. Do not restore it:
     ```sql
     -- Obsolete after TIP-88B1-E3: do not grant direct table SELECT to tagekyc_runtime.
@@ -89,7 +179,7 @@ Production `/readiness` fails closed (HTTP 503) with any of: `PROD_RAW_EXPORT_RO
 TIP-88B2 (subject export consent, landed `8cd52a3`) adds three append-only tables — `raw_export_subject_consent_events`, `raw_export_subject_consent_classes`, `raw_export_subject_consent_authorities` — written ONLY through `SECURITY DEFINER` functions owned by the non-login `tagekyc_raw_export_deployer` with a fixed `search_path=pg_catalog`. In-DB enforcement is always on: UPDATE/DELETE are denied by trigger on all three tables; a direct INSERT is rejected unless it comes through the intended append path; the actor principal comes from the transaction-local GUC `SET LOCAL tagekyc.actor_principal_id`, fail-closed; and class child rows may only be written in the SAME transaction as their `Granted` parent (xmin guard).
 
 **Deployment gate (operational, NOT an EF-migration artifact):**
-  - The app must connect as the dedicated inheriting LOGIN described above. Its complete transitive reachable-role set is exactly `{tagekyc_runtime}`; `session_user == current_user`; deployer/bootstrapper must not be reachable directly or indirectly.
+  - The ordinary API must connect as the dedicated inheriting LOGIN described above. Its complete ordinary reachable-role set is exactly `{tagekyc_runtime, tagekyc_application_persistence}`; `session_user == current_user`; deployer/bootstrapper and specialized raw-export worker roles must not be reachable directly or indirectly. The verification-persistence capability has no privileges on the consent or other raw-export tables.
   - `tagekyc_runtime` must hold `EXECUTE` on **exactly three** functions: `raw_export_resolve_subject_consent_for_authorization`, `raw_export_append_subject_consent_granted`, `raw_export_append_subject_consent_withdrawn`. It must NOT hold EXECUTE on the authority-management function or on the bare hash / lock-key / session-lock helpers.
   - `tagekyc_runtime` must hold **none** of the seven table privileges (`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, `TRIGGER`) on the three consent tables or `tagekyc.verification_sessions`. The lock, resolver, and granted-consent completeness check stay inside controlled SECURITY DEFINER paths.
   - **Consent recorder/withdrawer authorities MUST be bootstrap-seeded by the DEPLOYMENT role before any consent write.** `AuthorityType` is `SubjectConsentRecorder` (governs consent `Granted`) or `SubjectConsentWithdrawer` (governs consent `Withdrawn`). Runtime has no EXECUTE on authority grant/revoke and cannot self-grant. A consent write by a principal with no CURRENT effective authority is denied.
@@ -106,7 +196,16 @@ transitive-role, backing-read, deterministic-ACL, fulfillment-materialization,
 role-precedence, and B2 constraint-mode posture during every later migration.
 Do not restore any pre-E3 direct runtime table read.
 
-TIP-88B1-E3 supersedes the older SELECT-only guidance above. Authorization and readiness are capability-only: `tagekyc_runtime` must have zero of `SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, and `TRIGGER` on all fourteen protected tables (the four policy-catalog tables, both requirement-rule tables, four B1 event tables, `verification_sessions`, and the three B2 consent tables).
+TIP-88B1-E3 supersedes the older SELECT-only guidance above. The ordinary API
+LOGIN has the exact role pair `{tagekyc_runtime,
+tagekyc_application_persistence}` described above. The E3 zero-access rule in
+this section applies specifically to `tagekyc_runtime`: it must have zero of
+`SELECT`, `INSERT`, `UPDATE`, `DELETE`, `TRUNCATE`, `REFERENCES`, and `TRIGGER`
+on all fourteen protected tables (the four policy-catalog tables, both
+requirement-rule tables, four B1 event tables, `verification_sessions`, and the
+three B2 consent tables). This does not negate the separately bounded core-table
+access of `tagekyc_application_persistence`, which still has no raw-export
+table access.
 
 Keep every landed B1/B2/B3 function grant and add these E3 grants:
 
@@ -147,8 +246,9 @@ reject it.
 
 The production topology remains one hospital per database. Hospital IT must
 provision a dedicated inheriting runtime LOGIN whose transitive reachable-role
-set is exactly `{tagekyc_runtime}`. Exactly one `pg_auth_members` row may exist
-across all grantors for that pair; on PostgreSQL 16 it has
+set is exactly `{tagekyc_runtime, tagekyc_application_persistence}`. Exactly one
+`pg_auth_members` row may exist across all grantors for each direct capability
+edge; on PostgreSQL 16 each edge has
 `admin_option=false`, `inherit_option=true`, and `set_option=false`. The LOGIN is
 `INHERIT`, `NOSUPERUSER`, `NOCREATEDB`, `NOCREATEROLE`, `NOREPLICATION`, and
 `NOBYPASSRLS`. Rotate its secret and audit break-glass use. This boundary reduces

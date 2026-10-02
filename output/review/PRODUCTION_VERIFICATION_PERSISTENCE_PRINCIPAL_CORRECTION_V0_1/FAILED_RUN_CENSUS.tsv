@@ -1,0 +1,48 @@
+run	total	passed	failed	not_executed	classification	disposition
+verification-persistence-http.trx	1	0	1	0	SUPERSEDED_TEST_DEFECT	HTTP returned 201; test DTO parser omitted the API enum-string converter. Replaced with ID-only JsonDocument parsing; successor verification-persistence-http-restored.trx is green.
+verification-persistence-focused-final.trx	4	3	1	0	SUPERSEDED_BUILD_STALE_DEPENDENCY	Test project was built with --no-dependencies after validator source changed, so the old Infrastructure DLL could not observe the new column-level leak arm. Dependency rebuilt; successor verification-persistence-focused-restored-final2.trx is green.
+verification-persistence-focused-restored-final.trx	4	2	2	0	SUPERSEDED_TEST_QUERY_DEFECT	Sequence ACL probe selected pg_class rows through an optimizer-inlined CTE and has_sequence_privilege saw a table OID. Query now sources OIDs from pg_sequence; successor verification-persistence-focused-restored-final2.trx is green.
+verification-persistence-affected-gate-final.trx	17	16	1	0	SUPERSEDED_TEST_BOUNDARY	OpenBao migration test was temporarily pinned to the later ACL migration, so an expected earlier Down made its atomicity assertion compare the wrong boundary. Test now explicitly enters the OpenBao boundary; successor openbao-migration-boundary-restored.trx and final affected gate are green.
+mutant-skip-role-validation.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant bypassed RoleIsValidAsync; missing-membership assertion failed because no exception was thrown.
+mutant-skip-privilege-validation.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant bypassed PrivilegesAreValidAsync; missing-SELECT assertion failed because no exception was thrown.
+verification-persistence-http-restored.trx	1	1	0	0	EVIDENCE_GREEN	Real Program routes and EF repositories completed create, artifact, evidence and completion under the restricted ordinary login.
+verification-persistence-focused-restored-final2.trx	4	4	0	0	EVIDENCE_GREEN	Focused ACL, migration, application and HTTP predecessor gate after query/dependency corrections.
+openbao-migration-boundary-restored.trx	2	2	0	0	EVIDENCE_GREEN	OpenBao Down/reapply proof restored to its owned migration boundary.
+verification-persistence-affected-gate-restored-final.trx	17	17	0	0	EVIDENCE_GREEN	Final affected gate on restored source: principal correction, application/HTTP flow, migration discovery, OpenBao boundary and Layer 2 migration consumer.
+correction1-readiness-restored.trx	1	0	1	0	SUPERSEDED_TEST_QUERY_DEFECT	First correction query used COALESCE with an empty aclitem array; aclexplode rejected the zero-dimensional empty array with "ACL arrays must be one-dimensional". Direct nullable ACL expansion replaced it; successor correction1-readiness-restored2.trx is green.
+correction1-readiness-restored2.trx	1	1	0	0	EVIDENCE_GREEN	Corrected readiness query passed after direct nullable ACL expansion.
+correction1-mutant-extra-member.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant removed the exact cluster-wide member-set arm; rogue-extra-member assertion failed because no exception was thrown.
+correction1-mutant-direct-login-acl.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant disabled the ordinary-login table ACL census; direct-DELETE assertion failed because no exception was thrown.
+correction1-mutant-column-references.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant disabled expected-table column REFERENCES detection; column-REFERENCES assertion failed because no exception was thrown.
+correction1-affected-gate-final.trx	17	17	0	0	EVIDENCE_GREEN	Final correction affected gate on byte-exact restored validator: 17 passed, 0 failed, 0 skipped.
+correction2-e3-restored-initial.trx	2	2	0	0	EVIDENCE_GREEN	Exact two-capability E3 topology passed and ordinary login remained denied on every raw-export table in the focused integration proof.
+correction2-e3-adjacent-restored-initial.trx	2	2	0	0	EVIDENCE_GREEN	Both membership-edge/cycle manifest and existing B1 function readiness passed with the two-capability login topology.
+correction2-mutant-e3-exact-role-set.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant restored the obsolete one-role E3 allowlist; positive two-capability validation failed with PROD_RAW_EXPORT_CONTROL_PLANE_DEPLOYMENT_ROLE_INVALID.
+correction2-mutant-e3-current-user-matrix.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant forbade the ratified verification_sessions SELECT/INSERT surface for current_user; positive two-capability validation failed with PROD_RAW_EXPORT_CONTROL_PLANE_FORBIDDEN_TABLE_PRIVILEGE.
+correction2-affected-gate-final.trx	21	21	0	0	EVIDENCE_GREEN	Final integrated affected gate: prior 17 cases plus exact E3 topology, raw-export table denial, role-edge/cycle manifest, and B1 readiness; zero failures and zero skips.
+correction3-view-grant-restored-initial.trx	1	1	0	0	EVIDENCE_GREEN	Live view-grant proof established that the restricted ordinary login could read a definer-owned view while the corrected readiness validator rejected the out-of-allowlist relation privilege.
+correction3-mutant-omit-view-relkind.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant reduced the relation census to ordinary/partitioned tables; the view-leak assertion failed because no readiness exception was thrown.
+correction3-view-grant-restored-final.trx	1	1	0	0	EVIDENCE_GREEN	Inverse patch restored v/m/f relation coverage byte-exact; the focused view-grant proof returned GREEN.
+correction3-affected-gate-final.trx	21	21	0	0	EVIDENCE_GREEN	Final affected gate on restored bytes retained all 21 interacting persistence, E3/B1, OpenBao-boundary and Layer-2 cases with zero failures and zero skips.
+amendment-affected-gate-final.trx	23	21	2	0	SUPERSEDED_PRODUCT_ASSERTION	Initial amendment gate incorrectly required tagekyc_runtime to lose pre-existing managed-recipient table privileges; ratification required no widening, not revocation. Assertion narrowed to the ratified core/runtime boundary.
+amendment-principal-restored-final.trx	5	4	1	0	SUPERSEDED_PRODUCT_ASSERTION	Same overbroad runtime-recipient denial assertion; superseded by amendment-principal-final2.trx.
+amendment-principal-restored-final2.trx	5	5	0	0	EVIDENCE_GREEN	Application-principal gate after the runtime-boundary correction.
+amendment-principal-final.trx	5	4	1	0	INTENTIONAL_DIAGNOSTIC	First hard-coded prosrc digest omitted PostgreSQL prosrc leading newline; diagnostic measured exact catalog bytes.
+amendment-principal-restored-final3.trx	5	4	1	0	SUPERSEDED_TEST_HARNESS	An intentionally interrupted diagnostic left a temporary cluster LOGIN membership; cluster was destroyed and recreated before successor.
+amendment-principal-final2.trx	5	5	0	0	EVIDENCE_GREEN	Final principal/readiness/ACL/function/migration/runtime-denial gate on restored bytes.
+amendment-core-flow-restored-final.trx	1	1	0	0	EVIDENCE_GREEN	Production-shaped core verification flow completed under the exact ordinary LOGIN.
+amendment-e3-f3-final.trx	1	1	0	0	EVIDENCE_GREEN	E3 exact two-capability role and denial proof.
+amendment-e3-f6-final2.trx	1	0	1	0	PRODUCT_DEFECT_PREDECESSOR	Stale model-snapshot test pin predated already-landed rev24 model bytes; no current model change. All three test pins reconciled together.
+amendment-e3-f6-restored-final.trx	1	1	0	0	EVIDENCE_GREEN	E3 Down/reapply and current normalized snapshot pin restored.
+amendment-startup-composition-final.trx	1	0	1	0	SUPERSEDED_TEST_FIXTURE	Obsolete test fixture added direct LOGIN grants now correctly rejected by the whole-database census.
+amendment-startup-composition-restored-final.trx	1	0	1	0	SUPERSEDED_TEST_FIXTURE	After removing direct grants, stale format-1 activation evidence fixture failed current ratified seal semantics.
+amendment-startup-composition-final2.trx	1	1	0	0	EVIDENCE_GREEN	Startup composition with exact role pair and current format-2 DurableWorker/site-v1 evidence shape.
+amendment-recipient-c526-final.trx	1	0	1	0	EXCLUDED_UNRELATED_SITE_GATE	Historical whole-chain C526 reached the independent uninstalled site-qualification gate (503), not SQLSTATE 42501; it is not amendment evidence.
+mutant-skip-recipient-body-hash.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant skipped normalized prosrc hash; body-drift assertion failed because no readiness exception was thrown.
+mutant-bypass-recipient-companion-function.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	Intentional mutant bypassed the SECURITY DEFINER companion lookup; managed recipient key resolution returned null.
+amendment-restored-final.trx	5	5	0	0	EVIDENCE_GREEN	Final principal/readiness/ACL/function/migration/runtime-denial gate after inverse mutation restores.
+amendment-e3-f6-final.trx	0	0	0	0	NO_TEST_MATCH_DIAGNOSTIC	Retained provenance for a misspelled historical filter; zero tests executed and this artifact is not counted as an executing run.
+amendment-correction4-focused.trx	5	5	0	0	EVIDENCE_GREEN	Final PUBLIC/ownership/grant-option, provisioning-identity, all-caller authentication and runtime-recipient truth gate.
+amendment-correction4-affected.trx	3	3	0	0	EVIDENCE_GREEN	Affected migration discovery, site-measurement migration chain and runtime session-denial proof after final migration rename.
+amendment-correction5-focused.trx	5	5	0	0	EVIDENCE_GREEN	Final database CREATE/ownership, object/ACL census, provisioning, five-scope authentication and C5 runtime-recipient positive-tripwire gate.
+amendment-correction5-affected.trx	3	3	0	0	EVIDENCE_GREEN	Affected migration discovery, site-measurement migration chain and runtime session-denial proof after the database-authority correction.

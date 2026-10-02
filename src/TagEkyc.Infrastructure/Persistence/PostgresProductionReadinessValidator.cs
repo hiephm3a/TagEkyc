@@ -15,6 +15,7 @@ public sealed class PostgresProductionReadinessValidator(TagEkycDbContext dbCont
     public const string MigrationHistoryMissing = "PROD_DB_MIGRATION_HISTORY_MISSING";
     public const string MigrationsPending = "PROD_DB_MIGRATIONS_PENDING";
     public const string RequiredTableMissing = "PROD_DB_REQUIRED_TABLE_MISSING";
+    public const string PrivilegeInvalid = "PROD_DB_PRIVILEGE_INVALID";
 
     private const string NpgsqlProviderName = "Npgsql.EntityFrameworkCore.PostgreSQL";
 
@@ -52,10 +53,13 @@ public sealed class PostgresProductionReadinessValidator(TagEkycDbContext dbCont
             Throw(Unreachable);
         }
 
-        if (!await TableExistsAsync("public", "__EFMigrationsHistory", cancellationToken))
+        if (!await RelationExistsAsync("public", "__EFMigrationsHistory", cancellationToken))
         {
             Throw(MigrationHistoryMissing);
         }
+
+        if (!await HasSelectPrivilegeAsync("public", "__EFMigrationsHistory", cancellationToken))
+            Throw(PrivilegeInvalid);
 
         try
         {
@@ -74,14 +78,18 @@ public sealed class PostgresProductionReadinessValidator(TagEkycDbContext dbCont
             Throw(MigrationsPending);
         }
 
-        if (!await TableExistsAsync("tagekyc", "append_idempotency_records", cancellationToken) ||
-            !await TableExistsAsync("tagekyc", "api_keys", cancellationToken))
+        if (!await RelationExistsAsync("tagekyc", "append_idempotency_records", cancellationToken) ||
+            !await RelationExistsAsync("tagekyc", "api_keys", cancellationToken))
         {
             Throw(RequiredTableMissing);
         }
+
+        if (!await HasSelectPrivilegeAsync("tagekyc", "append_idempotency_records", cancellationToken) ||
+            !await HasSelectPrivilegeAsync("tagekyc", "api_keys", cancellationToken))
+            Throw(PrivilegeInvalid);
     }
 
-    private async Task<bool> TableExistsAsync(string schema, string table, CancellationToken cancellationToken)
+    private async Task<bool> RelationExistsAsync(string schema, string table, CancellationToken cancellationToken)
     {
         try
         {
@@ -95,8 +103,10 @@ public sealed class PostgresProductionReadinessValidator(TagEkycDbContext dbCont
             command.CommandText = """
                 SELECT EXISTS(
                     SELECT 1
-                    FROM information_schema.tables
-                    WHERE table_schema = @schema AND table_name = @table
+                    FROM pg_catalog.pg_class relation
+                    JOIN pg_catalog.pg_namespace namespace ON namespace.oid=relation.relnamespace
+                    WHERE namespace.nspname = @schema AND relation.relname = @table
+                      AND relation.relkind IN ('r','p')
                 )
                 """;
             var schemaParameter = command.CreateParameter();
@@ -119,6 +129,27 @@ public sealed class PostgresProductionReadinessValidator(TagEkycDbContext dbCont
             Throw(Unreachable);
             return false;
         }
+    }
+
+    private async Task<bool> HasSelectPrivilegeAsync(
+        string schema,
+        string table,
+        CancellationToken cancellationToken)
+    {
+        var connection = dbContext.Database.GetDbConnection();
+        if (connection.State != ConnectionState.Open)
+            await connection.OpenAsync(cancellationToken);
+        await using var command = connection.CreateCommand();
+        command.CommandText = "SELECT pg_catalog.has_table_privilege(current_user, pg_catalog.format('%I.%I',@schema,@table), 'SELECT')";
+        var schemaParameter = command.CreateParameter();
+        schemaParameter.ParameterName = "schema";
+        schemaParameter.Value = schema;
+        command.Parameters.Add(schemaParameter);
+        var tableParameter = command.CreateParameter();
+        tableParameter.ParameterName = "table";
+        tableParameter.Value = table;
+        command.Parameters.Add(tableParameter);
+        return await command.ExecuteScalarAsync(cancellationToken) is true;
     }
 
     private static void Throw(string code) => throw new PostgresProductionReadinessException(code);

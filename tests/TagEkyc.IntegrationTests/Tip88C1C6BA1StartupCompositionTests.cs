@@ -27,11 +27,10 @@ public sealed class Tip88C1C6BA1StartupCompositionTests(PostgresPersistenceFixtu
                 created.Add(name);
             }
             await admin.Database.ExecuteSqlRawAsync($"""
-                GRANT tagekyc_runtime TO {names[0]};
+                GRANT tagekyc_runtime TO {names[0]} WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
+                GRANT tagekyc_application_persistence TO {names[0]} WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
                 GRANT tagekyc_capture_runtime_application,tagekyc_capture_runtime_authenticator TO {names[1]};
                 GRANT tagekyc_capture_runtime_operator TO {names[2]};
-                GRANT SELECT ON public."__EFMigrationsHistory" TO {names[0]};
-                GRANT SELECT ON tagekyc.api_keys,tagekyc.append_idempotency_records TO {names[0]};
                 """);
             string Connection(int index) => new NpgsqlConnectionStringBuilder(admin.Database.GetConnectionString())
                 { Username = names[index], Password = password, Pooling = false }.ConnectionString;
@@ -40,7 +39,8 @@ public sealed class Tip88C1C6BA1StartupCompositionTests(PostgresPersistenceFixtu
             // Existing production readiness uses privilege-filtered information_schema.
             // These are ordinary pre-A1 tables, never an A1 authority-table grant.
             await new PostgresProductionReadinessValidator(ordinary).ValidateAsync(default);
-            await ProbeAsync(ordinary, ["tagekyc_runtime"], "ordinary");
+            await new ApplicationPersistenceReadinessValidator(ordinary).ValidateAsync(default);
+            await ProbeAsync(ordinary, ["tagekyc_runtime", "tagekyc_application_persistence"], "ordinary");
             await using (var onlineProbe = await new CaptureRuntimeDbContextFactory(options).CreateAsync())
                 await ProbeAsync(onlineProbe, ["tagekyc_capture_runtime_application", "tagekyc_capture_runtime_authenticator"], "online");
             await using (var operatorProbe = await new CaptureRuntimeOperatorDbContextFactory(options).CreateAsync())
@@ -69,7 +69,9 @@ public sealed class Tip88C1C6BA1StartupCompositionTests(PostgresPersistenceFixtu
                 reader, peppers, activationEvidence: evidence).SelectAsync(now, default));
             await Assert.ThrowsAsync<InvalidOperationException>(() => new CaptureRuntimeStartup(
                 reader, peppers, new Ready(), activationEvidence: evidence).SelectAsync(now, default));
-            selected = await new CaptureRuntimeStartup(reader, peppers, new Ready(), new Admission(), evidence)
+            selected = await new CaptureRuntimeStartup(
+                    reader, peppers, new Ready(), new Admission(), evidence,
+                    new CaptureRuntimeAssemblyTopology("DurableWorker"))
                 .SelectAsync(now, default);
             Assert.Equal(CaptureRuntimeRouteState.Activated, selected.State);
             // Independently invalidate a startup dependency without broadening privilege.
@@ -114,7 +116,9 @@ public sealed class Tip88C1C6BA1StartupCompositionTests(PostgresPersistenceFixtu
         private const string B = "BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB";
         private const string C = "CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC";
         private const string D = "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD";
-        public CaptureRuntimeActivationEvidenceSeal Current { get; } = new(1, 1, A, B, 0, A, B, 0, C, D);
+        public CaptureRuntimeActivationEvidenceSeal Current { get; } = new(
+            2, 1, A, B, 0, A, B, 0, C, D,
+            "DurableWorker", "DurableWorker", A, B, A, A, true, true, 1, 1);
     }
     private sealed class Peppers : ICaptureRuntimeVerifierPepperSource
     {

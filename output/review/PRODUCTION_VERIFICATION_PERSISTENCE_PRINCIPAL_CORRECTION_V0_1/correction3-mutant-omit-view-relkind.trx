@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="0f6abda6-9f92-431f-bbd7-28513c7c5cf0" name="3AVNN@LEARNPC 2026-10-02 13:59:09" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-02T13:59:09.6852280+07:00" queuing="2026-10-02T13:59:09.6852284+07:00" start="2026-10-02T13:58:55.0539774+07:00" finish="2026-10-02T13:59:09.7292808+07:00" />
+  <TestSettings name="default" id="ad2b3e97-ae53-49ae-bb2a-13ae1d14d617">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-02_13_59_09" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="d9898d03-14e7-4398-b463-ce6dfaa7f839" testId="6831fad8-50c6-71fd-1fb7-8ee3ba720bb1" testName="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary" computerName="LEARNPC" duration="00:00:00.7415514" startTime="2026-10-02T13:59:08.9180713+07:00" endTime="2026-10-02T13:59:08.9180874+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d9898d03-14e7-4398-b463-ce6dfaa7f839">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Throws() Failure: No exception was thrown&#xD;
+Expected: typeof(TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessException)</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 263&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 273&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 282&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 287&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 287&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 287&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6831fad8-50c6-71fd-1fb7-8ee3ba720bb1">
+      <Execution id="d9898d03-14e7-4398-b463-ce6dfaa7f839" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests" name="Readiness_requires_the_exact_role_and_privilege_boundary" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="6831fad8-50c6-71fd-1fb7-8ee3ba720bb1" executionId="d9898d03-14e7-4398-b463-ce6dfaa7f839" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.47]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.64]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.64]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:13.53]       Assert.Throws() Failure: No exception was thrown&#xD;
+[xUnit.net 00:00:13.53]       Expected: typeof(TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessException)&#xD;
+[xUnit.net 00:00:13.53]       Stack Trace:&#xD;
+[xUnit.net 00:00:13.53]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(263,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:13.53]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(273,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:13.53]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(282,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:13.53]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(287,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:13.53]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(287,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:13.53]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(287,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:13.53]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:14.29]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-02T13:59:08.9156225+07:00">
+        <Text>[xUnit.net 00:00:13.53]     TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

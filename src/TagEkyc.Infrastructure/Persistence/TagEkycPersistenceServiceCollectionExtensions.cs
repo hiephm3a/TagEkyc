@@ -40,6 +40,7 @@ public static class TagEkycPersistenceServiceCollectionExtensions
         services.AddScoped<RawExportControlPlaneReadinessValidator>();
         services.AddScoped<RawExportSubjectConsentReadinessValidator>();
         services.AddScoped<RawExportJobReadinessValidator>();
+        services.AddScoped<ApplicationPersistenceReadinessValidator>();
         services.AddScoped<ISiteRawIngressQualificationRunStore,
             PostgresSiteRawIngressQualificationRunStore>();
         services.AddScoped<IVerificationFinalizationBoundary, EfVerificationFinalizationBoundary>();

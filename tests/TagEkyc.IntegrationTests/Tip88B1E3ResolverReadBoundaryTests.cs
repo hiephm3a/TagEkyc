@@ -28,7 +28,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
     private const string Migration = "20260724015546_Tip88B1E3ResolverReadBoundary";
     private const string PreviousMigration = "20260723052003_Tip88B33RawExportAuthorizationPersistFunction";
     private const string ExpectedModelSnapshotSha256 =
-        "7DC276ED9F1E44F840DB5680940D55F0F7C652316E2A0DA6BD2CEAF221930F5B";
+        "4D244DF357477E43F4A568F89B5895A39AE8B7323668ECE75F3E4305309108C5";
     private const string EligibilityFunction =
         "tagekyc.raw_export_read_authorization_eligibility_inputs(uuid,uuid,integer)";
     private const string PolicyFunction =
@@ -59,6 +59,14 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
 
     private static readonly string[] E3ForbiddenRuntimeTablePrivileges =
         ["SELECT", "INSERT", "UPDATE", "DELETE", "TRUNCATE", "REFERENCES", "TRIGGER"];
+
+    private static readonly string[] E3ProtectedApplicationDirectAccessTables =
+        E3ProtectedRuntimeDirectAccessTables
+            .Where(table => !string.Equals(
+                table,
+                "verification_sessions",
+                StringComparison.Ordinal))
+            .ToArray();
 
     private static readonly string[] E3DeployerBackingReadTables =
     [
@@ -137,14 +145,14 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
     }
 
     [Fact]
-    public async Task F1_runtime_direct_select_and_mutations_fail_42501_on_all_fourteen_tables()
+    public async Task F1_application_login_direct_access_fails_42501_on_all_raw_export_tables()
     {
         var firstColumns = await ReadFirstColumnsAsync();
         await using var login = await CreateRuntimeLoginAsync();
         await using var connection = new NpgsqlConnection(login.ConnectionString);
         await connection.OpenAsync();
 
-        foreach (var table in E3ProtectedRuntimeDirectAccessTables)
+        foreach (var table in E3ProtectedApplicationDirectAccessTables)
         {
             var qualified = $"tagekyc.{Quote(table)}";
             var column = Quote(firstColumns[table]);
@@ -196,7 +204,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
     }
 
     [Fact]
-    public async Task F1_application_login_extra_membership_turns_readiness_role_invalid()
+    public async Task F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid()
     {
         var extraRole = $"e3_extra_reader_{Guid.NewGuid():N}";
         await using (var db = postgres.CreateDbContext())
@@ -214,6 +222,11 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
         {
             await using (var login = await CreateRuntimeLoginAsync())
             {
+                await using (var healthy = CreateDbContext(login.ConnectionString))
+                {
+                    await new RawExportControlPlaneReadinessValidator(healthy)
+                        .ValidateAsync(CancellationToken.None);
+                }
                 await ExecuteAsync(admin, $"GRANT {Quote(extraRole)} TO {Quote(login.Role)};");
                 await using var db = CreateDbContext(login.ConnectionString);
                 var exception = await Assert.ThrowsAsync<RawExportControlPlaneReadinessException>(
@@ -318,6 +331,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
         var capabilityRoles = new[]
         {
             "tagekyc_runtime",
+            "tagekyc_application_persistence",
             "tagekyc_raw_export_deployer",
             "tagekyc_raw_export_bootstrapper",
         };
@@ -407,30 +421,37 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
             await ExecuteAsync(admin, $"ALTER ROLE {Quote(login.Role)} NOSUPERUSER;");
         }
 
-        var safeGrant =
-            $"GRANT tagekyc_runtime TO {Quote(login.Role)} " +
-            "WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;";
-        var edgeMutations = new[]
+        foreach (var capabilityRole in new[]
         {
-            $"GRANT tagekyc_runtime TO {Quote(login.Role)} " +
-            "WITH ADMIN TRUE, INHERIT TRUE, SET FALSE;",
-            $"GRANT tagekyc_runtime TO {Quote(login.Role)} " +
-            "WITH ADMIN FALSE, INHERIT FALSE, SET FALSE;",
-            $"GRANT tagekyc_runtime TO {Quote(login.Role)} " +
-            "WITH ADMIN FALSE, INHERIT TRUE, SET TRUE;",
-        };
-        foreach (var mutation in edgeMutations)
+            "tagekyc_runtime",
+            "tagekyc_application_persistence",
+        })
         {
-            await ExecuteAsync(admin, mutation);
-            try
+            var safeGrant =
+                $"GRANT {capabilityRole} TO {Quote(login.Role)} " +
+                "WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;";
+            var edgeMutations = new[]
             {
-                await AssertReadinessCodeAsync(
-                    application,
-                    RawExportControlPlaneReadinessValidator.DeploymentRoleInvalid);
-            }
-            finally
+                $"GRANT {capabilityRole} TO {Quote(login.Role)} " +
+                "WITH ADMIN TRUE, INHERIT TRUE, SET FALSE;",
+                $"GRANT {capabilityRole} TO {Quote(login.Role)} " +
+                "WITH ADMIN FALSE, INHERIT FALSE, SET FALSE;",
+                $"GRANT {capabilityRole} TO {Quote(login.Role)} " +
+                "WITH ADMIN FALSE, INHERIT TRUE, SET TRUE;",
+            };
+            foreach (var mutation in edgeMutations)
             {
-                await ExecuteAsync(admin, safeGrant);
+                await ExecuteAsync(admin, mutation);
+                try
+                {
+                    await AssertReadinessCodeAsync(
+                        application,
+                        RawExportControlPlaneReadinessValidator.DeploymentRoleInvalid);
+                }
+                finally
+                {
+                    await ExecuteAsync(admin, safeGrant);
+                }
             }
         }
 
@@ -500,32 +521,40 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
                 REVOKE {Quote(bridge)} FROM {Quote(login.Role)};
                 REVOKE tagekyc_runtime FROM {Quote(bridge)};
                 DROP ROLE {Quote(bridge)};
-                {safeGrant}
+                GRANT tagekyc_runtime TO {Quote(login.Role)}
+                    WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
                 """);
         }
 
-        var runtimeOutgoing = $"e3_runtime_outgoing_{Guid.NewGuid():N}";
-        await ExecuteAsync(
-            admin,
-            $"""
-            CREATE ROLE {Quote(runtimeOutgoing)} NOLOGIN;
-            GRANT {Quote(runtimeOutgoing)} TO tagekyc_runtime
-                WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
-            """);
-        try
+        foreach (var capabilityRole in new[]
         {
-            await AssertReadinessCodeAsync(
-                application,
-                RawExportControlPlaneReadinessValidator.DeploymentRoleInvalid);
-        }
-        finally
+            "tagekyc_runtime",
+            "tagekyc_application_persistence",
+        })
         {
+            var outgoing = $"e3_capability_outgoing_{Guid.NewGuid():N}";
             await ExecuteAsync(
                 admin,
                 $"""
-                REVOKE {Quote(runtimeOutgoing)} FROM tagekyc_runtime;
-                DROP ROLE {Quote(runtimeOutgoing)};
+                CREATE ROLE {Quote(outgoing)} NOLOGIN;
+                GRANT {Quote(outgoing)} TO {capabilityRole}
+                    WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
                 """);
+            try
+            {
+                await AssertReadinessCodeAsync(
+                    application,
+                    RawExportControlPlaneReadinessValidator.DeploymentRoleInvalid);
+            }
+            finally
+            {
+                await ExecuteAsync(
+                    admin,
+                    $"""
+                    REVOKE {Quote(outgoing)} FROM {capabilityRole};
+                    DROP ROLE {Quote(outgoing)};
+                    """);
+            }
         }
 
         var cycleA = $"e3_cycle_a_{Guid.NewGuid():N}";
@@ -1489,7 +1518,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
             Assert.True(reader.GetBoolean(2));
             Assert.False(reader.GetBoolean(3));
             Assert.False(reader.GetBoolean(4));
-            Assert.Equal(1L, reader.GetInt64(5));
+            Assert.Equal(2L, reader.GetInt64(5));
         }
 
         var repository = Tip88B34AuthorizationEngineTests.CreateRepository(runtime);
@@ -1836,6 +1865,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
         identity.CommandText = """
             SELECT current_user, session_user,
                    pg_has_role(current_user, 'tagekyc_runtime', 'MEMBER'),
+                   pg_has_role(current_user, 'tagekyc_application_persistence', 'MEMBER'),
                    pg_has_role(current_user, 'tagekyc_raw_export_deployer', 'MEMBER'),
                    pg_has_role(current_user, 'tagekyc_raw_export_bootstrapper', 'MEMBER'),
                    (SELECT count(*)
@@ -1849,7 +1879,15 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
                     JOIN pg_roles AS member ON member.oid = membership.member
                     JOIN pg_roles AS granted ON granted.oid = membership.roleid
                     WHERE member.rolname = current_user
-                      AND granted.rolname = 'tagekyc_runtime'),
+                       AND granted.rolname = 'tagekyc_runtime'),
+                   (SELECT NOT membership.admin_option
+                               AND membership.inherit_option
+                               AND NOT membership.set_option
+                    FROM pg_auth_members AS membership
+                    JOIN pg_roles AS member ON member.oid = membership.member
+                    JOIN pg_roles AS granted ON granted.oid = membership.roleid
+                    WHERE member.rolname = current_user
+                      AND granted.rolname = 'tagekyc_application_persistence'),
                    role.rolinherit,
                    role.rolsuper,
                    role.rolcreatedb,
@@ -1864,16 +1902,18 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
         Assert.Equal(role, reader.GetString(0));
         Assert.Equal(role, reader.GetString(1));
         Assert.True(reader.GetBoolean(2));
-        Assert.False(reader.GetBoolean(3));
+        Assert.True(reader.GetBoolean(3));
         Assert.False(reader.GetBoolean(4));
-        Assert.Equal(1L, reader.GetInt64(5));
-        Assert.True(reader.GetBoolean(6));
+        Assert.False(reader.GetBoolean(5));
+        Assert.Equal(2L, reader.GetInt64(6));
         Assert.True(reader.GetBoolean(7));
-        Assert.False(reader.GetBoolean(8));
-        Assert.False(reader.GetBoolean(9));
+        Assert.True(reader.GetBoolean(8));
+        Assert.True(reader.GetBoolean(9));
         Assert.False(reader.GetBoolean(10));
         Assert.False(reader.GetBoolean(11));
         Assert.False(reader.GetBoolean(12));
+        Assert.False(reader.GetBoolean(13));
+        Assert.False(reader.GetBoolean(14));
         Assert.False(await reader.ReadAsync());
     }
 
@@ -2047,6 +2087,8 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
             CREATE ROLE {Quote(role)} LOGIN INHERIT PASSWORD '{password}'
                 NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
             GRANT tagekyc_runtime TO {Quote(role)}
+                WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
+            GRANT tagekyc_application_persistence TO {Quote(role)}
                 WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
             """);
         var builder = new NpgsqlConnectionStringBuilder(adminConnectionString)
@@ -2600,6 +2642,7 @@ public sealed class Tip88B1E3ResolverReadBoundaryTests(PostgresPersistenceFixtur
             await connection.OpenAsync();
             await using var command = new NpgsqlCommand(
                 $"""
+                REVOKE tagekyc_application_persistence FROM {Quote(Role)};
                 REVOKE tagekyc_runtime FROM {Quote(Role)};
                 DROP ROLE {Quote(Role)};
                 """,

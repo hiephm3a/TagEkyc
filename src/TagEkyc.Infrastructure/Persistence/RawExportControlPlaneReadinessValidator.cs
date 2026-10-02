@@ -76,9 +76,19 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         "TRIGGER",
     ];
 
+    private static readonly string[] VerificationSessionForbiddenApplicationPrivileges =
+    [
+        "UPDATE",
+        "DELETE",
+        "TRUNCATE",
+        "REFERENCES",
+        "TRIGGER",
+    ];
+
     private static readonly string[] RequiredCapabilityRoles =
     [
         "tagekyc_runtime",
+        "tagekyc_application_persistence",
         "tagekyc_raw_export_deployer",
         "tagekyc_raw_export_bootstrapper",
     ];
@@ -343,24 +353,41 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         }
 
         await using var command = connection.CreateCommand();
-        var values = string.Join(
+        var runtimeValues = string.Join(
             $",{Environment.NewLine}",
             ForbiddenTables.SelectMany(table =>
                 ForbiddenPrivileges.Select(privilege =>
                     $"('{table.Replace("'", "''")}','{privilege.Replace("'", "''")}')")));
+        var applicationValues = string.Join(
+            $",{Environment.NewLine}",
+            ForbiddenTables
+                .Where(table => !string.Equals(
+                    table,
+                    "verification_sessions",
+                    StringComparison.Ordinal))
+                .SelectMany(table =>
+                    ForbiddenPrivileges.Select(privilege =>
+                        $"('{table.Replace("'", "''")}','{privilege.Replace("'", "''")}')"))
+                .Concat(VerificationSessionForbiddenApplicationPrivileges.Select(privilege =>
+                    $"('verification_sessions','{privilege.Replace("'", "''")}')")));
         command.CommandText = $$"""
-            SELECT COALESCE(bool_or(
-                has_table_privilege(
-                    'tagekyc_runtime',
-                    'tagekyc.' || matrix.table_name,
-                    matrix.privilege_name)
-                 OR has_table_privilege(
-                    current_user,
-                    'tagekyc.' || matrix.table_name,
-                    matrix.privilege_name)), false)
-            FROM (VALUES
-                {{values}}
-            ) AS matrix(table_name, privilege_name);
+            SELECT
+                COALESCE((
+                    SELECT bool_or(has_table_privilege(
+                        'tagekyc_runtime',
+                        'tagekyc.' || matrix.table_name,
+                        matrix.privilege_name))
+                    FROM (VALUES
+                        {{runtimeValues}}
+                    ) AS matrix(table_name, privilege_name)), false)
+                OR COALESCE((
+                    SELECT bool_or(has_table_privilege(
+                        current_user,
+                        'tagekyc.' || matrix.table_name,
+                        matrix.privilege_name))
+                    FROM (VALUES
+                        {{applicationValues}}
+                    ) AS matrix(table_name, privilege_name)), false);
             """;
 
         return await command.ExecuteScalarAsync(cancellationToken) is true;
@@ -456,8 +483,9 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
                    rolcreaterole, rolreplication, rolbypassrls
             FROM pg_roles
             WHERE rolname IN (
-                'tagekyc_runtime',
-                'tagekyc_raw_export_deployer',
+                 'tagekyc_runtime',
+                 'tagekyc_application_persistence',
+                 'tagekyc_raw_export_deployer',
                 'tagekyc_raw_export_bootstrapper',
                 current_user::text);
             """;
@@ -506,7 +534,8 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
             sessionUser,
             currentUser,
             currentRole!,
-            roles["tagekyc_runtime"]);
+            roles["tagekyc_runtime"],
+            roles["tagekyc_application_persistence"]);
     }
 
     private static void ValidateServerVersion(int serverVersion)
@@ -574,7 +603,21 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
                     false),
                 (SELECT count(*)
                  FROM pg_auth_members
-                 WHERE member = CAST(@runtime AS oid));
+                 WHERE member = CAST(@runtime AS oid)),
+                (SELECT count(*)
+                 FROM pg_auth_members
+                 WHERE member = CAST(@caller AS oid)
+                   AND roleid = CAST(@verification_persistence AS oid)),
+                COALESCE(
+                    (SELECT bool_and(
+                        NOT admin_option AND inherit_option AND NOT set_option)
+                     FROM pg_auth_members
+                     WHERE member = CAST(@caller AS oid)
+                       AND roleid = CAST(@verification_persistence AS oid)),
+                    false),
+                (SELECT count(*)
+                 FROM pg_auth_members
+                 WHERE member = CAST(@verification_persistence AS oid));
             """;
 
         var callerParameter = command.CreateParameter();
@@ -587,6 +630,11 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         runtimeParameter.Value = (long)deployment.RuntimeRole.Oid;
         command.Parameters.Add(runtimeParameter);
 
+        var verificationPersistenceParameter = command.CreateParameter();
+        verificationPersistenceParameter.ParameterName = "verification_persistence";
+        verificationPersistenceParameter.Value = (long)deployment.VerificationPersistenceRole.Oid;
+        command.Parameters.Add(verificationPersistenceParameter);
+
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
         if (!await reader.ReadAsync(cancellationToken))
         {
@@ -597,12 +645,22 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         var directRuntimeRows = reader.GetInt64(1);
         var directRuntimeOptionsSafe = reader.GetBoolean(2);
         var runtimeOutgoingRows = reader.GetInt64(3);
+        var directVerificationPersistenceRows = reader.GetInt64(4);
+        var directVerificationPersistenceOptionsSafe = reader.GetBoolean(5);
+        var verificationPersistenceOutgoingRows = reader.GetInt64(6);
+        var expectedReachable = new[]
+        {
+            deployment.RuntimeRole.Oid,
+            deployment.VerificationPersistenceRole.Oid,
+        }.Order().ToArray();
 
-        if (reachable.Length != 1 ||
-            reachable[0] != deployment.RuntimeRole.Oid ||
+        if (!reachable.SequenceEqual(expectedReachable) ||
             directRuntimeRows != 1 ||
             !directRuntimeOptionsSafe ||
-            runtimeOutgoingRows != 0)
+            runtimeOutgoingRows != 0 ||
+            directVerificationPersistenceRows != 1 ||
+            !directVerificationPersistenceOptionsSafe ||
+            verificationPersistenceOutgoingRows != 0)
         {
             Throw(DeploymentRoleInvalid);
         }
@@ -1034,7 +1092,8 @@ public sealed class RawExportControlPlaneReadinessValidator(TagEkycDbContext dbC
         string SessionUser,
         string CurrentUser,
         RoleInfo CurrentRole,
-        RoleInfo RuntimeRole);
+        RoleInfo RuntimeRole,
+        RoleInfo VerificationPersistenceRole);
 
     private static string HashBody(string body) =>
         Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(body))).ToLowerInvariant();

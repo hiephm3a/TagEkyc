@@ -9,6 +9,8 @@ internal sealed class PostgresProductionReadinessHostedService(IServiceScopeFact
         await using var scope = scopeFactory.CreateAsyncScope();
         await scope.ServiceProvider.GetRequiredService<PostgresProductionReadinessValidator>()
             .ValidateAsync(cancellationToken);
+        await scope.ServiceProvider.GetRequiredService<ApplicationPersistenceReadinessValidator>()
+            .ValidateAsync(cancellationToken);
     }
 
     public Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;

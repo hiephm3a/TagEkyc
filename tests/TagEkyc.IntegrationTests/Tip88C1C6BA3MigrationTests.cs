@@ -16,7 +16,7 @@ namespace TagEkyc.IntegrationTests;
 public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgres)
 {
     internal const string MigrationId = "20260913120000_Tip88C1C6BA3RetainedIngressComposition";
-    private const string CurrentMigrationId = "20260930082453_OpenBaoProductionKekProvider";
+    private const string CurrentMigrationId = "20261002120000_ProductionApplicationPersistencePrincipal";
     private const string PredecessorId = "20260908120000_Tip88C1C6BA1Foundation";
     private const string R20 = "tagekyc.capture_runtime_issue_or_replace_capability(uuid,uuid,text,uuid,bigint,uuid,uuid,text,bytea,integer,bytea,timestamptz,uuid,uuid,jsonb)";
     private const string CompletionSignature = "tagekyc.complete_raw_export_source_ingress_claim(uuid,text,text,text,uuid,bigint,bigint,text,timestamptz,text,bytea,integer,text,integer,bytea,integer,text,integer,bytea,bigint,text,timestamptz,timestamptz,timestamptz,integer,text,text,integer,text,integer,text,bytea,integer,bytea,text,text,integer,text,integer,integer,integer,integer)";
@@ -289,7 +289,7 @@ public sealed class Tip88C1C6BA3MigrationTests(PostgresPersistenceFixture postgr
             "20260925090000_RawExportAssemblyRetainedModeWorkSource",
             "20260926120000_RawExportAssemblyPostSealRecovery",
             "20260927120000_SiteQualificationMeasurementPlane",
-            "20260930082453_OpenBaoProductionKekProvider"
+            "20261002120000_ProductionApplicationPersistencePrincipal"
         }, removedMigrations);
         var changedPairs = latestCatalog.Zip(afterCatalog)
             .Where(pair => pair.First != pair.Second)

@@ -23,7 +23,7 @@ public sealed class CaptureRuntimeStartupDependencyReader(TagEkycDbContext ordin
             string? database = null;
             (string Host, int Port, string Database)? endpoint = null;
             foreach (var (db, roles) in new[] {
-                (ordinary, new[] { "tagekyc_runtime" }),
+                (ordinary, new[] { "tagekyc_runtime", ApplicationPersistenceReadinessValidator.RoleName }),
                 (online, new[] { "tagekyc_capture_runtime_application", "tagekyc_capture_runtime_authenticator" }),
                 (management, new[] { "tagekyc_capture_runtime_operator" }) })
             {

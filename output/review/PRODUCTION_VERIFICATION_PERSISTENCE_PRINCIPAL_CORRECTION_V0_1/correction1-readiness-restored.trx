@@ -1,0 +1,87 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="aa4576b9-6d4e-4104-b399-eb27e4905778" name="3AVNN@LEARNPC 2026-10-02 10:21:28" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-02T10:21:28.5759324+07:00" queuing="2026-10-02T10:21:28.5759328+07:00" start="2026-10-02T10:21:05.8151831+07:00" finish="2026-10-02T10:21:28.7507124+07:00" />
+  <TestSettings name="default" id="848ebddb-6a37-4b91-add6-6943334e3436">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-02_10_21_28" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="1a99fe8d-d4f3-4678-9e9e-1cb8323fff8c" testId="6831fad8-50c6-71fd-1fb7-8ee3ba720bb1" testName="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary" computerName="LEARNPC" duration="00:00:00.7989148" startTime="2026-10-02T10:21:27.8776739+07:00" endTime="2026-10-02T10:21:27.8776894+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1a99fe8d-d4f3-4678-9e9e-1cb8323fff8c">
+      <Output>
+        <ErrorInfo>
+          <Message>TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessException : PROD_VERIFICATION_PERSISTENCE_PRIVILEGE_INVALID&#xD;
+---- Npgsql.PostgresException : 22023: ACL arrays must be one-dimensional</Message>
+          <StackTrace>   at TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessValidator.ValidateAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\VerificationPersistenceReadinessValidator.cs:line 83&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 190&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 258&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 263&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 263&#xD;
+   at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs:line 263&#xD;
+--- End of stack trace from previous location ---&#xD;
+----- Inner Stack Trace -----&#xD;
+   at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+   at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+   at Npgsql.NpgsqlDataReader.&lt;ReadMessage&gt;g__ReadMessageSequential|49_0(NpgsqlConnector connector, Boolean async)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+   at Npgsql.NpgsqlCommand.ExecuteScalar(Boolean async, CancellationToken cancellationToken)&#xD;
+   at TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessValidator.PrivilegesAreValidAsync(NpgsqlConnection connection, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\VerificationPersistenceReadinessValidator.cs:line 258&#xD;
+   at TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessValidator.PrivilegesAreValidAsync(NpgsqlConnection connection, CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\VerificationPersistenceReadinessValidator.cs:line 258&#xD;
+   at TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessValidator.ValidateAsync(CancellationToken cancellationToken) in D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\VerificationPersistenceReadinessValidator.cs:line 70</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6831fad8-50c6-71fd-1fb7-8ee3ba720bb1">
+      <Execution id="1a99fe8d-d4f3-4678-9e9e-1cb8323fff8c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests" name="Readiness_requires_the_exact_role_and_privilege_boundary" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="6831fad8-50c6-71fd-1fb7-8ee3ba720bb1" executionId="1a99fe8d-d4f3-4678-9e9e-1cb8323fff8c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:01.51]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.69]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.70]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:20.66]       TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessException : PROD_VERIFICATION_PERSISTENCE_PRIVILEGE_INVALID&#xD;
+[xUnit.net 00:00:20.66]       ---- Npgsql.PostgresException : 22023: ACL arrays must be one-dimensional&#xD;
+[xUnit.net 00:00:20.66]       Stack Trace:&#xD;
+[xUnit.net 00:00:20.66]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\VerificationPersistenceReadinessValidator.cs(83,0): at TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessValidator.ValidateAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:20.66]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(190,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:20.66]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(258,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:20.66]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(263,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:20.66]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(263,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:20.66]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\VerificationPersistencePrincipalTests.cs(263,0): at TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary()&#xD;
+[xUnit.net 00:00:20.66]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:20.66]         ----- Inner Stack Trace -----&#xD;
+[xUnit.net 00:00:20.66]            at Npgsql.Internal.NpgsqlConnector.ReadMessageLong(Boolean async, DataRowLoadingMode dataRowLoadingMode, Boolean readingNotifications, Boolean isReadingPrependedMessage)&#xD;
+[xUnit.net 00:00:20.66]            at System.Runtime.CompilerServices.PoolingAsyncValueTaskMethodBuilder`1.StateMachineBox`1.System.Threading.Tasks.Sources.IValueTaskSource&lt;TResult&gt;.GetResult(Int16 token)&#xD;
+[xUnit.net 00:00:20.66]            at Npgsql.NpgsqlDataReader.&lt;ReadMessage&gt;g__ReadMessageSequential|49_0(NpgsqlConnector connector, Boolean async)&#xD;
+[xUnit.net 00:00:20.66]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:20.66]            at Npgsql.NpgsqlDataReader.NextResult(Boolean async, Boolean isConsuming, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:20.66]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:20.66]            at Npgsql.NpgsqlCommand.ExecuteReader(Boolean async, CommandBehavior behavior, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:20.66]            at Npgsql.NpgsqlCommand.ExecuteScalar(Boolean async, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:20.66]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\VerificationPersistenceReadinessValidator.cs(258,0): at TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessValidator.PrivilegesAreValidAsync(NpgsqlConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:20.66]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\VerificationPersistenceReadinessValidator.cs(258,0): at TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessValidator.PrivilegesAreValidAsync(NpgsqlConnection connection, CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:20.66]         D:\Task\Remote Signing\TagEkyc\src\TagEkyc.Infrastructure\Persistence\VerificationPersistenceReadinessValidator.cs(70,0): at TagEkyc.Infrastructure.Persistence.VerificationPersistenceReadinessValidator.ValidateAsync(CancellationToken cancellationToken)&#xD;
+[xUnit.net 00:00:21.48]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-02T10:21:27.8744508+07:00">
+        <Text>[xUnit.net 00:00:20.66]     TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

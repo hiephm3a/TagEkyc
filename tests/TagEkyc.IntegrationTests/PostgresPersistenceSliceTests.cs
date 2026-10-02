@@ -27,6 +27,60 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
     public Task DisposeAsync() => Task.CompletedTask;
 
     [Fact]
+    public async Task Production_shaped_api_login_completes_the_core_verification_flow()
+    {
+        await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("verification_persistence_flow");
+        await using var admin = isolated.CreateDbContext();
+        var login = "verification_api_" + Guid.NewGuid().ToString("N");
+        var password = Guid.NewGuid().ToString("N");
+        await admin.Database.ExecuteSqlRawAsync($"""
+            CREATE ROLE {login} LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE
+              NOREPLICATION NOBYPASSRLS INHERIT PASSWORD '{password}';
+            GRANT tagekyc_runtime TO {login} WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
+            GRANT tagekyc_application_persistence TO {login} WITH ADMIN FALSE, INHERIT TRUE, SET FALSE;
+            """);
+        try
+        {
+            var restrictedConnection = new NpgsqlConnectionStringBuilder(admin.Database.GetConnectionString())
+            {
+                Username = login,
+                Password = password,
+                Pooling = false,
+            }.ConnectionString;
+
+            await using (var restricted = new TagEkycDbContext(
+                new DbContextOptionsBuilder<TagEkycDbContext>().UseNpgsql(restrictedConnection).Options))
+            {
+                await new ApplicationPersistenceReadinessValidator(restricted).ValidateAsync(CancellationToken.None);
+            }
+
+            await using (var provider = BuildProvider(restrictedConnection))
+            {
+                var session = await CreateCaptureQualitySessionAsync(provider, "external-restricted-api");
+                var artifact = await AppendArtifactAsync(provider, session.VerificationSessionId);
+                await AppendEvidenceAsync(provider, session.VerificationSessionId, artifact.CaptureArtifactId);
+                var completed = await CompleteAsync(provider, session.VerificationSessionId);
+
+                Assert.False(string.IsNullOrWhiteSpace(completed.EvidencePackageId));
+                Assert.False(string.IsNullOrWhiteSpace(completed.EvidencePackageHash));
+            }
+
+            Assert.Equal(1, await admin.Sessions.CountAsync());
+            Assert.Equal(1, await admin.CaptureArtifacts.CountAsync());
+            Assert.Equal(1, await admin.EvidenceResults.CountAsync());
+            Assert.Equal(1, await admin.VerificationDecisions.CountAsync());
+            Assert.Equal(1, await admin.EvidencePackages.CountAsync());
+            Assert.Equal(1, await admin.EvidenceManifests.CountAsync());
+            Assert.True(await admin.AuditEvents.CountAsync() >= 4);
+            Assert.Equal(2, await admin.AppendIdempotencyRecords.CountAsync());
+        }
+        finally
+        {
+            await admin.Database.ExecuteSqlRawAsync($"DROP OWNED BY {login}; DROP ROLE {login};");
+        }
+    }
+
+    [Fact]
     public async Task S1_flow_persists_idempotently_and_survives_service_restart()
     {
         await using var provider = BuildProvider();
@@ -599,12 +653,12 @@ public sealed class PostgresPersistenceSliceTests(PostgresPersistenceFixture pos
         Assert.Contains("PROD_PERSISTENCE_INMEMORY_FORBIDDEN", exception.ToString(), StringComparison.Ordinal);
     }
 
-    private ServiceProvider BuildProvider()
+    private ServiceProvider BuildProvider(string? connectionString = null)
     {
         var services = new ServiceCollection();
         services.AddSingleton<LocalDevRuntimePolicySource>();
         services.AddSingleton<ILocalDevClientPolicyProvider>(sp => sp.GetRequiredService<LocalDevRuntimePolicySource>());
-        services.AddTagEkycPostgresPersistence(postgres.ConnectionString);
+        services.AddTagEkycPostgresPersistence(connectionString ?? postgres.ConnectionString);
         services.AddSingleton<IEvidenceSigner, LocalDevEs256JwsEvidenceSigner>();
         services.AddScoped<EfPersistenceFaultInjector>();
         services.AddScoped<VerificationSessionApplicationService>();

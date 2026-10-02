@@ -1,0 +1,105 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="b33a8be8-ddcb-4b09-8f58-05ef54ceb61a" name="3AVNN@LEARNPC 2026-10-02 15:57:46" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-02T15:57:46.6066434+07:00" queuing="2026-10-02T15:57:46.6066437+07:00" start="2026-10-02T15:57:17.8805644+07:00" finish="2026-10-02T15:57:46.8078022+07:00" />
+  <TestSettings name="default" id="d9192146-ff8a-4da4-a1d7-dc7bec52f84f">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-02_15_57_46" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="67a18c2d-9493-4e36-b57f-9a64196d1fe8" testId="37d7e42f-a0a5-112c-55f2-47ce8abc720a" testName="TagEkyc.IntegrationTests.Tip88C1C5RecipientManagementTests.C526_canonical_chain_uses_real_c1_c2_c3_c4_and_managed_auth_surfaces" computerName="LEARNPC" duration="00:00:15.5192510" startTime="2026-10-02T15:57:45.6117162+07:00" endTime="2026-10-02T15:57:45.6117375+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="67a18c2d-9493-4e36-b57f-9a64196d1fe8">
+      <Output>
+        <ErrorInfo>
+          <Message>OBSERVED_RED:C526-DELIVERY-CONTROL-PLANE-HTTP; details=C526-DELIVERY-CONTROL-PLANE-HTTP: observed=bind=503;status= | C526-DELIVERY-CONTROL-PLANE-HTTP: observed=read=404;job=00000000-0000-0000-0000-000000000000;policyCalls=0</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C5RecipientManagementTests.C5ObservationCollector.ThrowIfAny() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C5RecipientManagementTests.cs:line 3874&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C5RecipientManagementTests.DisposeAsync() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C5RecipientManagementTests.cs:line 45</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C5RecipientManagementTests.C526_canonical_chain_uses_real_c1_c2_c3_c4_and_managed_auth_surfaces" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="37d7e42f-a0a5-112c-55f2-47ce8abc720a">
+      <Execution id="67a18c2d-9493-4e36-b57f-9a64196d1fe8" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C5RecipientManagementTests" name="C526_canonical_chain_uses_real_c1_c2_c3_c4_and_managed_auth_surfaces" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="37d7e42f-a0a5-112c-55f2-47ce8abc720a" executionId="67a18c2d-9493-4e36-b57f-9a64196d1fe8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.14]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.36]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.36]   Starting:    TagEkyc.IntegrationTests&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."ExportDecisionId", r."ApiKeyId", r."BoundRuleSetVersion", r."ClientApplicationId", r."ConsentEvaluatedAtUtc", r."ConsentRevision", r."ConsentScopeHash", r."ConsentValidFromUtc", r."ConsentValidUntilUtc", r."CurrentRuleSetVersion", r."DecidedAtUtc", r."DecisionExpiresAtUtc", r."EligibilityEvaluatedAtUtc", r."EligibilityPrimaryCause", r."FingerprintHash", r."GrantPolicyId", r."GrantPolicyVersion", r."GrantPrincipalId", r."GrantRevision", r."LifecyclePolicyId", r."LifecyclePolicyVersion", r."LifecycleRevision", r."Outcome", r."PolicyId", r."PolicyPermitTtlSeconds", r."PolicyVersion", r."PrimaryCause", r."PrincipalId", r."PurposeCode", r."RawClassSelectionMode", r."RecipientClientApplicationId", r."RequestedVerificationSessionId", r."ResolvedVerificationSessionId", r."SessionOwnerClientApplicationId", r."SessionState", r."SessionSubjectRef", r."SubjectConsentCause", r."SubjectConsentRecordId"&#xD;
+      FROM tagekyc.raw_export_authorization_decisions AS r&#xD;
+      WHERE r."ExportDecisionId" = @__exportDecisionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."Ordinal", r."Cause"&#xD;
+      FROM tagekyc.raw_export_decision_eligibility_causes AS r&#xD;
+      WHERE r."ExportDecisionId" = @__exportDecisionId_0&#xD;
+      ORDER BY r."Ordinal"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."Ordinal", r."RequirementType", r."FulfillmentEventId", r."Revision", r."ArtifactRef", r."ArtifactVersion", r."ValidUntilUtc"&#xD;
+      FROM tagekyc.raw_export_decision_fulfillment_refs AS r&#xD;
+      WHERE r."ExportDecisionId" = @__exportDecisionId_0&#xD;
+      ORDER BY r."Ordinal"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."ClassKind", r."RawClass", r."Ordinal"&#xD;
+      FROM tagekyc.raw_export_decision_classes AS r&#xD;
+      WHERE r."ExportDecisionId" = @__exportDecisionId_0&#xD;
+      ORDER BY r."ClassKind", r."Ordinal"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__exportDecisionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."PermitId", r."AuthorizationDecisionId", r."CreatedAt", r."DecisionExpiresAtUtc", r."PolicyId", r."PolicyVersion", r."PurposeCode", r."RecipientClientApplicationId", r."ResolvedVerificationSessionId", r."SchemaVersion", r."SubjectRef"&#xD;
+      FROM tagekyc.raw_export_authorization_permits AS r&#xD;
+      WHERE r."AuthorizationDecisionId" = @__exportDecisionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__permitRow_PermitId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT r."RawClass", r."Ordinal"&#xD;
+      FROM tagekyc.raw_export_permit_classes AS r&#xD;
+      WHERE r."PermitId" = @__permitRow_PermitId_0&#xD;
+      ORDER BY r."Ordinal"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__parsed_Prefix_0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."ApiKeyId", a."AllowedCaptureAgentIdsJson", a."AllowedClientApplicationIdsJson", a."CallerCategory", a."ClientApplicationId", a."CreatedAt", a."CredentialRef", a."CredentialStatus", a."CredentialType", a."ExpiresAt", a."KeyHash", a."KeyPrefix", a."MtlsSubjectDn", a."OAuthClientId", a."PrincipalId", a."ScopesJson", a.xmin&#xD;
+      FROM tagekyc.api_keys AS a&#xD;
+      WHERE a."KeyPrefix" = @__parsed_Prefix_0&#xD;
+      LIMIT 2&#xD;
+[xUnit.net 00:00:27.42]       OBSERVED_RED:C526-DELIVERY-CONTROL-PLANE-HTTP; details=C526-DELIVERY-CONTROL-PLANE-HTTP: observed=bind=503;status= | C526-DELIVERY-CONTROL-PLANE-HTTP: observed=read=404;job=00000000-0000-0000-0000-000000000000;policyCalls=0&#xD;
+[xUnit.net 00:00:27.42]       Stack Trace:&#xD;
+[xUnit.net 00:00:27.42]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C5RecipientManagementTests.cs(3874,0): at TagEkyc.IntegrationTests.Tip88C1C5RecipientManagementTests.C5ObservationCollector.ThrowIfAny()&#xD;
+[xUnit.net 00:00:27.42]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C5RecipientManagementTests.cs(45,0): at TagEkyc.IntegrationTests.Tip88C1C5RecipientManagementTests.DisposeAsync()&#xD;
+[xUnit.net 00:00:28.55]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-02T15:57:45.6091030+07:00">
+        <Text>[xUnit.net 00:00:27.42]     TagEkyc.IntegrationTests.Tip88C1C5RecipientManagementTests.C526_canonical_chain_uses_real_c1_c2_c3_c4_and_managed_auth_surfaces [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

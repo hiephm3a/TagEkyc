@@ -1,0 +1,339 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="3f2b9077-6fe4-4ab0-8394-43a3bee4ca45" name="3AVNN@LEARNPC 2026-10-02 14:07:25" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-02T14:07:25.4022255+07:00" queuing="2026-10-02T14:07:25.4022259+07:00" start="2026-10-02T14:07:16.4317667+07:00" finish="2026-10-02T14:09:03.3143707+07:00" />
+  <TestSettings name="default" id="54aff632-8996-4176-925d-487292d674c9">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-02_14_07_25" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="bf7a6801-b25b-4db8-aa3d-837fb5dd6f24" testId="927b66f8-cbf5-e3f1-8da2-c25b067f8191" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 6)" computerName="LEARNPC" duration="00:00:04.8884686" startTime="2026-10-02T14:07:30.2509449+07:00" endTime="2026-10-02T14:07:30.2509451+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bf7a6801-b25b-4db8-aa3d-837fb5dd6f24" />
+    <UnitTestResult executionId="21590c83-dcbc-499b-bee7-c3cd29cd4558" testId="dd0f22a1-0aaa-2a6d-1ca1-23f29ab21f25" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Two_independent_consumers_can_consume_the_same_run_only_once" computerName="LEARNPC" duration="00:00:04.9182094" startTime="2026-10-02T14:08:05.9420594+07:00" endTime="2026-10-02T14:08:05.9420597+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="21590c83-dcbc-499b-bee7-c3cd29cd4558" />
+    <UnitTestResult executionId="9f7f96dd-18dc-463e-9fba-33024be9134c" testId="aa1e128a-c03e-ae53-e635-79d8771eee7b" testName="TagEkyc.IntegrationTests.PostgresPersistenceSliceTests.Production_shaped_api_login_completes_the_core_verification_flow" computerName="LEARNPC" duration="00:00:01.4024168" startTime="2026-10-02T14:08:33.6247211+07:00" endTime="2026-10-02T14:08:33.6247213+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9f7f96dd-18dc-463e-9fba-33024be9134c" />
+    <UnitTestResult executionId="1cd0fedb-367a-4ffb-b3ec-61f6fee1e546" testId="ef1816f5-7fcb-ffa8-b1d4-c14a6a27a53a" testName="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid" computerName="LEARNPC" duration="00:00:00.2062035" startTime="2026-10-02T14:08:51.3979757+07:00" endTime="2026-10-02T14:08:51.3979758+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1cd0fedb-367a-4ffb-b3ec-61f6fee1e546" />
+    <UnitTestResult executionId="94432b36-b2e0-40ac-a876-230e8f8a6be3" testId="0018c534-49bd-292b-9e99-cb45970488ac" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 2)" computerName="LEARNPC" duration="00:00:07.9419800" startTime="2026-10-02T14:07:25.3620672+07:00" endTime="2026-10-02T14:07:25.3620910+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="94432b36-b2e0-40ac-a876-230e8f8a6be3" />
+    <UnitTestResult executionId="ed879dd3-146a-4a47-9ee9-340c010495dd" testId="4315f2e5-024a-9571-a34e-2f6597f136c8" testName="TagEkyc.IntegrationTests.Tip88B1RawExportControlPlaneTests.Readiness_function_acl_manifest_uses_actual_validator_and_rejects_drift" computerName="LEARNPC" duration="00:00:00.4228174" startTime="2026-10-02T14:08:56.3763834+07:00" endTime="2026-10-02T14:08:56.3763836+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ed879dd3-146a-4a47-9ee9-340c010495dd" />
+    <UnitTestResult executionId="c10545d3-32c5-4b47-8794-b3daaf68dd7a" testId="5c2933a2-4e87-83e0-5755-e0036cc3b77b" testName="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_direct_access_fails_42501_on_all_raw_export_tables" computerName="LEARNPC" duration="00:00:00.0722595" startTime="2026-10-02T14:08:37.9440434+07:00" endTime="2026-10-02T14:08:37.9440436+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c10545d3-32c5-4b47-8794-b3daaf68dd7a" />
+    <UnitTestResult executionId="62186d37-6b13-4357-9e8f-4e682d3ce3d1" testId="1641aa85-dd9c-88a3-fb9c-c75e5ef8e0df" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rechecks_database_clock_after_waiting_past_expiry" computerName="LEARNPC" duration="00:00:06.1920811" startTime="2026-10-02T14:08:01.0234331+07:00" endTime="2026-10-02T14:08:01.0234333+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="62186d37-6b13-4357-9e8f-4e682d3ce3d1" />
+    <UnitTestResult executionId="e4877569-b893-4007-86b7-9f6eb1de9559" testId="b0b041ba-63cf-f548-0446-0640034d9492" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 0)" computerName="LEARNPC" duration="00:00:05.0176024" startTime="2026-10-02T14:07:44.9589841+07:00" endTime="2026-10-02T14:07:44.9589844+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e4877569-b893-4007-86b7-9f6eb1de9559" />
+    <UnitTestResult executionId="60034ab0-1cca-4888-8e84-03dab87dc8af" testId="0a9df92e-6e52-a890-065c-40a232492ecc" testName="TagEkyc.IntegrationTests.OpenBaoProductionKekProviderTests.Migration_legacy_only_Down_and_reapply_restore_exact_boundary" computerName="LEARNPC" duration="00:00:06.9655622" startTime="2026-10-02T14:08:27.4086696+07:00" endTime="2026-10-02T14:08:27.4086699+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="60034ab0-1cca-4888-8e84-03dab87dc8af" />
+    <UnitTestResult executionId="61eaa429-ad71-48f1-a9e7-d194a72aed73" testId="94ccfd41-e7ce-52dd-ecce-fa3e03e13e83" testName="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.R1_isolated_role_manifests_edges_and_cycle_handling_are_exact" computerName="LEARNPC" duration="00:00:04.8066042" startTime="2026-10-02T14:08:46.9694309+07:00" endTime="2026-10-02T14:08:46.9694314+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="61eaa429-ad71-48f1-a9e7-d194a72aed73" />
+    <UnitTestResult executionId="1d2457bf-eac0-4864-bb50-678573e6d143" testId="6831fad8-50c6-71fd-1fb7-8ee3ba720bb1" testName="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary" computerName="LEARNPC" duration="00:00:00.3270931" startTime="2026-10-02T14:09:02.1309333+07:00" endTime="2026-10-02T14:09:02.1309336+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1d2457bf-eac0-4864-bb50-678573e6d143" />
+    <UnitTestResult executionId="7fa7351f-926c-4c3b-b385-f098821280d4" testId="8a2fe5e5-4bed-ee0b-63e3-0d2799df27ca" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Exact_binding_single_use_causal_handshake_and_security_metadata_round_trip" computerName="LEARNPC" duration="00:00:05.5348046" startTime="2026-10-02T14:08:11.4771973+07:00" endTime="2026-10-02T14:08:11.4771979+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7fa7351f-926c-4c3b-b385-f098821280d4" />
+    <UnitTestResult executionId="eae3c730-04a1-47ce-945d-d3bd28e2ea16" testId="b63c57af-0669-799d-537a-08dee63c9421" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory" computerName="LEARNPC" duration="00:00:04.3913175" startTime="2026-10-02T14:09:00.7679604+07:00" endTime="2026-10-02T14:09:00.7679606+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="eae3c730-04a1-47ce-945d-d3bd28e2ea16" />
+    <UnitTestResult executionId="b1bd4f15-7d4a-49b2-bce9-fb55f060134b" testId="989aee6c-b03a-0ea3-8416-e1563d6ea3bb" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 4)" computerName="LEARNPC" duration="00:00:04.8956354" startTime="2026-10-02T14:07:39.9412170+07:00" endTime="2026-10-02T14:07:39.9412173+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b1bd4f15-7d4a-49b2-bce9-fb55f060134b" />
+    <UnitTestResult executionId="d62e9c14-2e08-4780-8b39-f87cbcb02ea6" testId="760ba5ba-8e17-8475-c867-2e8bb0a1874f" testName="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Real_program_http_flow_uses_the_restricted_ordinary_api_login" computerName="LEARNPC" duration="00:00:01.0354068" startTime="2026-10-02T14:09:01.8036583+07:00" endTime="2026-10-02T14:09:01.8036585+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d62e9c14-2e08-4780-8b39-f87cbcb02ea6" />
+    <UnitTestResult executionId="8885bc85-c9fb-44a6-be9e-6f5440ef7f3c" testId="647fc160-1c58-65fc-a17f-9575bc887826" testName="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Migration_down_removes_database_privileges_and_reapply_restores_the_exact_surface" computerName="LEARNPC" duration="00:00:00.3310747" startTime="2026-10-02T14:09:02.4621706+07:00" endTime="2026-10-02T14:09:02.4621708+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8885bc85-c9fb-44a6-be9e-6f5440ef7f3c" />
+    <UnitTestResult executionId="212a7835-4979-4218-a757-2e9e7d0c995e" testId="ae49bb5d-eef4-15b7-05ca-8cde2f4f2a26" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 3)" computerName="LEARNPC" duration="00:00:04.9200932" startTime="2026-10-02T14:07:54.8302015+07:00" endTime="2026-10-02T14:07:54.8302019+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="212a7835-4979-4218-a757-2e9e7d0c995e" />
+    <UnitTestResult executionId="8bb0365d-398f-468f-961b-87b44e7e3a38" testId="93cdcbdd-705c-8792-9698-c79f10d1f1c1" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 1)" computerName="LEARNPC" duration="00:00:04.9506337" startTime="2026-10-02T14:07:49.9098175+07:00" endTime="2026-10-02T14:07:49.9098178+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8bb0365d-398f-468f-961b-87b44e7e3a38" />
+    <UnitTestResult executionId="39660af5-0e00-425b-857e-df08e01d4267" testId="544c0c2c-7a14-c078-795e-441588e407db" testName="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 5)" computerName="LEARNPC" duration="00:00:04.7939289" startTime="2026-10-02T14:07:35.0454372+07:00" endTime="2026-10-02T14:07:35.0454377+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="39660af5-0e00-425b-857e-df08e01d4267" />
+    <UnitTestResult executionId="b963dc72-32bc-4dfb-9a46-6dd44a1522ad" testId="6645233e-158e-74f8-0ce3-ab89cec0e8b9" testName="TagEkyc.IntegrationTests.OpenBaoProductionKekProviderTests.Migration_Down_rejects_opaque_reservation_before_schema_mutation" computerName="LEARNPC" duration="00:00:00.5486423" startTime="2026-10-02T14:08:27.9574632+07:00" endTime="2026-10-02T14:08:27.9574635+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b963dc72-32bc-4dfb-9a46-6dd44a1522ad" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Readiness_requires_the_exact_role_and_privilege_boundary" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6831fad8-50c6-71fd-1fb7-8ee3ba720bb1">
+      <Execution id="1d2457bf-eac0-4864-bb50-678573e6d143" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests" name="Readiness_requires_the_exact_role_and_privilege_boundary" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ef1816f5-7fcb-ffa8-b1d4-c14a6a27a53a">
+      <Execution id="1cd0fedb-367a-4ffb-b3ec-61f6fee1e546" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests" name="F1_application_login_exact_two_capabilities_is_ready_and_third_membership_turns_role_invalid" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 0)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b0b041ba-63cf-f548-0446-0640034d9492">
+      <Execution id="e4877569-b893-4007-86b7-9f6eb1de9559" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Consume_rejects_each_null_binding_arm_without_consuming_the_run" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 2)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0018c534-49bd-292b-9e99-cb45970488ac">
+      <Execution id="94432b36-b2e0-40ac-a876-230e8f8a6be3" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Consume_rejects_each_null_binding_arm_without_consuming_the_run" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 1)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="93cdcbdd-705c-8792-9698-c79f10d1f1c1">
+      <Execution id="8bb0365d-398f-468f-961b-87b44e7e3a38" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Consume_rejects_each_null_binding_arm_without_consuming_the_run" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 6)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="927b66f8-cbf5-e3f1-8da2-c25b067f8191">
+      <Execution id="bf7a6801-b25b-4db8-aa3d-837fb5dd6f24" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Consume_rejects_each_null_binding_arm_without_consuming_the_run" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 3)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ae49bb5d-eef4-15b7-05ca-8cde2f4f2a26">
+      <Execution id="212a7835-4979-4218-a757-2e9e7d0c995e" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Consume_rejects_each_null_binding_arm_without_consuming_the_run" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88B1RawExportControlPlaneTests.Readiness_function_acl_manifest_uses_actual_validator_and_rejects_drift" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="4315f2e5-024a-9571-a34e-2f6597f136c8">
+      <Execution id="ed879dd3-146a-4a47-9ee9-340c010495dd" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88B1RawExportControlPlaneTests" name="Readiness_function_acl_manifest_uses_actual_validator_and_rejects_drift" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Migration_down_removes_database_privileges_and_reapply_restores_the_exact_surface" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="647fc160-1c58-65fc-a17f-9575bc887826">
+      <Execution id="8885bc85-c9fb-44a6-be9e-6f5440ef7f3c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests" name="Migration_down_removes_database_privileges_and_reapply_restores_the_exact_surface" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionKekProviderTests.Migration_legacy_only_Down_and_reapply_restore_exact_boundary" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0a9df92e-6e52-a890-065c-40a232492ecc">
+      <Execution id="60034ab0-1cca-4888-8e84-03dab87dc8af" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionKekProviderTests" name="Migration_legacy_only_Down_and_reapply_restore_exact_boundary" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.PostgresPersistenceSliceTests.Production_shaped_api_login_completes_the_core_verification_flow" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="aa1e128a-c03e-ae53-e635-79d8771eee7b">
+      <Execution id="9f7f96dd-18dc-463e-9fba-33024be9134c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.PostgresPersistenceSliceTests" name="Production_shaped_api_login_completes_the_core_verification_flow" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Two_independent_consumers_can_consume_the_same_run_only_once" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="dd0f22a1-0aaa-2a6d-1ca1-23f29ab21f25">
+      <Execution id="21590c83-dcbc-499b-bee7-c3cd29cd4558" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Two_independent_consumers_can_consume_the_same_run_only_once" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests.A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b63c57af-0669-799d-537a-08dee63c9421">
+      <Execution id="eae3c730-04a1-47ce-945d-d3bd28e2ea16" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3MigrationTests" name="A3_MigrationDiscovery_FromEmptyMatchesCurrentModelAndHistory" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.OpenBaoProductionKekProviderTests.Migration_Down_rejects_opaque_reservation_before_schema_mutation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6645233e-158e-74f8-0ce3-ab89cec0e8b9">
+      <Execution id="b963dc72-32bc-4dfb-9a46-6dd44a1522ad" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.OpenBaoProductionKekProviderTests" name="Migration_Down_rejects_opaque_reservation_before_schema_mutation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.F1_application_login_direct_access_fails_42501_on_all_raw_export_tables" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5c2933a2-4e87-83e0-5755-e0036cc3b77b">
+      <Execution id="c10545d3-32c5-4b47-8794-b3daaf68dd7a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests" name="F1_application_login_direct_access_fails_42501_on_all_raw_export_tables" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests.R1_isolated_role_manifests_edges_and_cycle_handling_are_exact" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="94ccfd41-e7ce-52dd-ecce-fa3e03e13e83">
+      <Execution id="61eaa429-ad71-48f1-a9e7-d194a72aed73" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88B1E3ResolverReadBoundaryTests" name="R1_isolated_role_manifests_edges_and_cycle_handling_are_exact" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 4)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="989aee6c-b03a-0ea3-8416-e1563d6ea3bb">
+      <Execution id="b1bd4f15-7d4a-49b2-bce9-fb55f060134b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Consume_rejects_each_null_binding_arm_without_consuming_the_run" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests.Real_program_http_flow_uses_the_restricted_ordinary_api_login" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="760ba5ba-8e17-8475-c867-2e8bb0a1874f">
+      <Execution id="d62e9c14-2e08-4780-8b39-f87cbcb02ea6" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.VerificationPersistencePrincipalTests" name="Real_program_http_flow_uses_the_restricted_ordinary_api_login" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Exact_binding_single_use_causal_handshake_and_security_metadata_round_trip" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="8a2fe5e5-4bed-ee0b-63e3-0d2799df27ca">
+      <Execution id="7fa7351f-926c-4c3b-b385-f098821280d4" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Exact_binding_single_use_causal_handshake_and_security_metadata_round_trip" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rejects_each_null_binding_arm_without_consuming_the_run(nullArm: 5)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="544c0c2c-7a14-c078-795e-441588e407db">
+      <Execution id="39660af5-0e00-425b-857e-df08e01d4267" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Consume_rejects_each_null_binding_arm_without_consuming_the_run" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests.Consume_rechecks_database_clock_after_waiting_past_expiry" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="1641aa85-dd9c-88a3-fb9c-c75e5ef8e0df">
+      <Execution id="62186d37-6b13-4357-9e8f-4e682d3ce3d1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.SiteQualificationMeasurementPlanePostgresTests" name="Consume_rechecks_database_clock_after_waiting_past_expiry" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="927b66f8-cbf5-e3f1-8da2-c25b067f8191" executionId="bf7a6801-b25b-4db8-aa3d-837fb5dd6f24" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="dd0f22a1-0aaa-2a6d-1ca1-23f29ab21f25" executionId="21590c83-dcbc-499b-bee7-c3cd29cd4558" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="aa1e128a-c03e-ae53-e635-79d8771eee7b" executionId="9f7f96dd-18dc-463e-9fba-33024be9134c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ef1816f5-7fcb-ffa8-b1d4-c14a6a27a53a" executionId="1cd0fedb-367a-4ffb-b3ec-61f6fee1e546" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0018c534-49bd-292b-9e99-cb45970488ac" executionId="94432b36-b2e0-40ac-a876-230e8f8a6be3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4315f2e5-024a-9571-a34e-2f6597f136c8" executionId="ed879dd3-146a-4a47-9ee9-340c010495dd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5c2933a2-4e87-83e0-5755-e0036cc3b77b" executionId="c10545d3-32c5-4b47-8794-b3daaf68dd7a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="1641aa85-dd9c-88a3-fb9c-c75e5ef8e0df" executionId="62186d37-6b13-4357-9e8f-4e682d3ce3d1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b0b041ba-63cf-f548-0446-0640034d9492" executionId="e4877569-b893-4007-86b7-9f6eb1de9559" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0a9df92e-6e52-a890-065c-40a232492ecc" executionId="60034ab0-1cca-4888-8e84-03dab87dc8af" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="94ccfd41-e7ce-52dd-ecce-fa3e03e13e83" executionId="61eaa429-ad71-48f1-a9e7-d194a72aed73" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6831fad8-50c6-71fd-1fb7-8ee3ba720bb1" executionId="1d2457bf-eac0-4864-bb50-678573e6d143" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="8a2fe5e5-4bed-ee0b-63e3-0d2799df27ca" executionId="7fa7351f-926c-4c3b-b385-f098821280d4" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b63c57af-0669-799d-537a-08dee63c9421" executionId="eae3c730-04a1-47ce-945d-d3bd28e2ea16" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="989aee6c-b03a-0ea3-8416-e1563d6ea3bb" executionId="b1bd4f15-7d4a-49b2-bce9-fb55f060134b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="760ba5ba-8e17-8475-c867-2e8bb0a1874f" executionId="d62e9c14-2e08-4780-8b39-f87cbcb02ea6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="647fc160-1c58-65fc-a17f-9575bc887826" executionId="8885bc85-c9fb-44a6-be9e-6f5440ef7f3c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ae49bb5d-eef4-15b7-05ca-8cde2f4f2a26" executionId="212a7835-4979-4218-a757-2e9e7d0c995e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="93cdcbdd-705c-8792-9698-c79f10d1f1c1" executionId="8bb0365d-398f-468f-961b-87b44e7e3a38" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="544c0c2c-7a14-c078-795e-441588e407db" executionId="39660af5-0e00-425b-857e-df08e01d4267" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6645233e-158e-74f8-0ce3-ab89cec0e8b9" executionId="b963dc72-32bc-4dfb-9a46-6dd44a1522ad" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="21" executed="21" passed="21" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.26]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.42]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.43]   Starting:    TagEkyc.IntegrationTests&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__clientApplicationId_0='?' (DbType = Guid), @__externalSessionId_1='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."ClientApplicationId" = @__clientApplicationId_0 AND v."ExternalSessionId" = @__externalSessionId_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?' (DbType = Boolean), @p2='?', @p3='?', @p4='?', @p5='?', @p6='?' (DbType = Guid), @p7='?' (DbType = DateTime), @p8='?', @p9='?' (DbType = DateTime), @p10='?', @p11='?', @p12='?' (DbType = Guid), @p13='?' (DbType = DateTime), @p14='?', @p15='?', @p16='?' (DbType = Guid), @p17='?', @p18='?', @p19='?', @p20='?', @p21='?', @p22='?', @p23='?', @p24='?' (DbType = Object), @p25='?', @p26='?', @p27='?', @p28='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO tagekyc.verification_sessions ("Id", "AccessAuditRequired", "ActorCategory", "ActorId", "AssuranceLevel", "BindingNonceHash", "ClientApplicationId", "CompletedAt", "CorrelationId", "CreatedAt", "DeletionEligibility", "EvidencePackageHash", "EvidencePackageId", "ExpiresAt", "ExternalSessionId", "ExternalTransactionId", "FinalDecisionId", "LegalHoldStatus", "ManifestHash", "PolicySnapshotId", "Profile", "PurgeBlockReason", "Purpose", "RequestId", "RequiredChecksJson", "Result", "RetentionClass", "State", "SubjectRef")&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28)&#xD;
+      RETURNING xmin;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?', @p3='?' (DbType = Guid), @p4='?', @p5='?', @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO tagekyc.audit_events ("Id", "ActorId", "ActorType", "ClientApplicationId", "CorrelationId", "EventPayloadHash", "EventPayloadRef", "EventType", "OccurredAt", "RequestId", "VerificationSessionId")&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10);&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid), @__idempotencyKey_1='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."VerificationSessionId", a."IdempotencyKey", a."CreatedAt", a."EndpointKind", a."Fingerprint", a."MintedId", a."SubmissionSlot"&#xD;
+      FROM tagekyc.append_idempotency_records AS a&#xD;
+      WHERE a."VerificationSessionId" = @__verificationSessionId_0 AND a."IdempotencyKey" = @__idempotencyKey_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid), @__idempotencyKey_1='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."VerificationSessionId", a."IdempotencyKey", a."CreatedAt", a."EndpointKind", a."Fingerprint", a."MintedId", a."SubmissionSlot"&#xD;
+      FROM tagekyc.append_idempotency_records AS a&#xD;
+      WHERE a."VerificationSessionId" = @__verificationSessionId_0 AND a."IdempotencyKey" = @__idempotencyKey_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@p0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(@p0,70))&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid), @__idempotencyKey_1='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."VerificationSessionId", a."IdempotencyKey", a."CreatedAt", a."EndpointKind", a."Fingerprint", a."MintedId", a."SubmissionSlot"&#xD;
+      FROM tagekyc.append_idempotency_records AS a&#xD;
+      WHERE a."VerificationSessionId" = @__verificationSessionId_0 AND a."IdempotencyKey" = @__idempotencyKey_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p0='?', @p1='?' (DbType = Guid), @p2='?' (DbType = DateTime), @p3='?', @p4='?', @p5='?' (DbType = Guid), @p6='?', @p7='?' (DbType = Guid), @p8='?', @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?', @p13='?', @p14='?', @p15='?' (DbType = DateTime), @p16='?', @p17='?' (DbType = Guid), @p18='?' (DbType = Guid), @p19='?', @p20='?', @p21='?' (DbType = Guid), @p22='?', @p23='?', @p24='?', @p25='?', @p26='?' (DbType = DateTime), @p27='?', @p28='?' (DbType = Guid), @p29='?' (DbType = Guid), @p30='?', @p31='?', @p32='?', @p33='?', @p34='?', @p35='?' (DbType = DateTime), @p36='?', @p37='?' (DbType = DateTime), @p38='?', @p39='?', @p40='?', @p41='?', @p42='?', @p43='?' (DbType = Guid), @p45='?' (DbType = Guid), @p44='?', @p46='?' (DbType = Object)], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO tagekyc.append_idempotency_records ("IdempotencyKey", "VerificationSessionId", "CreatedAt", "EndpointKind", "Fingerprint", "MintedId", "SubmissionSlot")&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);&#xD;
+      INSERT INTO tagekyc.audit_events ("Id", "ActorId", "ActorType", "ClientApplicationId", "CorrelationId", "EventPayloadHash", "EventPayloadRef", "EventType", "OccurredAt", "RequestId", "VerificationSessionId")&#xD;
+      VALUES (@p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17);&#xD;
+      INSERT INTO tagekyc.audit_events ("Id", "ActorId", "ActorType", "ClientApplicationId", "CorrelationId", "EventPayloadHash", "EventPayloadRef", "EventType", "OccurredAt", "RequestId", "VerificationSessionId")&#xD;
+      VALUES (@p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28);&#xD;
+      INSERT INTO tagekyc.capture_artifacts ("Id", "ArtifactHash", "ArtifactType", "CaptureAgentId", "CaptureSource", "CorrelationId", "CreatedAt", "DeviceId", "ExpiresAt", "MetadataHash", "QualityState", "RequestId", "RetryReasonCode", "VaultRef", "VerificationSessionId")&#xD;
+      VALUES (@p29, @p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41, @p42, @p43);&#xD;
+      UPDATE tagekyc.verification_sessions SET "State" = @p44&#xD;
+      WHERE "Id" = @p45 AND xmin = @p46&#xD;
+      RETURNING xmin;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid), @__idempotencyKey_1='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."VerificationSessionId", a."IdempotencyKey", a."CreatedAt", a."EndpointKind", a."Fingerprint", a."MintedId", a."SubmissionSlot"&#xD;
+      FROM tagekyc.append_idempotency_records AS a&#xD;
+      WHERE a."VerificationSessionId" = @__verificationSessionId_0 AND a."IdempotencyKey" = @__idempotencyKey_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT c."Id", c."ArtifactHash", c."ArtifactType", c."CaptureAgentId", c."CaptureSource", c."CorrelationId", c."CreatedAt", c."DeviceId", c."ExpiresAt", c."MetadataHash", c."QualityState", c."RequestId", c."RetryReasonCode", c."VaultRef", c."VerificationSessionId"&#xD;
+      FROM tagekyc.capture_artifacts AS c&#xD;
+      WHERE c."VerificationSessionId" = @__verificationSessionId_0&#xD;
+      ORDER BY c."CreatedAt"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT e."Id", e."Confidence", e."CorrelationId", e."CreatedAt", e."EngineName", e."EngineVersion", e."InputCaptureArtifactIdsJson", e."PayloadHash", e."PayloadSignatureStatus", e."ReasonCodesJson", e."RequestId", e."Result", e."ResultType", e."RetryReasonCode", e."SanitizedSummaryRef", e."VerificationCheckId", e."VerificationSessionId"&#xD;
+      FROM tagekyc.evidence_results AS e&#xD;
+      WHERE e."VerificationSessionId" = @__verificationSessionId_0&#xD;
+      ORDER BY e."CreatedAt"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid), @__idempotencyKey_1='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."VerificationSessionId", a."IdempotencyKey", a."CreatedAt", a."EndpointKind", a."Fingerprint", a."MintedId", a."SubmissionSlot"&#xD;
+      FROM tagekyc.append_idempotency_records AS a&#xD;
+      WHERE a."VerificationSessionId" = @__verificationSessionId_0 AND a."IdempotencyKey" = @__idempotencyKey_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p0='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT pg_catalog.pg_advisory_xact_lock(pg_catalog.hashtextextended(@p0,70))&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid), @__idempotencyKey_1='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."VerificationSessionId", a."IdempotencyKey", a."CreatedAt", a."EndpointKind", a."Fingerprint", a."MintedId", a."SubmissionSlot"&#xD;
+      FROM tagekyc.append_idempotency_records AS a&#xD;
+      WHERE a."VerificationSessionId" = @__verificationSessionId_0 AND a."IdempotencyKey" = @__idempotencyKey_1&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (0ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@p0='?', @p1='?' (DbType = Guid), @p2='?' (DbType = DateTime), @p3='?', @p4='?', @p5='?' (DbType = Guid), @p6='?', @p7='?' (DbType = Guid), @p8='?', @p9='?', @p10='?' (DbType = Guid), @p11='?', @p12='?', @p13='?', @p14='?', @p15='?' (DbType = DateTime), @p16='?', @p17='?' (DbType = Guid), @p18='?' (DbType = Guid), @p19='?', @p20='?', @p21='?' (DbType = Guid), @p22='?', @p23='?', @p24='?', @p25='?', @p26='?' (DbType = DateTime), @p27='?', @p28='?' (DbType = Guid), @p29='?' (DbType = Guid), @p30='?' (DbType = Decimal), @p31='?', @p32='?' (DbType = DateTime), @p33='?', @p34='?', @p35='?' (DbType = Object), @p36='?', @p37='?', @p38='?' (DbType = Object), @p39='?', @p40='?', @p41='?', @p42='?', @p43='?', @p44='?' (DbType = Guid), @p45='?' (DbType = Guid), @p47='?' (DbType = Guid), @p46='?', @p48='?' (DbType = Object)], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO tagekyc.append_idempotency_records ("IdempotencyKey", "VerificationSessionId", "CreatedAt", "EndpointKind", "Fingerprint", "MintedId", "SubmissionSlot")&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6);&#xD;
+      INSERT INTO tagekyc.audit_events ("Id", "ActorId", "ActorType", "ClientApplicationId", "CorrelationId", "EventPayloadHash", "EventPayloadRef", "EventType", "OccurredAt", "RequestId", "VerificationSessionId")&#xD;
+      VALUES (@p7, @p8, @p9, @p10, @p11, @p12, @p13, @p14, @p15, @p16, @p17);&#xD;
+      INSERT INTO tagekyc.audit_events ("Id", "ActorId", "ActorType", "ClientApplicationId", "CorrelationId", "EventPayloadHash", "EventPayloadRef", "EventType", "OccurredAt", "RequestId", "VerificationSessionId")&#xD;
+      VALUES (@p18, @p19, @p20, @p21, @p22, @p23, @p24, @p25, @p26, @p27, @p28);&#xD;
+      INSERT INTO tagekyc.evidence_results ("Id", "Confidence", "CorrelationId", "CreatedAt", "EngineName", "EngineVersion", "InputCaptureArtifactIdsJson", "PayloadHash", "PayloadSignatureStatus", "ReasonCodesJson", "RequestId", "Result", "ResultType", "RetryReasonCode", "SanitizedSummaryRef", "VerificationCheckId", "VerificationSessionId")&#xD;
+      VALUES (@p29, @p30, @p31, @p32, @p33, @p34, @p35, @p36, @p37, @p38, @p39, @p40, @p41, @p42, @p43, @p44, @p45);&#xD;
+      UPDATE tagekyc.verification_sessions SET "State" = @p46&#xD;
+      WHERE "Id" = @p47 AND xmin = @p48&#xD;
+      RETURNING xmin;&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__verificationSessionId_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT e."Id", e."Confidence", e."CorrelationId", e."CreatedAt", e."EngineName", e."EngineVersion", e."InputCaptureArtifactIdsJson", e."PayloadHash", e."PayloadSignatureStatus", e."ReasonCodesJson", e."RequestId", e."Result", e."ResultType", e."RetryReasonCode", e."SanitizedSummaryRef", e."VerificationCheckId", e."VerificationSessionId"&#xD;
+      FROM tagekyc.evidence_results AS e&#xD;
+      WHERE e."VerificationSessionId" = @__verificationSessionId_0&#xD;
+      ORDER BY e."CreatedAt"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT c."Id", c."ArtifactHash", c."ArtifactType", c."CaptureAgentId", c."CaptureSource", c."CorrelationId", c."CreatedAt", c."DeviceId", c."ExpiresAt", c."MetadataHash", c."QualityState", c."RequestId", c."RetryReasonCode", c."VaultRef", c."VerificationSessionId"&#xD;
+      FROM tagekyc.capture_artifacts AS c&#xD;
+      WHERE c."VerificationSessionId" = @__verificationSessionId_0&#xD;
+      ORDER BY c."CreatedAt"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__verificationSessionId_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT a."Id", a."ActorId", a."ActorType", a."ClientApplicationId", a."CorrelationId", a."EventPayloadHash", a."EventPayloadRef", a."EventType", a."OccurredAt", a."RequestId", a."VerificationSessionId"&#xD;
+      FROM tagekyc.audit_events AS a&#xD;
+      WHERE a."VerificationSessionId" = @__verificationSessionId_0&#xD;
+      ORDER BY a."OccurredAt"&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (1ms) [Parameters=[@__write_ExpectedSession_Id_0='?' (DbType = Guid)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT v."Id", v."AccessAuditRequired", v."ActorCategory", v."ActorId", v."AssuranceLevel", v."BindingNonceHash", v."ClientApplicationId", v."CompletedAt", v."CorrelationId", v."CreatedAt", v."DeletionEligibility", v."EvidencePackageHash", v."EvidencePackageId", v."ExpiresAt", v."ExternalSessionId", v."ExternalTransactionId", v."FinalDecisionId", v."LegalHoldStatus", v."ManifestHash", v."PolicySnapshotId", v."Profile", v."PurgeBlockReason", v."Purpose", v."RequestId", v."RequiredChecksJson", v."Result", v."RetentionClass", v."State", v."SubjectRef", v.xmin&#xD;
+      FROM tagekyc.verification_sessions AS v&#xD;
+      WHERE v."Id" = @__write_ExpectedSession_Id_0&#xD;
+      LIMIT 2&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[session_id='?' (DbType = Guid), client_id='?' (DbType = Guid), principal_id='?' (DbType = Guid), @__p_1='?' (DbType = Int32)], CommandType='Text', CommandTimeout='30']&#xD;
+      SELECT t."CaptureAcceptanceId", t."CaptureRevision", t."RawClass", t."Required"&#xD;
+      FROM (&#xD;
+          SELECT "Required", "RawClass", "CaptureAcceptanceId", "CaptureRevision"&#xD;
+          FROM tagekyc.raw_export_select_runtime_sources_on_completion(&#xD;
+              @session_id,@client_id,@principal_id)&#xD;
+      ) AS t&#xD;
+      LIMIT @__p_1&#xD;
+info: Microsoft.EntityFrameworkCore.Database.Command[20101]&#xD;
+      Executed DbCommand (2ms) [Parameters=[@p0='?' (DbType = Guid), @p1='?', @p2='?', @p3='?' (DbType = Guid), @p4='?', @p5='?', @p6='?', @p7='?', @p8='?' (DbType = DateTime), @p9='?', @p10='?' (DbType = Guid), @p11='?' (DbType = Guid), @p12='?' (DbType = Object), @p13='?', @p14='?' (DbType = DateTime), @p15='?', @p16='?' (DbType = Object), @p17='?', @p18='?', @p19='?', @p20='?', @p21='?' (DbType = Guid), @p22='?' (DbType = Guid), @p23='?' (DbType = Guid), @p24='?', @p25='?' (DbType = Object), @p26='?' (DbType = DateTime), @p27='?' (DbType = Object), @p28='?' (DbType = Object), @p29='?', @p30='?' (DbType = Object), @p31='?' (DbType = Decimal), @p32='?' (DbType = Guid), @p43='?' (DbType = Guid), @p33='?', @p34='?' (DbType = DateTime), @p35='?', @p36='?', @p37='?' (DbType = Guid), @p38='?' (DbType = Guid), @p39='?', @p40='?', @p41='?', @p42='?', @p44='?' (DbType = Object), @p45='?' (DbType = Guid), @p46='?' (DbType = Object), @p47='?', @p48='?' (DbType = DateTime), @p49='?', @p50='?' (DbType = Object), @p51='?', @p52='?', @p53='?', @p54='?', @p55='?', @p56='?', @p57='?', @p58='?' (DbType = Guid), @p59='?' (DbType = Guid), @p60='?', @p61='?', @p62='?', @p63='?', @p64='?' (DbType = DateTime), @p65='?'], CommandType='Text', CommandTimeout='30']&#xD;
+      INSERT INTO tagekyc.audit_events ("Id", "ActorId", "ActorType", "ClientApplicationId", "CorrelationId", "EventPayloadHash", "EventPayloadRef", "EventType", "OccurredAt", "RequestId", "VerificationSessionId")&#xD;
+      VALUES (@p0, @p1, @p2, @p3, @p4, @p5, @p6, @p7, @p8, @p9, @p10);&#xD;
+      INSERT INTO tagekyc.evidence_packages ("Id", "AuditEventRefsJson", "CanonicalizationScheme", "CreatedAt", "EvidencePackageSignatureStatus", "EvidenceRefsJson", "HashAlgorithm", "ManifestHash", "PackageHash", "PackageVersion", "ResultRef", "VerificationSessionId")&#xD;
+      VALUES (@p11, @p12, @p13, @p14, @p15, @p16, @p17, @p18, @p19, @p20, @p21, @p22);&#xD;
+      INSERT INTO tagekyc.verification_decisions ("Id", "AssuranceLevel", "CompletedChecksJson", "CreatedAt", "DecisionReasonCodesJson", "FailedChecksJson", "Result", "RetryReasonCodesJson", "RiskScore", "VerificationSessionId")&#xD;
+      VALUES (@p23, @p24, @p25, @p26, @p27, @p28, @p29, @p30, @p31, @p32);&#xD;
+      UPDATE tagekyc.verification_sessions SET "AssuranceLevel" = @p33, "CompletedAt" = @p34, "CorrelationId" = @p35, "EvidencePackageHash" = @p36, "EvidencePackageId" = @p37, "FinalDecisionId" = @p38, "ManifestHash" = @p39, "RequestId" = @p40, "Result" = @p41, "State" = @p42&#xD;
+      WHERE "Id" = @p43 AND xmin = @p44&#xD;
+      RETURNING xmin;&#xD;
+      INSERT INTO tagekyc.evidence_manifests ("EvidencePackageId", "AuditEventRefsJson", "CanonicalizationScheme", "CreatedAt", "EvidencePackageSignatureStatus", "EvidenceRefsJson", "HashAlgorithm", "KeyId", "ManifestHash", "PackageHash", "PackageVersion", "PublicKeyFingerprint", "PublicKeyJwk", "ResultRef", "SessionGuid", "SignatureAlgorithm", "SignatureFormat", "SignatureScheme", "SignatureValue", "SignedAt", "VerificationSessionId")&#xD;
+      VALUES (@p45, @p46, @p47, @p48, @p49, @p50, @p51, @p52, @p53, @p54, @p55, @p56, @p57, @p58, @p59, @p60, @p61, @p62, @p63, @p64, @p65);&#xD;
+[xUnit.net 00:01:46.28]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

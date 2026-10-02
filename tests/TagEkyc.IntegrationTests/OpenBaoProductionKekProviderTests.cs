@@ -240,6 +240,8 @@ public sealed class OpenBaoProductionKekProviderTests(PostgresPersistenceFixture
         var expectedStageAclCount = await CountStageRightsAsync(predecessor.ConnectionString);
 
         await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("openbao_legacy_roundtrip");
+        await using (var currentDb = isolated.CreateDbContext())
+            await currentDb.GetService<IMigrator>().MigrateAsync(Current);
         var database = new PostgresPersistenceFixture(isolated.ConnectionString);
         var prepared = await PrepareAsync(LegacyKekWrappedMaterialProfileSource.Profile, database);
         var ciphertext = Enumerable.Range(0, 32).Select(value => (byte)(0x80 + value)).ToArray();
@@ -302,6 +304,8 @@ public sealed class OpenBaoProductionKekProviderTests(PostgresPersistenceFixture
     public async Task Migration_Down_rejects_opaque_reservation_before_schema_mutation()
     {
         await using var isolated = await postgres.CreateDisposableCurrentDatabaseAsync("openbao_down_opaque");
+        await using (var currentDb = isolated.CreateDbContext())
+            await currentDb.GetService<IMigrator>().MigrateAsync(Current);
         var database = new PostgresPersistenceFixture(isolated.ConnectionString);
         await new Tip88C1B2CoreTests(database)
             .C1B2CORE_new_candidate_commits_full_recovery_context_atomically();

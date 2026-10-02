@@ -1,5 +1,7 @@
 using System.Text.Json;
+using System.Data;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using TagEkyc.Application;
 using TagEkyc.Application.Ports;
 using TagEkyc.Domain;
@@ -51,24 +53,19 @@ public sealed class PostgresHashedApiKeyStore(TagEkycDbContext dbContext, ApiKey
                 activationScopes!);
             try
             {
-                var companion = await (
-                    from credential in dbContext.RawExportManagedRecipientCredentials.AsNoTracking()
-                    join identity in dbContext.RawExportManagedRecipientIdentities.AsNoTracking()
-                        on new { credential.RecipientClientApplicationId, credential.PrincipalId }
-                        equals new { identity.RecipientClientApplicationId, identity.PrincipalId }
-                    join policy in dbContext.RawExportManagedRecipientPolicies.AsNoTracking()
-                        on credential.RecipientClientApplicationId equals policy.RecipientClientApplicationId
-                    where credential.ApiKeyId == row.ApiKeyId
-                        && credential.RecipientClientApplicationId == row.ClientApplicationId
-                        && credential.PrincipalId == row.PrincipalId
-                        && credential.State == "Active"
-                        && identity.State == "Active"
-                        && policy.State == "Active"
-                        && policy.ActivationProfile == activationProfile
-                    select policy.ActivationScopesDigest)
-                    .SingleOrDefaultAsync(cancellationToken).ConfigureAwait(false);
-                if (companion is null
-                    || !ApiKeyHasher.FixedTimeEquals(companion, expectedDigest)) return null;
+                var connection = (NpgsqlConnection)dbContext.Database.GetDbConnection();
+                if (connection.State != ConnectionState.Open)
+                    await connection.OpenAsync(cancellationToken).ConfigureAwait(false);
+                await using var command = new NpgsqlCommand(
+                    "SELECT tagekyc.raw_export_managed_recipient_scope_matches($1,$2,$3,$4,$5)",
+                    connection);
+                command.Parameters.AddWithValue(row.ApiKeyId);
+                command.Parameters.AddWithValue(row.ClientApplicationId);
+                command.Parameters.AddWithValue(row.PrincipalId);
+                command.Parameters.AddWithValue(activationProfile!);
+                command.Parameters.AddWithValue(expectedDigest);
+                if (await command.ExecuteScalarAsync(cancellationToken).ConfigureAwait(false) is not true)
+                    return null;
             }
             finally
             {
