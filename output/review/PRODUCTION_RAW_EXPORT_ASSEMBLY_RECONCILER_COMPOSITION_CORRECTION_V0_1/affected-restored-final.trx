@@ -1,0 +1,913 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="822c4e1a-f899-469a-9f7c-7a00dd078285" name="3AVNN@LEARNPC 2026-10-03 08:06:55" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-03T08:06:55.4236360+07:00" queuing="2026-10-03T08:06:55.4236362+07:00" start="2026-10-03T08:06:54.1746030+07:00" finish="2026-10-03T08:14:43.1074720+07:00" />
+  <TestSettings name="default" id="a8833d9f-0458-40a5-858c-080306d7685e">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-03_08_06_55" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="a461178b-9564-4f6c-b94f-b5e370ddf8b2" testId="5348d033-71d0-0a56-b92c-683aaaa2fe18" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_legacy_finalize_capability_cannot_bypass_current_claim" computerName="LEARNPC" duration="00:00:09.3684702" startTime="2026-10-03T08:10:50.9951647+07:00" endTime="2026-10-03T08:10:50.9951651+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a461178b-9564-4f6c-b94f-b5e370ddf8b2" />
+    <UnitTestResult executionId="454a9dca-d322-40b6-8b7f-4dc0d2e273c8" testId="5fba6443-d442-0239-166b-473977c58daa" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" computerName="LEARNPC" duration="00:00:08.8735480" startTime="2026-10-03T08:11:04.9169399+07:00" endTime="2026-10-03T08:11:04.9169402+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="454a9dca-d322-40b6-8b7f-4dc0d2e273c8" />
+    <UnitTestResult executionId="edf5cc82-b286-43c5-9070-3e81983f45a6" testId="7fec0327-80ca-e8e8-0af7-0552b68c5121" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm" computerName="LEARNPC" duration="00:00:00.0007769" startTime="2026-10-03T08:06:55.4062175+07:00" endTime="2026-10-03T08:06:55.4062176+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="edf5cc82-b286-43c5-9070-3e81983f45a6" />
+    <UnitTestResult executionId="726cec2d-832e-47a1-b244-f269ef59ffc3" testId="6834c939-7abc-9ec0-3601-6bd3733439b5" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_preserves_sealed_obligation_for_recovery" computerName="LEARNPC" duration="00:00:09.2257266" startTime="2026-10-03T08:11:24.3260977+07:00" endTime="2026-10-03T08:11:24.3260987+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="726cec2d-832e-47a1-b244-f269ef59ffc3" />
+    <UnitTestResult executionId="c74b3390-6241-4b10-bf21-7e4785e93ac3" testId="9ec261f7-a3fa-5688-e939-437dbbca1555" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;capture.raw-export.site-qualification&quot;, expected: True)" computerName="LEARNPC" duration="00:00:00.0002455" startTime="2026-10-03T08:06:55.4045677+07:00" endTime="2026-10-03T08:06:55.4045678+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c74b3390-6241-4b10-bf21-7e4785e93ac3" />
+    <UnitTestResult executionId="1b993f29-7bd1-4aa5-87e3-21ec2ff3116e" testId="ddc043d7-2798-35d6-96f2-5caabc6d13f0" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C115_pending_requires_exact_receipt_and_revision" computerName="LEARNPC" duration="00:00:00.1138957" startTime="2026-10-03T08:14:41.5984939+07:00" endTime="2026-10-03T08:14:41.5984941+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1b993f29-7bd1-4aa5-87e3-21ec2ff3116e" />
+    <UnitTestResult executionId="246df3cf-78a6-4a3c-be3a-65ba5b6450b8" testId="073b6a96-772e-5d07-4812-3f5caf697552" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" computerName="LEARNPC" duration="00:00:00.0082757" startTime="2026-10-03T08:06:55.3125082+07:00" endTime="2026-10-03T08:06:55.3125086+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="246df3cf-78a6-4a3c-be3a-65ba5b6450b8" />
+    <UnitTestResult executionId="3e3ce789-d1a1-4470-b4b4-87c156e33ce0" testId="e82dc5c7-872a-8fbb-f049-5805264b39dd" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_displaced_owner_cannot_defer_or_complete_new_generation" computerName="LEARNPC" duration="00:00:10.3584517" startTime="2026-10-03T08:10:27.3763911+07:00" endTime="2026-10-03T08:10:27.3763914+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3e3ce789-d1a1-4470-b4b4-87c156e33ce0" />
+    <UnitTestResult executionId="fab67fce-bfbd-4a08-9549-8c5d989ae6bf" testId="57e2e83b-7d4a-b93f-6b12-8c79d3bbe069" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending" computerName="LEARNPC" duration="00:00:09.0928846" startTime="2026-10-03T08:08:13.3776731+07:00" endTime="2026-10-03T08:08:13.3776735+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fab67fce-bfbd-4a08-9549-8c5d989ae6bf" />
+    <UnitTestResult executionId="b438f1ec-5e8b-4f20-8a53-20ea24883f41" testId="d098d702-9fa9-4e1c-dc3f-a7f2248f53b6" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C111_deterministic_identifiers_and_fingerprints_are_absolute" computerName="LEARNPC" duration="00:00:00.0007417" startTime="2026-10-03T08:10:32.4439453+07:00" endTime="2026-10-03T08:10:32.4439454+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b438f1ec-5e8b-4f20-8a53-20ea24883f41" />
+    <UnitTestResult executionId="f3b310ac-4c87-40e8-9b19-99e6571777cf" testId="12158021-f1b0-cf52-0196-97a314b8356e" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_overwrite_claim_acquired_after_candidate_snapshot" computerName="LEARNPC" duration="00:00:10.3681414" startTime="2026-10-03T08:08:23.7459506+07:00" endTime="2026-10-03T08:08:23.7459509+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f3b310ac-4c87-40e8-9b19-99e6571777cf" />
+    <UnitTestResult executionId="ad53dbbc-a8ee-4d8e-b2a5-269055686b79" testId="7e28820f-8ce4-1940-2004-c83cd5a9105c" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C106_exact_object_is_reopened_without_public_locator_surface" computerName="LEARNPC" duration="00:00:04.9384866" startTime="2026-10-03T08:10:07.7091583+07:00" endTime="2026-10-03T08:10:07.7091586+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ad53dbbc-a8ee-4d8e-b2a5-269055686b79" />
+    <UnitTestResult executionId="35c79bb2-c0ab-4ac2-bdfd-19501e58ad63" testId="2ae2d3f8-3974-bb2b-1117-da9a264a84ba" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation" computerName="LEARNPC" duration="00:00:15.3314462" startTime="2026-10-03T08:14:26.0990297+07:00" endTime="2026-10-03T08:14:26.0990300+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="35c79bb2-c0ab-4ac2-bdfd-19501e58ad63" />
+    <UnitTestResult executionId="92b1ee6d-00e5-4a27-92b2-2405c194f058" testId="97e38191-8e3d-8346-3808-e0405c8b5a55" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm" computerName="LEARNPC" duration="00:00:00.0007043" startTime="2026-10-03T08:06:55.4062866+07:00" endTime="2026-10-03T08:06:55.4062866+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="92b1ee6d-00e5-4a27-92b2-2405c194f058" />
+    <UnitTestResult executionId="8d8746b7-c780-4128-8681-dc8d100f7335" testId="40013f16-0a41-d1dc-bf25-6cf35a946d8d" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C107_typed_source_failure_partition_is_exact" computerName="LEARNPC" duration="00:00:00.0027967" startTime="2026-10-03T08:09:17.0328912+07:00" endTime="2026-10-03T08:09:17.0328914+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8d8746b7-c780-4128-8681-dc8d100f7335" />
+    <UnitTestResult executionId="eac096d9-611e-4694-9f32-b76ff8488e15" testId="edfa2e98-b249-825a-668d-b637c26ce7a3" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;capture.raw-export.site-qualification&quot;, expected: False)" computerName="LEARNPC" duration="00:00:00.0000015" startTime="2026-10-03T08:06:55.4046046+07:00" endTime="2026-10-03T08:06:55.4046046+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="eac096d9-611e-4694-9f32-b76ff8488e15" />
+    <UnitTestResult executionId="cce97d49-b1d0-427a-a969-20c101b5185f" testId="4436eb5c-487f-e7e4-2939-6aeb2bbfbb3e" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_program_reaches_build_and_serves_health_with_fixture_profile_fail_closed_in_readiness" computerName="LEARNPC" duration="00:00:00.0683556" startTime="2026-10-03T08:06:55.3871733+07:00" endTime="2026-10-03T08:06:55.3871735+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="cce97d49-b1d0-427a-a969-20c101b5185f" />
+    <UnitTestResult executionId="f2ca27a7-556e-4528-b2bd-de5e47c0c607" testId="c35aa168-5336-b32c-25d8-3a8d28e15866" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_is_absorbed_without_stopping_real_generic_host" computerName="LEARNPC" duration="00:00:21.8264357" startTime="2026-10-03T08:08:45.5725193+07:00" endTime="2026-10-03T08:08:45.5725196+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f2ca27a7-556e-4528-b2bd-de5e47c0c607" />
+    <UnitTestResult executionId="f96cbf59-fa1b-49bf-9f69-33e65678b7ce" testId="c11aaf1f-4023-7306-b98b-a6e827287115" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C104_frozen_binding_is_insert_once_and_exact_replay_only" computerName="LEARNPC" duration="00:00:05.0689562" startTime="2026-10-03T08:11:52.5534017+07:00" endTime="2026-10-03T08:11:52.5534020+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f96cbf59-fa1b-49bf-9f69-33e65678b7ce" />
+    <UnitTestResult executionId="bdac908c-1323-4335-a25f-366b5e2da527" testId="91aeb71c-5a92-82c3-c41a-eb394a0bd517" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C122_finalize_follows_committed_seal" computerName="LEARNPC" duration="00:00:00.0173812" startTime="2026-10-03T08:09:17.0503709+07:00" endTime="2026-10-03T08:09:17.0503712+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bdac908c-1323-4335-a25f-366b5e2da527" />
+    <UnitTestResult executionId="156fd412-2084-482c-89a9-80c3e7def88b" testId="87317a4b-ede9-63d6-2451-0a7a62444943" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_broker_composition_registers_fixture_claim_services_and_exact_login" computerName="LEARNPC" duration="00:00:00.0401548" startTime="2026-10-03T08:06:55.4400638+07:00" endTime="2026-10-03T08:06:55.4400642+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="156fd412-2084-482c-89a9-80c3e7def88b" />
+    <UnitTestResult executionId="3c150599-21fe-4f8c-92e7-3c7ebdcbfcf0" testId="b86efd4a-c38d-0dc8-246d-5db54d7a5252" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim" computerName="LEARNPC" duration="00:00:10.1974375" startTime="2026-10-03T08:14:41.4845026+07:00" endTime="2026-10-03T08:14:41.4845029+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3c150599-21fe-4f8c-92e7-3c7ebdcbfcf0" />
+    <UnitTestResult executionId="90dbe873-b74d-424c-b3c3-6582f07efcc9" testId="36730286-c1bb-f808-3763-5d428582f860" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work" computerName="LEARNPC" duration="00:00:29.9669507" startTime="2026-10-03T08:13:25.3506395+07:00" endTime="2026-10-03T08:13:25.3506399+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="90dbe873-b74d-424c-b3c3-6582f07efcc9" />
+    <UnitTestResult executionId="b0d08183-32d2-4002-8138-97a0ce25084b" testId="7528f2e3-7a18-6001-ddd8-99b5bb47d923" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.Assembly_exact_read_keeps_reconciler_scope_alive_through_framed_consumer_and_disposes_in_order" computerName="LEARNPC" duration="00:00:04.9056790" startTime="2026-10-03T08:12:41.1950496+07:00" endTime="2026-10-03T08:12:41.1950499+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b0d08183-32d2-4002-8138-97a0ce25084b" />
+    <UnitTestResult executionId="be19d3c4-21e5-47ba-b253-c2a0bd664165" testId="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;operator.site-qualification.enroll&quot;, expected: False)" computerName="LEARNPC" duration="00:00:00.0000073" startTime="2026-10-03T08:06:55.4045885+07:00" endTime="2026-10-03T08:06:55.4045885+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="be19d3c4-21e5-47ba-b253-c2a0bd664165" />
+    <UnitTestResult executionId="78b0781d-fca4-4c9b-a4aa-10188d228b47" testId="9eed02a8-84a1-096b-351c-725996ebf89e" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C110_manifest_and_authentication_absolute_vectors" computerName="LEARNPC" duration="00:00:00.0047713" startTime="2026-10-03T08:07:23.6896637+07:00" endTime="2026-10-03T08:07:23.6896638+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="78b0781d-fca4-4c9b-a4aa-10188d228b47" />
+    <UnitTestResult executionId="ec72153c-15d8-4c44-8eaf-06b893b158c9" testId="26ff2699-b9d7-25b0-3f16-0b3a39a39032" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact" computerName="LEARNPC" duration="00:00:00.0613935" startTime="2026-10-03T08:14:05.7880199+07:00" endTime="2026-10-03T08:14:05.7880201+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ec72153c-15d8-4c44-8eaf-06b893b158c9" />
+    <UnitTestResult executionId="ad683cae-4499-4faa-9627-67d08bec57b6" testId="52ab1157-e8e5-ef13-639a-0e38781cc9e0" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare" computerName="LEARNPC" duration="00:00:09.0748977" startTime="2026-10-03T08:13:46.0952064+07:00" endTime="2026-10-03T08:13:46.0952067+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="ad683cae-4499-4faa-9627-67d08bec57b6" />
+    <UnitTestResult executionId="01c4113c-0877-4512-bf84-370a31dd786d" testId="40439020-0b9a-5ba1-6bb8-d00b33795342" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read" computerName="LEARNPC" duration="00:00:09.0420363" startTime="2026-10-03T08:12:01.5966838+07:00" endTime="2026-10-03T08:12:01.5966842+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="01c4113c-0877-4512-bf84-370a31dd786d" />
+    <UnitTestResult executionId="3b58e278-3dcc-4586-859f-559a4265436a" testId="b814a71e-c259-3c60-7968-42cbcaaeb128" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C103_source_eligibility_is_closed_and_fail_closed" computerName="LEARNPC" duration="00:00:05.0479641" startTime="2026-10-03T08:10:56.0432342+07:00" endTime="2026-10-03T08:10:56.0432344+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3b58e278-3dcc-4586-859f-559a4265436a" />
+    <UnitTestResult executionId="776b9bb9-6d87-41a2-ab47-be7170d85606" testId="043ea723-2ae5-7a8d-37ab-b58ac99186c3" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C109_pass_one_absolute_assembly_digest_vector" computerName="LEARNPC" duration="00:00:00.0010189" startTime="2026-10-03T08:12:41.1961442+07:00" endTime="2026-10-03T08:12:41.1961445+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="776b9bb9-6d87-41a2-ab47-be7170d85606" />
+    <UnitTestResult executionId="da61b8f8-d9cd-4eb6-b388-51847873b203" testId="7f872d99-838d-fce2-8ce3-dbdf6c7b5e0a" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_rejects_pre_registered_unknown_claim_provider(arm: &quot;subject&quot;)" computerName="LEARNPC" duration="00:00:00.0011869" startTime="2026-10-03T08:06:55.3185068+07:00" endTime="2026-10-03T08:06:55.3185069+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="da61b8f8-d9cd-4eb6-b388-51847873b203" />
+    <UnitTestResult executionId="fe69cfe9-8285-4181-856a-406d35e5c24e" testId="fb7067aa-8e16-6004-46f2-6bec0a14e52e" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_runtime_owner_composition_rejects_direct_connection_strings" computerName="LEARNPC" duration="00:00:00.0004617" startTime="2026-10-03T08:06:55.4062672+07:00" endTime="2026-10-03T08:06:55.4062673+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fe69cfe9-8285-4181-856a-406d35e5c24e" />
+    <UnitTestResult executionId="bc624a27-5728-45d4-ac41-8454af9eed0c" testId="67946be5-874f-98e2-da8e-08aefbe99d1f" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_lease_is_rechecked_after_lock_wait_for_defer_finalize_and_exact_claim" computerName="LEARNPC" duration="00:00:31.4573627" startTime="2026-10-03T08:09:17.0300153+07:00" endTime="2026-10-03T08:09:17.0300159+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bc624a27-5728-45d4-ac41-8454af9eed0c" />
+    <UnitTestResult executionId="aa8470ba-b897-4978-96eb-6aa36f36eac7" testId="d9a1aa12-85c0-81c9-5cc7-89290a9587ad" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured" computerName="LEARNPC" duration="00:00:00.0123722" startTime="2026-10-03T08:10:41.6265541+07:00" endTime="2026-10-03T08:10:41.6265544+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="aa8470ba-b897-4978-96eb-6aa36f36eac7" />
+    <UnitTestResult executionId="b068f9ae-833c-45b6-a06b-16fb262e8b1c" testId="58e67411-e13a-f5a8-2401-a5bb33c6c0e0" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm" computerName="LEARNPC" duration="00:00:00.0007537" startTime="2026-10-03T08:06:55.4046693+07:00" endTime="2026-10-03T08:06:55.4046693+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b068f9ae-833c-45b6-a06b-16fb262e8b1c" />
+    <UnitTestResult executionId="fcf1c122-dda1-4089-9b5b-49fbd4b0a7c0" testId="0b2aab3c-b6d4-0a94-0977-d700fb770da8" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings" computerName="LEARNPC" duration="00:00:09.0161510" startTime="2026-10-03T08:13:55.1114597+07:00" endTime="2026-10-03T08:13:55.1114599+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="fcf1c122-dda1-4089-9b5b-49fbd4b0a7c0" />
+    <UnitTestResult executionId="8d46706f-658b-4444-a8d1-3dfa6c667690" testId="6cd892ce-b96f-8692-5e35-223bca543790" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_losing_contender_continues_to_later_obligation" computerName="LEARNPC" duration="00:00:14.1797619" startTime="2026-10-03T08:12:55.3835759+07:00" endTime="2026-10-03T08:12:55.3835763+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="8d46706f-658b-4444-a8d1-3dfa6c667690" />
+    <UnitTestResult executionId="12e0da63-53a8-4782-b2ef-769cbdfbeb70" testId="88815e9d-bbce-de63-422a-1772ff4b22fe" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_claim_handoff_can_return_existing_match_plus_lease_lost_only_after_durable_finalize" computerName="LEARNPC" duration="00:00:11.8155737" startTime="2026-10-03T08:07:18.7105010+07:00" endTime="2026-10-03T08:07:18.7105013+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="12e0da63-53a8-4782-b2ef-769cbdfbeb70" />
+    <UnitTestResult executionId="7241bafd-c8ca-4366-ae33-4e1ed6651980" testId="f72b51f2-03eb-cd13-f8de-acc687a13617" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_rejects_pre_registered_unknown_claim_provider(arm: &quot;content&quot;)" computerName="LEARNPC" duration="00:00:00.0001695" startTime="2026-10-03T08:06:55.3187121+07:00" endTime="2026-10-03T08:06:55.3187122+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="7241bafd-c8ca-4366-ae33-4e1ed6651980" />
+    <UnitTestResult executionId="5ad5a21e-cdf6-4b1e-b778-f6d6e1d06245" testId="122659f5-42a5-b40d-719a-a294cb9bb489" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_discovers_finalized_provider_obligation" computerName="LEARNPC" duration="00:00:10.3070062" startTime="2026-10-03T08:08:04.2507516+07:00" endTime="2026-10-03T08:08:04.2507519+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="5ad5a21e-cdf6-4b1e-b778-f6d6e1d06245" />
+    <UnitTestResult executionId="4c30bf99-8899-4e29-b339-01da9d7ea60b" testId="b61898cb-61e5-b924-1ed6-b4c7070bb4ba" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_discovers_seal_committed_obligation(mode: EncryptedExportPacket)" computerName="LEARNPC" duration="00:00:14.8822519" startTime="2026-10-03T08:10:02.6496310+07:00" endTime="2026-10-03T08:10:02.6496315+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4c30bf99-8899-4e29-b339-01da9d7ea60b" />
+    <UnitTestResult executionId="bba0d31b-965b-443c-b345-c909470b78e3" testId="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;operator.site-qualification.enroll&quot;, expected: True)" computerName="LEARNPC" duration="00:00:00.0021907" startTime="2026-10-03T08:06:55.4044553+07:00" endTime="2026-10-03T08:06:55.4044555+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bba0d31b-965b-443c-b345-c909470b78e3" />
+    <UnitTestResult executionId="eac98d04-c93a-4849-b8ba-0114e50ca11d" testId="a9c0c154-040e-4950-852e-1374b96cc8d5" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_DurableWorkerIsARealProductCallerWithExplicitWorkSource" computerName="LEARNPC" duration="00:00:00.0018455" startTime="2026-10-03T08:11:15.1000268+07:00" endTime="2026-10-03T08:11:15.1000270+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="eac98d04-c93a-4849-b8ba-0114e50ca11d" />
+    <UnitTestResult executionId="16a145fe-438d-413d-bfe5-7bd0ecef4bda" testId="ce1f7299-262c-5964-51ce-797106f03b91" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C101_exact_selection_and_ordered_class_freeze" computerName="LEARNPC" duration="00:00:05.0279691" startTime="2026-10-03T08:12:06.6247500+07:00" endTime="2026-10-03T08:12:06.6247501+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="16a145fe-438d-413d-bfe5-7bd0ecef4bda" />
+    <UnitTestResult executionId="6e579b2e-f31d-4b45-ade5-045eff20d0d1" testId="35da3392-a083-8558-cd39-4059ffb4cc74" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" computerName="LEARNPC" duration="00:00:00.0002598" startTime="2026-10-03T08:06:55.4403873+07:00" endTime="2026-10-03T08:06:55.4403875+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6e579b2e-f31d-4b45-ade5-045eff20d0d1" />
+    <UnitTestResult executionId="633dd400-b195-4e05-a56b-596112107527" testId="08288354-1e8b-a8d1-9ceb-0c8a0b39333c" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C108_r2_and_c1_share_framed_verification_service" computerName="LEARNPC" duration="00:00:00.0010432" startTime="2026-10-03T08:11:52.5545190+07:00" endTime="2026-10-03T08:11:52.5545193+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="633dd400-b195-4e05-a56b-596112107527" />
+    <UnitTestResult executionId="1e82b22e-5dd2-43dc-98ea-902be0f44d2c" testId="7579dcea-cf7c-6781-ca4d-c6e69b9e7c72" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code(arm: &quot;unreadable-directory&quot;)" computerName="LEARNPC" duration="00:00:00.0663094" startTime="2026-10-03T08:06:55.3031507+07:00" endTime="2026-10-03T08:06:55.3031509+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1e82b22e-5dd2-43dc-98ea-902be0f44d2c" />
+    <UnitTestResult executionId="75260d16-915f-47b0-9901-d84697fb4bc5" testId="2178cc48-9e35-ef7a-78a4-91197f199dfb" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal" computerName="LEARNPC" duration="00:00:09.3085229" startTime="2026-10-03T08:10:17.0178019+07:00" endTime="2026-10-03T08:10:17.0178024+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="75260d16-915f-47b0-9901-d84697fb4bc5" />
+    <UnitTestResult executionId="92c44457-fa0f-42bf-8f96-f4179d8118c9" testId="9f033a0f-b2be-50b2-0f42-575861581ce1" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_defers_with_recovery_claim_generation(unresolvedOutcomeUnknown: False, expectedOutcome: ProviderUnavailable)" computerName="LEARNPC" duration="00:00:09.1343528" startTime="2026-10-03T08:11:38.4637935+07:00" endTime="2026-10-03T08:11:38.4637938+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="92c44457-fa0f-42bf-8f96-f4179d8118c9" />
+    <UnitTestResult executionId="eb0b65d6-28a7-47a1-bdf8-4ddd67d1b3b7" testId="90d64e64-2841-35c2-9480-e2fa4323ad13" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C121_assembly_sealed_is_a_closed_job_state_and_event" computerName="LEARNPC" duration="00:00:05.0030116" startTime="2026-10-03T08:11:29.3292810+07:00" endTime="2026-10-03T08:11:29.3292811+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="eb0b65d6-28a7-47a1-bdf8-4ddd67d1b3b7" />
+    <UnitTestResult executionId="c5daee02-fb05-41b7-8afe-04242f501799" testId="27f2594b-306c-ee21-d2ac-b425d3160373" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only" computerName="LEARNPC" duration="00:00:00.0337508" startTime="2026-10-03T08:08:04.2846477+07:00" endTime="2026-10-03T08:08:04.2846478+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c5daee02-fb05-41b7-8afe-04242f501799" />
+    <UnitTestResult executionId="b84c50a7-175f-452b-9698-9da576ce2a9f" testId="aa1f2c84-8f12-be0d-f4e8-75b256267bb8" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C118_exact_seal_replay_precedes_stale_revision" computerName="LEARNPC" duration="00:00:05.0380293" startTime="2026-10-03T08:10:32.4435192+07:00" endTime="2026-10-03T08:10:32.4435196+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b84c50a7-175f-452b-9698-9da576ce2a9f">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: ExistingMatch&#xD;
+Actual:   LeaseLost</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C118_exact_seal_replay_precedes_stale_revision() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1055&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C118_exact_seal_replay_precedes_stale_revision() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs:line 1075&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="bd80018d-04a9-4185-ae8e-a478d0336f52" testId="06e75008-3fdd-0cde-000e-2194ee7fa912" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_recipient_factory_rejects_direct_connection_strings" computerName="LEARNPC" duration="00:00:00.0027502" startTime="2026-10-03T08:06:55.3172797+07:00" endTime="2026-10-03T08:06:55.3172798+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bd80018d-04a9-4185-ae8e-a478d0336f52" />
+    <UnitTestResult executionId="bb390fa9-2058-4dc3-bedc-1088cd152d2a" testId="ace66ea2-aac1-20f5-673a-d9461591d68d" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_custody_registration_keeps_fixture_catalogs_and_provider" computerName="LEARNPC" duration="00:00:00.0006410" startTime="2026-10-03T08:06:55.4046293+07:00" endTime="2026-10-03T08:06:55.4046294+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bb390fa9-2058-4dc3-bedc-1088cd152d2a" />
+    <UnitTestResult executionId="78867017-d23d-4dbc-8fd3-411eba779f53" testId="467db7da-44a4-80b4-5718-0d1e597ba057" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present" computerName="LEARNPC" duration="00:00:07.4651307" startTime="2026-10-03T08:12:14.0899818+07:00" endTime="2026-10-03T08:12:14.0899819+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="78867017-d23d-4dbc-8fd3-411eba779f53" />
+    <UnitTestResult executionId="a348dd33-ce44-4ed9-9285-08fa0b3f7c91" testId="79b5747f-f255-b082-f067-7ccea752c3c7" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_custody_registration_excludes_fixtures_while_readiness_rejects_fixture_profile" computerName="LEARNPC" duration="00:00:00.0018988" startTime="2026-10-03T08:06:55.3144706+07:00" endTime="2026-10-03T08:06:55.3144707+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a348dd33-ce44-4ed9-9285-08fa0b3f7c91" />
+    <UnitTestResult executionId="eb59a008-3c2b-4764-85d4-4c187c38f4b9" testId="34046a72-c4a0-d335-5851-1a85e201deff" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_clear_backoff_deferred_after_candidate_snapshot" computerName="LEARNPC" duration="00:00:10.6149916" startTime="2026-10-03T08:14:05.7265465+07:00" endTime="2026-10-03T08:14:05.7265468+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="eb59a008-3c2b-4764-85d4-4c187c38f4b9" />
+    <UnitTestResult executionId="567cc58b-80db-4df5-95f9-4aef2f65c8d0" testId="f0726ede-c6bb-27e3-3ccf-c8db9dbc1be1" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_claim_registration_contains_only_OpenBao_providers_and_missing_catalog_is_readiness_RED" computerName="LEARNPC" duration="00:00:00.0006718" startTime="2026-10-03T08:06:55.4047034+07:00" endTime="2026-10-03T08:06:55.4047034+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="567cc58b-80db-4df5-95f9-4aef2f65c8d0" />
+    <UnitTestResult executionId="f450ba75-da01-44a9-99a7-0ade6eae17be" testId="95df5196-e77f-1d49-02cb-9ca1ec94e7ec" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_same_owner_stale_generation_cannot_defer_or_complete_successor_claim" computerName="LEARNPC" duration="00:00:15.7092676" startTime="2026-10-03T08:09:32.7598010+07:00" endTime="2026-10-03T08:09:32.7598018+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f450ba75-da01-44a9-99a7-0ade6eae17be" />
+    <UnitTestResult executionId="c2a9bec8-e0aa-4ee8-a5b7-629e5c88b8e6" testId="3fb7944c-e11f-6c5b-04f0-e2eaa8386298" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Existing_managed_key_generator_always_round_trips_fixed_length_prefix" computerName="LEARNPC" duration="00:00:00.0016611" startTime="2026-10-03T08:06:55.4062456+07:00" endTime="2026-10-03T08:06:55.4062457+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c2a9bec8-e0aa-4ee8-a5b7-629e5c88b8e6" />
+    <UnitTestResult executionId="88cc4a14-6eb0-4712-a58c-2b5834415abb" testId="70eab0ec-aa9a-d8b1-0b75-897147b958a5" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C119_two_pass_streaming_has_no_complete_plaintext_buffer_or_temp_file" computerName="LEARNPC" duration="00:00:05.1878240" startTime="2026-10-03T08:14:31.2869662+07:00" endTime="2026-10-03T08:14:31.2869665+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="88cc4a14-6eb0-4712-a58c-2b5834415abb" />
+    <UnitTestResult executionId="41c70b1c-3f4b-413c-b6c4-d24cd4c7ec36" testId="3dea7acb-88e8-981b-c1e9-965522229029" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C114_preparing_is_durable_before_provider_call_and_recoverable" computerName="LEARNPC" duration="00:00:00.0057633" startTime="2026-10-03T08:10:32.4443720+07:00" endTime="2026-10-03T08:10:32.4443725+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="41c70b1c-3f4b-413c-b6c4-d24cd4c7ec36" />
+    <UnitTestResult executionId="433d60f6-4349-403f-b6e9-4a4c6de574bd" testId="7e4e486d-99ba-b962-ccef-2a06ccedb620" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code(arm: &quot;malformed&quot;)" computerName="LEARNPC" duration="00:00:00.0822406" startTime="2026-10-03T08:06:55.2368056+07:00" endTime="2026-10-03T08:06:55.2368061+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="433d60f6-4349-403f-b6e9-4a4c6de574bd" />
+    <UnitTestResult executionId="2e707b2d-b6f6-470c-913a-7122a15f81ed" testId="473df6fb-e2b7-fdd7-9839-ac511cf0f8e8" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_discovers_seal_committed_obligation(mode: EncryptedRawVaultRetained)" computerName="LEARNPC" duration="00:00:15.0072862" startTime="2026-10-03T08:09:47.7672269+07:00" endTime="2026-10-03T08:09:47.7672271+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="2e707b2d-b6f6-470c-913a-7122a15f81ed" />
+    <UnitTestResult executionId="f3bb665c-a01f-4878-a446-58a65aa803ba" testId="99d0154f-e992-7c27-fd15-4ae12535a224" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C117_post_lock_admission_clock_is_single_and_fresh" computerName="LEARNPC" duration="00:00:30.2537813" startTime="2026-10-03T08:07:53.9436280+07:00" endTime="2026-10-03T08:07:53.9436283+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f3bb665c-a01f-4878-a446-58a65aa803ba" />
+    <UnitTestResult executionId="c72d01bc-90a2-4344-a387-19f871c836ad" testId="da461997-2542-c90f-8a41-c59a8b97f307" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_expired_job_can_complete_without_extending_job_expiry" computerName="LEARNPC" duration="00:00:11.6694517" startTime="2026-10-03T08:13:37.0202069+07:00" endTime="2026-10-03T08:13:37.0202072+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c72d01bc-90a2-4344-a387-19f871c836ad" />
+    <UnitTestResult executionId="d2331f34-1beb-4a09-ace4-f2e62c8d0c36" testId="d8ea26f4-8314-b487-efcb-53d24b0f547e" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" computerName="LEARNPC" duration="00:00:10.1810002" startTime="2026-10-03T08:11:15.0980723+07:00" endTime="2026-10-03T08:11:15.0980727+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d2331f34-1beb-4a09-ace4-f2e62c8d0c36" />
+    <UnitTestResult executionId="12ddb311-bd45-4f80-82ac-ceb618e237bf" testId="40cbe474-f262-fe11-47d7-7acd13235dc7" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved" computerName="LEARNPC" duration="00:00:04.9792815" startTime="2026-10-03T08:14:10.7674255+07:00" endTime="2026-10-03T08:14:10.7674258+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="12ddb311-bd45-4f80-82ac-ceb618e237bf" />
+    <UnitTestResult executionId="179a5634-7f17-4de1-b6db-3f452852e994" testId="578539e7-6c2e-1d87-270f-abce79ca7666" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_database_options_reject_direct_connection_string" computerName="LEARNPC" duration="00:00:00.0004633" startTime="2026-10-03T08:06:55.4046864+07:00" endTime="2026-10-03T08:06:55.4046864+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="179a5634-7f17-4de1-b6db-3f452852e994" />
+    <UnitTestResult executionId="4d1630da-3cf3-4825-9938-cdcc1d0bbf01" testId="cfb06ce2-6685-4da2-0529-f61a68ac4c82" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker" computerName="LEARNPC" duration="00:00:22.1992012" startTime="2026-10-03T08:12:36.2892827+07:00" endTime="2026-10-03T08:12:36.2892830+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4d1630da-3cf3-4825-9938-cdcc1d0bbf01" />
+    <UnitTestResult executionId="28f960f8-7fa2-4dd1-be51-2b53cffb1a8b" testId="b36450b3-27ef-0815-eef6-8b7ad31054a7" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation" computerName="LEARNPC" duration="00:00:09.1695319" startTime="2026-10-03T08:10:41.6140859+07:00" endTime="2026-10-03T08:10:41.6140862+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="28f960f8-7fa2-4dd1-be51-2b53cffb1a8b" />
+    <UnitTestResult executionId="69922a67-3ed9-4c88-9384-39ecda905c70" testId="efc3a1bc-e836-73c9-79a9-e1797fd7ea8d" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate" computerName="LEARNPC" duration="00:00:00.0074768" startTime="2026-10-03T08:12:41.2037001+07:00" endTime="2026-10-03T08:12:41.2037004+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="69922a67-3ed9-4c88-9384-39ecda905c70" />
+    <UnitTestResult executionId="45059826-5cee-4f47-be47-c9aca779ce81" testId="9e073cb5-125f-66ab-7373-61ae706e1f9b" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_defers_with_recovery_claim_generation(unresolvedOutcomeUnknown: True, expectedOutcome: ProviderOutcomeUnknown)" computerName="LEARNPC" duration="00:00:09.0204225" startTime="2026-10-03T08:11:47.4843379+07:00" endTime="2026-10-03T08:11:47.4843382+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="45059826-5cee-4f47-be47-c9aca779ce81" />
+    <UnitTestResult executionId="1b0a9883-ac8c-4e04-b66d-5b5b601632e7" testId="95fd4edf-b09c-68c8-f7f3-d3c8d6df723e" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code(arm: &quot;missing&quot;)" computerName="LEARNPC" duration="00:00:00.3521438" startTime="2026-10-03T08:06:55.1546034+07:00" endTime="2026-10-03T08:06:55.1546218+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="1b0a9883-ac8c-4e04-b66d-5b5b601632e7" />
+    <UnitTestResult executionId="a579e431-163a-4b76-9fba-652fa40b68e9" testId="4645fd3c-f690-118f-ac77-602d5e47f8d6" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C120_seal_commits_preparation_identity_items_head_and_event" computerName="LEARNPC" duration="00:00:04.9741862" startTime="2026-10-03T08:07:23.6848134+07:00" endTime="2026-10-03T08:07:23.6848135+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a579e431-163a-4b76-9fba-652fa40b68e9" />
+    <UnitTestResult executionId="bea03d6a-2e94-4854-b511-8ca2f1d60ee1" testId="7b13cd34-b017-940c-fffa-7e2ddb897bef" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C123_abort_requires_durable_authorization" computerName="LEARNPC" duration="00:00:00.1207831" startTime="2026-10-03T08:10:02.7705325+07:00" endTime="2026-10-03T08:10:02.7705326+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bea03d6a-2e94-4854-b511-8ca2f1d60ee1" />
+    <UnitTestResult executionId="a898a141-a2e8-43f7-944e-db08b93fd271" testId="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory" computerName="LEARNPC" duration="00:00:00.0036058" startTime="2026-10-03T08:06:55.4046479+07:00" endTime="2026-10-03T08:06:55.4046480+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="a898a141-a2e8-43f7-944e-db08b93fd271" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_lease_is_rechecked_after_lock_wait_for_defer_finalize_and_exact_claim" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="67946be5-874f-98e2-da8e-08aefbe99d1f">
+      <Execution id="bc624a27-5728-45d4-ac41-8454af9eed0c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_lease_is_rechecked_after_lock_wait_for_defer_finalize_and_exact_claim" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_discovers_seal_committed_obligation(mode: EncryptedExportPacket)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b61898cb-61e5-b924-1ed6-b4c7070bb4ba">
+      <Execution id="4c30bf99-8899-4e29-b339-01da9d7ea60b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F1_fresh_work_source_discovers_seal_committed_obligation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2178cc48-9e35-ef7a-78a4-91197f199dfb">
+      <Execution id="75260d16-915f-47b0-9901-d84697fb4bc5" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_C116_preparation_conflict_is_abort_handling_after_losing_seal" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_preparation_conflict_preserves_sealed_obligation_for_recovery" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6834c939-7abc-9ec0-3601-6bd3733439b5">
+      <Execution id="726cec2d-832e-47a1-b244-f269ef59ffc3" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_preparation_conflict_preserves_sealed_obligation_for_recovery" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_overwrite_claim_acquired_after_candidate_snapshot" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="12158021-f1b0-cf52-0196-97a314b8356e">
+      <Execution id="f3b310ac-4c87-40e8-9b19-99e6571777cf" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_claim_next_does_not_overwrite_claim_acquired_after_candidate_snapshot" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b86efd4a-c38d-0dc8-246d-5db54d7a5252">
+      <Execution id="3c150599-21fe-4f8c-92e7-3c7ebdcbfcf0" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_exact_claim_rejects_wrong_local_fingerprint_without_taking_claim" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_discovers_seal_committed_obligation(mode: EncryptedRawVaultRetained)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="473df6fb-e2b7-fdd7-9839-ac511cf0f8e8">
+      <Execution id="2e707b2d-b6f6-470c-913a-7122a15f81ed" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F1_fresh_work_source_discovers_seal_committed_obligation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_claim_registration_contains_only_OpenBao_providers_and_missing_catalog_is_readiness_RED" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f0726ede-c6bb-27e3-3ccf-c8db9dbc1be1">
+      <Execution id="567cc58b-80db-4df5-95f9-4aef2f65c8d0" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_claim_registration_contains_only_OpenBao_providers_and_missing_catalog_is_readiness_RED" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code(arm: &quot;malformed&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7e4e486d-99ba-b962-ccef-2a06ccedb620">
+      <Execution id="433d60f6-4349-403f-b6e9-4a4c6de574bd" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="27f2594b-306c-ee21-d2ac-b425d3160373">
+      <Execution id="c5daee02-fb05-41b7-8afe-04242f501799" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C126_disabled_is_valid_and_fixtureproof_is_nonproduction_only" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Recipient_package_composition_registers_exact_three_role_factory" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6">
+      <Execution id="a898a141-a2e8-43f7-944e-db08b93fd271" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Recipient_package_composition_registers_exact_three_role_factory" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_program_reaches_build_and_serves_health_with_fixture_profile_fail_closed_in_readiness" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="4436eb5c-487f-e7e4-2939-6aeb2bbfbb3e">
+      <Execution id="cce97d49-b1d0-427a-a969-20c101b5185f" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_program_reaches_build_and_serves_health_with_fixture_profile_fail_closed_in_readiness" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code(arm: &quot;unreadable-directory&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7579dcea-cf7c-6781-ca4d-c6e69b9e7c72">
+      <Execution id="1e82b22e-5dd2-43dc-98ea-902be0f44d2c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C109_pass_one_absolute_assembly_digest_vector" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="043ea723-2ae5-7a8d-37ab-b58ac99186c3">
+      <Execution id="776b9bb9-6d87-41a2-ab47-be7170d85606" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C109_pass_one_absolute_assembly_digest_vector" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5fba6443-d442-0239-166b-473977c58daa">
+      <Execution id="454a9dca-d322-40b6-8b7f-4dc0d2e273c8" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_ASSEMBLY_P33_SelectedCommittedSourceIsUnavailableWithoutProviderRead" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C115_pending_requires_exact_receipt_and_revision" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ddc043d7-2798-35d6-96f2-5caabc6d13f0">
+      <Execution id="1b993f29-7bd1-4aa5-87e3-21ec2ff3116e" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C115_pending_requires_exact_receipt_and_revision" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;operator.site-qualification.enroll&quot;, expected: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9">
+      <Execution id="bba0d31b-965b-443c-b345-c909470b78e3" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C114_preparing_is_durable_before_provider_call_and_recoverable" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="3dea7acb-88e8-981b-c1e9-965522229029">
+      <Execution id="41c70b1c-3f4b-413c-b6c4-d24cd4c7ec36" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C114_preparing_is_durable_before_provider_call_and_recoverable" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="35da3392-a083-8558-cd39-4059ffb4cc74">
+      <Execution id="6e579b2e-f31d-4b45-ade5-045eff20d0d1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Missing_runtime_owner_configuration_keeps_prepared_graph_lazy" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C107_typed_source_failure_partition_is_exact" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40013f16-0a41-d1dc-bf25-6cf35a946d8d">
+      <Execution id="8d8746b7-c780-4128-8681-dc8d100f7335" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C107_typed_source_failure_partition_is_exact" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_record_conflict_is_absorbed_without_stopping_real_generic_host" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="c35aa168-5336-b32c-25d8-3a8d28e15866">
+      <Execution id="f2ca27a7-556e-4528-b2bd-de5e47c0c607" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_record_conflict_is_absorbed_without_stopping_real_generic_host" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="97e38191-8e3d-8346-3808-e0405c8b5a55">
+      <Execution id="92b1ee6d-00e5-4a27-92b2-2405c194f058" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_with_fixture_custody_profile_fails_closed_at_custody_arm" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_defers_with_recovery_claim_generation(unresolvedOutcomeUnknown: False, expectedOutcome: ProviderUnavailable)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9f033a0f-b2be-50b2-0f42-575861581ce1">
+      <Execution id="92c44457-fa0f-42bf-8f96-f4179d8118c9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_same_acquiring_work_source_defers_with_recovery_claim_generation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="2ae2d3f8-3974-bb2b-1117-da9a264a84ba">
+      <Execution id="35c79bb2-c0ab-4ac2-bdfd-19501e58ad63" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_active_stuck_claim_does_not_block_later_eligible_obligation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C105_resolver_and_sealer_acl_manifests_are_separate" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="efc3a1bc-e836-73c9-79a9-e1797fd7ea8d">
+      <Execution id="69922a67-3ed9-4c88-9384-39ecda905c70" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C105_resolver_and_sealer_acl_manifests_are_separate" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: OperatorAdmin, scope: &quot;capture.raw-export.site-qualification&quot;, expected: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="edfa2e98-b249-825a-668d-b637c26ce7a3">
+      <Execution id="eac096d9-611e-4694-9f32-b76ff8488e15" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="cfb06ce2-6685-4da2-0529-f61a68ac4c82">
+      <Execution id="4d1630da-3cf3-4825-9938-cdcc1d0bbf01" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_original_finalize_claim_excludes_fresh_recovery_worker" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;capture.raw-export.site-qualification&quot;, expected: True)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9ec261f7-a3fa-5688-e939-437dbbca1555">
+      <Execution id="c74b3390-6241-4b10-bf21-7e4785e93ac3" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_rejects_pre_registered_unknown_claim_provider(arm: &quot;subject&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7f872d99-838d-fce2-8ce3-dbdf6c7b5e0a">
+      <Execution id="da61b8f8-d9cd-4eb6-b388-51847873b203" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_rejects_pre_registered_unknown_claim_provider" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C110_manifest_and_authentication_absolute_vectors" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9eed02a8-84a1-096b-351c-725996ebf89e">
+      <Execution id="78b0781d-fca4-4c9b-a4aa-10188d228b47" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C110_manifest_and_authentication_absolute_vectors" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C103_source_eligibility_is_closed_and_fail_closed" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b814a71e-c259-3c60-7968-42cbcaaeb128">
+      <Execution id="3b58e278-3dcc-4586-859f-559a4265436a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C103_source_eligibility_is_closed_and_fail_closed" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C108_r2_and_c1_share_framed_verification_service" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="08288354-1e8b-a8d1-9ceb-0c8a0b39333c">
+      <Execution id="633dd400-b195-4e05-a56b-596112107527" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C108_r2_and_c1_share_framed_verification_service" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code(arm: &quot;missing&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="95fd4edf-b09c-68c8-f7f3-d3c8d6df723e">
+      <Execution id="1b0a9883-ac8c-4e04-b66d-5b5b601632e7" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_readiness_maps_bad_claim_provider_CA_to_stable_503_code" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F2_same_acquiring_work_source_defers_with_recovery_claim_generation(unresolvedOutcomeUnknown: True, expectedOutcome: ProviderOutcomeUnknown)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="9e073cb5-125f-66ab-7373-61ae706e1f9b">
+      <Execution id="45059826-5cee-4f47-be47-c9aca779ce81" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F2_same_acquiring_work_source_defers_with_recovery_claim_generation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_claim_next_does_not_clear_backoff_deferred_after_candidate_snapshot" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="34046a72-c4a0-d335-5851-1a85e201deff">
+      <Execution id="eb59a008-3c2b-4764-85d4-4c187c38f4b9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_claim_next_does_not_clear_backoff_deferred_after_candidate_snapshot" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="36730286-c1bb-f808-3763-5d428582f860">
+      <Execution id="90dbe873-b74d-424c-b3c3-6582f07efcc9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_mixed_queue_makes_bounded_progress_for_recovery_and_normal_work" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C116_global_lock_subsequence_is_preserved" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40cbe474-f262-fe11-47d7-7acd13235dc7">
+      <Execution id="12ddb311-bd45-4f80-82ac-ceb618e237bf" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C116_global_lock_subsequence_is_preserved" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_recipient_factory_rejects_direct_connection_strings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="06e75008-3fdd-0cde-000e-2194ee7fa912">
+      <Execution id="bd80018d-04a9-4185-ae8e-a478d0336f52" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_recipient_factory_rejects_direct_connection_strings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C101_exact_selection_and_ordered_class_freeze" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ce1f7299-262c-5964-51ce-797106f03b91">
+      <Execution id="16a145fe-438d-413d-bfe5-7bd0ecef4bda" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C101_exact_selection_and_ordered_class_freeze" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_F1_fresh_work_source_discovers_finalized_provider_obligation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="122659f5-42a5-b40d-719a-a294cb9bb489">
+      <Execution id="5ad5a21e-cdf6-4b1e-b778-f6d6e1d06245" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_F1_fresh_work_source_discovers_finalized_provider_obligation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C122_finalize_follows_committed_seal" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="91aeb71c-5a92-82c3-c41a-eb394a0bd517">
+      <Execution id="bdac908c-1323-4335-a25f-366b5e2da527" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C122_finalize_follows_committed_seal" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_same_owner_stale_generation_cannot_defer_or_complete_successor_claim" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="95df5196-e77f-1d49-02cb-9ca1ec94e7ec">
+      <Execution id="f450ba75-da01-44a9-99a7-0ade6eae17be" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_same_owner_stale_generation_cannot_defer_or_complete_successor_claim" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C106_exact_object_is_reopened_without_public_locator_surface" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7e28820f-8ce4-1940-2004-c83cd5a9105c">
+      <Execution id="ad53dbbc-a8ee-4d8e-b2a5-269055686b79" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C106_exact_object_is_reopened_without_public_locator_surface" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C123_abort_requires_durable_authorization" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7b13cd34-b017-940c-fffa-7e2ddb897bef">
+      <Execution id="bea03d6a-2e94-4854-b511-8ca2f1d60ee1" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C123_abort_requires_durable_authorization" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C118_exact_seal_replay_precedes_stale_revision" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="aa1f2c84-8f12-be0d-f4e8-75b256267bb8">
+      <Execution id="b84c50a7-175f-452b-9698-9da576ce2a9f" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C118_exact_seal_replay_precedes_stale_revision" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_runtime_owner_composition_rejects_direct_connection_strings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="fb7067aa-8e16-6004-46f2-6bec0a14e52e">
+      <Execution id="fe69cfe9-8285-4181-856a-406d35e5c24e" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_runtime_owner_composition_rejects_direct_connection_strings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_custody_registration_excludes_fixtures_while_readiness_rejects_fixture_profile" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="79b5747f-f255-b082-f067-7ccea752c3c7">
+      <Execution id="a348dd33-ce44-4ed9-9285-08fa0b3f7c91" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_custody_registration_excludes_fixtures_while_readiness_rejects_fixture_profile" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C104_frozen_binding_is_insert_once_and_exact_replay_only" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="c11aaf1f-4023-7306-b98b-a6e827287115">
+      <Execution id="f96cbf59-fa1b-49bf-9f69-33e65678b7ce" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C104_frozen_binding_is_insert_once_and_exact_replay_only" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C121_assembly_sealed_is_a_closed_job_state_and_event" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="90d64e64-2841-35c2-9480-e2fa4323ad13">
+      <Execution id="eb0b65d6-28a7-47a1-bdf8-4ddd67d1b3b7" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C121_assembly_sealed_is_a_closed_job_state_and_event" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_current_database_sql_and_security_metadata_are_captured" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d9a1aa12-85c0-81c9-5cc7-89290a9587ad">
+      <Execution id="aa8470ba-b897-4978-96eb-6aa36f36eac7" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_current_database_sql_and_security_metadata_are_captured" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_acquire_contention_losing_contender_continues_to_later_obligation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="6cd892ce-b96f-8692-5e35-223bca543790">
+      <Execution id="8d46706f-658b-4444-a8d1-3dfa6c667690" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_acquire_contention_losing_contender_continues_to_later_obligation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C117_post_lock_admission_clock_is_single_and_fresh" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="99d0154f-e992-7c27-fd15-4ae12535a224">
+      <Execution id="f3bb665c-a01f-4878-a446-58a65aa803ba" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C117_post_lock_admission_clock_is_single_and_fresh" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d8ea26f4-8314-b487-efcb-53d24b0f547e">
+      <Execution id="d2331f34-1beb-4a09-ace4-f2e62c8d0c36" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_W2_AssemblyExactOutcomeMatrixUsesOneSharedProviderFixture" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C120_seal_commits_preparation_identity_items_head_and_event" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="4645fd3c-f690-118f-ac77-602d5e47f8d6">
+      <Execution id="a579e431-163a-4b76-9fba-652fa40b68e9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C120_seal_commits_preparation_identity_items_head_and_event" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_displaced_owner_cannot_defer_or_complete_new_generation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="e82dc5c7-872a-8fbb-f049-5805264b39dd">
+      <Execution id="3e3ce789-d1a1-4470-b4b4-87c156e33ce0" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_displaced_owner_cannot_defer_or_complete_new_generation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_broker_composition_registers_fixture_claim_services_and_exact_login" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="87317a4b-ede9-63d6-2451-0a7a62444943">
+      <Execution id="156fd412-2084-482c-89a9-80c3e7def88b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Development_broker_composition_registers_fixture_claim_services_and_exact_login" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_database_options_reject_direct_connection_string" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="578539e7-6c2e-1d87-270f-abce79ca7666">
+      <Execution id="179a5634-7f17-4de1-b6db-3f452852e994" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_database_options_reject_direct_connection_string" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="58e67411-e13a-f5a8-2401-a5bb33c6c0e0">
+      <Execution id="b068f9ae-833c-45b6-a06b-16fb262e8b1c" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_with_fixture_content_commitment_fails_closed_at_commitment_arm" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_rejects_pre_registered_unknown_claim_provider(arm: &quot;content&quot;)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f72b51f2-03eb-cd13-f8de-acc687a13617">
+      <Execution id="7241bafd-c8ca-4366-ae33-4e1ed6651980" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_rejects_pre_registered_unknown_claim_provider" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C112_first_fresh_barrier_precedes_source_read" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="40439020-0b9a-5ba1-6bb8-d00b33795342">
+      <Execution id="01c4113c-0877-4512-bf84-370a31dd786d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C112_first_fresh_barrier_precedes_source_read" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7fec0327-80ca-e8e8-0af7-0552b68c5121">
+      <Execution id="edf5cc82-b286-43c5-9070-3e81983f45a6" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_broker_with_fixture_subject_token_fails_closed_at_subject_arm" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C113_second_fresh_barrier_immediately_precedes_prepare" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="52ab1157-e8e5-ef13-639a-0e38781cc9e0">
+      <Execution id="ad683cae-4499-4faa-9627-67d08bec57b6" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C113_second_fresh_barrier_immediately_precedes_prepare" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.A3_W2_DurableWorkerIsARealProductCallerWithExplicitWorkSource" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="a9c0c154-040e-4950-852e-1374b96cc8d5">
+      <Execution id="eac98d04-c93a-4849-b8ba-0114e50ca11d" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="A3_W2_DurableWorkerIsARealProductCallerWithExplicitWorkSource" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Existing_managed_key_generator_always_round_trips_fixed_length_prefix" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="3fb7944c-e11f-6c5b-04f0-e2eaa8386298">
+      <Execution id="c2a9bec8-e0aa-4ee8-a5b7-629e5c88b8e6" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Existing_managed_key_generator_always_round_trips_fixed_length_prefix" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C124_schema_function_owner_and_acl_shapes_are_exact" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="26ff2699-b9d7-25b0-3f16-0b3a39a39032">
+      <Execution id="ec72153c-15d8-4c44-8eaf-06b893b158c9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C124_schema_function_owner_and_acl_shapes_are_exact" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.Assembly_exact_read_keeps_reconciler_scope_alive_through_framed_consumer_and_disposes_in_order" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7528f2e3-7a18-6001-ddd8-99b5bb47d923">
+      <Execution id="b0d08183-32d2-4002-8138-97a0ce25084b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="Assembly_exact_read_keeps_reconciler_scope_alive_through_framed_consumer_and_disposes_in_order" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="073b6a96-772e-5d07-4812-3f5caf697552">
+      <Execution id="246df3cf-78a6-4a3c-be3a-65ba5b6450b8" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="b36450b3-27ef-0815-eef6-8b7ad31054a7">
+      <Execution id="28f960f8-7fa2-4dd1-be51-2b53cffb1a8b" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_sql_capability_rejects_null_required_inputs_without_mutation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C102_missing_duplicate_or_mismatched_source_has_zero_bindings" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="0b2aab3c-b6d4-0a94-0977-d700fb770da8">
+      <Execution id="fcf1c122-dda1-4089-9b5b-49fbd4b0a7c0" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C102_missing_duplicate_or_mismatched_source_has_zero_bindings" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Provisioning_category_scope_boundary_covers_exact_site_credentials(category: CaptureAgent, scope: &quot;operator.site-qualification.enroll&quot;, expected: False)" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9">
+      <Execution id="be19d3c4-21e5-47ba-b253-c2a0bd664165" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Provisioning_category_scope_boundary_covers_exact_site_credentials" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C125_migration_model_is_clean_and_b4_down_contract_is_present" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="467db7da-44a4-80b4-5718-0d1e597ba057">
+      <Execution id="78867017-d23d-4dbc-8fd3-411eba779f53" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C125_migration_model_is_clean_and_b4_down_contract_is_present" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C111_deterministic_identifiers_and_fingerprints_are_absolute" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="d098d702-9fa9-4e1c-dc3f-a7f2248f53b6">
+      <Execution id="b438f1ec-5e8b-4f20-8a53-20ea24883f41" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C111_deterministic_identifiers_and_fingerprints_are_absolute" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Development_custody_registration_keeps_fixture_catalogs_and_provider" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ace66ea2-aac1-20f5-673a-d9461591d68d">
+      <Execution id="bb390fa9-2058-4dc3-bedc-1088cd152d2a" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Development_custody_registration_keeps_fixture_catalogs_and_provider" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_expired_job_can_complete_without_extending_job_expiry" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="da461997-2542-c90f-8a41-c59a8b97f307">
+      <Execution id="c72d01bc-90a2-4344-a387-19f871c836ad" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_expired_job_can_complete_without_extending_job_expiry" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C119_two_pass_streaming_has_no_complete_plaintext_buffer_or_temp_file" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="70eab0ec-aa9a-d8b1-0b75-897147b958a5">
+      <Execution id="88cc4a14-6eb0-4712-a58c-2b5834415abb" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C119_two_pass_streaming_has_no_complete_plaintext_buffer_or_temp_file" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="57e2e83b-7d4a-b93f-6b12-8c79d3bbe069">
+      <Execution id="fab67fce-bfbd-4a08-9549-8c5d989ae6bf" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_C116_exact_recovery_runs_when_winner_finishes_before_loser_records_pending" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_legacy_finalize_capability_cannot_bypass_current_claim" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="5348d033-71d0-0a56-b92c-683aaaa2fe18">
+      <Execution id="a461178b-9564-4f6c-b94f-b5e370ddf8b2" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_legacy_finalize_capability_cannot_bypass_current_claim" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.PostSealRecovery_C116_claim_handoff_can_return_existing_match_plus_lease_lost_only_after_durable_finalize" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="88815e9d-bbce-de63-422a-1772ff4b22fe">
+      <Execution id="12e0da63-53a8-4782-b2ef-769cbdfbeb70" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="PostSealRecovery_C116_claim_handoff_can_return_existing_match_plus_lease_lost_only_after_durable_finalize" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="5348d033-71d0-0a56-b92c-683aaaa2fe18" executionId="a461178b-9564-4f6c-b94f-b5e370ddf8b2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5fba6443-d442-0239-166b-473977c58daa" executionId="454a9dca-d322-40b6-8b7f-4dc0d2e273c8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7fec0327-80ca-e8e8-0af7-0552b68c5121" executionId="edf5cc82-b286-43c5-9070-3e81983f45a6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6834c939-7abc-9ec0-3601-6bd3733439b5" executionId="726cec2d-832e-47a1-b244-f269ef59ffc3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9ec261f7-a3fa-5688-e939-437dbbca1555" executionId="c74b3390-6241-4b10-bf21-7e4785e93ac3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ddc043d7-2798-35d6-96f2-5caabc6d13f0" executionId="1b993f29-7bd1-4aa5-87e3-21ec2ff3116e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="073b6a96-772e-5d07-4812-3f5caf697552" executionId="246df3cf-78a6-4a3c-be3a-65ba5b6450b8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="e82dc5c7-872a-8fbb-f049-5805264b39dd" executionId="3e3ce789-d1a1-4470-b4b4-87c156e33ce0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="57e2e83b-7d4a-b93f-6b12-8c79d3bbe069" executionId="fab67fce-bfbd-4a08-9549-8c5d989ae6bf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d098d702-9fa9-4e1c-dc3f-a7f2248f53b6" executionId="b438f1ec-5e8b-4f20-8a53-20ea24883f41" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="12158021-f1b0-cf52-0196-97a314b8356e" executionId="f3b310ac-4c87-40e8-9b19-99e6571777cf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7e28820f-8ce4-1940-2004-c83cd5a9105c" executionId="ad53dbbc-a8ee-4d8e-b2a5-269055686b79" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2ae2d3f8-3974-bb2b-1117-da9a264a84ba" executionId="35c79bb2-c0ab-4ac2-bdfd-19501e58ad63" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="97e38191-8e3d-8346-3808-e0405c8b5a55" executionId="92b1ee6d-00e5-4a27-92b2-2405c194f058" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40013f16-0a41-d1dc-bf25-6cf35a946d8d" executionId="8d8746b7-c780-4128-8681-dc8d100f7335" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="edfa2e98-b249-825a-668d-b637c26ce7a3" executionId="eac096d9-611e-4694-9f32-b76ff8488e15" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4436eb5c-487f-e7e4-2939-6aeb2bbfbb3e" executionId="cce97d49-b1d0-427a-a969-20c101b5185f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c35aa168-5336-b32c-25d8-3a8d28e15866" executionId="f2ca27a7-556e-4528-b2bd-de5e47c0c607" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c11aaf1f-4023-7306-b98b-a6e827287115" executionId="f96cbf59-fa1b-49bf-9f69-33e65678b7ce" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="91aeb71c-5a92-82c3-c41a-eb394a0bd517" executionId="bdac908c-1323-4335-a25f-366b5e2da527" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="87317a4b-ede9-63d6-2451-0a7a62444943" executionId="156fd412-2084-482c-89a9-80c3e7def88b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b86efd4a-c38d-0dc8-246d-5db54d7a5252" executionId="3c150599-21fe-4f8c-92e7-3c7ebdcbfcf0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="36730286-c1bb-f808-3763-5d428582f860" executionId="90dbe873-b74d-424c-b3c3-6582f07efcc9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7528f2e3-7a18-6001-ddd8-99b5bb47d923" executionId="b0d08183-32d2-4002-8138-97a0ce25084b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="336d1eb1-abec-03c2-ab8a-3eb4bb0f40e9" executionId="be19d3c4-21e5-47ba-b253-c2a0bd664165" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9eed02a8-84a1-096b-351c-725996ebf89e" executionId="78b0781d-fca4-4c9b-a4aa-10188d228b47" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="26ff2699-b9d7-25b0-3f16-0b3a39a39032" executionId="ec72153c-15d8-4c44-8eaf-06b893b158c9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="52ab1157-e8e5-ef13-639a-0e38781cc9e0" executionId="ad683cae-4499-4faa-9627-67d08bec57b6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40439020-0b9a-5ba1-6bb8-d00b33795342" executionId="01c4113c-0877-4512-bf84-370a31dd786d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b814a71e-c259-3c60-7968-42cbcaaeb128" executionId="3b58e278-3dcc-4586-859f-559a4265436a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="043ea723-2ae5-7a8d-37ab-b58ac99186c3" executionId="776b9bb9-6d87-41a2-ab47-be7170d85606" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7f872d99-838d-fce2-8ce3-dbdf6c7b5e0a" executionId="da61b8f8-d9cd-4eb6-b388-51847873b203" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="fb7067aa-8e16-6004-46f2-6bec0a14e52e" executionId="fe69cfe9-8285-4181-856a-406d35e5c24e" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="67946be5-874f-98e2-da8e-08aefbe99d1f" executionId="bc624a27-5728-45d4-ac41-8454af9eed0c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d9a1aa12-85c0-81c9-5cc7-89290a9587ad" executionId="aa8470ba-b897-4978-96eb-6aa36f36eac7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="58e67411-e13a-f5a8-2401-a5bb33c6c0e0" executionId="b068f9ae-833c-45b6-a06b-16fb262e8b1c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="0b2aab3c-b6d4-0a94-0977-d700fb770da8" executionId="fcf1c122-dda1-4089-9b5b-49fbd4b0a7c0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="6cd892ce-b96f-8692-5e35-223bca543790" executionId="8d46706f-658b-4444-a8d1-3dfa6c667690" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="88815e9d-bbce-de63-422a-1772ff4b22fe" executionId="12e0da63-53a8-4782-b2ef-769cbdfbeb70" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f72b51f2-03eb-cd13-f8de-acc687a13617" executionId="7241bafd-c8ca-4366-ae33-4e1ed6651980" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="122659f5-42a5-b40d-719a-a294cb9bb489" executionId="5ad5a21e-cdf6-4b1e-b778-f6d6e1d06245" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b61898cb-61e5-b924-1ed6-b4c7070bb4ba" executionId="4c30bf99-8899-4e29-b339-01da9d7ea60b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9fbc6d68-bba9-aff3-4a4a-82565a3cd7d9" executionId="bba0d31b-965b-443c-b345-c909470b78e3" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a9c0c154-040e-4950-852e-1374b96cc8d5" executionId="eac98d04-c93a-4849-b8ba-0114e50ca11d" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ce1f7299-262c-5964-51ce-797106f03b91" executionId="16a145fe-438d-413d-bfe5-7bd0ecef4bda" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="35da3392-a083-8558-cd39-4059ffb4cc74" executionId="6e579b2e-f31d-4b45-ade5-045eff20d0d1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="08288354-1e8b-a8d1-9ceb-0c8a0b39333c" executionId="633dd400-b195-4e05-a56b-596112107527" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7579dcea-cf7c-6781-ca4d-c6e69b9e7c72" executionId="1e82b22e-5dd2-43dc-98ea-902be0f44d2c" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2178cc48-9e35-ef7a-78a4-91197f199dfb" executionId="75260d16-915f-47b0-9901-d84697fb4bc5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9f033a0f-b2be-50b2-0f42-575861581ce1" executionId="92c44457-fa0f-42bf-8f96-f4179d8118c9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="90d64e64-2841-35c2-9480-e2fa4323ad13" executionId="eb0b65d6-28a7-47a1-bdf8-4ddd67d1b3b7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="27f2594b-306c-ee21-d2ac-b425d3160373" executionId="c5daee02-fb05-41b7-8afe-04242f501799" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="aa1f2c84-8f12-be0d-f4e8-75b256267bb8" executionId="b84c50a7-175f-452b-9698-9da576ce2a9f" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="06e75008-3fdd-0cde-000e-2194ee7fa912" executionId="bd80018d-04a9-4185-ae8e-a478d0336f52" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ace66ea2-aac1-20f5-673a-d9461591d68d" executionId="bb390fa9-2058-4dc3-bedc-1088cd152d2a" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="467db7da-44a4-80b4-5718-0d1e597ba057" executionId="78867017-d23d-4dbc-8fd3-411eba779f53" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="79b5747f-f255-b082-f067-7ccea752c3c7" executionId="a348dd33-ce44-4ed9-9285-08fa0b3f7c91" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="34046a72-c4a0-d335-5851-1a85e201deff" executionId="eb59a008-3c2b-4764-85d4-4c187c38f4b9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f0726ede-c6bb-27e3-3ccf-c8db9dbc1be1" executionId="567cc58b-80db-4df5-95f9-4aef2f65c8d0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="95df5196-e77f-1d49-02cb-9ca1ec94e7ec" executionId="f450ba75-da01-44a9-99a7-0ade6eae17be" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3fb7944c-e11f-6c5b-04f0-e2eaa8386298" executionId="c2a9bec8-e0aa-4ee8-a5b7-629e5c88b8e6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="70eab0ec-aa9a-d8b1-0b75-897147b958a5" executionId="88cc4a14-6eb0-4712-a58c-2b5834415abb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3dea7acb-88e8-981b-c1e9-965522229029" executionId="41c70b1c-3f4b-413c-b6c4-d24cd4c7ec36" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7e4e486d-99ba-b962-ccef-2a06ccedb620" executionId="433d60f6-4349-403f-b6e9-4a4c6de574bd" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="473df6fb-e2b7-fdd7-9839-ac511cf0f8e8" executionId="2e707b2d-b6f6-470c-913a-7122a15f81ed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="99d0154f-e992-7c27-fd15-4ae12535a224" executionId="f3bb665c-a01f-4878-a446-58a65aa803ba" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="da461997-2542-c90f-8a41-c59a8b97f307" executionId="c72d01bc-90a2-4344-a387-19f871c836ad" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="d8ea26f4-8314-b487-efcb-53d24b0f547e" executionId="d2331f34-1beb-4a09-ace4-f2e62c8d0c36" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="40cbe474-f262-fe11-47d7-7acd13235dc7" executionId="12ddb311-bd45-4f80-82ac-ceb618e237bf" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="578539e7-6c2e-1d87-270f-abce79ca7666" executionId="179a5634-7f17-4de1-b6db-3f452852e994" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="cfb06ce2-6685-4da2-0529-f61a68ac4c82" executionId="4d1630da-3cf3-4825-9938-cdcc1d0bbf01" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="b36450b3-27ef-0815-eef6-8b7ad31054a7" executionId="28f960f8-7fa2-4dd1-be51-2b53cffb1a8b" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="efc3a1bc-e836-73c9-79a9-e1797fd7ea8d" executionId="69922a67-3ed9-4c88-9384-39ecda905c70" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="9e073cb5-125f-66ab-7373-61ae706e1f9b" executionId="45059826-5cee-4f47-be47-c9aca779ce81" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="95fd4edf-b09c-68c8-f7f3-d3c8d6df723e" executionId="1b0a9883-ac8c-4e04-b66d-5b5b601632e7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="4645fd3c-f690-118f-ac77-602d5e47f8d6" executionId="a579e431-163a-4b76-9fba-652fa40b68e9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7b13cd34-b017-940c-fffa-7e2ddb897bef" executionId="bea03d6a-2e94-4854-b511-8ca2f1d60ee1" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f8b90d91-52b8-709d-9bdc-fef8bf3be8d6" executionId="a898a141-a2e8-43f7-944e-db08b93fd271" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="78" executed="78" passed="77" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.14]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.28]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.29]   Starting:    TagEkyc.IntegrationTests&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+warn: Microsoft.AspNetCore.HttpsPolicy.HttpsRedirectionMiddleware[3]&#xD;
+      Failed to determine the https port for redirect.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Production&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+C116_STAGE=exact post-seal claim after losing SealAsync; provider finalize calls=1; provider abort calls=0&#xD;
+C116_PROVIDER_EVENTS=Prepare:Prepared|Inspect:Prepared|Finalize:1:Finalized&#xD;
+[xUnit.net 00:03:37.96]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:03:37.96]       Expected: ExistingMatch&#xD;
+[xUnit.net 00:03:37.96]       Actual:   LeaseLost&#xD;
+[xUnit.net 00:03:37.96]       Stack Trace:&#xD;
+[xUnit.net 00:03:37.96]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1055,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C118_exact_seal_replay_precedes_stale_revision()&#xD;
+[xUnit.net 00:03:37.96]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C1ResolverAssemblyTests.cs(1075,0): at TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C118_exact_seal_replay_precedes_stale_revision()&#xD;
+[xUnit.net 00:03:37.96]         --- End of stack trace from previous location ---&#xD;
+DATABASE_ID=tagekyc_persistence_tests;USER=tagekyc;ENGINE=PostgreSQL 16.15 (Debian 16.15-1.pgdg13+2) on x86_64-pc-linux-gnu, compiled by gcc (Debian 14.2.0-19) 14.2.0, 64-bit&#xD;
+MIGRATION=20260621075836_InitialPostgresPersistence&#xD;
+MIGRATION=20260622033429_Tip65EvidenceHashMetadata&#xD;
+MIGRATION=20260622141420_Tip66EvidencePackageSigning&#xD;
+MIGRATION=20260623120000_Tip67BNeutralProofPublicKeyMaterial&#xD;
+MIGRATION=20260706144217_Tip80SAppendIdempotency&#xD;
+MIGRATION=20260709003221_Tip84BApiKeyStore&#xD;
+MIGRATION=20260711132410_Tip88ARawExportPolicyCatalog&#xD;
+MIGRATION=20260712133151_Tip88B1RawExportControlPlane&#xD;
+MIGRATION=20260720022629_Tip88B2SubjectExportConsent&#xD;
+MIGRATION=20260721070118_Tip88AE2PolicyPermitTtlField&#xD;
+MIGRATION=20260722084729_Tip88B31RawExportAuthorizationSchema&#xD;
+MIGRATION=20260722163505_Tip88B32RawExportAuthorizationIdempotencyFunctions&#xD;
+MIGRATION=20260723052003_Tip88B33RawExportAuthorizationPersistFunction&#xD;
+MIGRATION=20260724015546_Tip88B1E3ResolverReadBoundary&#xD;
+MIGRATION=20260726145547_Tip88B4RawExportJobFoundation&#xD;
+MIGRATION=20260730090000_Tip88C1ACaptureAcceptanceSurface&#xD;
+MIGRATION=20260730214000_Tip88C1B1IngressClaimIdempotencySkeleton&#xD;
+MIGRATION=20260731045718_Tip88C1B2AuthoritySnapshotLifecycle&#xD;
+MIGRATION=20260731082733_Tip88C1B2CoreNewCandidate&#xD;
+MIGRATION=20260731130919_Tip88C1B2BetaExistingCandidates&#xD;
+MIGRATION=20260802105416_Tip88C1B2DurableKeyProd&#xD;
+MIGRATION=20260803151824_Tip88C1B2DurableKeyFixtureProof&#xD;
+MIGRATION=20260804120000_Tip88C1B2DurableObjectCustody&#xD;
+MIGRATION=20260807120000_Tip88C1B2R2DurableCustodyEncryption&#xD;
+MIGRATION=20260810120000_Tip88C1B2R3VerifiedCiphertextStaging&#xD;
+MIGRATION=20260812120000_Tip88C1B2R4R6SourceFinalization&#xD;
+MIGRATION=20260815120000_Tip88C1C1ResolverAssembly&#xD;
+MIGRATION=20260818120000_Tip88C1C2RecipientPackage&#xD;
+MIGRATION=20260819120000_Tip88C1C3AuthenticatedPackageDelivery&#xD;
+MIGRATION=20260819180000_Tip88C1C4PackageReferenceDistribution&#xD;
+MIGRATION=20260823120000_Tip88C1C5ManagedRecipientEnrollment&#xD;
+MIGRATION=20260904154848_Tip88C1C6AProductionAuthorityDeliveryBarrier&#xD;
+MIGRATION=20260906055502_Tip88C1C6BIngressSqlComposition&#xD;
+MIGRATION=20260908120000_Tip88C1C6BA1Foundation&#xD;
+MIGRATION=20260913120000_Tip88C1C6BA3RetainedIngressComposition&#xD;
+MIGRATION=20260923090000_RawExportAssemblyDurableWorkSource&#xD;
+MIGRATION=20260924120000_RawExportDeliveryRecipientCredential&#xD;
+MIGRATION=20260924130000_RawExportLegacyConsentClassFence&#xD;
+MIGRATION=20260925090000_RawExportAssemblyRetainedModeWorkSource&#xD;
+MIGRATION=20260926120000_RawExportAssemblyPostSealRecovery&#xD;
+MIGRATION=20260927120000_SiteQualificationMeasurementPlane&#xD;
+MIGRATION=20260930082453_OpenBaoProductionKekProvider&#xD;
+MIGRATION=20261002120000_ProductionApplicationPersistencePrincipal&#xD;
+FUNCTION_GRANT=raw_export_freeze_job_source_bindings;SPECIFIC=raw_export_freeze_job_source_bindings_53258;GRANTEE=tagekyc_raw_export_assembly_resolver;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_next_assembly_candidate;SPECIFIC=raw_export_next_assembly_candidate_54569;GRANTEE=tagekyc_raw_export_assembly_resolver;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_read_job_source_verification_context;SPECIFIC=raw_export_read_job_source_verification_context_53260;GRANTEE=tagekyc_raw_export_assembly_resolver;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_record_assembly_source_integrity_failure;SPECIFIC=raw_export_record_assembly_source_integrity_failure_53262;GRANTEE=tagekyc_raw_export_assembly_resolver;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_authorize_assembly_abort;SPECIFIC=raw_export_authorize_assembly_abort_53267;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_claim_exact_post_seal_recovery;SPECIFIC=raw_export_claim_exact_post_seal_recovery_54623;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_claim_next_post_seal_recovery;SPECIFIC=raw_export_claim_next_post_seal_recovery_54621;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_defer_post_seal_recovery;SPECIFIC=raw_export_defer_post_seal_recovery_54625;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_read_assembly_recovery_context;SPECIFIC=raw_export_read_assembly_recovery_context_53270;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_read_committed_assembly_recovery_context;SPECIFIC=raw_export_read_committed_assembly_recovery_context_53271;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_record_assembly_aborted;SPECIFIC=raw_export_record_assembly_aborted_53269;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_record_assembly_pending;SPECIFIC=raw_export_record_assembly_pending_53264;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_record_claimed_assembly_finalized;SPECIFIC=raw_export_record_claimed_assembly_finalized_54626;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_register_assembly_preparing;SPECIFIC=raw_export_register_assembly_preparing_53263;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION_GRANT=raw_export_seal_authenticated_assembly;SPECIFIC=raw_export_seal_authenticated_assembly_53265;GRANTEE=tagekyc_raw_export_assembly_sealer;PRIVILEGE=EXECUTE&#xD;
+FUNCTION=raw_export_next_assembly_candidate()&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_raw_export_assembly_resolver=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_next_assembly_candidate()&#xD;
+ RETURNS TABLE("JobId" uuid, "PrincipalId" uuid, "ClientApplicationId" uuid, "CreatedByApiKeyId" uuid, "Revision" bigint, "FencingToken" bigint)&#xD;
+ LANGUAGE sql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+  SELECT i."JobId",i."PrincipalId",i."ClientApplicationId",i."CreatedByApiKeyId",&#xD;
+         h."Revision",h."FencingToken"&#xD;
+  FROM tagekyc.raw_export_job_identities i&#xD;
+  JOIN tagekyc.raw_export_job_operational_heads h ON h."JobId"=i."JobId"&#xD;
+  WHERE i."ExportMode" IN ('EncryptedExportPacket','EncryptedRawVaultRetained')&#xD;
+    AND i."JobExpiresAt"&gt;clock_timestamp()&#xD;
+    AND (&#xD;
+      h."CurrentState"='Claimed'&#xD;
+      OR (h."CurrentState"='Assembling'&#xD;
+          AND (h."LeaseOwnerId" IS NULL OR h."LeaseExpiresAt"&lt;=clock_timestamp())))&#xD;
+  ORDER BY i."CreatedAt",i."JobId"&#xD;
+  LIMIT 1&#xD;
+$function$&#xD;
+FUNCTION=raw_export_seal_authenticated_assembly(uuid,uuid,bigint,bigint,bigint,uuid,bytea,bytea,bytea,text,integer,bytea,bigint,integer,jsonb)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_raw_export_assembly_sealer=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_seal_authenticated_assembly(p_c2_preparation_id uuid, p_job_id uuid, p_expected_preparation_revision bigint, p_expected_job_revision bigint, p_expected_fence bigint, p_attempt_id uuid, p_assembly_digest bytea, p_manifest_digest bytea, p_authentication_value bytea, p_authentication_key_id text, p_authentication_key_version integer, p_assembly_fingerprint bytea, p_complete_assembly_length bigint, p_item_count integer, p_items jsonb)&#xD;
+ RETURNS TABLE("Outcome" text, "JobRevision" bigint, "PreparationRevision" bigint, "SealedAtUtc" timestamp with time zone)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE&#xD;
+  prep tagekyc.raw_export_assembly_preparation_dispositions%ROWTYPE; h tagekyc.raw_export_job_operational_heads%ROWTYPE;&#xD;
+  j tagekyc.raw_export_job_identities%ROWTYPE; b record; authority record; consent record; authority_kind text; prefix_session uuid; prefix_reference text; prefix_key bigint; now_ timestamptz;&#xD;
+  first_binding tagekyc.raw_export_job_source_bindings%ROWTYPE; actual_count integer;&#xD;
+  previous_head_context text; previous_transition_context text;&#xD;
+BEGIN&#xD;
+  SELECT p.* INTO prep FROM tagekyc.raw_export_assembly_preparation_dispositions p&#xD;
+  JOIN tagekyc.raw_export_assembly_identities i ON i."C2PreparationId"=p."C2PreparationId"&#xD;
+  WHERE p."C2PreparationId"=p_c2_preparation_id AND p."Disposition" IN ('SealCommitted','Finalized')&#xD;
+    AND p."JobId"=p_job_id AND p."AttemptId"=p_attempt_id AND p."FencingToken"=p_expected_fence&#xD;
+    AND p."AssemblyFingerprint"=p_assembly_fingerprint AND i."JobId"=p_job_id&#xD;
+    AND i."AttemptId"=p_attempt_id AND i."FencingToken"=p_expected_fence AND i."AssemblyDigest"=p_assembly_digest&#xD;
+    AND i."ManifestDigest"=p_manifest_digest AND i."AssemblyAuthenticationValue"=p_authentication_value&#xD;
+    AND i."AssemblyAuthenticationKeyId"=p_authentication_key_id AND i."AssemblyAuthenticationKeyVersion"=p_authentication_key_version&#xD;
+    AND i."CompleteAssemblyLength"=p_complete_assembly_length AND i."ItemCount"=p_item_count&#xD;
+    AND (SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(&#xD;
+          'Ordinal',a."Ordinal",'RawClass',a."RawClass",'SourceArtifactId',a."SourceArtifactId",&#xD;
+          'CaptureArtifactId',a."CaptureArtifactId",'CaptureRevision',a."CaptureRevision",'MediaType',a."MediaType",&#xD;
+          'PlaintextLength',a."PlaintextLength",'ContentCommitmentSchemaVersion',a."ContentCommitmentSchemaVersion",&#xD;
+          'ContentCommitmentKeyId',a."ContentCommitmentKeyId",'ContentCommitmentKeyVersion',a."ContentCommitmentKeyVersion",&#xD;
+          'ContentCommitment',pg_catalog.encode(a."ContentCommitment",'base64')) ORDER BY a."Ordinal")&#xD;
+         FROM tagekyc.raw_export_assembly_items a WHERE a."AssemblyId"=i."AssemblyId")=p_items&#xD;
+    AND EXISTS (SELECT 1 FROM tagekyc.raw_export_job_transitions t&#xD;
+                WHERE t."JobId"=p_job_id AND t."ResultingRevision"=p_expected_job_revision+1&#xD;
+                  AND t."EventType"='AssemblySealed' AND t."FromState"='Assembling' AND t."ToState"='AssemblySealed'&#xD;
+                  AND t."AttemptId"=p_attempt_id AND t."FencingToken"=p_expected_fence);&#xD;
+  IF FOUND THEN RETURN QUERY SELECT 'ExistingMatch'::text,p_expected_job_revision+1,prep."RowRevision",prep."SealCommittedAtUtc"; RETURN; END IF;&#xD;
+  IF EXISTS (&#xD;
+    SELECT 1 FROM tagekyc.raw_export_assembly_preparation_dispositions p&#xD;
+    LEFT JOIN tagekyc.raw_export_assembly_identities i ON i."C2PreparationId"=p."C2PreparationId"&#xD;
+    WHERE p."C2PreparationId"=p_c2_preparation_id&#xD;
+      AND (p."Disposition" IN ('SealCommitted','Finalized') OR i."AssemblyId" IS NOT NULL))&#xD;
+  THEN RETURN QUERY SELECT 'AssemblyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  FOR prefix_session IN SELECT DISTINCT "VerificationSessionId" FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id ORDER BY "VerificationSessionId" LOOP PERFORM 1 FROM tagekyc.verification_sessions WHERE "Id"=prefix_session FOR UPDATE; IF NOT FOUND THEN RETURN QUERY SELECT 'NotFoundOrNotAllowed'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF; END LOOP;&#xD;
+  FOR prefix_reference,prefix_key IN SELECT DISTINCT reference."ExternalConsentArtifactRef",pg_catalog.hashtextextended('tip88c1:a3:consent-reference:'||snapshot."ClientApplicationId"::text||':'||reference."ExternalConsentArtifactRef",0) FROM tagekyc.raw_export_job_source_bindings source JOIN tagekyc.raw_export_authority_snapshots snapshot ON snapshot."AuthoritySnapshotId"=source."AuthoritySnapshotId" JOIN tagekyc.raw_source_consent_bindings binding ON binding."ConsentBindingId"=snapshot."ConsentBindingId" JOIN tagekyc.raw_source_consent_references reference ON reference."ConsentReferenceId"=binding."ConsentReferenceId" WHERE source."JobId"=p_job_id AND snapshot."AuthorityKind"='SourceRetention' ORDER BY 2 LOOP PERFORM pg_catalog.pg_advisory_xact_lock_shared(prefix_key); END LOOP;&#xD;
+  SELECT * INTO h FROM tagekyc.raw_export_job_operational_heads WHERE "JobId"=p_job_id FOR UPDATE;&#xD;
+  IF h."JobId" IS NULL THEN RETURN QUERY SELECT 'NotFoundOrNotAllowed'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_job_attempts WHERE "AttemptId"=p_attempt_id AND "JobId"=p_job_id FOR UPDATE;&#xD;
+  SELECT * INTO j FROM tagekyc.raw_export_job_identities WHERE "JobId"=p_job_id FOR SHARE;&#xD;
+  IF j."JobId" IS NULL THEN RETURN QUERY SELECT 'NotFoundOrNotAllowed'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF NOT FOUND OR h."CurrentState"&lt;&gt;'Assembling' OR h."CurrentAttemptId" IS DISTINCT FROM p_attempt_id OR h."Revision"&lt;&gt;p_expected_job_revision OR h."FencingToken"&lt;&gt;p_expected_fence THEN RETURN QUERY SELECT 'LeaseLost'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_publications p JOIN tagekyc.raw_export_job_source_bindings x ON x."SourcePublicationId"=p."SourcePublicationId" WHERE x."JobId"=p_job_id ORDER BY p."SourceArtifactId" FOR UPDATE OF p;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_encryption_attempts a JOIN tagekyc.raw_export_job_source_bindings x ON x."EncryptionAttemptId"=a."AttemptId" WHERE x."JobId"=p_job_id ORDER BY a."AttemptId" FOR UPDATE OF a;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_head s JOIN tagekyc.raw_export_job_source_bindings x ON x."SourceArtifactId"=s."SourceArtifactId" WHERE x."JobId"=p_job_id ORDER BY s."SourceArtifactId" FOR UPDATE OF s;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_reservations r JOIN tagekyc.raw_export_job_source_bindings x ON x."SourceArtifactId"=r."SourceArtifactId" WHERE x."JobId"=p_job_id ORDER BY r."SourceArtifactId" FOR UPDATE OF r;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_source_ingress_claims c JOIN tagekyc.raw_export_job_source_bindings x ON x."VerificationSessionId"=c."VerificationSessionId" AND x."CaptureAcceptanceId"=c."CaptureAcceptanceId" AND x."CaptureArtifactId"=c."CaptureArtifactId" AND x."CaptureRevision"=c."CaptureRevision" AND x."RawClass"=c."RawClass" WHERE x."JobId"=p_job_id ORDER BY c."IngressClaimId" FOR UPDATE OF c;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_attempt_key_reservations k JOIN tagekyc.raw_export_job_source_bindings x ON x."AttemptKeyReservationId"=k."AttemptKeyReservationId" WHERE x."JobId"=p_job_id ORDER BY k."AttemptKeyReservationId" FOR UPDATE OF k;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_provisional_objects o JOIN tagekyc.raw_export_job_source_bindings x ON x."ObjectCustodyId"=o."ObjectCustodyId" WHERE x."JobId"=p_job_id ORDER BY o."ObjectCustodyId" FOR UPDATE OF o;&#xD;
+  PERFORM 1 FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id ORDER BY "Ordinal" FOR UPDATE;&#xD;
+  SELECT * INTO prep FROM tagekyc.raw_export_assembly_preparation_dispositions WHERE "C2PreparationId"=p_c2_preparation_id FOR UPDATE;&#xD;
+  IF NOT FOUND OR prep."Disposition"&lt;&gt;'Pending' OR prep."RowRevision"&lt;&gt;p_expected_preparation_revision OR prep."JobId"&lt;&gt;p_job_id OR prep."AttemptId"&lt;&gt;p_attempt_id OR prep."FencingToken"&lt;&gt;p_expected_fence OR prep."AssemblyFingerprint"&lt;&gt;p_assembly_fingerprint THEN RETURN QUERY SELECT 'PreparationConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  actual_count:=(SELECT pg_catalog.count(*)::integer FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id);&#xD;
+  IF p_item_count&lt;1 OR pg_catalog.jsonb_typeof(p_items)&lt;&gt;'array' OR pg_catalog.jsonb_array_length(p_items)&lt;&gt;p_item_count OR pg_catalog.octet_length(p_assembly_digest)&lt;&gt;32 OR pg_catalog.octet_length(p_manifest_digest)&lt;&gt;32 OR pg_catalog.octet_length(p_authentication_value)&lt;&gt;32 OR pg_catalog.octet_length(p_assembly_fingerprint)&lt;&gt;32 OR p_authentication_key_version&lt;1 OR p_complete_assembly_length&lt;1 THEN RETURN QUERY SELECT 'AssemblyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF actual_count&lt;&gt;p_item_count&#xD;
+     OR (SELECT pg_catalog.count(*)::integer FROM tagekyc.raw_export_job_classes WHERE "JobId"=p_job_id)&lt;&gt;p_item_count&#xD;
+     OR EXISTS (&#xD;
+       SELECT 1 FROM tagekyc.raw_export_job_classes c&#xD;
+       WHERE c."JobId"=p_job_id AND NOT EXISTS (&#xD;
+         SELECT 1 FROM pg_catalog.jsonb_array_elements(p_items) item&#xD;
+         WHERE item-&gt;&gt;'Ordinal'=c."Ordinal"::text AND item-&gt;&gt;'RawClass'=c."RawClass"))&#xD;
+     OR EXISTS (&#xD;
+       SELECT 1 FROM pg_catalog.jsonb_array_elements(p_items) item&#xD;
+       WHERE NOT EXISTS (&#xD;
+         SELECT 1 FROM tagekyc.raw_export_job_classes c&#xD;
+         WHERE c."JobId"=p_job_id AND item-&gt;&gt;'Ordinal'=c."Ordinal"::text AND item-&gt;&gt;'RawClass'=c."RawClass"))&#xD;
+  THEN RETURN QUERY SELECT 'AssemblyClassSetMismatch'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF (SELECT pg_catalog.jsonb_agg(pg_catalog.jsonb_build_object(&#xD;
+        'Ordinal',x."Ordinal",'RawClass',x."RawClass",'SourceArtifactId',x."SourceArtifactId",&#xD;
+        'CaptureArtifactId',x."CaptureArtifactId",'CaptureRevision',x."CaptureRevision",'MediaType',x."MediaType",&#xD;
+        'PlaintextLength',x."PlaintextLength",'ContentCommitmentSchemaVersion',x."ContentCommitmentSchemaVersion",&#xD;
+        'ContentCommitmentKeyId',x."ContentCommitmentKeyId",'ContentCommitmentKeyVersion',x."ContentCommitmentKeyVersion",&#xD;
+        'ContentCommitment',pg_catalog.encode(x."ContentCommitment",'base64')) ORDER BY x."Ordinal")&#xD;
+      FROM tagekyc.raw_export_job_source_bindings x WHERE x."JobId"=p_job_id) IS DISTINCT FROM p_items&#xD;
+  THEN RETURN QUERY SELECT 'SourceBindingInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  -- Acquire every authority and consent lock before the single admission clock.&#xD;
+  FOR b IN SELECT x.*,c."ClientApplicationId" FROM tagekyc.raw_export_job_source_bindings x JOIN tagekyc.raw_export_source_ingress_claims c ON c."VerificationSessionId"=x."VerificationSessionId" AND c."CaptureAcceptanceId"=x."CaptureAcceptanceId" AND c."CaptureArtifactId"=x."CaptureArtifactId" AND c."CaptureRevision"=x."CaptureRevision" AND c."RawClass"=x."RawClass" WHERE x."JobId"=p_job_id ORDER BY x."Ordinal"&#xD;
+  LOOP&#xD;
+    PERFORM pg_catalog.pg_advisory_xact_lock_shared(pg_catalog.hashtext('tip88c1:b2-authority:'||b."ClientApplicationId"::text||':'||b."VerificationSessionId"::text||':'||b."CaptureAcceptanceId"::text||':'||b."RawClass"));&#xD;
+    PERFORM 1 FROM tagekyc.raw_export_resolve_subject_consent_for_authorization(b."VerificationSessionId",b."ConsentPolicyId",b."ConsentPolicyVersion") WHERE "RawClass"=b."RawClass" AND "RecipientClientApplicationId"=j."RecipientClientApplicationId";&#xD;
+  END LOOP;&#xD;
+  now_:=pg_catalog.clock_timestamp();&#xD;
+  FOR b IN SELECT x.*,c."ClientApplicationId" FROM tagekyc.raw_export_job_source_bindings x JOIN tagekyc.raw_export_source_ingress_claims c ON c."VerificationSessionId"=x."VerificationSessionId" AND c."CaptureAcceptanceId"=x."CaptureAcceptanceId" AND c."CaptureArtifactId"=x."CaptureArtifactId" AND c."CaptureRevision"=x."CaptureRevision" AND c."RawClass"=x."RawClass" WHERE x."JobId"=p_job_id ORDER BY x."Ordinal"&#xD;
+  LOOP&#xD;
+    SELECT * INTO consent FROM tagekyc.raw_export_resolve_subject_consent_for_authorization(b."VerificationSessionId",b."ConsentPolicyId",b."ConsentPolicyVersion") WHERE "RawClass"=b."RawClass" AND "RecipientClientApplicationId"=j."RecipientClientApplicationId";&#xD;
+    SELECT * INTO authority FROM tagekyc.raw_export_resolve_current_authority_for_source(b."ClientApplicationId",b."VerificationSessionId",b."CaptureAcceptanceId",b."RawClass",now_);&#xD;
+                    SELECT "AuthorityKind" INTO authority_kind FROM tagekyc.raw_export_authority_snapshots WHERE "AuthoritySnapshotId"=b."AuthoritySnapshotId";&#xD;
+    IF authority_kind NOT IN ('LegacyExport','SourceRetention')&#xD;
+                       OR (authority_kind='SourceRetention' AND (authority."ApprovedPurpose"&lt;&gt;'SourceRetention' OR NOT tagekyc.raw_export_retained_snapshot_is_current(b."AuthoritySnapshotId",now_)))&#xD;
+                       OR consent."State" IS DISTINCT FROM 'Effective'&#xD;
+       OR consent."ValidFromUtc"&gt;now_ OR consent."ValidUntilUtc"&lt;=now_&#xD;
+       OR consent."PolicyId"&lt;&gt;b."ConsentPolicyId" OR consent."PolicyVersion"&lt;&gt;b."ConsentPolicyVersion"&#xD;
+       OR authority."AuthoritySnapshotId" IS NULL OR authority."AuthoritySnapshotId"&lt;&gt;b."AuthoritySnapshotId"&#xD;
+       OR authority."Revision"&lt;&gt;b."AuthorityRevision" OR authority."ReuseDisposition"&lt;&gt;'FreshAuthorityRequired'&#xD;
+       OR authority."ExtensionDisposition"&lt;&gt;'Forbidden' OR authority."ConsentPolicyId"&lt;&gt;b."ConsentPolicyId"&#xD;
+       OR authority."ConsentPolicyVersion"&lt;&gt;b."ConsentPolicyVersion"&#xD;
+       OR b."AbsoluteSourceExpiresAtUtc"&lt;=now_ OR b."EffectivePlaintextRetentionExpiresAtUtc"&lt;=now_&#xD;
+    THEN RETURN QUERY SELECT 'AuthorityInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  END LOOP;&#xD;
+  IF h."LeaseExpiresAt" IS NULL OR h."LeaseExpiresAt"&lt;=now_ OR j."PermitExpiresAt"&lt;=now_ OR j."JobExpiresAt"&lt;=now_ THEN RETURN QUERY SELECT 'Expired'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  SELECT * INTO first_binding FROM tagekyc.raw_export_job_source_bindings WHERE "JobId"=p_job_id ORDER BY "Ordinal" LIMIT 1;&#xD;
+  UPDATE tagekyc.raw_export_assembly_preparation_dispositions AS d SET "Disposition"='SealCommitted',"RowRevision"=d."RowRevision"+1,"SealCommittedAtUtc"=now_ WHERE d."C2PreparationId"=p_c2_preparation_id;&#xD;
+  INSERT INTO tagekyc.raw_export_assembly_identities(&#xD;
+    "AssemblyId","JobId","AttemptId","FencingToken","PermitId","VerificationSessionId","ClientApplicationId","RecipientClientApplicationId","PolicyId","PolicyVersion","PurposeCode","ExportMode","ManifestVersion","SubjectRefTokenSchemaVersion","SubjectRefTokenKeyId","SubjectRefTokenKeyVersion","SubjectRefToken","AssemblyAuthenticationKeyId","AssemblyAuthenticationKeyVersion","AssemblyDigest","ManifestDigest","AssemblyAuthenticationValue","AssemblyFingerprint","CompleteAssemblyLength","ItemCount","C2PreparationId","CreatedAtUtc","JobExpiresAtUtc","SealedAtUtc","SchemaVersion")&#xD;
+  VALUES(prep."AssemblyId",p_job_id,p_attempt_id,p_expected_fence,j."PermitId",j."VerificationSessionId",j."ClientApplicationId",j."RecipientClientApplicationId",j."PolicyId",j."PolicyVersion",j."PurposeCode",j."ExportMode",1,first_binding."SubjectRefTokenSchemaVersion",first_binding."SubjectRefTokenKeyId",first_binding."SubjectRefTokenKeyVersion",first_binding."SubjectRefToken",p_authentication_key_id,p_authentication_key_version,p_assembly_digest,p_manifest_digest,p_authentication_value,p_assembly_fingerprint,p_complete_assembly_length,p_item_count,p_c2_preparation_id,now_,j."JobExpiresAt",now_,1);&#xD;
+  INSERT INTO tagekyc.raw_export_assembly_items("AssemblyId","Ordinal","RawClass","JobSourceBindingId","SourceArtifactId","CaptureArtifactId","CaptureRevision","MediaType","PlaintextLength","ContentCommitmentSchemaVersion","ContentCommitmentKeyId","ContentCommitmentKeyVersion","ContentCommitment")&#xD;
+  SELECT prep."AssemblyId",x."Ordinal",x."RawClass",x."JobSourceBindingId",x."SourceArtifactId",x."CaptureArtifactId",x."CaptureRevision",x."MediaType",x."PlaintextLength",x."ContentCommitmentSchemaVersion",x."ContentCommitmentKeyId",x."ContentCommitmentKeyVersion",x."ContentCommitment" FROM tagekyc.raw_export_job_source_bindings x WHERE x."JobId"=p_job_id ORDER BY x."Ordinal";&#xD;
+  previous_head_context:=pg_catalog.current_setting('tagekyc.raw_export_job_mutation_context',true);&#xD;
+  previous_transition_context:=previous_head_context;&#xD;
+  PERFORM pg_catalog.set_config('tagekyc.raw_export_job_mutation_context','job_head_assembly_sealed',true);&#xD;
+  UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='AssemblySealed',"Revision"="Revision"+1,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=p_job_id;&#xD;
+  PERFORM pg_catalog.set_config('tagekyc.raw_export_job_mutation_context','job_transition',true);&#xD;
+  INSERT INTO tagekyc.raw_export_job_transitions VALUES(pg_catalog.gen_random_uuid(),p_job_id,p_expected_job_revision+1,'AssemblySealed','Assembling','AssemblySealed',p_attempt_id,p_expected_fence,NULL,NULL,NULL,now_);&#xD;
+  PERFORM pg_catalog.set_config('tagekyc.raw_export_job_mutation_context',COALESCE(previous_head_context,''),true);&#xD;
+  RETURN QUERY SELECT 'Sealed'::text,p_expected_job_revision+1,p_expected_preparation_revision+1,now_;&#xD;
+EXCEPTION WHEN OTHERS THEN&#xD;
+  PERFORM pg_catalog.set_config('tagekyc.raw_export_job_mutation_context',COALESCE(previous_head_context,''),true);&#xD;
+  RAISE;&#xD;
+END $function$&#xD;
+FUNCTION=raw_export_read_committed_assembly_recovery_context(uuid,uuid,bigint,bigint)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_raw_export_assembly_sealer=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_read_committed_assembly_recovery_context(p_job_id uuid, p_attempt_id uuid, p_expected_job_revision bigint, p_expected_fence bigint)&#xD;
+ RETURNS TABLE("C2PreparationId" uuid, "AssemblyId" uuid, "JobId" uuid, "AttemptId" uuid, "FencingToken" bigint, "AssemblyFingerprint" bytea, "PreparationFingerprint" bytea, "Disposition" text, "ProviderReceiptDigest" bytea, "AbortAuthorizationDigest" bytea, "RowRevision" bigint, "JobRevision" bigint)&#xD;
+ LANGUAGE sql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+  SELECT p."C2PreparationId",p."AssemblyId",p."JobId",p."AttemptId",p."FencingToken",&#xD;
+         p."AssemblyFingerprint",p."PreparationFingerprint",p."Disposition",&#xD;
+         p."ProviderReceiptDigest",p."AbortAuthorizationDigest",p."RowRevision",h."Revision"&#xD;
+  FROM tagekyc.raw_export_assembly_preparation_dispositions p&#xD;
+  JOIN tagekyc.raw_export_assembly_identities i&#xD;
+    ON i."C2PreparationId"=p."C2PreparationId"&#xD;
+   AND i."AssemblyId"=p."AssemblyId"&#xD;
+   AND i."JobId"=p."JobId"&#xD;
+   AND i."AttemptId"=p."AttemptId"&#xD;
+   AND i."FencingToken"=p."FencingToken"&#xD;
+   AND i."AssemblyFingerprint"=p."AssemblyFingerprint"&#xD;
+  JOIN tagekyc.raw_export_job_operational_heads h&#xD;
+    ON h."JobId"=p."JobId"&#xD;
+  WHERE p."JobId"=p_job_id&#xD;
+    AND p."AttemptId"=p_attempt_id&#xD;
+    AND p."FencingToken"=p_expected_fence&#xD;
+    AND p."Disposition" IN ('SealCommitted','Finalized')&#xD;
+    AND h."CurrentState"='AssemblySealed'&#xD;
+    AND h."CurrentAttemptId"=p_attempt_id&#xD;
+    AND h."FencingToken"=p_expected_fence&#xD;
+    AND h."Revision"=p_expected_job_revision+1&#xD;
+    AND i."ItemCount"=(SELECT pg_catalog.count(*) FROM tagekyc.raw_export_assembly_items a WHERE a."AssemblyId"=i."AssemblyId")&#xD;
+    AND EXISTS (&#xD;
+      SELECT 1 FROM tagekyc.raw_export_job_transitions t&#xD;
+      WHERE t."JobId"=p_job_id&#xD;
+        AND t."ResultingRevision"=p_expected_job_revision+1&#xD;
+        AND t."EventType"='AssemblySealed'&#xD;
+        AND t."FromState"='Assembling'&#xD;
+        AND t."ToState"='AssemblySealed'&#xD;
+        AND t."AttemptId"=p_attempt_id&#xD;
+        AND t."FencingToken"=p_expected_fence);&#xD;
+$function$&#xD;
+FUNCTION=raw_export_acquire_or_reclaim_job_lease(uuid,uuid,uuid,bigint,bigint,uuid,uuid,integer)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_runtime=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_acquire_or_reclaim_job_lease(job_id uuid, principal_id uuid, client_application_id uuid, expected_revision bigint, expected_fencing_token bigint, attempt_id uuid, lease_owner_id uuid, lease_seconds integer)&#xD;
+ RETURNS TABLE(outcome text, resulting_revision bigint, resulting_fencing_token bigint, resulting_lease_expires_at timestamp with time zone)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE a uuid; h tagekyc.raw_export_job_operational_heads%ROWTYPE; i tagekyc.raw_export_job_identities%ROWTYPE; now_ timestamptz; expiry timestamptz; nextrev bigint; nextfence bigint; ordinal integer; event text; out_ text;&#xD;
+BEGIN&#xD;
+  a:=tagekyc.raw_export_current_actor(); IF a IS DISTINCT FROM principal_id THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_ACTOR_MISMATCH'; END IF;&#xD;
+  IF lease_seconds IS NULL OR lease_seconds NOT BETWEEN 10 AND 300 THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_LEASE_CONFIG_INVALID'; END IF;&#xD;
+  SELECT x.* INTO h FROM tagekyc.raw_export_job_operational_heads x JOIN tagekyc.raw_export_job_identities j ON j."JobId"=x."JobId" WHERE x."JobId"=job_id AND j."PrincipalId"=principal_id AND j."ClientApplicationId"=client_application_id FOR UPDATE OF x;&#xD;
+  IF NOT FOUND OR expected_revision IS NULL OR h."Revision"&lt;&gt;expected_revision THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  SELECT * INTO i FROM tagekyc.raw_export_job_identities WHERE "JobId"=job_id;&#xD;
+  IF expected_fencing_token IS NULL OR h."FencingToken"&lt;&gt;expected_fencing_token THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  now_:=clock_timestamp();&#xD;
+  IF h."CurrentState" IN ('TerminalFailed','Cancelled','Expired') THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF now_&gt;=i."JobExpiresAt" THEN&#xD;
+    nextrev:=h."Revision"+1; PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_terminal',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='Expired',"Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,'JobExpired',h."CurrentState",'Expired',h."CurrentAttemptId",h."FencingToken",NULL,NULL,'PERMIT_OR_JOB_EXPIRED',now_);&#xD;
+    RETURN QUERY SELECT 'Expired'::text,nextrev,h."FencingToken",NULL::timestamptz; RETURN;&#xD;
+  END IF;&#xD;
+  IF h."LeaseOwnerId" IS NOT NULL AND h."LeaseExpiresAt"&gt;now_ THEN RETURN QUERY SELECT 'LeaseHeld'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF h."CurrentState"='Assembling' AND i."ExportMode"&lt;&gt;'EncryptedExportPacket' THEN&#xD;
+    nextrev:=h."Revision"+1; PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_terminal',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='TerminalFailed',"Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,'JobTerminalFailed',h."CurrentState",'TerminalFailed',h."CurrentAttemptId",h."FencingToken",NULL,NULL,'MODE_RETRY_NOT_AUTHORIZED',now_);&#xD;
+    RETURN QUERY SELECT 'TerminalizedModeRetryForbidden'::text,nextrev,h."FencingToken",NULL::timestamptz; RETURN;&#xD;
+  END IF;&#xD;
+  SELECT COALESCE(max("AttemptOrdinal"),-1)+1 INTO ordinal FROM tagekyc.raw_export_job_attempts WHERE "JobId"=job_id;&#xD;
+  nextfence:=h."FencingToken"+1; nextrev:=h."Revision"+1; expiry:=LEAST(now_+make_interval(secs=&gt;lease_seconds),i."JobExpiresAt");&#xD;
+  IF h."CurrentState"='Claimed' THEN event:='LeaseAcquired';out_:='Acquired'; ELSIF h."LeaseExpiresAt" IS NOT NULL THEN event:='LeaseReclaimed';out_:='Reclaimed'; ELSE event:='LeaseAcquiredAfterRetryableFailure';out_:='AcquiredAfterRetryableFailure'; END IF;&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_attempt',true); INSERT INTO tagekyc.raw_export_job_attempts VALUES(attempt_id,job_id,ordinal,'Assembling',lease_owner_id,nextfence,now_,expiry);&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_acquire',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='Assembling',"Revision"=nextrev,"CurrentAttemptId"=attempt_id,"LeaseOwnerId"=lease_owner_id,"LeaseExpiresAt"=expiry,"FencingToken"=nextfence,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,event,h."CurrentState",'Assembling',attempt_id,nextfence,lease_owner_id,expiry,NULL,now_);&#xD;
+  RETURN QUERY SELECT out_,nextrev,nextfence,expiry;&#xD;
+END $function$&#xD;
+FUNCTION=raw_export_lock_job_for_attempt(uuid,uuid,uuid,bigint,bigint)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_runtime=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_lock_job_for_attempt(job_id uuid, principal_id uuid, client_application_id uuid, expected_revision bigint, expected_fencing_token bigint)&#xD;
+ RETURNS TABLE(outcome text, current_state text, current_revision bigint, current_fencing_token bigint)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE a uuid; h tagekyc.raw_export_job_operational_heads%ROWTYPE; deadline timestamptz; now_ timestamptz;&#xD;
+BEGIN&#xD;
+  IF current_setting('transaction_isolation') &lt;&gt; 'read committed' THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_TRANSACTION_ISOLATION_INVALID'; END IF;&#xD;
+  a:=tagekyc.raw_export_current_actor(); IF a IS DISTINCT FROM principal_id THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_ACTOR_MISMATCH'; END IF;&#xD;
+  SELECT x.* INTO h FROM tagekyc.raw_export_job_operational_heads x JOIN tagekyc.raw_export_job_identities i ON i."JobId"=x."JobId" WHERE x."JobId"=job_id AND i."PrincipalId"=principal_id AND i."ClientApplicationId"=client_application_id FOR UPDATE OF x;&#xD;
+  IF NOT FOUND THEN RETURN QUERY SELECT 'NotFound'::text,NULL::text,NULL::bigint,NULL::bigint; RETURN; END IF;&#xD;
+  IF expected_revision IS NULL OR h."Revision"&lt;&gt;expected_revision THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::text,NULL::bigint,NULL::bigint; RETURN; END IF;&#xD;
+  IF expected_fencing_token IS NULL OR h."FencingToken"&lt;&gt;expected_fencing_token THEN RETURN QUERY SELECT 'FenceStale'::text,NULL::text,NULL::bigint,NULL::bigint; RETURN; END IF;&#xD;
+  IF h."CurrentState" IN ('TerminalFailed','Cancelled','Expired') THEN RETURN QUERY SELECT 'AlreadyTerminal'::text,h."CurrentState",h."Revision",h."FencingToken"; RETURN; END IF;&#xD;
+  SELECT i."JobExpiresAt" INTO deadline FROM tagekyc.raw_export_job_identities i WHERE i."JobId"=job_id;&#xD;
+  now_:=clock_timestamp();&#xD;
+  IF h."LeaseOwnerId" IS NOT NULL AND h."LeaseExpiresAt"&gt;now_ AND deadline&gt;now_ THEN RETURN QUERY SELECT 'LeaseHeld'::text,h."CurrentState",h."Revision",h."FencingToken"; RETURN; END IF;&#xD;
+  RETURN QUERY SELECT 'Locked'::text,h."CurrentState",h."Revision",h."FencingToken";&#xD;
+END $function$&#xD;
+FUNCTION=raw_export_record_job_attempt_failure(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_runtime=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_record_job_attempt_failure(job_id uuid, principal_id uuid, client_application_id uuid, expected_revision bigint, expected_fencing_token bigint, attempt_id uuid, lease_owner_id uuid, failure_code text)&#xD;
+ RETURNS TABLE(outcome text, resulting_revision bigint, resulting_fencing_token bigint, resulting_lease_expires_at timestamp with time zone)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE a uuid; h tagekyc.raw_export_job_operational_heads%ROWTYPE; mode text; now_ timestamptz; nextrev bigint;&#xD;
+BEGIN&#xD;
+  a:=tagekyc.raw_export_current_actor(); IF a IS DISTINCT FROM principal_id THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_ACTOR_MISMATCH'; END IF;&#xD;
+  SELECT x.* INTO h FROM tagekyc.raw_export_job_operational_heads x JOIN tagekyc.raw_export_job_identities i ON i."JobId"=x."JobId" WHERE x."JobId"=job_id AND i."PrincipalId"=principal_id AND i."ClientApplicationId"=client_application_id FOR UPDATE OF x;&#xD;
+  IF NOT FOUND OR expected_revision IS NULL OR h."Revision"&lt;&gt;expected_revision THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  SELECT "ExportMode" INTO mode FROM tagekyc.raw_export_job_identities WHERE "JobId"=job_id;&#xD;
+  IF expected_fencing_token IS NULL OR h."FencingToken"&lt;&gt;expected_fencing_token THEN RETURN QUERY SELECT 'FenceStale'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  now_:=clock_timestamp(); IF h."CurrentAttemptId" IS DISTINCT FROM attempt_id OR h."LeaseOwnerId" IS DISTINCT FROM lease_owner_id OR h."LeaseExpiresAt" IS NULL OR h."LeaseExpiresAt"&lt;=now_ THEN RETURN QUERY SELECT 'LeaseNotHeld'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF failure_code IS NULL OR failure_code&lt;&gt;'ATTEMPT_EXECUTION_FAILED_RETRYABLE' THEN RETURN QUERY SELECT 'TransitionInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  nextrev:=h."Revision"+1;&#xD;
+  IF mode&lt;&gt;'EncryptedExportPacket' THEN&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_terminal',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"='TerminalFailed',"Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,'JobTerminalFailed','Assembling','TerminalFailed',attempt_id,h."FencingToken",NULL,NULL,'MODE_RETRY_NOT_AUTHORIZED',now_);&#xD;
+    RETURN QUERY SELECT 'TerminalizedModeRetryForbidden'::text,nextrev,h."FencingToken",NULL::timestamptz;&#xD;
+  ELSE&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_release',true); UPDATE tagekyc.raw_export_job_operational_heads SET "Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+    PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,'AttemptFailedRetryable','Assembling','Assembling',attempt_id,h."FencingToken",NULL,NULL,failure_code,now_);&#xD;
+    RETURN QUERY SELECT 'Recorded'::text,nextrev,h."FencingToken",NULL::timestamptz;&#xD;
+  END IF;&#xD;
+END $function$&#xD;
+FUNCTION=raw_export_terminalize_job(uuid,uuid,uuid,bigint,bigint,uuid,uuid,text,text)&#xD;
+OWNER=tagekyc_raw_export_deployer;SECURITY_DEFINER=True;SEARCH_PATH={search_path=pg_catalog};ACL={tagekyc_raw_export_deployer=X/tagekyc_raw_export_deployer,tagekyc_runtime=X/tagekyc_raw_export_deployer}&#xD;
+CREATE OR REPLACE FUNCTION tagekyc.raw_export_terminalize_job(job_id uuid, principal_id uuid, client_application_id uuid, expected_revision bigint, expected_fencing_token bigint, attempt_id uuid, lease_owner_id uuid, terminal_state text, reason_code text)&#xD;
+ RETURNS TABLE(outcome text, resulting_revision bigint, resulting_fencing_token bigint, resulting_lease_expires_at timestamp with time zone)&#xD;
+ LANGUAGE plpgsql&#xD;
+ SECURITY DEFINER&#xD;
+ SET search_path TO 'pg_catalog'&#xD;
+AS $function$&#xD;
+DECLARE a uuid; h tagekyc.raw_export_job_operational_heads%ROWTYPE; deadline timestamptz; now_ timestamptz; nextrev bigint; state_ text; reason_ text; event_ text;&#xD;
+BEGIN&#xD;
+  a:=tagekyc.raw_export_current_actor(); IF a IS DISTINCT FROM principal_id THEN RAISE EXCEPTION 'RAW_EXPORT_JOB_ACTOR_MISMATCH'; END IF;&#xD;
+  SELECT x.* INTO h FROM tagekyc.raw_export_job_operational_heads x JOIN tagekyc.raw_export_job_identities i ON i."JobId"=x."JobId" WHERE x."JobId"=job_id AND i."PrincipalId"=principal_id AND i."ClientApplicationId"=client_application_id FOR UPDATE OF x;&#xD;
+  IF NOT FOUND OR expected_revision IS NULL OR h."Revision"&lt;&gt;expected_revision THEN RETURN QUERY SELECT 'ConcurrencyConflict'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  SELECT "JobExpiresAt" INTO deadline FROM tagekyc.raw_export_job_identities WHERE "JobId"=job_id;&#xD;
+  IF expected_fencing_token IS NULL OR h."FencingToken"&lt;&gt;expected_fencing_token THEN RETURN QUERY SELECT 'FenceStale'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF h."CurrentState" IN ('TerminalFailed','Cancelled','Expired') THEN RETURN QUERY SELECT 'AlreadyTerminal'::text,h."Revision",h."FencingToken",NULL::timestamptz; RETURN; END IF;&#xD;
+  IF h."CurrentAttemptId" IS DISTINCT FROM attempt_id OR h."LeaseOwnerId" IS DISTINCT FROM lease_owner_id THEN RETURN QUERY SELECT 'LeaseNotHeld'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF terminal_state IS NULL OR reason_code IS NULL OR terminal_state NOT IN ('TerminalFailed','Cancelled','Expired') THEN RETURN QUERY SELECT 'TransitionInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  now_:=clock_timestamp(); state_:=terminal_state; reason_:=reason_code;&#xD;
+  IF terminal_state='Expired' AND now_&lt;deadline THEN RETURN QUERY SELECT 'TransitionInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  IF now_&gt;=deadline THEN state_:='Expired';reason_:='PERMIT_OR_JOB_EXPIRED'; END IF;&#xD;
+  IF (state_='Cancelled' AND reason_&lt;&gt;'REQUEST_CANCELLED') OR (state_='Expired' AND reason_&lt;&gt;'PERMIT_OR_JOB_EXPIRED') OR (state_='TerminalFailed' AND reason_ NOT IN ('AUTHORITY_REVALIDATION_FAILED','ATTEMPT_EXECUTION_FAILED_NON_RETRYABLE','JOB_GRAPH_INVARIANT_FAILURE','MODE_RETRY_NOT_AUTHORIZED')) THEN RETURN QUERY SELECT 'TransitionInvalid'::text,NULL::bigint,NULL::bigint,NULL::timestamptz; RETURN; END IF;&#xD;
+  nextrev:=h."Revision"+1; event_:=CASE state_ WHEN 'Expired' THEN 'JobExpired' WHEN 'Cancelled' THEN 'JobCancelled' ELSE 'JobTerminalFailed' END;&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_head_terminal',true); UPDATE tagekyc.raw_export_job_operational_heads SET "CurrentState"=state_,"Revision"=nextrev,"LeaseOwnerId"=NULL,"LeaseExpiresAt"=NULL,"UpdatedAt"=now_ WHERE "JobId"=job_id;&#xD;
+  PERFORM set_config('tagekyc.raw_export_job_mutation_context','job_transition',true); INSERT INTO tagekyc.raw_export_job_transitions VALUES(gen_random_uuid(),job_id,nextrev,event_,h."CurrentState",state_,h."CurrentAttemptId",h."FencingToken",NULL,NULL,reason_,now_);&#xD;
+  RETURN QUERY SELECT CASE WHEN state_='Expired' THEN 'Expired' ELSE 'Terminalized' END,nextrev,h."FencingToken",NULL::timestamptz;&#xD;
+END $function$&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Production&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application started. Press Ctrl+C to shut down.&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Hosting environment: Production&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Content root path: D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+info: Microsoft.Hosting.Lifetime[0]&#xD;
+      Application is shutting down...&#xD;
+[xUnit.net 00:07:48.55]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-03T08:10:32.4405890+07:00">
+        <Text>[xUnit.net 00:03:37.96]     TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C118_exact_seal_replay_precedes_stale_revision [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

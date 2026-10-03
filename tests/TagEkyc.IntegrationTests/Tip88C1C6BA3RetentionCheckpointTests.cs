@@ -1533,7 +1533,9 @@ public sealed class Tip88C1C6BA3RetentionCheckpointTests(PostgresPersistenceFixt
             verifyDb.Database.GetConnectionString()!));
         var resolver = new RawExportAssemblySourceResolver(
             repository,
-            new S3CompatibleProvisionalObjectReconciler(minio.Options(ProvisionalObjectCapability.Reconciler)),
+            new TestRawExportAssemblyReconcilerScopeFactory(
+                new S3CompatibleProvisionalObjectReconciler(
+                    minio.Options(ProvisionalObjectCapability.Reconciler))),
             new RawExportFramedSourceVerificationService(
                 new AttemptAeadVerificationOperationService(
                     verifyDb, kek, DurableKeyCustodyOptions.Resolve(new ConfigurationManager())),

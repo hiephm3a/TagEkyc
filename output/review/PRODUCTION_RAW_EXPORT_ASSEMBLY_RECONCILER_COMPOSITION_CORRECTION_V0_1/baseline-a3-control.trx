@@ -1,0 +1,61 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="3bba0eda-3775-4f51-99e6-a03a1fd4e850" name="3AVNN@LEARNPC 2026-10-03 07:54:51" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-03T07:54:51.4583759+07:00" queuing="2026-10-03T07:54:51.4583762+07:00" start="2026-10-03T07:54:30.9617180+07:00" finish="2026-10-03T07:54:52.0294928+07:00" />
+  <TestSettings name="default" id="32d109ef-dc87-4c72-9ea9-ae37c1527be4">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-03_07_54_51" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="b9bc9c3e-2645-48f3-b50d-ae12beaa0163" testId="546f7bef-de2c-0d82-5ce7-c107a9843615" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation" computerName="LEARNPC" duration="00:00:07.1904194" startTime="2026-10-03T07:54:51.1180008+07:00" endTime="2026-10-03T07:54:51.1180202+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="b9bc9c3e-2645-48f3-b50d-ae12beaa0163">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: AuthorityInvalid&#xD;
+Actual:   PreparationConflict</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation() in C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs:line 202&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation() in C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs:line 205&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation() in C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs:line 205&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation() in C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs:line 205&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation" storage="c:\users\admin\documents\ekyc\tagekyc-baseline-a3\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="546f7bef-de2c-0d82-5ce7-c107a9843615">
+      <Execution id="b9bc9c3e-2645-48f3-b50d-ae12beaa0163" />
+      <TestMethod codeBase="C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests" name="A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="546f7bef-de2c-0d82-5ce7-c107a9843615" executionId="b9bc9c3e-2645-48f3-b50d-ae12beaa0163" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.95]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.10]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:01.11]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:19.55]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:19.56]       Expected: AuthorityInvalid&#xD;
+[xUnit.net 00:00:19.56]       Actual:   PreparationConflict&#xD;
+[xUnit.net 00:00:19.56]       Stack Trace:&#xD;
+[xUnit.net 00:00:19.56]         C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs(202,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation()&#xD;
+[xUnit.net 00:00:19.56]         C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs(205,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation()&#xD;
+[xUnit.net 00:00:19.56]         C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs(205,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation()&#xD;
+[xUnit.net 00:00:19.56]         C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs(205,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation()&#xD;
+[xUnit.net 00:00:19.56]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:20.41]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-03T07:54:51.1148301+07:00">
+        <Text>[xUnit.net 00:00:19.55]     TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

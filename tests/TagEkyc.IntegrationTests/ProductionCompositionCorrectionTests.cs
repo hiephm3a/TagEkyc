@@ -23,18 +23,12 @@ public sealed class ProductionCompositionCorrectionTests
     [Fact]
     public void Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback()
     {
-        var configuration = BrokerConfiguration();
-        configuration["TagEkyc:RawExport:RawExportCustodyMaximumPlaintextWindowBytesPerStream"] = "1048576";
-        AddOwner(configuration, "Writer", CaptureRuntimeCustodyProviderScopes.WriterLogin,
-            ProvisionalObjectCapability.Writer, "writer-access");
-        AddOwner(configuration, "Reconciler", CaptureRuntimeCustodyProviderScopes.ReconcilerLogin,
-            ProvisionalObjectCapability.Reconciler, "reconciler-access");
-        AddOwner(configuration, "Lifecycle", CaptureRuntimeCustodyProviderScopes.LifecycleLogin,
-            ProvisionalObjectCapability.Lifecycle, "lifecycle-access");
+        using var secrets = new SyntheticOwnerSecrets();
+        var configuration = secrets.Configuration;
 
         using var provider = new ServiceCollection()
             .AddSingleton<IConfiguration>(configuration)
-            .AddTagEkycCaptureRuntimeRawIngress(configuration, isProduction: false)
+            .AddTagEkycCaptureRuntimeRawIngress(configuration, isProduction: true)
             .BuildServiceProvider(new ServiceProviderOptions
             {
                 ValidateOnBuild = true,

@@ -1,0 +1,64 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="6bda7ae4-6d89-40c1-a146-dcf7fb223e83" name="3AVNN@LEARNPC 2026-10-03 07:55:47" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-03T07:55:47.3021413+07:00" queuing="2026-10-03T07:55:47.3021415+07:00" start="2026-10-03T07:55:45.5011610+07:00" finish="2026-10-03T07:56:21.0443603+07:00" />
+  <TestSettings name="default" id="a3b7c33a-047f-48df-8947-23d989284c85">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-03_07_55_47" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="f8c9adfa-d56f-4137-aa08-8b7ae988f928" testId="f056a673-7a7b-0964-2175-e67afaa7ebc5" testName="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests.Real_Program_Production_graph_validates_DurableWorker_reconciler_edge" computerName="LEARNPC" duration="00:00:00.2872701" startTime="2026-10-03T07:55:46.4643686+07:00" endTime="2026-10-03T07:55:46.4643689+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f8c9adfa-d56f-4137-aa08-8b7ae988f928" />
+    <UnitTestResult executionId="399d35c5-bd57-4b0d-a93a-11ac29ff98ae" testId="15d85904-5617-c6bf-b2e6-1e11f13d7b0a" testName="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests.Production_DurableWorker_registers_exact_role_scoped_reconciler_seam_without_root_reconciler" computerName="LEARNPC" duration="00:00:00.0083170" startTime="2026-10-03T07:55:46.4734864+07:00" endTime="2026-10-03T07:55:46.4734871+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="399d35c5-bd57-4b0d-a93a-11ac29ff98ae" />
+    <UnitTestResult executionId="d5636b17-6a68-436a-8f2a-6465e3e76706" testId="7be459da-8a59-1ef3-f203-9f5a27d7ea33" testName="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests.NonProduction_FixtureProof_uses_fixture_scope_adapter_only" computerName="LEARNPC" duration="00:00:00.0006185" startTime="2026-10-03T07:55:46.4650649+07:00" endTime="2026-10-03T07:55:46.4650650+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="d5636b17-6a68-436a-8f2a-6465e3e76706" />
+    <UnitTestResult executionId="0a955d49-7647-4777-9ceb-67bba23aadf6" testId="7528f2e3-7a18-6001-ddd8-99b5bb47d923" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.Assembly_exact_read_keeps_reconciler_scope_alive_through_framed_consumer_and_disposes_in_order" computerName="LEARNPC" duration="00:00:05.9874082" startTime="2026-10-03T07:56:19.9865293+07:00" endTime="2026-10-03T07:56:19.9865297+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="0a955d49-7647-4777-9ceb-67bba23aadf6" />
+    <UnitTestResult executionId="9ff8fa0a-2e5e-4894-a404-9e3af06d0dd5" testId="073b6a96-772e-5d07-4812-3f5caf697552" testName="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" computerName="LEARNPC" duration="00:00:00.0245084" startTime="2026-10-03T07:55:46.1883078+07:00" endTime="2026-10-03T07:55:46.1883079+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9ff8fa0a-2e5e-4894-a404-9e3af06d0dd5" />
+    <UnitTestResult executionId="4eb76d08-2193-4b49-9849-c9dc8d66bcd5" testId="42d91619-919e-2e17-10c5-15554885119d" testName="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests.Production_DurableWorker_rejects_unknown_reconciler_scope_registration" computerName="LEARNPC" duration="00:00:00.0111565" startTime="2026-10-03T07:55:46.1775547+07:00" endTime="2026-10-03T07:55:46.1775686+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4eb76d08-2193-4b49-9849-c9dc8d66bcd5" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.Assembly_exact_read_keeps_reconciler_scope_alive_through_framed_consumer_and_disposes_in_order" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7528f2e3-7a18-6001-ddd8-99b5bb47d923">
+      <Execution id="0a955d49-7647-4777-9ceb-67bba23aadf6" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="Assembly_exact_read_keeps_reconciler_scope_alive_through_framed_consumer_and_disposes_in_order" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests.Production_DurableWorker_rejects_unknown_reconciler_scope_registration" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="42d91619-919e-2e17-10c5-15554885119d">
+      <Execution id="4eb76d08-2193-4b49-9849-c9dc8d66bcd5" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests" name="Production_DurableWorker_rejects_unknown_reconciler_scope_registration" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests.Production_DurableWorker_registers_exact_role_scoped_reconciler_seam_without_root_reconciler" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="15d85904-5617-c6bf-b2e6-1e11f13d7b0a">
+      <Execution id="399d35c5-bd57-4b0d-a93a-11ac29ff98ae" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests" name="Production_DurableWorker_registers_exact_role_scoped_reconciler_seam_without_root_reconciler" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests.Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="073b6a96-772e-5d07-4812-3f5caf697552">
+      <Execution id="9ff8fa0a-2e5e-4894-a404-9e3af06d0dd5" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.ProductionCompositionCorrectionTests" name="Production_api_composition_registers_existing_runtime_owners_without_fixture_fallback" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests.Real_Program_Production_graph_validates_DurableWorker_reconciler_edge" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="f056a673-7a7b-0964-2175-e67afaa7ebc5">
+      <Execution id="f8c9adfa-d56f-4137-aa08-8b7ae988f928" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests" name="Real_Program_Production_graph_validates_DurableWorker_reconciler_edge" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests.NonProduction_FixtureProof_uses_fixture_scope_adapter_only" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="7be459da-8a59-1ef3-f203-9f5a27d7ea33">
+      <Execution id="d5636b17-6a68-436a-8f2a-6465e3e76706" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.RawExportAssemblyReconcilerCompositionTests" name="NonProduction_FixtureProof_uses_fixture_scope_adapter_only" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="f056a673-7a7b-0964-2175-e67afaa7ebc5" executionId="f8c9adfa-d56f-4137-aa08-8b7ae988f928" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="15d85904-5617-c6bf-b2e6-1e11f13d7b0a" executionId="399d35c5-bd57-4b0d-a93a-11ac29ff98ae" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7be459da-8a59-1ef3-f203-9f5a27d7ea33" executionId="d5636b17-6a68-436a-8f2a-6465e3e76706" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7528f2e3-7a18-6001-ddd8-99b5bb47d923" executionId="0a955d49-7647-4777-9ceb-67bba23aadf6" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="073b6a96-772e-5d07-4812-3f5caf697552" executionId="9ff8fa0a-2e5e-4894-a404-9e3af06d0dd5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="42d91619-919e-2e17-10c5-15554885119d" executionId="4eb76d08-2193-4b49-9849-c9dc8d66bcd5" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="6" executed="6" passed="6" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.14]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.33]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.34]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:35.19]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

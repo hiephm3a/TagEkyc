@@ -1,0 +1,127 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="c91c0846-ced8-4fda-953f-f74d33b5c717" name="3AVNN@LEARNPC 2026-10-03 08:18:55" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-03T08:18:55.6280390+07:00" queuing="2026-10-03T08:18:55.6280393+07:00" start="2026-10-03T08:18:53.0733936+07:00" finish="2026-10-03T08:18:55.6578324+07:00" />
+  <TestSettings name="default" id="6db32a88-c41c-4f75-bca3-d415036bd874">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-03_08_18_55" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="03af443b-caa6-4d53-87d3-25ab4601fed8" testId="94ffc3a7-7236-b7a4-5df6-318e23f5a08d" testName="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests.C1_public_contract_exposes_no_locator_key_plaintext_or_provider_credentials" computerName="LEARNPC" duration="00:00:00.1041473" startTime="2026-10-03T08:18:55.5269986+07:00" endTime="2026-10-03T08:18:55.5269986+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="03af443b-caa6-4d53-87d3-25ab4601fed8" />
+    <UnitTestResult executionId="e41085d6-ac90-4119-a10f-edfc72a36550" testId="2856df59-023a-f1c1-b070-752c86600d49" testName="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration" computerName="LEARNPC" duration="00:00:00.0035710" startTime="2026-10-03T08:18:55.5583173+07:00" endTime="2026-10-03T08:18:55.5583178+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="e41085d6-ac90-4119-a10f-edfc72a36550">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Single() Failure: The collection contained 2 items&#xD;
+Collection: [Microsoft.Extensions.DependencyInjection.IServiceCollection AddTagEkycCaptureRuntimeRawIngress(Microsoft.Extensions.DependencyInjection.IServiceCollection, TagEkyc.Infrastructure.RawExport.RawIngressBrokerOptions, RuntimeOwners), Microsoft.Extensions.DependencyInjection.IServiceCollection AddTagEkycCaptureRuntimeRawIngress(Microsoft.Extensions.DependencyInjection.IServiceCollection, Microsoft.Extensions.Configuration.IConfiguration, Boolean)]</Message>
+          <StackTrace>   at TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\Tip88C1C6BA3CompositionArchTests.cs:line 52&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="32f0a21f-07e0-4685-a4ff-ab79545486c0" testId="902767f9-e0dd-4599-95b7-5acaec8ceb91" testName="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA2_runtime_graph_cannot_resolve_s3_or_foreign_object_capabilities" computerName="LEARNPC" duration="00:00:00.0038369" startTime="2026-10-03T08:18:55.6089302+07:00" endTime="2026-10-03T08:18:55.6089303+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="32f0a21f-07e0-4685-a4ff-ab79545486c0" />
+    <UnitTestResult executionId="f552ca54-1266-4446-8ffd-557c26e3a359" testId="c2b4fbbd-c872-2494-54e1-9f2642320947" testName="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA6_s3_sdk_version_and_every_single_put_request_property_are_pinned" computerName="LEARNPC" duration="00:00:00.0665026" startTime="2026-10-03T08:18:55.5912059+07:00" endTime="2026-10-03T08:18:55.5912061+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="f552ca54-1266-4446-8ffd-557c26e3a359" />
+    <UnitTestResult executionId="eff16ce0-17f3-418e-9000-2034e5d73bfe" testId="a42465d6-c817-fb89-cbce-fb0e911f4263" testName="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.BrokerBusinessPortHasNoRawStreamOrCallerSelectedPrincipal" computerName="LEARNPC" duration="00:00:00.1114513" startTime="2026-10-03T08:18:55.5301625+07:00" endTime="2026-10-03T08:18:55.5301626+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="eff16ce0-17f3-418e-9000-2034e5d73bfe" />
+    <UnitTestResult executionId="9e1c5da3-a6ae-4604-8f00-f47b12a2e681" testId="257103a5-a0a8-2714-bef8-5e645336cb3a" testName="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA3_multipart_batch_delete_version_copy_list_presign_and_transfer_utility_are_forbidden" computerName="LEARNPC" duration="00:00:00.0009312" startTime="2026-10-03T08:18:55.6090747+07:00" endTime="2026-10-03T08:18:55.6090747+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9e1c5da3-a6ae-4604-8f00-f47b12a2e681" />
+    <UnitTestResult executionId="9d35b1f3-0704-460a-9fca-f74929334477" testId="5eb5eb20-238a-c281-b738-7922609ceaf6" testName="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.BrokerProjectDependsOnlyOnExistingModules" computerName="LEARNPC" duration="00:00:00.0155964" startTime="2026-10-03T08:18:55.5458454+07:00" endTime="2026-10-03T08:18:55.5458456+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9d35b1f3-0704-460a-9fca-f74929334477" />
+    <UnitTestResult executionId="9466a041-5d5f-4f23-ba73-735123ad19ac" testId="3f05c0e0-f71f-0a20-441a-68ec3064793d" testName="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA1_object_capability_interfaces_are_non_assignable" computerName="LEARNPC" duration="00:00:00.1050333" startTime="2026-10-03T08:18:55.5252445+07:00" endTime="2026-10-03T08:18:55.5252618+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="9466a041-5d5f-4f23-ba73-735123ad19ac" />
+    <UnitTestResult executionId="72181ad9-9ccd-438b-9462-207472479399" testId="f804886e-16cd-4fd4-73ce-8404e2d482db" testName="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA4_object_provider_contract_has_no_arbitrary_bucket_or_key_input" computerName="LEARNPC" duration="00:00:00.0004367" startTime="2026-10-03T08:18:55.6090455+07:00" endTime="2026-10-03T08:18:55.6090455+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="72181ad9-9ccd-438b-9462-207472479399" />
+    <UnitTestResult executionId="257382a2-5f60-471f-8161-a01b495a48b9" testId="7cb1ed27-53c5-9af9-b003-0b1c4751cf43" testName="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests.C1_orchestrator_uses_resolver_authenticator_and_c2_capability_without_writer_or_lifecycle" computerName="LEARNPC" duration="00:00:00.0009730" startTime="2026-10-03T08:18:55.5297414+07:00" endTime="2026-10-03T08:18:55.5297415+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="257382a2-5f60-471f-8161-a01b495a48b9" />
+    <UnitTestResult executionId="33dc148d-2572-4b1f-a1ba-09a06097e9a2" testId="293813d0-0131-5187-0403-3b21daca8aa4" testName="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests.C1_resolver_and_framed_verifier_are_internal_and_share_one_parser" computerName="LEARNPC" duration="00:00:00.0007027" startTime="2026-10-03T08:18:55.5305025+07:00" endTime="2026-10-03T08:18:55.5305026+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="33dc148d-2572-4b1f-a1ba-09a06097e9a2" />
+    <UnitTestResult executionId="6ab7e035-eb7a-4dd4-861c-00044c1eac77" testId="389acc7a-e480-3d94-f846-bbb7b8dd5049" testName="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests.C1_source_contains_no_complete_plaintext_buffer_temp_file_or_raw_logging_edge" computerName="LEARNPC" duration="00:00:00.0040317" startTime="2026-10-03T08:18:55.5287133+07:00" endTime="2026-10-03T08:18:55.5287135+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="6ab7e035-eb7a-4dd4-861c-00044c1eac77" />
+    <UnitTestResult executionId="4fef182a-ad2e-4135-85e7-3750b88089f9" testId="405c5f45-e91f-b2b9-5cd3-b06b3cfdaeb8" testName="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA5_object_handles_credentials_and_receipts_are_redacted" computerName="LEARNPC" duration="00:00:00.0013186" startTime="2026-10-03T08:18:55.6091068+07:00" endTime="2026-10-03T08:18:55.6091068+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4fef182a-ad2e-4135-85e7-3750b88089f9" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests.C1_source_contains_no_complete_plaintext_buffer_temp_file_or_raw_logging_edge" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="389acc7a-e480-3d94-f846-bbb7b8dd5049">
+      <Execution id="6ab7e035-eb7a-4dd4-861c-00044c1eac77" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests" name="C1_source_contains_no_complete_plaintext_buffer_temp_file_or_raw_logging_edge" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA1_object_capability_interfaces_are_non_assignable" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="3f05c0e0-f71f-0a20-441a-68ec3064793d">
+      <Execution id="9466a041-5d5f-4f23-ba73-735123ad19ac" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests" name="OA1_object_capability_interfaces_are_non_assignable" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA5_object_handles_credentials_and_receipts_are_redacted" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="405c5f45-e91f-b2b9-5cd3-b06b3cfdaeb8">
+      <Execution id="4fef182a-ad2e-4135-85e7-3750b88089f9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests" name="OA5_object_handles_credentials_and_receipts_are_redacted" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA2_runtime_graph_cannot_resolve_s3_or_foreign_object_capabilities" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="902767f9-e0dd-4599-95b7-5acaec8ceb91">
+      <Execution id="32f0a21f-07e0-4685-a4ff-ab79545486c0" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests" name="OA2_runtime_graph_cannot_resolve_s3_or_foreign_object_capabilities" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA3_multipart_batch_delete_version_copy_list_presign_and_transfer_utility_are_forbidden" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="257103a5-a0a8-2714-bef8-5e645336cb3a">
+      <Execution id="9e1c5da3-a6ae-4604-8f00-f47b12a2e681" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests" name="OA3_multipart_batch_delete_version_copy_list_presign_and_transfer_utility_are_forbidden" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA6_s3_sdk_version_and_every_single_put_request_property_are_pinned" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="c2b4fbbd-c872-2494-54e1-9f2642320947">
+      <Execution id="f552ca54-1266-4446-8ffd-557c26e3a359" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests" name="OA6_s3_sdk_version_and_every_single_put_request_property_are_pinned" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests.C1_orchestrator_uses_resolver_authenticator_and_c2_capability_without_writer_or_lifecycle" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="7cb1ed27-53c5-9af9-b003-0b1c4751cf43">
+      <Execution id="257382a2-5f60-471f-8161-a01b495a48b9" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests" name="C1_orchestrator_uses_resolver_authenticator_and_c2_capability_without_writer_or_lifecycle" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.BrokerBusinessPortHasNoRawStreamOrCallerSelectedPrincipal" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="a42465d6-c817-fb89-cbce-fb0e911f4263">
+      <Execution id="eff16ce0-17f3-418e-9000-2034e5d73bfe" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests" name="BrokerBusinessPortHasNoRawStreamOrCallerSelectedPrincipal" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="2856df59-023a-f1c1-b070-752c86600d49">
+      <Execution id="e41085d6-ac90-4119-a10f-edfc72a36550" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests" name="ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.BrokerProjectDependsOnlyOnExistingModules" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="5eb5eb20-238a-c281-b738-7922609ceaf6">
+      <Execution id="9d35b1f3-0704-460a-9fca-f74929334477" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests" name="BrokerProjectDependsOnlyOnExistingModules" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests.C1_resolver_and_framed_verifier_are_internal_and_share_one_parser" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="293813d0-0131-5187-0403-3b21daca8aa4">
+      <Execution id="33dc148d-2572-4b1f-a1ba-09a06097e9a2" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests" name="C1_resolver_and_framed_verifier_are_internal_and_share_one_parser" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests.OA4_object_provider_contract_has_no_arbitrary_bucket_or_key_input" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="f804886e-16cd-4fd4-73ce-8404e2d482db">
+      <Execution id="72181ad9-9ccd-438b-9462-207472479399" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1B2DurableObjectCustodyArchTests" name="OA4_object_provider_contract_has_no_arbitrary_bucket_or_key_input" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests.C1_public_contract_exposes_no_locator_key_plaintext_or_provider_credentials" storage="d:\task\remote signing\tagekyc\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="94ffc3a7-7236-b7a4-5df6-318e23f5a08d">
+      <Execution id="03af443b-caa6-4d53-87d3-25ab4601fed8" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1C1ResolverAssemblyArchTests" name="C1_public_contract_exposes_no_locator_key_plaintext_or_provider_credentials" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="94ffc3a7-7236-b7a4-5df6-318e23f5a08d" executionId="03af443b-caa6-4d53-87d3-25ab4601fed8" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="2856df59-023a-f1c1-b070-752c86600d49" executionId="e41085d6-ac90-4119-a10f-edfc72a36550" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="902767f9-e0dd-4599-95b7-5acaec8ceb91" executionId="32f0a21f-07e0-4685-a4ff-ab79545486c0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="c2b4fbbd-c872-2494-54e1-9f2642320947" executionId="f552ca54-1266-4446-8ffd-557c26e3a359" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a42465d6-c817-fb89-cbce-fb0e911f4263" executionId="eff16ce0-17f3-418e-9000-2034e5d73bfe" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="257103a5-a0a8-2714-bef8-5e645336cb3a" executionId="9e1c5da3-a6ae-4604-8f00-f47b12a2e681" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="5eb5eb20-238a-c281-b738-7922609ceaf6" executionId="9d35b1f3-0704-460a-9fca-f74929334477" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="3f05c0e0-f71f-0a20-441a-68ec3064793d" executionId="9466a041-5d5f-4f23-ba73-735123ad19ac" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="f804886e-16cd-4fd4-73ce-8404e2d482db" executionId="72181ad9-9ccd-438b-9462-207472479399" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="7cb1ed27-53c5-9af9-b003-0b1c4751cf43" executionId="257382a2-5f60-471f-8161-a01b495a48b9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="293813d0-0131-5187-0403-3b21daca8aa4" executionId="33dc148d-2572-4b1f-a1ba-09a06097e9a2" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="389acc7a-e480-3d94-f846-bbb7b8dd5049" executionId="6ab7e035-eb7a-4dd4-861c-00044c1eac77" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="405c5f45-e91f-b2b9-5cd3-b06b3cfdaeb8" executionId="4fef182a-ad2e-4135-85e7-3750b88089f9" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="13" executed="13" passed="12" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.84]   Discovering: TagEkyc.ArchTests&#xD;
+[xUnit.net 00:00:01.11]   Discovered:  TagEkyc.ArchTests&#xD;
+[xUnit.net 00:00:01.11]   Starting:    TagEkyc.ArchTests&#xD;
+[xUnit.net 00:00:01.28]       Assert.Single() Failure: The collection contained 2 items&#xD;
+[xUnit.net 00:00:01.28]       Collection: [Microsoft.Extensions.DependencyInjection.IServiceCollection AddTagEkycCaptureRuntimeRawIngress(Microsoft.Extensions.DependencyInjection.IServiceCollection, TagEkyc.Infrastructure.RawExport.RawIngressBrokerOptions, RuntimeOwners), Microsoft.Extensions.DependencyInjection.IServiceCollection AddTagEkycCaptureRuntimeRawIngress(Microsoft.Extensions.DependencyInjection.IServiceCollection, Microsoft.Extensions.Configuration.IConfiguration, Boolean)]&#xD;
+[xUnit.net 00:00:01.28]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.28]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.ArchTests\Tip88C1C6BA3CompositionArchTests.cs(52,0): at TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration()&#xD;
+[xUnit.net 00:00:01.28]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:01.28]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:01.33]   Finished:    TagEkyc.ArchTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-03T08:18:55.5569550+07:00">
+        <Text>[xUnit.net 00:00:01.28]     TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

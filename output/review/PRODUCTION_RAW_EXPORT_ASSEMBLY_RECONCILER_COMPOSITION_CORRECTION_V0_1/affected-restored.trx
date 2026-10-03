@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="f749bbbc-b8a6-470b-9a49-e26130cebd5e" name="3AVNN@LEARNPC 2026-10-03 07:49:08" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-03T07:49:08.0746648+07:00" queuing="2026-10-03T07:49:08.0746652+07:00" start="2026-10-03T07:48:50.1659316+07:00" finish="2026-10-03T07:49:14.9416017+07:00" />
+  <TestSettings name="default" id="e2582eca-099e-4981-ab18-e57b6f3a51c2">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-03_07_49_08" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="dd667451-3c6d-4e31-b349-05f9e8aa37b7" testId="546f7bef-de2c-0d82-5ce7-c107a9843615" testName="TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation" computerName="LEARNPC" duration="00:00:06.1489354" startTime="2026-10-03T07:49:14.2173814+07:00" endTime="2026-10-03T07:49:14.2173817+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="dd667451-3c6d-4e31-b349-05f9e8aa37b7">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Equal() Failure: Values differ&#xD;
+Expected: AuthorityInvalid&#xD;
+Actual:   PreparationConflict</Message>
+          <StackTrace>   at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs:line 202&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs:line 205&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs:line 205&#xD;
+   at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation() in D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs:line 205&#xD;
+--- End of stack trace from previous location ---</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+    <UnitTestResult executionId="93b7d7f9-53b4-45d7-9bed-dc893c93fc00" testId="ce1f7299-262c-5964-51ce-797106f03b91" testName="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C101_exact_selection_and_ordered_class_freeze" computerName="LEARNPC" duration="00:00:06.1774463" startTime="2026-10-03T07:49:08.0567418+07:00" endTime="2026-10-03T07:49:08.0567564+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="93b7d7f9-53b4-45d7-9bed-dc893c93fc00" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="546f7bef-de2c-0d82-5ce7-c107a9843615">
+      <Execution id="dd667451-3c6d-4e31-b349-05f9e8aa37b7" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests" name="A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests.C101_exact_selection_and_ordered_class_freeze" storage="d:\task\remote signing\tagekyc\tests\tagekyc.integrationtests\bin\debug\net8.0\tagekyc.integrationtests.dll" id="ce1f7299-262c-5964-51ce-797106f03b91">
+      <Execution id="93b7d7f9-53b4-45d7-9bed-dc893c93fc00" />
+      <TestMethod codeBase="D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\bin\Debug\net8.0\TagEkyc.IntegrationTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.IntegrationTests.Tip88C1C1ResolverAssemblyTests" name="C101_exact_selection_and_ordered_class_freeze" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="546f7bef-de2c-0d82-5ce7-c107a9843615" executionId="dd667451-3c6d-4e31-b349-05f9e8aa37b7" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="ce1f7299-262c-5964-51ce-797106f03b91" executionId="93b7d7f9-53b4-45d7-9bed-dc893c93fc00" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="2" executed="2" passed="1" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.14]   Discovering: TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.28]   Discovered:  TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:00.28]   Starting:    TagEkyc.IntegrationTests&#xD;
+[xUnit.net 00:00:23.75]       Assert.Equal() Failure: Values differ&#xD;
+[xUnit.net 00:00:23.75]       Expected: AuthorityInvalid&#xD;
+[xUnit.net 00:00:23.75]       Actual:   PreparationConflict&#xD;
+[xUnit.net 00:00:23.75]       Stack Trace:&#xD;
+[xUnit.net 00:00:23.75]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs(202,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation()&#xD;
+[xUnit.net 00:00:23.75]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs(205,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation()&#xD;
+[xUnit.net 00:00:23.75]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs(205,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation()&#xD;
+[xUnit.net 00:00:23.75]         D:\Task\Remote Signing\TagEkyc\tests\TagEkyc.IntegrationTests\Tip88C1C6BA3RetentionCheckpointTests.cs(205,0): at TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation()&#xD;
+[xUnit.net 00:00:23.75]         --- End of stack trace from previous location ---&#xD;
+[xUnit.net 00:00:24.41]   Finished:    TagEkyc.IntegrationTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-03T07:49:14.2155087+07:00">
+        <Text>[xUnit.net 00:00:23.75]     TagEkyc.IntegrationTests.Tip88C1C6BA3RetentionCheckpointTests.A3_RetainedSeal_RechecksAuthorityAfterProviderPreparation [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

@@ -19,7 +19,7 @@ internal sealed record ResolvedAssemblySource(
 
 internal sealed class RawExportAssemblySourceResolver(
     RawExportAssemblyRepository repository,
-    IProvisionalObjectReconciler objectReconciler,
+    IRawExportAssemblyReconcilerScopeFactory reconcilerScopes,
     RawExportFramedSourceVerificationService framedVerification)
 {
     internal async Task<ResolvedAssemblySource?> ResolveAsync(
@@ -65,7 +65,9 @@ internal sealed class RawExportAssemblySourceResolver(
                 || context.Object.CiphertextLength is null || context.Object.CiphertextDigest is null)
                 return RawExportAssemblySourceDisposition.ObjectReadIndeterminate;
 
-            await using var exact = await objectReconciler.OpenExactReadAsync(
+            await using var reconcilerScope = await reconcilerScopes
+                .OpenAsync(cancellationToken).ConfigureAwait(false);
+            await using var exact = await reconcilerScope.Reconciler.OpenExactReadAsync(
                 new(context.Object.ProvisionalObjectIdentity, context.Object.ObjectKey, context.Object.ObjectBindingDigest),
                 cancellationToken).ConfigureAwait(false);
             if (exact.CiphertextLength != context.Object.CiphertextLength)

@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="d92aeff4-0f55-4eaf-87db-2dcb97b58cc1" name="3AVNN@LEARNPC 2026-10-03 08:19:20" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-03T08:19:20.9223691+07:00" queuing="2026-10-03T08:19:20.9223694+07:00" start="2026-10-03T08:19:18.9634103+07:00" finish="2026-10-03T08:19:20.9262691+07:00" />
+  <TestSettings name="default" id="c547e31a-9903-4349-88db-50993c6e023c">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-03_08_19_20" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="52adb139-f811-48b5-9511-7162cd9739fa" testId="2856df59-023a-f1c1-b070-752c86600d49" testName="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration" computerName="LEARNPC" duration="00:00:00.1131679" startTime="2026-10-03T08:19:20.8349670+07:00" endTime="2026-10-03T08:19:20.8349828+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Failed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="52adb139-f811-48b5-9511-7162cd9739fa">
+      <Output>
+        <ErrorInfo>
+          <Message>Assert.Single() Failure: The collection contained 2 items&#xD;
+Collection: [Microsoft.Extensions.DependencyInjection.IServiceCollection AddTagEkycCaptureRuntimeRawIngress(Microsoft.Extensions.DependencyInjection.IServiceCollection, TagEkyc.Infrastructure.RawExport.RawIngressBrokerOptions, RuntimeOwners), Microsoft.Extensions.DependencyInjection.IServiceCollection AddTagEkycCaptureRuntimeRawIngress(Microsoft.Extensions.DependencyInjection.IServiceCollection, Microsoft.Extensions.Configuration.IConfiguration, Boolean)]</Message>
+          <StackTrace>   at TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration() in C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.ArchTests\Tip88C1C6BA3CompositionArchTests.cs:line 52&#xD;
+   at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)</StackTrace>
+        </ErrorInfo>
+      </Output>
+    </UnitTestResult>
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration" storage="c:\users\admin\documents\ekyc\tagekyc-baseline-a3\tests\tagekyc.archtests\bin\debug\net8.0\tagekyc.archtests.dll" id="2856df59-023a-f1c1-b070-752c86600d49">
+      <Execution id="52adb139-f811-48b5-9511-7162cd9739fa" />
+      <TestMethod codeBase="C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.ArchTests\bin\Debug\net8.0\TagEkyc.ArchTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests" name="ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="2856df59-023a-f1c1-b070-752c86600d49" executionId="52adb139-f811-48b5-9511-7162cd9739fa" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Failed">
+    <Counters total="1" executed="1" passed="0" failed="1" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.63]   Discovering: TagEkyc.ArchTests&#xD;
+[xUnit.net 00:00:00.93]   Discovered:  TagEkyc.ArchTests&#xD;
+[xUnit.net 00:00:00.93]   Starting:    TagEkyc.ArchTests&#xD;
+[xUnit.net 00:00:01.08]       Assert.Single() Failure: The collection contained 2 items&#xD;
+[xUnit.net 00:00:01.08]       Collection: [Microsoft.Extensions.DependencyInjection.IServiceCollection AddTagEkycCaptureRuntimeRawIngress(Microsoft.Extensions.DependencyInjection.IServiceCollection, TagEkyc.Infrastructure.RawExport.RawIngressBrokerOptions, RuntimeOwners), Microsoft.Extensions.DependencyInjection.IServiceCollection AddTagEkycCaptureRuntimeRawIngress(Microsoft.Extensions.DependencyInjection.IServiceCollection, Microsoft.Extensions.Configuration.IConfiguration, Boolean)]&#xD;
+[xUnit.net 00:00:01.08]       Stack Trace:&#xD;
+[xUnit.net 00:00:01.08]         C:\Users\Admin\Documents\eKyc\TagEkyc-baseline-a3\tests\TagEkyc.ArchTests\Tip88C1C6BA3CompositionArchTests.cs(52,0): at TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration()&#xD;
+[xUnit.net 00:00:01.08]            at System.RuntimeMethodHandle.InvokeMethod(Object target, Void** arguments, Signature sig, Boolean isConstructor)&#xD;
+[xUnit.net 00:00:01.08]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)&#xD;
+[xUnit.net 00:00:01.08]   Finished:    TagEkyc.ArchTests&#xD;
+</StdOut>
+    </Output>
+    <RunInfos>
+      <RunInfo computerName="LEARNPC" outcome="Error" timestamp="2026-10-03T08:19:20.8329434+07:00">
+        <Text>[xUnit.net 00:00:01.08]     TagEkyc.ArchTests.Tip88C1C6BA3CompositionArchTests.ActivatedCompositionExportsOnlyHostPortsAndOwnerConfiguration [FAIL]</Text>
+      </RunInfo>
+    </RunInfos>
+  </ResultSummary>
+</TestRun>

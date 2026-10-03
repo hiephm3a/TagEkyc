@@ -1,0 +1,15 @@
+run	artifact	executed	passed	failed	not_executed	classification	successor	reason
+affected-initial	affected-restored.trx	2	1	1	0	PREEXISTING_BASELINE_FAILURE	baseline-a3-control.trx	A3 retained-seal assertion expected AuthorityInvalid but observed PreparationConflict; exact rev27 baseline reproduces the same result.
+affected-a3-isolated	affected-a3-isolated.trx	1	0	1	0	PREEXISTING_BASELINE_FAILURE	baseline-a3-control.trx	Isolated confirmation before baseline control; exact rev27 baseline reproduces the same outcome.
+affected-a3-after-fixture-passthrough	affected-a3-restored-final.trx	1	0	1	0	PREEXISTING_BASELINE_FAILURE	baseline-a3-control.trx	Fixture adapter passthrough did not change the outcome; exact rev27 baseline reproduces it.
+baseline-a3-control	baseline-a3-control.trx	1	0	1	0	PREEXISTING_BASELINE_FAILURE	NONE	Positive control executed from detached exact baseline 1be2891 and failed with the same expected/actual pair.
+focused-pre-final	focused-restored.trx	6	6	0	0	SUPERSEDED_GREEN	focused-restored-final.trx	Green predecessor retained; final focused run follows the transparent fixture-adapter correction.
+focused-final	focused-restored-final.trx	6	6	0	0	EVIDENCE_GREEN	NONE	Final six-test composition, blind-test correction and lifetime gate.
+mutant-root-dependency	mutant-root-di.trx	1	0	1	0	EVIDENCE_RED_PRODUCT_MUTATION	mutant-root-di-restored.trx	Restoring the root IProvisionalObjectReconciler dependency makes real Program Production validation fail to resolve the resolver and orchestrator.
+mutant-root-restored	mutant-root-di-restored.trx	1	1	0	0	EVIDENCE_GREEN	NONE	Inverse patch restored resolver SHA byte-exact and the exact Program Production test returned GREEN.
+affected-final	affected-restored-final.trx	78	77	1	0	PREEXISTING_BASELINE_FAILURE	baseline-c118-control.trx	Only C118 failed; exact rev27 baseline reproduces ExistingMatch versus LeaseLost.
+baseline-c118-control	baseline-c118-control.trx	1	0	1	0	PREEXISTING_BASELINE_FAILURE	NONE	Positive control executed from detached exact baseline 1be2891 and failed identically.
+arch-final	arch-restored-final.trx	13	12	1	0	PREEXISTING_BASELINE_FAILURE	baseline-arch-control.trx	Only the overload-count assertion failed; exact rev27 baseline also contains two overloads and fails identically.
+baseline-arch-control	baseline-arch-control.trx	1	0	1	0	PREEXISTING_BASELINE_FAILURE	NONE	Positive control executed from detached exact baseline 1be2891 and failed identically.
+custody-authority-final	custody-authority-restored-final.trx	35	35	0	0	EVIDENCE_GREEN	NONE	Existing role actor, membership, ACL, capability separation, ambient transaction and stage-right gates all pass.
+

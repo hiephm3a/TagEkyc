@@ -42,8 +42,20 @@ public static class RawExportAssemblyServiceCollectionExtensions
         services.TryAddSingleton<IRawExportAssemblyConnectionFactory, RawExportAssemblyConnectionFactory>();
         if (options.Topology == RawExportAssemblyTopology.DurableWorker)
         {
+            services.TryAddSingleton<IRawExportAssemblyReconcilerScopeFactory,
+                CaptureRuntimeAssemblyReconcilerScopeFactory>();
+            if (isProduction && !HasExactSingleton<
+                    IRawExportAssemblyReconcilerScopeFactory,
+                    CaptureRuntimeAssemblyReconcilerScopeFactory>(services))
+                throw new InvalidOperationException(
+                    "PROD_RAW_EXPORT_ASSEMBLY_RECONCILER_SCOPE_INVALID");
             services.TryAddSingleton(new RawExportAssemblyWorkerIdentity(Guid.NewGuid()));
             services.TryAddScoped<IRawExportAssemblyWorkSource, DurableRawExportAssemblyWorkSource>();
+        }
+        else
+        {
+            services.TryAddScoped<IRawExportAssemblyReconcilerScopeFactory,
+                FixtureAssemblyReconcilerScopeFactory>();
         }
 
         services.TryAddScoped<RawExportAssemblyRepository>();
@@ -54,6 +66,17 @@ public static class RawExportAssemblyServiceCollectionExtensions
         services.TryAddScoped<IRawExportAssemblyOrchestrator>(provider =>
             provider.GetRequiredService<RawExportAssemblyOrchestrator>());
         return services;
+    }
+
+    private static bool HasExactSingleton<TService, TImplementation>(
+        IServiceCollection services) where TImplementation : class, TService
+    {
+        var registrations = services
+            .Where(descriptor => descriptor.ServiceType == typeof(TService))
+            .ToArray();
+        return registrations.Length == 1
+               && registrations[0].Lifetime == ServiceLifetime.Singleton
+               && registrations[0].ImplementationType == typeof(TImplementation);
     }
 }
 

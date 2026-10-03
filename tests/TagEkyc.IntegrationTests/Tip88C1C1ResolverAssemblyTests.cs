@@ -75,8 +75,9 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var repository = new RawExportAssemblyRepository(new RoleConnectionFactory(postgres.ConnectionString));
         var resolver = new RawExportAssemblySourceResolver(
             repository,
-            new S3CompatibleProvisionalObjectReconciler(
-                minio.Options(ProvisionalObjectCapability.Reconciler)),
+            new TestRawExportAssemblyReconcilerScopeFactory(
+                new S3CompatibleProvisionalObjectReconciler(
+                    minio.Options(ProvisionalObjectCapability.Reconciler))),
             new RawExportFramedSourceVerificationService(
                 new AttemptAeadVerificationOperationService(
                     verifyDb, kek, DurableKeyCustodyOptions.Resolve(new ConfigurationManager())),
@@ -133,6 +134,40 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         Assert.Equal("Finalized", (await assertion.RawExportAssemblyPreparationDispositions.SingleAsync(row => row.C2PreparationId == fixture.Result.C2PreparationId)).Disposition);
     }
 
+    [Fact]
+    public async Task Assembly_exact_read_keeps_reconciler_scope_alive_through_framed_consumer_and_disposes_in_order()
+    {
+        var lifetime = new List<string>();
+        var c2 = new BoundedFixtureC2Provider(afterPrepare: () =>
+        {
+            lifetime.Add("Bounded assembly writer completed");
+            return Task.CompletedTask;
+        });
+        await using var prepared = await PrepareAssemblyExecutionAsync(
+            c2,
+            null,
+            null,
+            reconcilerLifetime: lifetime);
+        var assembly = await prepared.Orchestrator.ExecuteAsync(
+            prepared.Request,
+            CancellationToken.None);
+        Assert.Equal(RawExportAssemblyExecutionOutcome.Sealed, assembly.Outcome);
+        Assert.True(c2.AssemblyWasRetained);
+        Assert.Equal(
+            [
+                "RoleScope opened",
+                "ExactObjectRead opened",
+                "ExactObjectRead disposed",
+                "RoleScope disposed",
+                "RoleScope opened",
+                "ExactObjectRead opened",
+                "ExactObjectRead disposed",
+                "RoleScope disposed",
+                "Bounded assembly writer completed",
+            ],
+            lifetime);
+    }
+
     private async Task<SealedAssemblyFixture> CreateSealedAssemblyFixtureAsync(
         BoundedFixtureC2Provider? c2Override = null,
         byte[]? plaintextOverride = null)
@@ -162,7 +197,8 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         DurableObjectMinioFixture? sharedMinio = null,
         bool acquireThroughDurableWorkSource = false,
         RawExportMode durableMode = RawExportMode.EncryptedExportPacket,
-        bool usePacketPermit = false)
+        bool usePacketPermit = false,
+        IList<string>? reconcilerLifetime = null)
     {
         var plaintext = plaintextOverride ?? Encoding.UTF8.GetBytes("c1-end-to-end-synthetic-selfie");
         var minio = sharedMinio ?? await DurableObjectMinioFixture.StartAsync();
@@ -260,7 +296,9 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
             new S3CompatibleProvisionalObjectReconciler(minio.Options(ProvisionalObjectCapability.Reconciler)));
         var resolver = new RawExportAssemblySourceResolver(
             repository,
-            objectReads,
+            new TestRawExportAssemblyReconcilerScopeFactory(
+                objectReads,
+                reconcilerLifetime),
             new RawExportFramedSourceVerificationService(
                 new AttemptAeadVerificationOperationService(
                     verifyDb, kek, DurableKeyCustodyOptions.Resolve(new ConfigurationManager())),
@@ -312,8 +350,9 @@ public sealed class Tip88C1C1ResolverAssemblyTests(PostgresPersistenceFixture po
         var repository = new RawExportAssemblyRepository(new RoleConnectionFactory(postgres.ConnectionString));
         var resolver = new RawExportAssemblySourceResolver(
             repository,
-            new S3CompatibleProvisionalObjectReconciler(
-                minio.Options(ProvisionalObjectCapability.Reconciler)),
+            new TestRawExportAssemblyReconcilerScopeFactory(
+                new S3CompatibleProvisionalObjectReconciler(
+                    minio.Options(ProvisionalObjectCapability.Reconciler))),
             new RawExportFramedSourceVerificationService(
                 new AttemptAeadVerificationOperationService(
                     verifyDb,
