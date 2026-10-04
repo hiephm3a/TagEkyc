@@ -1,0 +1,258 @@
+## GPTW verdict: **PASS**
+
+Evidence-only successor này **đóng hoàn toàn HOLD còn lại của V0.4**. Tôi không tìm thấy actionable finding mới.
+
+### 1. Per-file hash/read failure — **CLOSED**
+
+Exact script mới:
+
+```powershell
+catch {
+    Add-EnumerationError "$Phase-file-hash" $file.FullName $_.Exception
+    ...
+    Sha256 = 'UNREADABLE'
+}
+```
+
+Với `$Phase` được gọi bằng `before` hoặc `after`, nên failure được ghi rõ thành:
+
+```text
+before-file-hash
+after-file-hash
+```
+
+Counterexample tôi nêu ở V0.4:
+
+```text
+UNREADABLE before
+UNREADABLE after
+same length
+```
+
+**không còn có thể PASS** vì chỉ một hash failure đã làm:
+
+```text
+EnumerationErrorCount > 0
+```
+
+Ngoài ra còn lớp chặn độc lập:
+
+```text
+UnreadableLogCountBefore > 0
+UnreadableLogCountAfter  > 0
+```
+
+---
+
+### 2. Final fail-closed condition — **PASS**
+
+Script hiện reject nếu bất kỳ điều kiện nào đúng:
+
+```powershell
+HarnessOutputEmpty
+EnumerationErrorCount != 0
+UnreadableLogCountBefore != 0
+UnreadableLogCountAfter != 0
+AnyPayloadNeedleMatch
+AnyMrzLikeTextObserved
+UnreadableChangedLogCount != 0
+```
+
+Như vậy cả traversal failure, hash/read failure và output evidence rỗng đều fail closed.
+
+`SilentlyContinue` còn lại chỉ ở việc đọc/cleanup temporary stdout/stderr; nếu stdout không đọc được thì:
+
+```text
+HarnessOutputEmpty = true
+→ qualification FAIL
+```
+
+Không còn bypass chịu lực.
+
+---
+
+### 3. Physical rerun — **PASS**
+
+Exact retained result SHA:
+
+```text
+35712399A67160B8DD2200F845D09FCA0B389E6BD494D27C0DDB2295A5281593
+```
+
+Tôi xác minh:
+
+```text
+HarnessExitCode             0
+HarnessOutputEmpty          false
+
+AccessMethod                BAC
+BacSuccess                  true
+PaceSuccess                 false
+
+ChipAuth                    CHIP_AUTH_RESPONSE_VALID
+ChipAuthResponseValid       true
+
+EnumerationErrorCount       0
+UnreadableLogCountBefore    0
+UnreadableLogCountAfter     0
+UnreadableChangedLogCount   0
+
+Log files before            8
+Log files after             8
+Changed logs                0
+
+Payload needle match        false
+MRZ-like observation        false
+```
+
+Candidate binding trong physical result:
+
+```text
+750CEBDAC3CACA4D8C65E47295F8C27AAA61A58A9C0497E440D2F62E7E529DFB
+```
+
+đúng exact candidate manifest.
+
+Harness/helper V0.3 filename giữ lại là **không có vấn đề**: executable bytes không đổi và physical evidence vẫn hash-bind:
+
+```text
+Harness  FD301F04...5328E17
+Helper   2040C56A...CEF2D55
+```
+
+Audit script đã đổi đúng thành:
+
+```text
+Invoke-Smid50V04PhysicalQualification.ps1
+SHA 7C36BD74...F43E27
+```
+
+---
+
+### 4. Không có product drift — **PASS**
+
+Tôi re-bind lại current working trees:
+
+```text
+Candidate files       34 / 34 MATCH
+
+Agent                  29 / 29
+Server                  5 / 5
+```
+
+Current baselines vẫn:
+
+```text
+Agent HEAD
+cbabf18584cfec82adce296398078d1901e77e97
+
+Server HEAD
+6759b624c7e30d2e1fd9db47de26cb89f647513c
+```
+
+Git:
+
+```text
+Agent staged      0
+Server staged     0
+Conflicted        0
+```
+
+Tức successor này thực sự **evidence-only**.
+
+---
+
+### 5. Packet integrity — **PASS**
+
+Outer ZIP tôi xác minh đúng:
+
+```text
+DE0138E934679F42C541CEFE24E3510061F38335132E474D2BEC4AFC85C8DC7A
+```
+
+Evidence manifest:
+
+```text
+13 / 13 entries independently re-hashed
+13 / 13 MATCH SHA
+13 / 13 MATCH byte length
+```
+
+Không còn giới hạn binary như packet V0.4 vì correction packet 13-entry này đều đọc/hash được qua review surface.
+
+Census:
+
+```text
+runs          1
+executed      1
+passed        1
+failed        0
+skipped       0
+unclassified  0
+```
+
+---
+
+## Closure chain
+
+```text
+V0.1  HOLD
+      ↓
+PACE overclaim / DG trust / SDK integrity / provenance...
+
+V0.2  HOLD
+      ↓
+zeroization / log evidence / physical provenance...
+
+V0.3  HOLD
+      ↓
+ReasonCodes BAC→PACE escalation
+log traversal fail-closed
+
+V0.4  HOLD
+      ↓
+per-file UNREADABLE pre/post blind spot
+
+V0.4 EVIDENCE CORRECTION V0.1
+      PASS
+```
+
+### Final status
+
+```text
+SMID50 architecture                PASS
+Physical SMID50                    PASS
+BAC                                PASS
+AA                                 PASS
+PACE claim                         NONE — correct
+
+BAC/PACE durable distinction       PASS
+BAC assurance cap                  PASS
+DG3/DG4 rule                       PASS
+Reserved ReasonCodes ownership     PASS
+
+Zeroization                        PASS
+SDK pinning                        PASS
+Process/helper boundary            PASS
+Vendor log audit                   PASS
+Per-file unreadable handling       PASS
+Empty harness protection           PASS
+
+Candidate 34/34                    MATCH
+Correction packet 13/13            MATCH
+Outer ZIP                           MATCH
+
+Actionable findings                0
+```
+
+# **PASS**
+
+Giữ đúng boundary hiện tại:
+
+```text
+COMMIT       NO
+RE-FREEZE    NO
+PUSH         NO
+```
+
+Đây là **review PASS của candidate/evidence**, chưa tự động là quyền commit. Bước kế tiếp có thể chuyển sang **Homeowner ratification / commit gate riêng**, không cần thêm successor SMID50 nữa.

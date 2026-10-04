@@ -1,0 +1,3 @@
+run	kind	executed	passed	failed	skipped	classification	detail
+post-commit-binding	STATIC	1	1	0	0	EVIDENCE_GREEN	34/34 commit paths and checkout bytes map to the immutable reviewed pre-commit manifest
+# summary	runs=1	executed=1	passed=1	failed=0	skipped=0	unclassified=0

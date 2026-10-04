@@ -1,0 +1,99 @@
+# Review `SMID50_READER_PROVIDER_V0_4`
+
+## Verdict: **PASS**
+
+```
+ZIP SHA     058580EE…A0F8 ✓
+Evidence    73/73 MATCH, 0 MISMATCH, 0 MISSING ✓
+Census      18 runs / 239 executed / 229 pass / 10 fail / 0 skip / 0 unclassified ✓
+```
+
+## Trước hết: finding của GPTW là lỗ thật, và là lỗ phần review này bỏ sót
+
+Ở V0.3 phần review đã xác nhận `AssuranceLevel` đọc `nfc.ReasonCodes.Contains("PACE_SUCCESS")` → `High`, và coi đó là đóng. Nhưng không hỏi **ai ghi được `ReasonCodes`**. Nếu caller cấp reason code và server lưu nguyên, thì một caller chỉ cần gửi `PACE_SUCCESS` là có `High` trên một lần đọc BAC — vô hiệu hoá đúng tầng vừa được xác nhận.
+
+Đây là **lần thứ năm trong phiên** cùng một họ lỗi: tin một đầu vào mà không chứng minh nguồn của nó. Câu "cái gì làm nó ĐỎ?" đã được hỏi; câu "**ai ghi được giá trị này?**" thì không.
+
+## Chín mục kiểm — đóng cả chín
+
+**(1)(2) Strip rộng, regenerate hẹp** — đây là phần làm đúng nhất:
+
+```csharp
+:97       (request.ReasonCodes ?? []).Where(code => !IsReservedNfcDurableReasonCode(code))
+
+:137-140  IsReservedNfcDurableReasonCode(code) =            ← STRIP: rộng, theo prefix
+              ChipAccessMethodFlags.Contains(code)
+           || code.StartsWith("SOD_DECLARED_DG_")
+           || code.StartsWith("SOD_SUPPLIED_DG_")
+
+:120-135  regeneration predicate                            ← REGEN: hẹp, canonical
+              int.TryParse(suffix) && number is >= 1 and <= 16
+           && suffix == number.ToString(InvariantCulture)
+```
+
+Bất đối xứng đó là chỗ chịu lực. Nếu cả hai dùng predicate hẹp thì `SOD_DECLARED_DG_01` do caller gửi sẽ **lọt qua bộ lọc** rồi được lưu. Dùng chung predicate rộng thì không regenerate được dạng canonical. Hai hàm riêng, hai độ chặt khác nhau, đúng chiều.
+
+**(3)(4) Hai chiều xung đột basis-vs-caller** — `:195-196` là một theory với `[InlineData("BAC_SUCCESS","PACE_SUCCESS")]` và `[InlineData("PACE_SUCCESS","BAC_SUCCESS")]`, `:239` `Assert.Single(... is "PACE_SUCCESS" or "BAC_SUCCESS")` — đúng một token được lưu, không bao giờ cả hai.
+
+Và mục quan trọng nhất được chứng minh ở **tầng completion**, không chỉ tầng reason code:
+
+```csharp
+:331-332  basis "BAC_SUCCESS",  caller ["PACE_SUCCESS"]
+:342      Assert.Equal(AssuranceLevelDto.Medium, completed.Value?.AssuranceLevel)
+```
+
+Đó chính là đường tấn công — caller khai PACE để lấy High — và nó ra Medium.
+
+**(5)** `:236-238` `SOD_DECLARED_DG_16` / `SOD_SUPPLIED_DG_16` caller-only và `SOD_DECLARED_DG_01` malformed đều không được persist.
+
+**(6)** `mutation-reserved-reason-code-red.trx` = 3 executed / 0 passed / **3 failed** → đúng 0/3 RED; `restore-reserved-reason-code-green.trx` 3/3 GREEN byte-exact.
+
+**(7) Traversal fail-closed, và lỗi được ĐẾM rồi công bố:**
+
+```powershell
+:30  Get-ChildItem -Directory -Recurse -ErrorAction Stop   → :34 Add-EnumerationError
+:43  Get-ChildItem -File      -Recurse -ErrorAction Stop   → :46 Add-EnumerationError
+:87  sensitive-reference enumeration   -ErrorAction Stop   → :90 Add-EnumerationError
+:215-216  EnumerationErrorCount + EnumerationErrors  → vào thẳng result JSON
+```
+
+Bốn `SilentlyContinue` còn lại **không nằm trên traversal**: hai cái là `Remove-Item` dọn temp, hai cái đọc stdout/stderr của harness — và `:194-195` có `if ($null -eq $safeStdout) { $safeStdout = '' }`, tức đúng chỗ đã gây ra `physical-predecessor-4`.
+
+**(8) Physical bind đúng candidate set:**
+
+```
+CandidateManifestSha256 trong physical JSON   750CEBDAC3CACA…529DFB
+sha256sum candidate-file-manifest.tsv         750CEBDAC3CACA…529DFB   ✓ khớp
+files trong manifest                          34                      ✓
+EnumerationErrorCount 0    ChangedLogFileCount 0    AccessMethod Bac   PaceSuccess false
+```
+
+**(9)** ZIP, manifest, census đã verify ở trên. Các artifact V0.3 được xếp lại đúng `SUPERSEDED_GREEN`, bốn predecessor physical vẫn giữ `SUPERSEDED_EVIDENCE_HARNESS` với lý do cụ thể.
+
+---
+
+## Hai LOW, không chặn
+
+**LOW-01 — artifact mang tên V03 nằm trong packet V0_4 và sinh bằng chứng V0_4.** `qualification-tools/Invoke-Smid50V03PhysicalQualification.ps1` và `smid50-v03-candidate-manifest.tsv`. Nội dung đúng (traversal fail-closed là bản mới), nhưng trong một chuỗi chặt như thế này, tên "V03" tạo ra bằng chứng V0.4 sẽ làm người đọc sau phải truy ngược. Đổi tên hoặc thêm một dòng provenance là đủ.
+
+**LOW-02 — `HarnessOutput` rỗng không fail tường minh.** Toàn bộ nội dung của physical proof nằm trong trường đó. Nếu stdout không đọc được, kết quả sẽ có `HarnessOutput: ""` — vẫn nhìn thấy được, và còn `HarnessExitCode` để đối chiếu, nên không phải bằng chứng ngầm. Nhưng rỗng thì nên là FAIL tường minh hơn là chuỗi rỗng.
+
+## Chưa verify
+
+Không chạy lại 18 run, ba mutation, build, hay physical. Chưa đọc `REPORT.md`/`REVIEW_PROMPT.md`. Chưa đọc `Program.cs` của qualification harness. Chưa đọc hết `agent-tracked.patch` (vòng này thay đổi chủ yếu ở server).
+
+---
+
+## KẾT LUẬN
+
+**PASS. Không có finding chặn.** Hai LOW đều về nhãn và về cách báo lỗi, không về đúng/sai.
+
+Lỗ GPTW nêu đã bị đóng ở đúng tầng: không phải thêm một phép kiểm trên giá trị, mà **cắt nguồn ghi** của giá trị — caller không còn tạo được bốn họ token đó, và chúng chỉ tái sinh từ `NfcEvidenceDecisionBasis.Flags` đã validate. Kèm mutation 0/3 RED và một assertion ở tầng completion chứng minh đường tấn công thật ra Medium.
+
+```
+Commit allowed?         YES
+Hardware-qualified?     YES cho đường BAC, bind đúng 34-file candidate set
+Site Qualification      MAY RESUME
+```
+
+Việc kế tiếp, một việc: **commit V0.4 (agent + server patch, chưa push)**, rồi quay lại `SITE_QUALIFICATION_REV28_LAB` bước 1. Hai asset còn chặn: **SilentFace ONNX model** và **trust Lab Root CA trên s5** — đầu đọc đã xong.

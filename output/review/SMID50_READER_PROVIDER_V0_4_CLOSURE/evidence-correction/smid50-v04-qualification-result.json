@@ -1,0 +1,39 @@
+{
+    "FormatVersion":  1,
+    "StartedAtUtc":  "\/Date(1791100194568)\/",
+    "CompletedAtUtc":  "\/Date(1791100206134)\/",
+    "MachineName":  "TUNN-PC",
+    "WindowsUser":  "TUNN-PC\\TU BEO",
+    "CurrentPath":  "Smid50ReaderProcessClient-\u003eSmid50CccdReader-\u003ex86-helper-\u003ephysical-reader",
+    "HarnessExitCode":  0,
+    "HarnessSha256":  "FD301F0473FE103F17E02C1812FE3CE0071A784E3CB90D8C57EFE894B5328E17",
+    "HelperSha256":  "2040C56A61F061CD00FD2BD85629BFF45C1C5BD72E75F62DC22841FA0CEF2D55",
+    "SdkManifestSha256":  "C65779E4A0C0A145749DE89A7954767839FC4D0B943B422304F6FCE763DB2A53",
+    "CandidateManifestSha256":  "750CEBDAC3CACA4D8C65E47295F8C27AAA61A58A9C0497E440D2F62E7E529DFB",
+    "SdkConfigSha256":  "730365268ECF3EAEC0E690E643AE98B5C7C697AA738B8A3C4DA0F1EBC888764F",
+    "HarnessOutput":  "{\"Success\":true,\"ObservedAtUtc\":\"2026-10-04T07:50:05.7762436+00:00\",\"MachineName\":\"TUNN-PC\",\"CurrentPath\":\"Smid50ReaderProcessClient-\\u003ESmid50CccdReader-\\u003Ex86-helper-\\u003Ephysical-reader\",\"AccessMethod\":\"Bac\",\"BacSuccess\":true,\"PaceSuccess\":false,\"ChipAuthFlag\":\"CHIP_AUTH_RESPONSE_VALID\",\"ChipAuthResponseValid\":true,\"NfcEngineName\":\"smid50-star200-v5-nfc-adapter\",\"NfcEngineVersion\":\"v1\",\"NfcArtifactHash\":\"sha256:ffcee97adc660ae1e55c3d7704950528be5ba81fba106dd75c2caebadde2b3d3\",\"DeclaredDataGroups\":[1,2,3,13,14,15],\"SuppliedDataGroups\":[1,2,13,14,15],\"HelperSha256\":\"2040C56A61F061CD00FD2BD85629BFF45C1C5BD72E75F62DC22841FA0CEF2D55\",\"ManifestSha256\":\"C65779E4A0C0A145749DE89A7954767839FC4D0B943B422304F6FCE763DB2A53\",\"CandidateManifestSha256\":\"750CEBDAC3CACA4D8C65E47295F8C27AAA61A58A9C0497E440D2F62E7E529DFB\",\"HarnessSha256\":\"FD301F0473FE103F17E02C1812FE3CE0071A784E3CB90D8C57EFE894B5328E17\"}",
+    "HarnessOutputEmpty":  false,
+    "HarnessError":  "",
+    "LogDirectoryPaths":  [
+                              "C:\\CCCD\\CCCDID50\\Reader_demo\\STAR200_V5_demo\\dll\\log",
+                              "C:\\CCCD\\CCCDID50\\Reader_demo\\STAR200_V5_demo\\dll\\logd",
+                              "C:\\CCCD\\CCCDID50\\win-x86\\sdk\\log",
+                              "C:\\CCCD\\CCCDID50\\win-x86\\sdk\\logd"
+                          ],
+    "EnumerationErrorCount":  0,
+    "EnumerationErrors":  [
+
+                          ],
+    "LogFileCountBefore":  8,
+    "LogFileCountAfter":  8,
+    "UnreadableLogCountBefore":  0,
+    "UnreadableLogCountAfter":  0,
+    "ChangedLogFileCount":  0,
+    "ChangedLogFiles":  {
+
+                        },
+    "SensitiveReferenceArtifactCount":  8,
+    "AnyPayloadNeedleMatch":  false,
+    "AnyMrzLikeTextObserved":  false,
+    "UnreadableChangedLogCount":  0
+}

@@ -1,0 +1,246 @@
+Tôi đã review độc lập **V0.4 exact successor**.
+
+## Verdict: **HOLD — còn đúng 1 correction evidence nhỏ**
+
+Phần **product HIGH của V0.3 đã CLOSED**. Tôi không còn thấy BAC→PACE/High bypass.
+
+### 1. Reserved NFC durable-token ownership — **PASS**
+
+Exact Server bytes hiện làm đúng cơ chế:
+
+```csharp
+var reasonCodes = new SortedSet<string>(
+    (request.ReasonCodes ?? [])
+        .Where(code => !IsReservedNfcDurableReasonCode(code)),
+    StringComparer.Ordinal);
+
+foreach (var observation in submittedFlags.Where(IsDurableNfcObservation))
+{
+    reasonCodes.Add(observation);
+}
+```
+
+Reserved namespace gồm:
+
+```text
+PACE_SUCCESS
+BAC_SUCCESS
+SOD_DECLARED_DG_*
+SOD_SUPPLIED_DG_*
+```
+
+Sau khi strip caller input, server mới tái sinh durable facts từ **validated `NfcEvidenceDecisionBasis.Flags`**.
+
+Tôi cũng quét source và hiện chỉ có **một nơi tạo `EvidenceResult`**; cả TrustedAdapter và CaptureRuntime đều đi qua `PlanEvidenceResultAsync` → NFC preparation này. Không thấy parallel write path nào có thể mint `PACE_SUCCESS`.
+
+Các proof đều đứng:
+
+```text
+BAC basis + caller PACE
+→ persisted BAC
+→ no PACE
+→ completion Medium
+
+PACE basis + caller BAC
+→ persisted PACE
+→ no BAC
+
+caller-only SOD_DECLARED_DG_16
+→ not persisted
+
+caller-only SOD_SUPPLIED_DG_16
+→ not persisted
+
+SOD_DECLARED_DG_01
+→ not persisted
+```
+
+Mutation cũng phân biệt đúng:
+
+```text
+reserved-guard mutation     0/3 RED
+
+RED #1  spoof PACE persisted
+RED #2  BAC became High
+RED #3  spoof BAC persisted
+
+inverse restore             3/3 PASS
+pre SHA == post SHA
+1FCF8392...1ABB757
+```
+
+**Finding HIGH V0.3 = CLOSED.**
+
+---
+
+## 2. Recursive traversal `SilentlyContinue` — **đã sửa**, nhưng log audit vẫn chưa hoàn toàn fail-closed
+
+Đây là finding duy nhất giữ HOLD.
+
+Script hiện đã sửa đúng traversal:
+
+```powershell
+Get-ChildItem ... -Recurse -ErrorAction Stop
+```
+
+và lỗi traversal được đưa vào:
+
+```text
+EnumerationErrorCount
+EnumerationErrors
+```
+
+Physical run hiện:
+
+```text
+EnumerationErrorCount     0
+LogFileCountBefore        8
+LogFileCountAfter         8
+ChangedLogFileCount       0
+UnreadableChangedLogCount 0
+```
+
+Nhưng còn một lỗ hẹp ở **per-file hashing**.
+
+Trong `qualification-tools/Invoke-Smid50V03PhysicalQualification.ps1`, khi hash/read một log file lỗi, code hiện làm:
+
+```powershell
+catch {
+    [pscustomobject]@{
+        Path = ...
+        Length = ...
+        LastWriteTimeUtc = ...
+        Sha256 = 'UNREADABLE'
+    }
+}
+```
+
+Nó **không gọi `Add-EnumerationError`**.
+
+Sau đó `$changed` chỉ so:
+
+```text
+path existence
+SHA
+length
+```
+
+và `UnreadableChangedLogCount` chỉ đếm các file đã lọt vào `$changed`.
+
+Do đó counterexample vẫn tồn tại:
+
+```text
+PRE:
+foo.log
+Length = 100
+SHA = UNREADABLE
+
+POST:
+foo.log
+Length = 100
+SHA = UNREADABLE
+```
+
+Kết quả hiện tại:
+
+```text
+SHA pre == SHA post       ("UNREADABLE")
+length pre == length post
+→ file không nằm trong $changed
+→ không được Test-ChangedLogs
+→ UnreadableChangedLogCount = 0
+→ EnumerationErrorCount = 0
+→ qualification có thể PASS
+```
+
+Trong trường hợp này auditor thực tế **không đọc được file log**, nên không thể kết luận nó không chứa MRZ/DG/APDU.
+
+Đây là **evidence qualification gap**, không phải lỗi SMID50/BAC product.
+
+### Correction rất nhỏ
+
+Tôi đề nghị sửa đúng chỗ catch đó thành fail-closed:
+
+```powershell
+catch {
+    Add-EnumerationError "$Phase-file-hash" $file.FullName $_.Exception
+    ...
+}
+```
+
+Hoặc thêm:
+
+```text
+UnreadableLogCountBefore
+UnreadableLogCountAfter
+```
+
+và yêu cầu cả hai phải bằng `0`.
+
+Tốt nhất làm cả hai.
+
+Sau đó rerun **một physical current-path**. Không cần sửa Agent/Server và không cần chạy lại toàn bộ kiến trúc SMID50.
+
+---
+
+## 3. Những phần tôi đã xác minh PASS
+
+| Hạng mục | GPTW |
+|---|---|
+| Outer ZIP SHA `058580EE…A0F8` | **MATCH** |
+| Current candidate | **34/34 MATCH** |
+| Agent current tree | **29 files đúng manifest** |
+| Server current tree | **5 files đúng manifest** |
+| Agent focused | **62/62 PASS** |
+| Server focused | **50/50 PASS** |
+| Reserved-token mutation | **0/3 RED đúng cơ chế** |
+| Inverse restore | **3/3 GREEN + byte-exact** |
+| Server Application build | **PASS, 0 warning / 0 error** |
+| Physical reader | **BAC + AA VALID** |
+| Declared DG | `1,2,3,13,14,15` |
+| Supplied DG | `1,2,13,14,15` |
+| BAC full profile | **Medium** |
+| PACE spoof from ReasonCodes | **blocked** |
+| Census | **239 / 229 / 10 classified / 0 unclassified** |
+| Commit/staged changes | **NO** |
+
+Evidence manifest có **73 entries**. Tôi tự re-hash được **69/73** bằng authenticated MCP reads và tất cả 69 MATCH. Bốn entry MCP không expose byte stream là:
+
+```text
+agent-tracked.patch
+server-tracked.patch
+Smid50CurrentPathQualification.exe
+TagEkyc.CaptureAgent.Smid50Service.exe
+```
+
+Nên tôi không lặp claim “GPTW independently rehashed 73/73”. Outer ZIP itself thì đã stream-hash exact và MATCH.
+
+---
+
+## Final disposition
+
+```text
+SMID50_READER_PROVIDER_V0_4
+
+V0.3 HIGH product finding          CLOSED
+Reserved NFC token ownership       PASS
+BAC/PACE durable distinction       PASS
+BAC assurance cap                  PASS
+DG census                          PASS
+Physical BAC + AA                  PASS
+Mutation discrimination            PASS
+Candidate binding                  PASS
+
+Recursive traversal errors         PASS
+Per-file unreadable log handling   HOLD
+
+Product findings                   0
+Evidence findings                  1 MEDIUM
+Authority expansion                NO
+
+COMMIT                             NO
+RE-FREEZE                          NO
+PUSH                               NO
+```
+
+**Không cần V0.5 product.** Chỉ cần successor evidence nhỏ: làm per-file hash/read failure fail-closed, rerun physical SMID50 một lần, giữ result mới + script SHA + manifest binding. Nếu vòng đó sạch thì theo review hiện tại **SMID50 slice có thể PASS để sang gate commit/ratification riêng**.

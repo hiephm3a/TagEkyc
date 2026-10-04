@@ -1,0 +1,20 @@
+run	kind	executed	passed	failed	classification	detail
+predecessor/V0_3/mutation-missing-dg1-red.trx	TEST	1	0	1	EVIDENCE_RED_PRODUCT_MUTATION	withheld DG1 changed Verified from false to true
+predecessor/V0_3/restore-missing-dg1-green.trx	TEST	1	1	0	EVIDENCE_GREEN	byte-exact source restored
+predecessor/V0_3/mutation-bac-assurance-red.trx	TEST	1	0	1	EVIDENCE_RED_PRODUCT_MUTATION	BAC full profile incorrectly became High
+predecessor/V0_3/restore-bac-assurance-green.trx	TEST	1	1	0	EVIDENCE_GREEN	byte-exact source restored
+predecessor/V0_3/mutation-zeroization-red.trx	TEST	1	0	1	EVIDENCE_RED_PRODUCT_MUTATION	forbidden key16[..8] temporary detected
+predecessor/V0_3/restore-zeroization-green.trx	TEST	1	1	0	EVIDENCE_GREEN	byte-exact source restored
+predecessor/V0_3/final-agent-focused.trx	TEST	62	62	0	SUPERSEDED_GREEN	V0.3 focused gate retained as predecessor evidence
+predecessor/V0_3/final-server-focused.trx	TEST	47	47	0	SUPERSEDED_GREEN	V0.3 focused gate retained as predecessor evidence
+predecessor/V0_3/physical-predecessor-1	PHYSICAL	1	0	1	SUPERSEDED_EVIDENCE_HARNESS	Windows PowerShell 5.1 lacked CryptographicOperations
+predecessor/V0_3/physical-predecessor-2	PHYSICAL	1	0	1	SUPERSEDED_EVIDENCE_HARNESS	Windows PowerShell 5.1 lacked Convert.ToHexString
+predecessor/V0_3/physical-predecessor-3	PHYSICAL	1	0	1	SUPERSEDED_EVIDENCE_HARNESS	PowerShell array subtraction parse failure
+predecessor/V0_3/physical-predecessor-4	PHYSICAL	1	0	1	SUPERSEDED_EVIDENCE_HARNESS	null stdout Trim obscured harness result
+predecessor/V0_3/physical-final	PHYSICAL	1	1	0	SUPERSEDED_GREEN	V0.3 physical proof superseded by fail-closed enumeration successor
+tests/mutation-reserved-reason-code-red.trx	TEST	3	0	3	EVIDENCE_RED_PRODUCT_MUTATION	both access-token spoof arms and BAC-to-High upgrade failed
+tests/restore-reserved-reason-code-green.trx	TEST	3	3	0	EVIDENCE_GREEN	byte-exact source restored
+tests/final-agent-focused-v04.trx	TEST	62	62	0	EVIDENCE_GREEN	current Agent SMID50 plus Tip74 focused gate
+tests/final-server-focused-v04.trx	TEST	50	50	0	EVIDENCE_GREEN	current Tip05 plus Tip08 durable evidence gate
+physical/smid50-v04-qualification-result.json	PHYSICAL	1	1	0	EVIDENCE_GREEN	BAC plus AA path; fail-closed enumeration completed with zero errors
+# summary	runs=18	executed=239	passed=229	failed=10	skipped=0	unclassified=0	retained_red=4

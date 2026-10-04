@@ -1,0 +1,2 @@
+target	pre_mutation_sha256	post_restore_sha256	mutation	red_assertion
+SERVER:src/TagEkyc.Application/VerificationSessions/VerificationEvidenceApplicationService.cs	1FCF8392C6966FC41625FB985C6CC99B624991AEE3EB002A1E9EA9D831ABB757	1FCF8392C6966FC41625FB985C6CC99B624991AEE3EB002A1E9EA9D831ABB757	remove reserved durable reason-code stripping	2 spoof persistence assertions plus BAC assurance expected Medium actual High

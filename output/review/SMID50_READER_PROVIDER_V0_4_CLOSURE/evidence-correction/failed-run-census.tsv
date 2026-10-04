@@ -1,0 +1,3 @@
+run	kind	executed	passed	failed	classification	detail
+physical/smid50-v04-qualification-result.json	PHYSICAL	1	1	0	EVIDENCE_GREEN	per-file hashing and recursive enumeration completed with zero unreadable/error counts
+# summary	runs=1	executed=1	passed=1	failed=0	skipped=0	unclassified=0

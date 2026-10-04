@@ -1,0 +1,5 @@
+artifact	sha256	purpose
+qualification-tools/Invoke-Smid50V04PhysicalQualification.ps1	7C36BD74CCF696C035B98CA5D992A2A766295784E0F9E4A12010A08E7051DE5E	fail-closed per-file hash and traversal audit
+physical/smid50-v04-qualification-result.json	35712399A67160B8DD2200F845D09FCA0B389E6BD494D27C0DDB2295A5281593	sanitized physical successor result
+candidate-file-manifest.tsv	750CEBDAC3CACA4D8C65E47295F8C27AAA61A58A9C0497E440D2F62E7E529DFB	unchanged 34-file Agent/Server candidate binding
+predecessor V0.4 outer ZIP	058580EE3EBC184CDB99DFFF2B3F3F4D1E2EA36A6198D04BB9EF8AA5B724A0F8	complete prior product/evidence packet binding

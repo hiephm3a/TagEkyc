@@ -1,0 +1,140 @@
+## Closure review — **PASS**
+
+Tôi đã review trực tiếp trên **hai commit object thực tế**, không dựa vào trạng thái của hai repo `D:\Task\Remote Signing\...` ban đầu.
+
+```text
+SMID50_COMMIT_CLOSURE
+
+Agent
+5eb4d900d8c6f9e4321c499b9c187fdc0fb33d30
+parent: cbabf18584cfec82adce296398078d1901e77e97
+
+Server
+a5b5e956ce59ec6f760532a1aa414da633071c52
+parent: 6759b624c7e30d2e1fd9db47de26cb89f647513c
+
+DECISION                PASS
+Product findings        0
+Evidence findings       0
+Fresh actionable        0
+Authority expansion     NO
+
+EVIDENCE-ONLY RE-FREEZE YES
+PUSH                     NOT YET
+```
+
+### Pass 1 — Closure: **PASS**
+
+Candidate thực tế nằm ở đúng hai worktree:
+
+- Agent: `C:\Users\Admin\Documents\eKyc\TagEkyc-CaptureAgent-builder`
+  - HEAD = `5eb4d900...`
+  - branch `codex/smid50-reader-provider`
+  - clean: staged `0`, unstaged `0`, untracked `0`.
+- Server: `C:\Users\Admin\Documents\eKyc\TagEkyc-bac-success`
+  - HEAD = `a5b5e956...`
+  - **detached HEAD**
+  - clean: staged `0`, unstaged `0`, untracked `0`.
+
+Parent chain cũng đúng tuyệt đối: Agent commit đi trực tiếp từ `cbabf185...`; Server đi trực tiếp từ `6759b624...`. Không có commit chen giữa.
+
+Tôi tự lấy changed-path set từ Git:
+
+- Agent: **đúng 29 path**.
+- Server: **đúng 5 path**.
+- Ngoài write set: **0**.
+
+Quan trọng hơn, tôi đối chiếu lại từng file với manifest đã qua review trước commit:
+
+```text
+Agent    29/29 MATCH
+Server    5/5 MATCH
+Total    34/34 MATCH
+```
+
+Manifest sản phẩm vẫn là:
+
+```text
+750CEBDAC3CACA4D8C65E47295F8C27AAA61A58A9C0497E440D2F62E7E529DFB
+```
+
+Có khác biệt giữa SHA của một số **Git blob LF** và SHA của snapshot **worktree CRLF**. Tôi đã kiểm riêng việc này: checkout của HEAD sạch và **worktree bytes khớp 34/34 manifest**. Đây là Git EOL normalization, không phải product drift.
+
+Finding cuối của GPTW trước commit cũng đóng thật: script V0.4 hiện gọi `Add-EnumerationError` khi per-file hash thất bại, có `UnreadableLogCountBefore/After`, và stdout harness rỗng làm qualification fail. Physical successor hiện:
+
+```text
+HarnessExitCode              0
+HarnessOutputEmpty           false
+EnumerationErrorCount        0
+UnreadableLogCountBefore     0
+UnreadableLogCountAfter      0
+UnreadableChangedLogCount    0
+ChangedLogFileCount          0
+AnyPayloadNeedleMatch        false
+AnyMrzLikeTextObserved       false
+```
+
+### Pass 2 — Patch / safety: **PASS**
+
+Tôi quét lại các seam chịu lực, không chỉ kiểm hash.
+
+Agent vẫn giữ đúng security shape:
+
+- `SMID50` sinh **`BAC_SUCCESS`**, không giả thành `PACE_SUCCESS`.
+- Helper x86 không nhận credential Agent; environment được allowlist.
+- Helper EXE, SDK manifest và SDK artifacts đều hash-pin trước launch.
+- Read locks giữ từ hash đến hết vòng đời helper, đóng cửa sổ hash-to-use replacement.
+- SDK manifest bắt buộc có `STAR200_V5_DRV.dll`; top-level DLL ngoài manifest bị từ chối.
+- Parent có watchdog và kill cả process tree khi native call treo.
+- EF.SOD signature + exact CMS/LDS content type + supplied DG hashes được kiểm.
+- SOD-declared DG thiếu chỉ cho phép đúng DG3/DG4; DG2 bắt buộc hiện diện/bound.
+- AA dùng nonce dẫn xuất từ session/challenge hiện tại.
+- Physical path thực đo được `BAC`, `PACE=false`, `CHIP_AUTH_RESPONSE_VALID`.
+
+Server cũng vẫn đúng:
+
+- phải có **exactly one** `PACE_SUCCESS` hoặc `BAC_SUCCESS`;
+- caller không thể mint lại các namespace durable:
+  `PACE_SUCCESS`, `BAC_SUCCESS`, `SOD_DECLARED_DG_*`, `SOD_SUPPLIED_DG_*`;
+- các durable fact được tái sinh từ decision basis đã validate;
+- caller gửi `PACE_SUCCESS` trên BAC không thể nâng assurance;
+- full biometric profile bằng BAC vẫn **Medium**;
+- `High` vẫn yêu cầu durable `PACE_SUCCESS`.
+
+Tôi cũng soi lại trường hợp AA fail → `WeakContext`. Ban đầu đây trông như một khả năng finding, nhưng đối chiếu authority cũ cho thấy TIP-74 đã ratify `CHIP_AUTH_WEAK_CONTEXT` là Passed-eligible ở mức assurance thấp hơn. Vì vậy **không mở finding giả** ở đây. Physical SMID50 hiện tại vẫn chứng minh nhánh mạnh `CHIP_AUTH_RESPONSE_VALID`.
+
+### Pass 3 — Fresh sweep: **0 actionable findings**
+
+Không tìm thấy đường mới có thể:
+
+- BAC → PACE;
+- BAC → High;
+- caller → durable trust fact;
+- helper claim success → bỏ qua SOD/DG verification;
+- native/helper replacement sau hash;
+- mixed HN212/SMID50 production config;
+- thêm schema/migration;
+- mở Raw BIO/A3/Layer 2/KEK/Claim Provider/SignFlow;
+- hoặc đưa file ngoài 34-file write set vào commit.
+
+Cảnh báo Drive hook thiếu local config **không ảnh hưởng closure**: hai resulting commit tree đã được xác minh độc lập, đúng parent, đúng path set và sạch.
+
+## Gate tiếp theo: cho phép **evidence-only re-freeze**
+
+Có một yêu cầu provenance rất quan trọng: **không được ghi đè/regenerate `candidate-file-manifest.tsv` cũ rồi giả vờ nó vẫn là physical manifest**.
+
+Manifest `750CEBDA…E529DFB` có cột trạng thái `modified/untracked` vì nó được tạo **trước commit**, và physical qualification đã bind chính xác vào SHA đó. Sau commit những status đó đương nhiên không còn là current Git status.
+
+Re-freeze nên:
+
+1. Giữ nguyên manifest `750CEBDA…E529DFB` như **pre-commit physical/product-byte manifest**.
+2. Thêm một **post-commit binding** mới ghi:
+   - Agent commit `5eb4d900...`, parent `cbabf185...`, 29 paths;
+   - Server commit `a5b5e956...`, parent `6759b624...`, 5 paths;
+   - clean `0/0/0`;
+   - mapping **34/34 committed checkout bytes → old reviewed manifest hashes**.
+3. Với file text, nên ghi cả Git object/blob ID và checkout SHA nếu cần; **không coi LF-vs-CRLF là mismatch sản phẩm**.
+4. Không sửa Agent/Server, không amend hai commit, không cần rerun physical hay focused tests chỉ để re-freeze — product bytes đã được chứng minh 34/34 unchanged.
+5. Sau khi có bundle re-freeze mới, review riêng bundle đó rồi mới mở **push gate**.
+
+**Kết luận:** hai commit hiện tại được **closure-accepted**. Không cần correction commit. Có thể chuyển ngay sang **evidence-only re-freeze**, nhưng **chưa push** trước khi bundle re-freeze mới qua gate.

@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="eec4d1f4-5a52-46b1-a7f2-241d68b6b2a9" name="3AVNN@LEARNPC 2026-10-04 14:00:30" runUser="LEARNPC\3AVNN" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-10-04T14:00:30.7619207+07:00" queuing="2026-10-04T14:00:30.7619209+07:00" start="2026-10-04T14:00:29.9173103+07:00" finish="2026-10-04T14:00:30.7654541+07:00" />
+  <TestSettings name="default" id="35c9e196-2592-4d03-bb23-0a8544ee48e0">
+    <Deployment runDeploymentRoot="3AVNN_LEARNPC_2026-10-04_14_00_30" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="3b741737-481d-4461-8783-2368d00cab53" testId="066c153e-ccc0-558f-6275-84e6dc523b31" testName="TagEkyc.UnitTests.Tip05EvidenceApplicationTests.Tip69_nfc_durable_reason_namespaces_are_derived_only_from_validated_basis(basisAccessMethod: &quot;BAC_SUCCESS&quot;, spoofedAccessMethod: &quot;PACE_SUCCESS&quot;)" computerName="LEARNPC" duration="00:00:00.0743286" startTime="2026-10-04T14:00:30.6469111+07:00" endTime="2026-10-04T14:00:30.6469231+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="3b741737-481d-4461-8783-2368d00cab53" />
+    <UnitTestResult executionId="12971f53-779b-4cc3-90eb-cfec9dd72553" testId="306b3552-dd7a-8761-58c8-de2636bf934f" testName="TagEkyc.UnitTests.Tip08TransactionBoundE2eProofTests.Tip08_caller_reason_code_cannot_upgrade_bac_to_pace_assurance" computerName="LEARNPC" duration="00:00:00.1100815" startTime="2026-10-04T14:00:30.6808064+07:00" endTime="2026-10-04T14:00:30.6808066+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="12971f53-779b-4cc3-90eb-cfec9dd72553" />
+    <UnitTestResult executionId="bf19b867-2922-466a-a4b9-b0d7f7848b63" testId="a750bef1-c58d-dc56-ba36-6626dd839c05" testName="TagEkyc.UnitTests.Tip05EvidenceApplicationTests.Tip69_nfc_durable_reason_namespaces_are_derived_only_from_validated_basis(basisAccessMethod: &quot;PACE_SUCCESS&quot;, spoofedAccessMethod: &quot;BAC_SUCCESS&quot;)" computerName="LEARNPC" duration="00:00:00.0005818" startTime="2026-10-04T14:00:30.6489830+07:00" endTime="2026-10-04T14:00:30.6489831+07:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="bf19b867-2922-466a-a4b9-b0d7f7848b63" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="TagEkyc.UnitTests.Tip05EvidenceApplicationTests.Tip69_nfc_durable_reason_namespaces_are_derived_only_from_validated_basis(basisAccessMethod: &quot;PACE_SUCCESS&quot;, spoofedAccessMethod: &quot;BAC_SUCCESS&quot;)" storage="c:\users\admin\documents\ekyc\tagekyc-bac-success\tests\tagekyc.unittests\bin\release\net8.0\tagekyc.unittests.dll" id="a750bef1-c58d-dc56-ba36-6626dd839c05">
+      <Execution id="bf19b867-2922-466a-a4b9-b0d7f7848b63" />
+      <TestMethod codeBase="C:\Users\Admin\Documents\eKyc\TagEkyc-bac-success\tests\TagEkyc.UnitTests\bin\Release\net8.0\TagEkyc.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.UnitTests.Tip05EvidenceApplicationTests" name="Tip69_nfc_durable_reason_namespaces_are_derived_only_from_validated_basis" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.UnitTests.Tip05EvidenceApplicationTests.Tip69_nfc_durable_reason_namespaces_are_derived_only_from_validated_basis(basisAccessMethod: &quot;BAC_SUCCESS&quot;, spoofedAccessMethod: &quot;PACE_SUCCESS&quot;)" storage="c:\users\admin\documents\ekyc\tagekyc-bac-success\tests\tagekyc.unittests\bin\release\net8.0\tagekyc.unittests.dll" id="066c153e-ccc0-558f-6275-84e6dc523b31">
+      <Execution id="3b741737-481d-4461-8783-2368d00cab53" />
+      <TestMethod codeBase="C:\Users\Admin\Documents\eKyc\TagEkyc-bac-success\tests\TagEkyc.UnitTests\bin\Release\net8.0\TagEkyc.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.UnitTests.Tip05EvidenceApplicationTests" name="Tip69_nfc_durable_reason_namespaces_are_derived_only_from_validated_basis" />
+    </UnitTest>
+    <UnitTest name="TagEkyc.UnitTests.Tip08TransactionBoundE2eProofTests.Tip08_caller_reason_code_cannot_upgrade_bac_to_pace_assurance" storage="c:\users\admin\documents\ekyc\tagekyc-bac-success\tests\tagekyc.unittests\bin\release\net8.0\tagekyc.unittests.dll" id="306b3552-dd7a-8761-58c8-de2636bf934f">
+      <Execution id="12971f53-779b-4cc3-90eb-cfec9dd72553" />
+      <TestMethod codeBase="C:\Users\Admin\Documents\eKyc\TagEkyc-bac-success\tests\TagEkyc.UnitTests\bin\Release\net8.0\TagEkyc.UnitTests.dll" adapterTypeName="executor://xunit/VsTestRunner2/netcoreapp" className="TagEkyc.UnitTests.Tip08TransactionBoundE2eProofTests" name="Tip08_caller_reason_code_cannot_upgrade_bac_to_pace_assurance" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="066c153e-ccc0-558f-6275-84e6dc523b31" executionId="3b741737-481d-4461-8783-2368d00cab53" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="306b3552-dd7a-8761-58c8-de2636bf934f" executionId="12971f53-779b-4cc3-90eb-cfec9dd72553" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a750bef1-c58d-dc56-ba36-6626dd839c05" executionId="bf19b867-2922-466a-a4b9-b0d7f7848b63" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Results Not in a List" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="All Loaded Results" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="3" executed="3" passed="3" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v2.5.3.1+6b60a9e56a (64-bit .NET 8.0.22)&#xD;
+[xUnit.net 00:00:00.21]   Discovering: TagEkyc.UnitTests&#xD;
+[xUnit.net 00:00:00.27]   Discovered:  TagEkyc.UnitTests&#xD;
+[xUnit.net 00:00:00.28]   Starting:    TagEkyc.UnitTests&#xD;
+[xUnit.net 00:00:00.42]   Finished:    TagEkyc.UnitTests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>
