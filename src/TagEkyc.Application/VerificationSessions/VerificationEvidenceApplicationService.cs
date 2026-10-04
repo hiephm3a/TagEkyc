@@ -24,9 +24,14 @@ public sealed class VerificationEvidenceApplicationService(
     private static readonly IReadOnlySet<string> RequiredNfcChipFlags = new HashSet<string>(StringComparer.Ordinal)
     {
         "NFC_READ_OK",
-        "PACE_SUCCESS",
         "SOD_INTERNAL_VALID",
         "DG_HASHES_MATCH_SOD",
+    };
+
+    private static readonly IReadOnlySet<string> ChipAccessMethodFlags = new HashSet<string>(StringComparer.Ordinal)
+    {
+        "PACE_SUCCESS",
+        "BAC_SUCCESS",
     };
 
     private static readonly IReadOnlySet<string> CscaStateFlags = new HashSet<string>(StringComparer.Ordinal)
@@ -698,7 +703,7 @@ public sealed class VerificationEvidenceApplicationService(
         {
             return SessionOperationResult<NfcEvidencePreparation>.Failure(
                 "NFC_EVIDENCE_DECOMPOSITION_REQUIRED",
-                "NfcValidation=Passed requires NFC_READ_OK, PACE_SUCCESS, SOD_INTERNAL_VALID, DG_HASHES_MATCH_SOD, one CSCA state, and one chip-auth state.",
+                "NfcValidation=Passed requires NFC_READ_OK, exactly one chip-access method (PACE_SUCCESS or BAC_SUCCESS), SOD_INTERNAL_VALID, DG_HASHES_MATCH_SOD, one CSCA state, and one chip-auth state.",
                 400);
         }
 
@@ -706,7 +711,13 @@ public sealed class VerificationEvidenceApplicationService(
         var hasNegativeBindingState = submittedFlags.Overlaps(NegativeCaptureBindingStates);
         var effectiveResult = request.Result;
         var finalFlags = new SortedSet<string>(submittedFlags, StringComparer.Ordinal);
-        var reasonCodes = new SortedSet<string>(request.ReasonCodes ?? [], StringComparer.Ordinal);
+        var reasonCodes = new SortedSet<string>(
+            (request.ReasonCodes ?? []).Where(code => !IsReservedNfcDurableReasonCode(code)),
+            StringComparer.Ordinal);
+        foreach (var observation in submittedFlags.Where(IsDurableNfcObservation))
+        {
+            reasonCodes.Add(observation);
+        }
 
         if (!captureBindingTrusted || hasNegativeBindingState)
         {
@@ -772,8 +783,37 @@ public sealed class VerificationEvidenceApplicationService(
             missing.Add("CHIP_AUTH_STATE");
         }
 
+        if (ChipAccessMethodFlags.Count(flags.Contains) != 1)
+        {
+            missing.Add("CHIP_ACCESS_METHOD");
+        }
+
         return missing;
     }
+
+    private static bool IsDurableNfcObservation(string flag)
+    {
+        if (ChipAccessMethodFlags.Contains(flag))
+        {
+            return true;
+        }
+
+        const string declaredPrefix = "SOD_DECLARED_DG_";
+        const string suppliedPrefix = "SOD_SUPPLIED_DG_";
+        var suffix = flag.StartsWith(declaredPrefix, StringComparison.Ordinal)
+            ? flag[declaredPrefix.Length..]
+            : flag.StartsWith(suppliedPrefix, StringComparison.Ordinal)
+                ? flag[suppliedPrefix.Length..]
+                : string.Empty;
+        return int.TryParse(suffix, out var number) &&
+               number is >= 1 and <= 16 &&
+               string.Equals(suffix, number.ToString(System.Globalization.CultureInfo.InvariantCulture), StringComparison.Ordinal);
+    }
+
+    private static bool IsReservedNfcDurableReasonCode(string code) =>
+        ChipAccessMethodFlags.Contains(code) ||
+        code.StartsWith("SOD_DECLARED_DG_", StringComparison.Ordinal) ||
+        code.StartsWith("SOD_SUPPLIED_DG_", StringComparison.Ordinal);
 
     private static bool IsCaptureBindingTrusted(
         VerificationSession session,

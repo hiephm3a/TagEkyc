@@ -117,7 +117,7 @@ public sealed class VerificationCompletionApplicationService(
         var completedAt = operationNow;
         var completedAtCanonical = EvidenceCanonicalization.FormatTimestamp(completedAt);
         var finalResult = CalculateFinalResult(selectedEvidence, request.ForceReview);
-        var assuranceLevel = CalculateAssuranceLevel(session, finalResult);
+        var assuranceLevel = CalculateAssuranceLevel(session, selectedEvidence, finalResult);
         var completedChecks = selectedEvidence
             .Where(candidate => candidate.Result == VerificationResult.Passed)
             .Select(candidate => MapEvidenceToCheck(candidate.ResultType))
@@ -592,7 +592,10 @@ public sealed class VerificationCompletionApplicationService(
         return VerificationResult.Passed;
     }
 
-    private static AssuranceLevel CalculateAssuranceLevel(VerificationSession session, VerificationResult result)
+    private static AssuranceLevel CalculateAssuranceLevel(
+        VerificationSession session,
+        IReadOnlyList<EvidenceResult> evidence,
+        VerificationResult result)
     {
         if (result == VerificationResult.TechnicalError)
         {
@@ -604,9 +607,17 @@ public sealed class VerificationCompletionApplicationService(
             return AssuranceLevel.Low;
         }
 
-        return session.RequiredChecks.Contains(RequiredCheckType.DocumentNfc) &&
-               session.RequiredChecks.Contains(RequiredCheckType.FaceMatch) &&
-               session.RequiredChecks.Contains(RequiredCheckType.Liveness)
+        var fullBiometricProfile =
+            session.RequiredChecks.Contains(RequiredCheckType.DocumentNfc) &&
+            session.RequiredChecks.Contains(RequiredCheckType.FaceMatch) &&
+            session.RequiredChecks.Contains(RequiredCheckType.Liveness);
+        if (!fullBiometricProfile)
+        {
+            return AssuranceLevel.Medium;
+        }
+
+        var nfc = evidence.SingleOrDefault(candidate => candidate.ResultType == EvidenceResultType.NfcValidation);
+        return nfc?.ReasonCodes.Contains("PACE_SUCCESS", StringComparer.Ordinal) == true
             ? AssuranceLevel.High
             : AssuranceLevel.Medium;
     }

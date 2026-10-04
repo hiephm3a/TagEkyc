@@ -166,6 +166,63 @@ public sealed class Tip08TransactionBoundE2eProofTests
         Assert.DoesNotContain("payloadHash", serializedOutputs, StringComparison.OrdinalIgnoreCase);
     }
 
+    [Fact]
+    public async Task Tip08_bac_remains_durable_and_caps_full_profile_assurance_below_pace()
+    {
+        var fixture = CreateFixture();
+        var session = await fixture.SessionService.CreateAsync(
+            BusinessCaller(),
+            ChallengeBoundRequest(Challenge),
+            cancellationToken: CancellationToken.None);
+        Assert.True(session.IsSuccess);
+
+        var artifactIds = await AppendS1CaptureArtifactsAsync(fixture, session.Value!.VerificationSessionId);
+        await AppendTrustedAdapterS1EvidenceAsync(
+            fixture,
+            session.Value.VerificationSessionId,
+            artifactIds,
+            "BAC_SUCCESS");
+
+        var completed = await fixture.CompletionService.CompleteAsync(
+            BusinessCaller(),
+            session.Value.VerificationSessionId,
+            new CompleteVerificationSessionRequestDto(),
+            CancellationToken.None);
+
+        Assert.True(completed.IsSuccess);
+        Assert.Equal(VerificationResultDto.Passed, completed.Value?.Result);
+        Assert.Equal(AssuranceLevelDto.Medium, completed.Value?.AssuranceLevel);
+    }
+
+    [Fact]
+    public async Task Tip08_caller_reason_code_cannot_upgrade_bac_to_pace_assurance()
+    {
+        var fixture = CreateFixture();
+        var session = await fixture.SessionService.CreateAsync(
+            BusinessCaller(),
+            ChallengeBoundRequest(Challenge),
+            cancellationToken: CancellationToken.None);
+        Assert.True(session.IsSuccess);
+
+        var artifactIds = await AppendS1CaptureArtifactsAsync(fixture, session.Value!.VerificationSessionId);
+        await AppendTrustedAdapterS1EvidenceAsync(
+            fixture,
+            session.Value.VerificationSessionId,
+            artifactIds,
+            "BAC_SUCCESS",
+            ["PACE_SUCCESS"]);
+
+        var completed = await fixture.CompletionService.CompleteAsync(
+            BusinessCaller(),
+            session.Value.VerificationSessionId,
+            new CompleteVerificationSessionRequestDto(),
+            CancellationToken.None);
+
+        Assert.True(completed.IsSuccess);
+        Assert.Equal(VerificationResultDto.Passed, completed.Value?.Result);
+        Assert.Equal(AssuranceLevelDto.Medium, completed.Value?.AssuranceLevel);
+    }
+
     private static void AssertDocumentNfcIsEvidencedByNfcValidation(IReadOnlyList<EvidenceRefSummaryDto> evidenceRefs)
     {
         // Current repo behavior maps the canonical DocumentNfc required check to NfcValidation evidence.
@@ -229,7 +286,9 @@ public sealed class Tip08TransactionBoundE2eProofTests
     private static async Task AppendTrustedAdapterS1EvidenceAsync(
         TestFixture fixture,
         string verificationSessionId,
-        S1ArtifactIds artifactIds)
+        S1ArtifactIds artifactIds,
+        string chipAccessMethodFlag = "PACE_SUCCESS",
+        IReadOnlyList<string>? callerReasonCodes = null)
     {
         var captureQuality = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
@@ -240,7 +299,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
         var documentNfc = await fixture.EvidenceService.AppendEvidenceResultAsync(
             TrustedCaller(),
             verificationSessionId,
-            NfcEvidence(verificationSessionId, artifactIds.Nfc),
+            NfcEvidence(verificationSessionId, artifactIds.Nfc, chipAccessMethodFlag, callerReasonCodes),
             CancellationToken.None,
             $"test-idempotency-{Guid.NewGuid():N}");
         var faceMatch = await fixture.EvidenceService.AppendEvidenceResultAsync(
@@ -250,7 +309,7 @@ public sealed class Tip08TransactionBoundE2eProofTests
                 verificationSessionId,
                 artifactIds.Nfc,
                 documentNfc.Value!.EvidenceResultId,
-                ExpectedNfcPayloadHash(verificationSessionId, artifactIds.Nfc),
+                ExpectedNfcPayloadHash(verificationSessionId, artifactIds.Nfc, chipAccessMethodFlag),
                 artifactIds.Selfie),
             CancellationToken.None,
             $"test-idempotency-{Guid.NewGuid():N}");
@@ -302,14 +361,17 @@ public sealed class Tip08TransactionBoundE2eProofTests
 
     private static EvidenceResultSubmissionRequestDto NfcEvidence(
         string verificationSessionId,
-        string artifactId) =>
+        string artifactId,
+        string chipAccessMethodFlag = "PACE_SUCCESS",
+        IReadOnlyList<string>? callerReasonCodes = null) =>
         Evidence(EvidenceResultTypeDto.NfcValidation, [artifactId], "summary:tip08-document-nfc") with
         {
+            ReasonCodes = callerReasonCodes ?? [],
             PayloadHash = null,
             NfcEvidenceDecisionBasis = new NfcEvidenceDecisionBasisDto(
                 [
                     "NFC_READ_OK",
-                    "PACE_SUCCESS",
+                    chipAccessMethodFlag,
                     "SOD_INTERNAL_VALID",
                     "DG_HASHES_MATCH_SOD",
                     "CSCA_NOT_VERIFIED",
@@ -425,7 +487,8 @@ public sealed class Tip08TransactionBoundE2eProofTests
 
     private static string ExpectedNfcPayloadHash(
         string verificationSessionId,
-        string artifactId) =>
+        string artifactId,
+        string chipAccessMethodFlag = "PACE_SUCCESS") =>
         EvidenceCanonicalization.HashCanonical(
             "tip-69-nfc-evidence-decision-basis",
             new
@@ -444,9 +507,9 @@ public sealed class Tip08TransactionBoundE2eProofTests
                     "CSCA_NOT_VERIFIED",
                     "DG_HASHES_MATCH_SOD",
                     "NFC_READ_OK",
-                    "PACE_SUCCESS",
+                    chipAccessMethodFlag,
                     "SOD_INTERNAL_VALID",
-                },
+                }.Order(StringComparer.Ordinal).ToArray(),
                 captureBinding = new
                 {
                     challengeHash = EvidenceCanonicalization.HashCanonical("tip-69-capture-session-challenge", new

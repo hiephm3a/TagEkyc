@@ -190,6 +190,130 @@ public sealed class Tip05EvidenceApplicationTests
     }
 
     [Fact]
+    public async Task Tip69_bac_is_an_explicit_accepted_chip_access_method()
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
+        var artifact = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            NfcArtifact(),
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
+        var basis = ValidNfcBasis(session.Value.VerificationSessionId, artifact.Value!.CaptureArtifactId);
+        var bacFlags = basis.Flags
+            .Select(flag => flag == "PACE_SUCCESS" ? "BAC_SUCCESS" : flag)
+            .Concat([
+                "SOD_DECLARED_DG_1",
+                "SOD_DECLARED_DG_2",
+                "SOD_DECLARED_DG_3",
+                "SOD_SUPPLIED_DG_1",
+                "SOD_SUPPLIED_DG_2",
+            ])
+            .ToArray();
+
+        var result = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            ValidNfcEvidence(session.Value.VerificationSessionId, artifact.Value.CaptureArtifactId) with
+            {
+                NfcEvidenceDecisionBasis = basis with { Flags = bacFlags },
+            },
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
+
+        Assert.True(result.IsSuccess);
+        var stored = Assert.Single(fixture.Evidence.EvidenceResults);
+        Assert.Contains("BAC_SUCCESS", stored.ReasonCodes);
+        Assert.DoesNotContain("PACE_SUCCESS", stored.ReasonCodes);
+        Assert.Contains("SOD_DECLARED_DG_3", stored.ReasonCodes);
+        Assert.DoesNotContain("SOD_SUPPLIED_DG_3", stored.ReasonCodes);
+    }
+
+    [Theory]
+    [InlineData("BAC_SUCCESS", "PACE_SUCCESS")]
+    [InlineData("PACE_SUCCESS", "BAC_SUCCESS")]
+    public async Task Tip69_nfc_durable_reason_namespaces_are_derived_only_from_validated_basis(
+        string basisAccessMethod,
+        string spoofedAccessMethod)
+    {
+        var fixture = CreateFixture();
+        var session = await CreateChallengeBoundSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
+        var artifact = await fixture.Service.AppendCaptureArtifactAsync(
+            CaptureCaller(),
+            session.Value!.VerificationSessionId,
+            NfcArtifact(),
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
+        var basis = ValidNfcBasis(session.Value.VerificationSessionId, artifact.Value!.CaptureArtifactId);
+        var flags = basis.Flags
+            .Where(flag => flag != "PACE_SUCCESS" && flag != "BAC_SUCCESS")
+            .Append(basisAccessMethod)
+            .ToArray();
+
+        var result = await fixture.Service.AppendEvidenceResultAsync(
+            TrustedCaller(),
+            session.Value.VerificationSessionId,
+            ValidNfcEvidence(session.Value.VerificationSessionId, artifact.Value.CaptureArtifactId) with
+            {
+                ReasonCodes =
+                [
+                    spoofedAccessMethod,
+                    "SOD_DECLARED_DG_16",
+                    "SOD_SUPPLIED_DG_16",
+                    "SOD_DECLARED_DG_01",
+                ],
+                NfcEvidenceDecisionBasis = basis with { Flags = flags },
+            },
+            CancellationToken.None,
+            $"test-idempotency-{Guid.NewGuid():N}");
+
+        Assert.True(result.IsSuccess);
+        var stored = Assert.Single(fixture.Evidence.EvidenceResults);
+        Assert.Contains(basisAccessMethod, stored.ReasonCodes);
+        Assert.DoesNotContain(spoofedAccessMethod, stored.ReasonCodes);
+        Assert.DoesNotContain("SOD_DECLARED_DG_16", stored.ReasonCodes);
+        Assert.DoesNotContain("SOD_SUPPLIED_DG_16", stored.ReasonCodes);
+        Assert.DoesNotContain("SOD_DECLARED_DG_01", stored.ReasonCodes);
+        Assert.Single(stored.ReasonCodes.Where(code => code is "PACE_SUCCESS" or "BAC_SUCCESS"));
+    }
+
+    [Fact]
+    public async Task Tip69_requires_exactly_one_chip_access_method()
+    {
+        foreach (var accessFlags in new[]
+                 {
+                     Array.Empty<string>(),
+                     new[] { "PACE_SUCCESS", "BAC_SUCCESS" },
+                 })
+        {
+            var fixture = CreateFixture();
+            var session = await CreateChallengeBoundSessionAsync(fixture, [RequiredCheckTypeDto.DocumentNfc]);
+            var artifact = await fixture.Service.AppendCaptureArtifactAsync(
+                CaptureCaller(), session.Value!.VerificationSessionId, NfcArtifact(), CancellationToken.None,
+                $"test-idempotency-{Guid.NewGuid():N}");
+            var basis = ValidNfcBasis(session.Value.VerificationSessionId, artifact.Value!.CaptureArtifactId);
+            var flags = basis.Flags
+                .Where(flag => flag != "PACE_SUCCESS" && flag != "BAC_SUCCESS")
+                .Concat(accessFlags)
+                .ToArray();
+
+            var result = await fixture.Service.AppendEvidenceResultAsync(
+                TrustedCaller(),
+                session.Value.VerificationSessionId,
+                ValidNfcEvidence(session.Value.VerificationSessionId, artifact.Value.CaptureArtifactId) with
+                {
+                    NfcEvidenceDecisionBasis = basis with { Flags = flags },
+                },
+                CancellationToken.None,
+                $"test-idempotency-{Guid.NewGuid():N}");
+
+            Assert.False(result.IsSuccess);
+            Assert.Equal("NFC_EVIDENCE_DECOMPOSITION_REQUIRED", result.Error?.Code);
+        }
+    }
+
+    [Fact]
     public async Task Tip69_nfc_payload_hash_is_server_owned_and_rejects_adapter_mismatch()
     {
         var fixture = CreateFixture();
